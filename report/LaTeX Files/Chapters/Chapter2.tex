@@ -1,0 +1,132 @@
+\chapter{Flow past a uniform cylinder} % Main chapter title
+\label{Chapter2}
+
+\section{Inviscid Flow}
+
+When we consider an inviscid flow past a circular cylinder (without any circulation), under the assumptions of Potential Flow Theory, the stream function ($\psi$) is defined as follows in the polar coordinate system \parencite{White2018-ai}:
+
+\begin{equation}
+	\psi = \bigg(r - \frac{R^{2}}{r}\bigg) V_{\infty} \sin(\theta)
+\end{equation}
+Where ($R$) is the radius of the cylinder and ($V_{\infty}$) is the free-stream velocity. Therefore, the velocity components are defined as:
+\begin{equation}
+	V_r = \frac{1}{r} \frac{d \psi}{d \theta}=  \bigg(1 - \frac{R^{2}}{r^2}\bigg) V_{\infty} \cos(\theta)
+\end{equation}
+\begin{equation}
+	V_{\theta} = - \frac{d \psi}{d r} =  - \bigg(1 + \frac{R^{2}}{r^2}\bigg) V_{\infty} \sin(\theta)
+\end{equation}
+Whereas for an inviscid flow past a circular cylinder with circulation, the stream function is as follows:
+\begin{equation}
+	\psi = \bigg(r - \frac{R^{2}}{r}\bigg) V_{\infty} \sin(\theta) - K\ln\big(\frac{r}{R}\big)
+\end{equation}
+Where ($K$) is the strength of the vortex at the center of the cylinder.
+
+
+\section{Viscous Flow}
+
+\subsection{Dimensional Analysis}
+Let us being by assuming that the Drag ($D$) is a function of the free-stream velocity ($V_{\infty}$), the radius of cylinder ($R$), viscosity ($\mu$), vortex shedding frequency ($f$), shear stress on the surface of the cylinder ($\tau$), the density of the fluid ($\rho$) and the boundary layer thickness ($\delta$).
+\begin{equation}
+	D = \mathbbm{f} \big( V_{\infty}, R, \mu, f, \tau, \rho, \delta \big)
+\end{equation}
+By reducing this equation using the step-by-step method by Ipsen \parencite{ipsen1960units}, we arrive at the following dimensionless $\Pi$ groups.
+\begin{equation}
+	\Bigg( \frac{D}{\rho V_{\infty}^2 R^2} \Bigg) = \mathbbm{f} \Bigg( \frac{\mu}{\rho V_{\infty} R}, \frac{R f}{V_{\infty}}, \frac{\tau}{\rho V_{\infty}^2}, \frac{\delta}{R} \Bigg)
+\end{equation}
+Here the $\Pi$ groups are as follows:
+\begin{itemize}
+	\item $\Pi_1 = \frac{D}{\rho V_{\infty}^2 R^2} \rightarrow$ Drag Coefficient
+	\item $\Pi_2 = \frac{\rho V_{\infty} R}{\mu} \rightarrow$ Reynolds Number
+	\item $\Pi_3 = \frac{2 R f}{V_{\infty}} \rightarrow$ Strouhal Number
+	\item $\Pi_4 = \frac{\tau}{\rho V_{\infty}^2} \rightarrow$ Skin Friction Coefficient
+	\item $\Pi_5 = \frac{\delta}{R}$
+\end{itemize}
+Here we see that the drag coefficient (or the thrust coefficient thereof) is related to the standard dimensionless constants of fluid mechanics.
+
+\subsection{Vorticity generation from Boundary-Layer Theory}
+% TODO - Remove unnecessary parts
+By solving the Blasius equation a flow past a flat-plate \parencite{White2018-ai}, we know the relationship between $\delta$ and the Reynolds Number as:
+\begin{equation}
+	\frac{\delta}{x} \approx \frac{5.0}{Re_x^{1/2}}
+\end{equation}
+Now by considering the definition of vorticity, in the case of flow past a flat-plate we can reasonably make the following assumption:
+\begin{equation}
+	\vec{\omega} = \nabla \times \vec{V} = \bigg( \frac{\partial V_y}{\partial x} - \frac{\partial V_x}{\partial y} \bigg) \hat{z}
+\end{equation}
+\begin{equation}
+	\Bigg(\frac{\partial V_x}{\partial y} \approx \frac{\Delta V_x}{\Delta y} = \frac{V_{\infty}}{\delta} \Bigg) >> \Bigg(\frac{\partial V_y}{\partial x}  \approx \frac{\Delta V_y}{\Delta x} = 0 \Bigg)
+\end{equation}
+\begin{equation}
+	\implies \vec{\omega} \approx - \frac{V_{\infty}}{\delta} \hat{z} = -\frac{V_{\infty} Re_x^{1/2}}{5.0 x} \hat{z} = - \frac{V_{\infty}^{3/2}}{5.0 x^{1/2}}\sqrt{\frac{\rho}{\mu}} \hat{z}
+\end{equation}
+\begin{equation}
+	\therefore \vec{\omega} = - \frac{\kappa}{x^{1/2}}\hat{z} \text{ and } \kappa = \frac{V_{\infty}^{3/2}}{5.0}\sqrt{\frac{\rho}{\mu}}
+	\label{eq:flat-plate-vorticity-approx}
+\end{equation}
+Clearly we can see from eq. \ref{eq:flat-plate-vorticity-approx} that vorticity is inversely proportional to $x^{1/2}$ and directly proportional  to $V_{\infty}^{3/2}$.
+
+Now consider the vorticity transport equation, for the case of incompressible and isotropic fluids, with conservative body forces:
+\begin{equation}
+	\frac{D \vec{\omega}}{D t} = \frac{\partial \vec{\omega}}{\partial t} + (\vec{V}.\nabla)\vec{\omega} = (\vec{\omega}.\nabla)\vec{V} + \nu \nabla^2 \vec{\omega} 
+	\label{eq:vorticity-transport-equation}
+\end{equation}
+\begin{equation}
+	\nu = \frac{\mu}{\rho}
+\end{equation}
+Where ($\nu$) is the kinematic viscosity of the fluid.
+When we consider eq. \ref{eq:vorticity-transport-equation} for 2D space, we see that since:
+\begin{equation}
+	\vec{V} = (V_x, V_y, 0) \text{ and } \frac{\partial}{\partial z} = 0
+\end{equation}
+\begin{equation}
+	(\vec{\omega}.\nabla)\vec{V} = 0
+\end{equation}
+\begin{equation}
+	\implies \frac{D \vec{\omega}}{D t} = \nu \nabla^2 \vec{\omega} = \nu\nabla^2 \omega_z \hat{z} = \nu \frac{\partial^2 \omega_z}{\partial x^2} \hat{z} \text{ , } \because \vec{\omega} = (0, 0, \omega_z)
+	\label{eq:vorticity-transport-equation-2D-simplified}
+\end{equation}
+By substituting eqs. \ref{eq:flat-plate-vorticity-approx} and \ref{eq:vorticity-transport-equation-2D-simplified}, we arrive at the result:
+\begin{equation}
+	 \frac{D \vec{\omega}}{D t} = - \frac{3 \nu \kappa}{4 x^{5/2}} \hat{z}
+	 \label{eq:omega-dot-flat-plate}
+\end{equation}
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=14cm]{Figures/Vortex Shedding}
+	\caption{Schematic of vortex shedding during flow past a cylinder}
+	\label{fig:vortex-shedding}
+\end{figure}
+
+Subsequently, eq. \ref{eq:omega-dot-flat-plate} was assumed to model the region of $\theta = 90^{\circ}$ on a cylinder in inviscid flow, by treating the region to be similar to that of a flat-plate in a small neighborhood of $\theta = 90^{\circ}$. This assumption provided an equation which governed the rate of vorticity on top of the cylinder - the region from where vortices are typically shed. This equation, in addition to the following assumptions detailed below, an equation to model the vorticity of the shed vortex was derived:'
+\begin{itemize}
+	\item Generation of vorticity at the point of shedding is governed by the eq. \ref{eq:omega-dot-flat-plate}
+	\item Strouhal number is approximately a constant ($\approx 0.22$) for wide ranges of Reynolds number ($10^2 < Re < 10^7$) \parencite{White2018-ai}:
+	\begin{equation}
+		St = \frac{2 R f}{V_{\infty}}
+	\end{equation}
+	\item Time taken for a vortex to grow and detach from the boundary = $t_{sep}$
+	\begin{equation}
+		t_{sep} = \frac{1}{f} = \frac{2 R}{V_{\infty} (St)}
+	\end{equation}
+\end{itemize}
+The derived equation turned out to be a function of the angle of vortex separation. Hence to model this angle in terms of known variables, work by Wu et al. \parencite{Wu2004} was considered, wherein they studied the separation angles for 2D laminar flow upto a $Re$ of 290 through both 2D soap-film experiments and 2D numerical simulations, and subsequently proposed the following empirical relationship between $\theta_s - Re$ ($\theta_s$ is the angle measured clock-wise from the forward stagnation point on the cylinder, in degrees):
+\begin{equation}
+	\theta_s = 95.7 + 267.1 Re^{-1/2} - 625.9 Re^{-1} + 1046.6 Re^{-3/2}
+\end{equation}
+\begin{equation}
+	\Delta \theta = \theta_s - 90^{\circ} = 5.7 + 267.1 Re^{-1/2} - 625.9 Re^{-1} + 1046.6 Re^{-3/2}
+	\label{eq:delta-theta-re-relation}
+\end{equation}
+The empirical relation given in eq. \ref{eq:delta-theta-re-relation} is characterised to have a root-mean-square error of $4 \times 10^{-4}$ for $7 \leq Re \leq 200$. The empirical relationship between $\Delta \theta - Re$ has been plotted in fig. \ref{fig:delta-theta-vs-re}.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=12cm]{Figures/delta-theta-vs-re}
+	\caption{Empirical relationship between $\Delta \theta - Re$}
+	\label{fig:delta-theta-vs-re}
+\end{figure}
+
+This allowed for a closed-form equation for the shed vorticity, through known flow quantities and the Reynolds number, which showed that the magnitude of circulation would be directly proportional to the Reynolds number.
+
+However this entire exercise, built on the premise that the flow on the top-most point of a cylinder in an inviscid flow is similar to that of the flow past a flat plate, could not be substantiated through adequate mathematical rigour. Hence, the subsequent equations and their corresponding dependencies and results, could not be validated as well.
+Hence, the work shifted towards calculating the forces that act inside a control volume containing a cylinder for various configurations of trailing vortices, and their evolution in time, which is outlined in the subsequent chapter.

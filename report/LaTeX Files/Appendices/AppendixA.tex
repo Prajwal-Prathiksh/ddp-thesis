@@ -1,0 +1,270 @@
+\chapter{XOOPIC Input File} % Main appendix title
+
+\label{AppendixA} % Change X to a consecutive letter; for referencing this appendix elsewhere, use \ref{AppendixX}
+\begin{verbatim}
+Magnetic Nozzle
+{
+}
+
+Variables
+{
+//CONSTANTS
+PI = 3.141592654
+
+//INPUT PARAMETERS
+
+timeStep = 5.0e-17
+
+tolerance = 1e-3 // Residue for Poisson solver - Default in XOOPIC is 1e-3
+
+shrinkFactor = 6.0e6
+
+plasmaDensityOriginal = 2.2e+20 // (\# m^-3) plasma density without scaling
+
+domainNumberOfNodes_Z = 165
+
+domainNumberOfNodes_R = 90
+
+zStart_original = -0.05
+
+zEnd_original = 0.5
+
+rStart_original = 0.0
+
+rEnd_original = 0.15
+
+plasmaSource_radius_original = 0.04
+
+plasmaSource_zIndexStart = 2
+
+plasmaSource_zIndexWidth = 10
+
+plasmaSource_rIndexStart = 0
+
+reflectionPlane_zIndex = 1
+
+reflectionPlane_rIndexStart = 0
+
+reflectionPlane_rIndexEnd = 28
+
+plasmaDriftVelocity = 14022.186118872227
+
+thermalVelocity_electrons = 1390935.7152134727 // 11ev
+
+thermalVelocity_ions = 1548.4914120125895 // 0.01eV
+
+physicalParticlesToComputationalParticle = 0.3555300328136598
+
+//COMPUTED PARAMETERS
+
+plasmaDensity = plasmaDensityOriginal * shrinkFactor
+
+zStart_scaled = zStart_original / shrinkFactor
+
+DZ = (zEnd_original - zStart_original) / (shrinkFactor * domainNumberOfNodes_Z)
+
+DR = (rEnd_original - rStart_original) / (shrinkFactor * domainNumberOfNodes_R)
+
+plasmaSource_radius = plasmaSource_radius_original / shrinkFactor
+
+plasmaSource_zStart = zStart_scaled + plasmaSource_zIndexStart * DZ
+
+plasmaSource_zEnd = plasmaSource_zStart + plasmaSource_zIndexWidth * DZ
+
+plasmaSource_rStart = plasmaSource_rIndexStart * DR
+
+plasmaSource_rEnd = plasmaSource_radius
+
+plasmaSource_zWidth = plasmaSource_zIndexWidth * DZ
+
+emmision_area = PI * plasmaSource_radius ^ 2
+
+emmision_volume = emmision_area * plasmaSource_zWidth
+
+plasmaFlowRate = plasmaDensity * emmision_area * plasmaDriftVelocity//physical particles/s
+
+plasmaSourceRate = plasmaFlowRate / emmision_volume
+
+}
+
+Region
+{
+Grid
+{
+	J = domainNumberOfNodes_Z
+	x1s = zStart_original/shrinkFactor
+	x1f = zEnd_original/shrinkFactor
+	n1 = 1.0
+	K = domainNumberOfNodes_R
+	x2s = rStart_original/shrinkFactor
+	x2f = rEnd_original/shrinkFactor
+	n2 = 1.0
+	Geometry=0
+	Rule
+	{
+	 Limit
+	 n1 < 0.25
+	 Fatal -- n1 < 0.25 grid spacing too nonuniform to ensure accuracy
+	}
+	Rule
+	{
+	 Algebra
+	 J * K > 10000
+	 Warning -- J*K >= 10000 may mean memory problems!
+	}
+}
+Control
+{
+	dt = timeStep
+	ElectrostaticFlag = 1
+	Bf= ./BTP/V8/magneticField_Gauss.txt //
+	presidue = tolerance
+	Rule
+	{
+	 Limit
+	 dt <= 0.0
+	 Fatal -- time step must be positive
+	}
+}
+
+Species
+{
+        name = electrons
+        m = 9.11E-31
+        q = -1.6e-19 
+}
+Species
+{
+	name = ArgonIon
+        m = 6.633e-26
+        q = 1.6e-19
+}
+
+PlasmaSource
+{
+	units1 = MKS
+	v1drift1 = plasmaDriftVelocity
+	temperature1= thermalVelocity_electrons
+	speciesName1 = electrons
+	
+	units2 = MKS
+	v1drift2 = plasmaDriftVelocity
+	temperature2= thermalVelocity_ions
+	speciesName2 = ArgonIon
+	
+	A1 = plasmaSource_zStart
+	A2 = plasmaSource_rStart
+	B1 = plasmaSource_zEnd
+	B2 = plasmaSource_rEnd
+	sourceRate = plasmaSourceRate  // \# m^-3 s^-1 
+	np2c = physicalParticlesToComputationalParticle //
+}
+
+
+Dielectric
+{
+	j1 = reflectionPlane_zIndex
+	k1 = reflectionPlane_rIndexStart
+	j2 = reflectionPlane_zIndex
+	k2 = reflectionPlane_rIndexEnd
+	reflection = 1
+	refMaxE = 1e20
+}
+
+Conductor
+{
+	j1=0
+	k1=0
+	j2=0
+	k2=domainNumberOfNodes_R
+	normal = 1
+}
+Conductor
+{
+	j1=0
+	k1=domainNumberOfNodes_R
+	j2=domainNumberOfNodes_Z
+	k2=domainNumberOfNodes_R
+	normal = -1
+}
+Conductor
+{
+	j1=domainNumberOfNodes_Z
+	k1=domainNumberOfNodes_R
+	j2=domainNumberOfNodes_Z
+	k2=0
+	normal = -1
+}
+Diagnostic
+{
+
+        directory = BTP/Output
+        file = e_phase\%08d.dat
+        VarName = predef phase space for electrons
+        n_step = 50000
+}
+Diagnostic
+{
+
+        directory = BTP/Output
+        file = ar_phase\%08d.dat
+        VarName = predef phase space for ArgonIon
+        n_step = 50000
+}
+
+Diagnostic
+{
+
+        directory = BTP/Output
+        file = Ar_ndt\%08d.dat
+        VarName = predef Number density for ArgonIon
+        n_step = 50000
+}
+
+Diagnostic
+{
+
+        directory = BTP/Output
+        file = e_ndt\%08d.dat
+        VarName = predef Number density for electrons
+        n_step = 50000
+}
+
+Diagnostic
+{
+        directory = BTP/Output
+        file = ndt\%08d.dat
+        VarName = predef total density (t)
+        n_step = 50000
+}
+
+
+Diagnostic
+{
+
+        directory = BTP/Output
+        file = phi\%08d.dat
+        VarName = predef phi
+        n_step = 50000
+}
+
+Diagnostic
+{
+
+        directory = BTP/Output
+        file = E\%08d.dat
+        VarName = predef E
+        n_step = 50000
+}
+
+Diagnostic
+{
+
+        directory = BTP/Output
+        file = B\%08d.dat
+        VarName = predef B
+        n_step = 50000
+}
+
+}
+ \end{verbatim}
