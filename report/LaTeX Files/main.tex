@@ -29,7 +29,7 @@ english, % ngerman for German
 singlespacing, % Single line spacing, alternatives: onehalfspacing or doublespacing
 %draft, % Uncomment to enable draft mode (no pictures, no links, overfull hboxes indicated)
 %nolistspacing, % If the document is onehalfspacing or doublespacing, uncomment this to set spacing in lists to single
-%liststotoc, % Uncomment to add the list of figures/tables/etc to the table of contents
+liststotoc, % Uncomment to add the list of figures/tables/etc to the table of contents
 %toctotoc, % Uncomment to add the main table of contents to the table of contents
 %parskip, % Uncomment to add space between paragraphs
 %nohyperref, % Uncomment to not load the hyperref package
@@ -38,6 +38,7 @@ headsepline, % Uncomment to get a line under the header
 %consistentlayout, % Uncomment to change the layout of the declaration, abstract and acknowledgements pages to match the default layout
 ]{MastersDoctoralThesis} % The class file specifying the document structure
 \usepackage{amsmath}
+\usepackage{bm}
 \usepackage{algorithm2e}
 \RestyleAlgo{ruled}
 \usepackage[utf8]{inputenc} % Required for inputting international characters
@@ -59,6 +60,29 @@ style=authoryear]{biblatex}
 \usepackage{bbm}
 \usepackage{amssymb}
 \usepackage{hyperref}
+
+%----------------------------------------------------------------------------------------
+%	CUSTOM MATH COMMANDS
+%----------------------------------------------------------------------------------------
+\newcommand{\bb}[1]{\mathbb{#1}}
+\newcommand{\LagDerivative}[2][t]{\frac{\operatorname{d} #2}{\operatorname{d} #1}}
+\newcommand{\PartialDerivative}[2][t]{\frac{\partial #2}{\partial #1}}
+\newcommand{\vect}[1]{\mathbf{#1}}
+\newcommand{\tensor}[1]{\underline{\underline{\bm{#1}}}}
+\newcommand{\DWIJ}{\nabla_{i} W_{h, ij}}
+\newcommand{\VIJ}{\vect{v}_{ij}}
+\newcommand{\RIJ}{\vect{r}_{ij}}
+\newcommand{\RtwoIJ}[1][2]{|\vect{r}_{ij}|^{#1}}
+\newcommand{\MachineEpsilon}{\varepsilon}
+\newcommand{\RAProp}[1]{\langle #1 \rangle}
+\newcommand{\FrobeniusInnerProduct}[2]{\langle #1, #2 \rangle_F}
+\newcommand{\FrobeniusNorm}[1]{||#1||_F}
+\newcommand{\BasisVect}[1][i]{\hat{\vect{e}}_{#1}}
+\newcommand{\HalfFrac}{\frac{1}{2}}
+\newcommand{\Vol}[1][V]{\mathcal{#1}}
+
+
+
 
 %----------------------------------------------------------------------------------------
 %	MARGIN SETTINGS
@@ -136,7 +160,7 @@ style=authoryear]{biblatex}
 \emph{Supervisor:} \\
 {\supname} % Supervisor name - remove the \href bracket to remove the link  
 \end{flushright}
-\end{minipage}\\[3cm]
+\end{minipage}\\[1cm]
  
 \vfill
 
@@ -146,7 +170,7 @@ style=authoryear]{biblatex}
  
 \vfill
 
-{\large \today}\\[4cm] % Date
+{\large \today}\\[2cm] % Date
 %\includegraphics{Logo} % University/department logo - uncomment to place it
  
 \vfill
@@ -178,6 +202,8 @@ style=authoryear]{biblatex}
 \tableofcontents % Prints the main table of contents
 
 \listoffigures % Prints the list of figures
+
+\include{Chapters/ChapterLOS}
 
 %\listoftables % Prints the list of tables
 
@@ -232,7 +258,7 @@ style=authoryear]{biblatex}
 % Uncomment the lines as you write the chapters
 
 \include{Chapters/Chapter1}
-%\include{Chapters/Chapter2} 
+\include{Chapters/Chapter2} 
 %\include{Chapters/Chapter3}
 %\include{Chapters/Chapter4}
 %\include{Chapters/Chapter5}

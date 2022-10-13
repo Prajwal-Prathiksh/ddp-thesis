@@ -1,0 +1,52 @@
+\chapter*{List of Symbols}
+
+\addcontentsline{toc}{chapter}{List of Symbols}
+\setlength{\tabcolsep}{10pt} % Default value: 6pt - Column Spacing
+\renewcommand{\arraystretch}{1.7} % Default value: 1 - Row Spacing
+
+%TODO Increase size of Header
+
+% Please add the following required packages to your document preamble:
+% \usepackage{longtable}
+% Note: It may be necessary to compile the document several times to get a multi-page table to line up properly
+\begin{longtable}{ll}
+\textbf{Symbol}    & \textbf{Description}              \\
+\endfirsthead
+%
+\multicolumn{2}{c}%
+{{\bfseries Table \thetable\ continued from previous page}} \\
+\textbf{Symbol}    & \textbf{Description}              \\
+\endhead
+%
+$\vect{a}$         & Vector Field                      \\
+$\tensor{A}$       & Second-rank Tensor Field          \\
+$\BasisVect$       & $i^{th}$ Basis                    \\
+$\LagDerivative{}$ & Lagrangian Derivative             \\
+$\FrobeniusInnerProduct{\tensor{A}}{\tensor{B}}$ & Frobenius Inner Product of $\tensor{A}$ and $\tensor{B}$                                    \\
+$\FrobeniusNorm{A}$                              & Frobenius Norm of $\tensor{A}$ $( = \sqrt{\FrobeniusInnerProduct{\tensor{A}}{\tensor{A}}})$ \\
+$\Delta$           & Component-wise Laplacian Operator \\
+$(...)_{i}$        & Property of $i^{th}$ SPH particle \\
+$(...)_{j}$        & Property of $j^{th}$ SPH particle \\
+$(...)_{ij}$       & $(...)_{i} - (...)_{j}$           \\
+$t$                & Time                              \\
+$\vect{r}$         & Position                          \\
+$\vect{v}$         & Velocity                          \\
+$m$                & Mass                              \\
+$P$                & Pressure                          \\
+$\rho$             & Density                           \\
+$W_{h}$            & SPH Interpolating Kernel          \\
+$h$                & Kernel Smoothing Length           \\
+$\DWIJ$            & $\nabla_i W_h (\RIJ)$             \\
+$\Vol_i$           & Volume of $i^{th}$ SPH particle   \\
+$\vect{F}$         & External Body Force               \\
+$\nu$              & Kinematic Viscosity               \\
+$\eta$             & Dynamic Viscosity                 \\
+$\MachineEpsilon$  & Machine Epsilon                   \\
+$P_0$              & Reference Pressure                \\
+$\rho_0$           & Reference Density                 \\
+$c_s$              & Speed of Sound                    \\
+$\gamma$           & Exponent - Equation of State      \\
+$\nu_t$            & Turbulent Eddy Viscosity          \\
+$\tensor{S}$                                     & Strain-Rate Tensor $(=[1/2][\nabla \vect{v} + \nabla \vect{v}^T])$                          \\
+$\tensor{\tau}$    & Sub-Particle Stress Tensor       
+\end{longtable}
