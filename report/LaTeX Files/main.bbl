@@ -1,0 +1,334 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.2 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global}
+    \entry{Adami2012}{report}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=0d4775fea8584fd7956c5b505c8108dd}{%
+           family={Adami},
+           familyi={A\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=2,uniquepart=given,hash=0759110aae1a8818e2ece48dd7eaba54}{%
+           family={Hu},
+           familyi={H\bibinitperiod},
+           given={X.\bibnamedelimi Y.},
+           giveni={X\bibinitperiod\bibinitdelim Y\bibinitperiod},
+           givenun=2}}%
+        {{un=2,uniquepart=given,hash=e77df22f865b327edf41941aa19f4ca1}{%
+           family={Adams},
+           familyi={A\bibinitperiod},
+           given={N.\bibnamedelimi A.},
+           giveni={N\bibinitperiod\bibinitdelim A\bibinitperiod},
+           givenun=2}}%
+      }
+      \list{institution}{1}{%
+        {Lehrstuhl für Aerodynamik}%
+      }
+      \strng{namehash}{ebf3da8bfbea42f40b5a84143741ba7a}
+      \strng{fullhash}{ebf3da8bfbea42f40b5a84143741ba7a}
+      \strng{bibnamehash}{ebf3da8bfbea42f40b5a84143741ba7a}
+      \strng{authorbibnamehash}{ebf3da8bfbea42f40b5a84143741ba7a}
+      \strng{authornamehash}{ebf3da8bfbea42f40b5a84143741ba7a}
+      \strng{authorfullhash}{ebf3da8bfbea42f40b5a84143741ba7a}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Simulating three-dimensional turbulence with SPH}
+      \field{year}{2012}
+    \endentry
+    \entry{frigo2005design}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=26a5a1c098bdade790e2ee41c62dd36b}{%
+           family={Frigo},
+           familyi={F\bibinitperiod},
+           given={Matteo},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=f271cef1e5ae0aff0d07deccf21fd368}{%
+           family={Johnson},
+           familyi={J\bibinitperiod},
+           given={Steven\bibnamedelima G},
+           giveni={S\bibinitperiod\bibinitdelim G\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {IEEE}%
+      }
+      \strng{namehash}{534f6e9a353fb1ac07e7f8e33d067b91}
+      \strng{fullhash}{534f6e9a353fb1ac07e7f8e33d067b91}
+      \strng{bibnamehash}{534f6e9a353fb1ac07e7f8e33d067b91}
+      \strng{authorbibnamehash}{534f6e9a353fb1ac07e7f8e33d067b91}
+      \strng{authornamehash}{534f6e9a353fb1ac07e7f8e33d067b91}
+      \strng{authorfullhash}{534f6e9a353fb1ac07e7f8e33d067b91}
+      \field{sortinit}{F}
+      \field{sortinithash}{2638baaa20439f1b5a8f80c6c08a13b4}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Proceedings of the IEEE}
+      \field{number}{2}
+      \field{title}{The design and implementation of FFTW3}
+      \field{volume}{93}
+      \field{year}{2005}
+      \field{pages}{216\bibrangedash 231}
+      \range{pages}{16}
+    \endentry
+    \entry{gossler2001moving}{report}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=6257315889bc47eaa09152b21d9f0ea7}{%
+           family={GOSSLER},
+           familyi={G\bibinitperiod},
+           given={ALBERT\bibnamedelima A},
+           giveni={A\bibinitperiod\bibinitdelim A\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{institution}{1}{%
+        {Sandia National Lab.(SNL-NM), Albuquerque, NM (United States); Sandia~…}%
+      }
+      \strng{namehash}{6257315889bc47eaa09152b21d9f0ea7}
+      \strng{fullhash}{6257315889bc47eaa09152b21d9f0ea7}
+      \strng{bibnamehash}{6257315889bc47eaa09152b21d9f0ea7}
+      \strng{authorbibnamehash}{6257315889bc47eaa09152b21d9f0ea7}
+      \strng{authornamehash}{6257315889bc47eaa09152b21d9f0ea7}
+      \strng{authorfullhash}{6257315889bc47eaa09152b21d9f0ea7}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Moving Least-Squares: a numerical differentiation method for irregularly spaced calculation points}
+      \field{type}{techreport}
+      \field{year}{2001}
+    \endentry
+    \entry{hu2006multi}{article}{}
+      \name{author}{2}{}{%
+        {{un=2,uniquepart=given,hash=c6eb881cdcb54b88b3e9df86976a99d1}{%
+           family={Hu},
+           familyi={H\bibinitperiod},
+           given={Xiang\bibnamedelima Yu},
+           giveni={X\bibinitperiod\bibinitdelim Y\bibinitperiod},
+           givenun=2}}%
+        {{un=2,uniquepart=given,hash=54d047106356f745398344726a0428ec}{%
+           family={Adams},
+           familyi={A\bibinitperiod},
+           given={Nikolaus\bibnamedelima A},
+           giveni={N\bibinitperiod\bibinitdelim A\bibinitperiod},
+           givenun=2}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{cea6b15e2357207784e80819b805d36e}
+      \strng{fullhash}{cea6b15e2357207784e80819b805d36e}
+      \strng{bibnamehash}{cea6b15e2357207784e80819b805d36e}
+      \strng{authorbibnamehash}{cea6b15e2357207784e80819b805d36e}
+      \strng{authornamehash}{cea6b15e2357207784e80819b805d36e}
+      \strng{authorfullhash}{cea6b15e2357207784e80819b805d36e}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Computational Physics}
+      \field{number}{2}
+      \field{title}{A multi-phase SPH method for macroscopic and mesoscopic flows}
+      \field{volume}{213}
+      \field{year}{2006}
+      \field{pages}{844\bibrangedash 861}
+      \range{pages}{18}
+    \endentry
+    \entry{hu2007incompressible}{article}{}
+      \name{author}{2}{}{%
+        {{un=1,uniquepart=given,hash=0759110aae1a8818e2ece48dd7eaba54}{%
+           family={Hu},
+           familyi={H\bibinitperiod},
+           given={XY},
+           giveni={X\bibinitperiod},
+           givenun=1}}%
+        {{un=2,uniquepart=given,hash=54d047106356f745398344726a0428ec}{%
+           family={Adams},
+           familyi={A\bibinitperiod},
+           given={Nikolaus\bibnamedelima A},
+           giveni={N\bibinitperiod\bibinitdelim A\bibinitperiod},
+           givenun=2}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{f8a6f3066c5f11bbfdabb8231a7698a6}
+      \strng{fullhash}{f8a6f3066c5f11bbfdabb8231a7698a6}
+      \strng{bibnamehash}{f8a6f3066c5f11bbfdabb8231a7698a6}
+      \strng{authorbibnamehash}{f8a6f3066c5f11bbfdabb8231a7698a6}
+      \strng{authornamehash}{f8a6f3066c5f11bbfdabb8231a7698a6}
+      \strng{authorfullhash}{f8a6f3066c5f11bbfdabb8231a7698a6}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of computational physics}
+      \field{number}{1}
+      \field{title}{An incompressible multi-phase SPH method}
+      \field{volume}{227}
+      \field{year}{2007}
+      \field{pages}{264\bibrangedash 278}
+      \range{pages}{15}
+    \endentry
+    \entry{Monaghan1992}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=441fe88aa55fb5b33be74d8641d0d091}{%
+           family={Monaghan},
+           familyi={M\bibinitperiod},
+           given={J.\bibnamedelimi J.},
+           giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{fullhash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{bibnamehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{authorbibnamehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{authornamehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{authorfullhash}{441fe88aa55fb5b33be74d8641d0d091}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Smoothed particle hydrodynamics (SPH) was invented to simulate nonaxisymmetric phenomena in astrophysics (Lucy 1977, Gingold {\&} Monaghan 1977). We wanted a method that was easy to work with and could give reasonable accuracy. The SPH method satisfied these require- ments. As a bonus we found the SPH was rugged, gave sensible answers in difficult situations, and could be extended to complicated physics with- out much trouble. The SPH method is a particle method. Unlike the particle in cell method (PIC) (Harlow 1957, 1974, 1988), SPH does not need a grid to calculate spatial derivatives. Instead, they are found by analytical differentiation of interpolation formulae. The equations of momentum and energy become sets of ordinary differential equations which are easy to understand in mechanical and thermodynamical terms. For example, the pressure gradi- ent becomes a force between pairs of particles. The astrophysicist can then use intuition in a way which is difficult with the original partial differential equations. This intuition, coupled with detailed analysis, has allowed SPH to be extended to a wide variety of astrophysical problems. Although very accurate finite-difference methods exist-and these are better than SPH for some problems-they cannot handle complex physics in three dimensions with the same ease. Various aspects of SPH have been reviewed by Monaghan (1985, 1988a) and Benz (1988, 1989).}
+      \field{issn}{00664146}
+      \field{journaltitle}{Annual Review of Astronomy and Astrophysics}
+      \field{month}{9}
+      \field{number}{1}
+      \field{title}{{Smoothed particle hydrodynamics}}
+      \field{volume}{30}
+      \field{year}{1992}
+      \field{pages}{543\bibrangedash 574}
+      \range{pages}{32}
+      \verb{doi}
+      \verb 10.1146/annurev.aa.30.090192.002551
+      \endverb
+      \verb{urlraw}
+      \verb http://adsabs.harvard.edu/full/1992ARA{\&}A..30..543M http://www.annualreviews.org/doi/10.1146/annurev.aa.30.090192.002551
+      \endverb
+      \verb{url}
+      \verb http://adsabs.harvard.edu/full/1992ARA%7B%5C&%7DA..30..543M%20http://www.annualreviews.org/doi/10.1146/annurev.aa.30.090192.002551
+      \endverb
+      \keyw{Computational-fluid dynamics,Numerical analysis}
+    \endentry
+    \entry{pope1994lagrangi}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=0df85bf2c259df7fdc0a9a5bccfc8fd1}{%
+           family={Pope},
+           familyi={P\bibinitperiod},
+           given={SB},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{0df85bf2c259df7fdc0a9a5bccfc8fd1}
+      \strng{fullhash}{0df85bf2c259df7fdc0a9a5bccfc8fd1}
+      \strng{bibnamehash}{0df85bf2c259df7fdc0a9a5bccfc8fd1}
+      \strng{authorbibnamehash}{0df85bf2c259df7fdc0a9a5bccfc8fd1}
+      \strng{authornamehash}{0df85bf2c259df7fdc0a9a5bccfc8fd1}
+      \strng{authorfullhash}{0df85bf2c259df7fdc0a9a5bccfc8fd1}
+      \field{sortinit}{P}
+      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Annu. Rev. Fluid Mech}
+      \field{title}{LAGRANGI-AN PDF METHODS FOR TURBULENT FLOWS}
+      \field{volume}{23}
+      \field{year}{1994}
+      \field{pages}{63}
+      \range{pages}{1}
+    \endentry
+    \entry{VIOLEAU2002}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=983d240830bb1a407a1bb0ed4f0ed8d4}{%
+           family={VIOLEAU},
+           familyi={V\bibinitperiod},
+           given={D.},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=30f95c9ab8680741e4ffde28426642b2}{%
+           family={PICCON},
+           familyi={P\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=990c015775013eb8ad37ca3ff6893a55}{%
+           family={CHABARD},
+           familyi={C\bibinitperiod},
+           given={J.-P.},
+           giveni={J\bibinithyphendelim P\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {WORLD SCIENTIFIC}%
+      }
+      \strng{namehash}{fd6d8f95f4fb13464fe4733aa09214fd}
+      \strng{fullhash}{fd6d8f95f4fb13464fe4733aa09214fd}
+      \strng{bibnamehash}{fd6d8f95f4fb13464fe4733aa09214fd}
+      \strng{authorbibnamehash}{fd6d8f95f4fb13464fe4733aa09214fd}
+      \strng{authornamehash}{fd6d8f95f4fb13464fe4733aa09214fd}
+      \strng{authorfullhash}{fd6d8f95f4fb13464fe4733aa09214fd}
+      \field{sortinit}{V}
+      \field{sortinithash}{afb52128e5b4dc4b843768c0113d673b}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{通过对黄土高原西峰黄土剖面S5古土壤层的蜗牛化石组合研究发现,西峰地区在S5形成时(对应海洋氧同位素MIS15~13期)气候环境经历了几次显著的波动。MIS15期地层中绝大多数蜗牛壳体被溶蚀,气候非常暖湿,夏季风强盛;MIS14是个弱冰期,蜗牛组合显示气候以凉湿为主,仍然有较强的夏季风影响;MIS13期以暖湿的气候为主,夏季风增强。对温湿蜗牛种类冠状砂螺(Gastrocopta coreana)含量变化的功率谱分析显示出明显的23ka周期,表明岁差轨道驱动的低纬太阳辐射是控制黄土高原夏季风变化的主导因素;冷干种类杂色虹蛹螺(Pupilla aeoli)含量变化具有明显的100ka和弱的43ka周期,说明即使在气候特征总体暖湿的背景下,冬季风仍具有以全球冰量(100ka)为主导周期的变化特征。在海洋和冰芯记录中MIS13和MIS15时期并不是最温暖的间冰期,但在黄土高原受到强夏季风的持续影响,这可能与此时北半球夏季太阳辐射量的增强和北大西洋深层流强度的加强有关。S5中S5SS1与S5SS3两层强烈发育的古土壤可能有着不同的发育机制,S5SS1因其较发育的母质、超长的成壤期,形成了比S5SS3更强的成壤特征。分析认为全球冰量与轨道驱动的北半球太阳辐射对MIS15~13时期黄土高原气候环境的演替和冬、夏季风的消长起了主导作用。}
+      \field{isbn}{978-981-02-4931-1}
+      \field{issn}{1001-7410}
+      \field{issue}{5}
+      \field{journaltitle}{Advances in Fluid Modeling and Turbulence Measurements}
+      \field{month}{7}
+      \field{title}{TWO ATTEMPTS OF TURBULENCE MODELLING IN SMOOTHED PARTICLE HYDRODYNAMICS}
+      \field{volume}{1}
+      \field{year}{2002}
+      \field{pages}{339\bibrangedash 346}
+      \range{pages}{8}
+      \verb{doi}
+      \verb 10.1142/9789812777591_0041
+      \endverb
+      \verb{urlraw}
+      \verb http://guest.cnki.net/grid2008/brief/detailj.aspx?filename=DZDQ200901001251&dbname=CPFD2010 http://www.worldscientific.com/doi/abs/10.1142/9789812777591_0041
+      \endverb
+      \verb{url}
+      \verb http://guest.cnki.net/grid2008/brief/detailj.aspx?filename=DZDQ200901001251&dbname=CPFD2010%20http://www.worldscientific.com/doi/abs/10.1142/9789812777591_0041
+      \endverb
+      \keyw{古土壤,古环境,太阳辐射,蜗牛化石,西峰S5}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+
