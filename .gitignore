@@ -130,3 +130,28 @@ dmypy.json
 
 # VS Code
 .vscode/*
+
+# Miscellaneous
+*.pyc
+*.o
+*.c
+*~
+*.orig
+*.log
+*.pyd
+*.pdf
+*.out
+*_output
+*.aux
+*.bbl
+*.blg
+*.spl
+*.synctex.gz
+*.bcf
+*.lof
+*.lot
+*.run.xml
+*.toc
+config*.json*
+.ipynb_checkpoints/
+.automan/
