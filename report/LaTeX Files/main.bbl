@@ -371,6 +371,97 @@
       \endverb
       \keyw{Breakwater,Large eddy simulation,Partially immersed,Regular wave,Smoothed particle hydrodynamics}
     \endentry
+    \entry{holm1998euler}{article}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=54da33665d182072fc9af545bafcc456}{%
+           family={Holm},
+           familyi={H\bibinitperiod},
+           given={Darryl\bibnamedelima D},
+           giveni={D\bibinitperiod\bibinitdelim D\bibinitperiod},
+           givenun=0}}%
+        {{un=2,uniquepart=given,hash=ec03988d2dd9d918b4d7f236b192cc6a}{%
+           family={Marsden},
+           familyi={M\bibinitperiod},
+           given={Jerrold\bibnamedelima E},
+           giveni={J\bibinitperiod\bibinitdelim E\bibinitperiod},
+           givenun=2}}%
+        {{un=0,uniquepart=base,hash=7ff78e76bb4945ce84765cf37b43c723}{%
+           family={Ratiu},
+           familyi={R\bibinitperiod},
+           given={Tudor\bibnamedelima S},
+           giveni={T\bibinitperiod\bibinitdelim S\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {APS}%
+      }
+      \strng{namehash}{8d1f06635f7a6c3f902633bf4f23e402}
+      \strng{fullhash}{8d1f06635f7a6c3f902633bf4f23e402}
+      \strng{bibnamehash}{8d1f06635f7a6c3f902633bf4f23e402}
+      \strng{authorbibnamehash}{8d1f06635f7a6c3f902633bf4f23e402}
+      \strng{authornamehash}{8d1f06635f7a6c3f902633bf4f23e402}
+      \strng{authorfullhash}{8d1f06635f7a6c3f902633bf4f23e402}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Physical Review Letters}
+      \field{number}{19}
+      \field{title}{Euler-Poincaré models of ideal fluids with nonlinear dispersion}
+      \field{volume}{80}
+      \field{year}{1998}
+      \field{pages}{4173}
+      \range{pages}{1}
+    \endentry
+    \entry{Hu2015}{article}{}
+      \name{author}{2}{}{%
+        {{un=2,uniquepart=given,hash=0759110aae1a8818e2ece48dd7eaba54}{%
+           family={Hu},
+           familyi={H\bibinitperiod},
+           given={X.\bibnamedelimi Y.},
+           giveni={X\bibinitperiod\bibinitdelim Y\bibinitperiod},
+           givenun=2}}%
+        {{un=2,uniquepart=given,hash=e77df22f865b327edf41941aa19f4ca1}{%
+           family={Adams},
+           familyi={A\bibinitperiod},
+           given={N.\bibnamedelimi A.},
+           giveni={N\bibinitperiod\bibinitdelim A\bibinitperiod},
+           givenun=2}}%
+      }
+      \strng{namehash}{30e01312abecc844a72031774a67455e}
+      \strng{fullhash}{30e01312abecc844a72031774a67455e}
+      \strng{bibnamehash}{30e01312abecc844a72031774a67455e}
+      \strng{authorbibnamehash}{30e01312abecc844a72031774a67455e}
+      \strng{authornamehash}{30e01312abecc844a72031774a67455e}
+      \strng{authorfullhash}{30e01312abecc844a72031774a67455e}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{A coarse-grained particle model for incompressible Navier-Stokes (NS) equation is proposed based on spatial filtering by utilizing smoothed particle hydrodynamics (SPH) approximations. This model is similar to our previous developed SPH discretization of NS equation (Hu X.Y. {\&} N.A. Adams, J. Comput. Physics, 227:264-278, 2007 and 228:2082-2091, 2009) and the Lagrangian averaged NS (LANS-$\alpha$) turbulence model. Other than using smoothing approaches, this model obtains particle transport velocity by imposing constant $\sigma$ which is associated with the particle density, and is called SPH-$\sigma$ model. Numerical tests on two-dimensional decay and forced turbulences with high Reynolds number suggest that the model is able to reproduce both the inverse energy cascade and direct enstrophy cascade of the kinetic energy spectrum, the time scaling of enstrophy decay and the non-Guassian probability density function (PDF) of particle acceleration.}
+      \field{eprinttype}{arXiv}
+      \field{issn}{22109838}
+      \field{journaltitle}{Procedia IUTAM}
+      \field{title}{{A SPH Model for Incompressible Turbulence}}
+      \field{volume}{18}
+      \field{year}{2015}
+      \field{pages}{66\bibrangedash 75}
+      \range{pages}{10}
+      \verb{doi}
+      \verb 10.1016/j.piutam.2015.11.007
+      \endverb
+      \verb{eprint}
+      \verb 1204.5097
+      \endverb
+      \verb{file}
+      \verb :D$\backslash$:/IIT Bombay - Miscellaneous/Research Papers/Dual Degree Programme/A SPH Model for Incompressible Turbulence.pdf:pdf
+      \endverb
+      \keyw{coarse-graining,incompressible flow,particle method}
+    \endentry
     \entry{hu2006multi}{article}{}
       \name{author}{2}{}{%
         {{un=2,uniquepart=given,hash=c6eb881cdcb54b88b3e9df86976a99d1}{%
@@ -568,14 +659,113 @@
       \field{pages}{686\bibrangedash 726}
       \range{pages}{41}
     \endentry
+    \entry{Marsden2001}{article}{}
+      \name{author}{2}{}{%
+        {{un=2,uniquepart=given,hash=a109e64d7dd72d3d3700a1a0216efd4b}{%
+           family={Marsden},
+           familyi={M\bibinitperiod},
+           given={J.\bibnamedelimi E.},
+           giveni={J\bibinitperiod\bibinitdelim E\bibinitperiod},
+           givenun=2}}%
+        {{un=0,uniquepart=base,hash=4be76fe72bb64bc6bb5f4b541044f9b3}{%
+           family={Shkoller},
+           familyi={S\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{de03d2d03ea974ca7a8cff087339c773}
+      \strng{fullhash}{de03d2d03ea974ca7a8cff087339c773}
+      \strng{bibnamehash}{de03d2d03ea974ca7a8cff087339c773}
+      \strng{authorbibnamehash}{de03d2d03ea974ca7a8cff087339c773}
+      \strng{authornamehash}{de03d2d03ea974ca7a8cff087339c773}
+      \strng{authorfullhash}{de03d2d03ea974ca7a8cff087339c773}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We prove the global well-posedness and regularity of the (isotropic) Lagrangian averaged Navier-Stokes (LANS-$\alpha$) equations on a three-dimensional bounded domain with a smooth boundary with no-slip boundary conditions for initial data in the set {\{}u ∈ Hs ∩ H01 | Au = 0 on $\delta$$\Omega$, div u = 0{\}}, s ∈ [3, 5), where A is the Stokes operator. As with the Navier-Stokes equations, one has parabolic-type regularity; that is, the solutions instantaneously become space-time smooth when the forcing is smooth (or zero). The equations are an ensemble average of the Navier-Stokes equations over initial data in an $\alpha$-radius phase-space ball, and converge to the Navier-Stokes equations as $\alpha$ → 0. We also show that classical solutions of the LANS-$\alpha$ equations converge almost all in Hs for s ∈ (2.5, 3), to solutions of the inviscid equations (v = 0), called the Lagrangian averaged Euler (LAE-$\alpha$) equations, even on domains with boundary, for time-intervals governed by the time of existence of solutions of the LAE-$\alpha$ equations.}
+      \field{issn}{1364503X}
+      \field{journaltitle}{Philosophical Transactions of the Royal Society A: Mathematical, Physical and Engineering Sciences}
+      \field{number}{1784}
+      \field{title}{{Global well-posedness for the Lagrangian averaged Navier-Stokes (LANS-$\alpha$) equations on bounded domains}}
+      \field{volume}{359}
+      \field{year}{2001}
+      \field{pages}{1449\bibrangedash 1468}
+      \range{pages}{20}
+      \verb{doi}
+      \verb 10.1098/rsta.2001.0852
+      \endverb
+      \verb{file}
+      \verb :D$\backslash$:/IIT Bombay - Miscellaneous/Research Papers/Dual Degree Programme/Global well–posedness for the Lagrangian averaged Navier–Stokes (LANS–$\alpha$) equations on bounded domains.pdf:pdf
+      \endverb
+      \keyw{Averaging,Euler equations,Large-scale flow,Navier-Stokes,Turbulence}
+    \endentry
+    \entry{Mohseni2003}{article}{}
+      \name{author}{4}{}{%
+        {{un=0,uniquepart=base,hash=9d9e22a8870a29f641f30556652588e5}{%
+           family={Mohseni},
+           familyi={M\bibinitperiod},
+           given={Kamran},
+           giveni={K\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=19056edff4db78debf6f97209e9d6038}{%
+           family={Kosović},
+           familyi={K\bibinitperiod},
+           given={Branko},
+           giveni={B\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=51614fc0849d7f794aca19ce8ef33482}{%
+           family={Shkoller},
+           familyi={S\bibinitperiod},
+           given={Steve},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=ec03988d2dd9d918b4d7f236b192cc6a}{%
+           family={Marsden},
+           familyi={M\bibinitperiod},
+           given={Jerrold\bibnamedelima E.},
+           giveni={J\bibinitperiod\bibinitdelim E\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{e7a98bfac9e7924e6076c6be8bf7dce2}
+      \strng{fullhash}{cac37ad16ad36557126c97b4a3f6517e}
+      \strng{bibnamehash}{e7a98bfac9e7924e6076c6be8bf7dce2}
+      \strng{authorbibnamehash}{e7a98bfac9e7924e6076c6be8bf7dce2}
+      \strng{authornamehash}{e7a98bfac9e7924e6076c6be8bf7dce2}
+      \strng{authorfullhash}{cac37ad16ad36557126c97b4a3f6517e}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Capabilities for turbulence calculations of the Lagrangian averaged Navier-Stokes (LANS-$\alpha$) equations are investigated in decaying and statistically stationary three-dimensional homogeneous and isotropic turbulence. Results of the LANS-$\alpha$ computations are analyzed by comparison with direct numerical simulation (DNS) data and large eddy simulations. Two different decaying turbulence cases at moderate and high Reynolds numbers are studied. In statistically stationary turbulence two different forcing techniques are implemented to model the energetics of the energy-containing scales. The resolved flows are examined by comparison of the energy spectra of the LANS-$\alpha$ with the DNS computations. The energy transfer and the capability of the LANS-$\alpha$ equations in representing the backscatter of energy is analyzed by comparison with the DNS data. Furthermore, the correlation between the vorticity and the eigenvectors of the rate of the resolved strain tensor is studied. We find that the LANS-$\alpha$ equations capture the gross features of the flow, while the wave activity below the scale $\alpha$ is filtered by a nonlinear redistribution of energy. {©} 2003 American Institute of Physics.}
+      \field{issn}{10706631}
+      \field{journaltitle}{Physics of Fluids}
+      \field{number}{2}
+      \field{title}{{Numerical simulations of the Lagrangian averaged Navier-Stokes equations for homogeneous isotropic turbulence}}
+      \field{volume}{15}
+      \field{year}{2003}
+      \field{pages}{524\bibrangedash 544}
+      \range{pages}{21}
+      \verb{doi}
+      \verb 10.1063/1.1533069
+      \endverb
+      \verb{file}
+      \verb :D$\backslash$:/IIT Bombay - Miscellaneous/Research Papers/Dual Degree Programme/Numerical simulations of the Lagrangian averaged Navier–Stokes equations for homogeneous isotropic turbulence.pdf:pdf
+      \endverb
+    \endentry
     \entry{Monaghan1992}{article}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=441fe88aa55fb5b33be74d8641d0d091}{%
+        {{un=2,uniquepart=given,hash=441fe88aa55fb5b33be74d8641d0d091}{%
            family={Monaghan},
            familyi={M\bibinitperiod},
            given={J.\bibnamedelimi J.},
            giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod},
-           givenun=0}}%
+           givenun=2}}%
       }
       \strng{namehash}{441fe88aa55fb5b33be74d8641d0d091}
       \strng{fullhash}{441fe88aa55fb5b33be74d8641d0d091}
@@ -583,6 +773,7 @@
       \strng{authorbibnamehash}{441fe88aa55fb5b33be74d8641d0d091}
       \strng{authornamehash}{441fe88aa55fb5b33be74d8641d0d091}
       \strng{authorfullhash}{441fe88aa55fb5b33be74d8641d0d091}
+      \field{extraname}{1}
       \field{sortinit}{M}
       \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
       \field{extradatescope}{labelyear}
@@ -609,6 +800,165 @@
       \verb http://adsabs.harvard.edu/full/1992ARA%7B%5C&%7DA..30..543M%20http://www.annualreviews.org/doi/10.1146/annurev.aa.30.090192.002551
       \endverb
       \keyw{Computational-fluid dynamics,Numerical analysis}
+    \endentry
+    \entry{Monaghan2002}{article}{}
+      \name{author}{1}{}{%
+        {{un=2,uniquepart=given,hash=441fe88aa55fb5b33be74d8641d0d091}{%
+           family={Monaghan},
+           familyi={M\bibinitperiod},
+           given={J.\bibnamedelimi J.},
+           giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod},
+           givenun=2}}%
+      }
+      \strng{namehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{fullhash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{bibnamehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{authorbibnamehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{authornamehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{authorfullhash}{441fe88aa55fb5b33be74d8641d0d091}
+      \field{extraname}{2}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{In this paper an SPH version of the alpha turbulence model devised by Holm and his colleagues is formulated for compressible flow with a resolution that varies in space and time. The alpha model involves two velocity fields. One velocity field is obtained from the momentum equation, the other by averaging this velocity field as in the version of SPH called XSPH. The particles (fluid elements) are moved with the averaged velocity. In analogy to the continuum alpha model we obtain a particle Lagrangian from which the SPH alpha equations can be derived. The system satisfies a discrete Kelvin circulation theorem identical to that obtained with no velocity averaging. In addition, the energy, linear and angular momentum are conserved. We show that the continuum equivalent of the SPH equations are identical to the continuum alpha model, and we conjecture that they will have the same desirable features of the continuum modelincluding the reduction of energy in the high wave number modes even when the dissipation is zero. Regardless of issues concerning turbulence modelling, the SPH alpha model is a powerful extension of the XSPH algorithm which reduces disorder at short length scales and retains the constants of the motion. The SPH alpha model is simple to implement.}
+      \field{month}{4}
+      \field{title}{SPH compressible turbulence}
+      \field{volume}{852}
+      \field{year}{2002}
+      \field{pages}{843\bibrangedash 852}
+      \range{pages}{10}
+      \verb{doi}
+      \verb 10.1046/j.1365-8711.2002.05678.x
+      \endverb
+      \verb{urlraw}
+      \verb http://arxiv.org/abs/astro-ph/0204118 http://dx.doi.org/10.1046/j.1365-8711.2002.05678.x
+      \endverb
+      \verb{url}
+      \verb http://arxiv.org/abs/astro-ph/0204118%20http://dx.doi.org/10.1046/j.1365-8711.2002.05678.x
+      \endverb
+      \keyw{hydrodynamics,turbulence}
+    \endentry
+    \entry{Monaghan2011}{article}{}
+      \name{author}{1}{}{%
+        {{un=2,uniquepart=given,hash=441fe88aa55fb5b33be74d8641d0d091}{%
+           family={Monaghan},
+           familyi={M\bibinitperiod},
+           given={J.\bibnamedelimi J.},
+           giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod},
+           givenun=2}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier Masson SAS.}%
+      }
+      \strng{namehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{fullhash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{bibnamehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{authorbibnamehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{authornamehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{authorfullhash}{441fe88aa55fb5b33be74d8641d0d091}
+      \field{extraname}{3}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{09977546}
+      \field{issue}{4}
+      \field{journaltitle}{European Journal of Mechanics, B/Fluids}
+      \field{title}{A turbulence model for smoothed particle hydrodynamics}
+      \field{volume}{30}
+      \field{year}{2011}
+      \field{pages}{360\bibrangedash 370}
+      \range{pages}{11}
+      \verb{doi}
+      \verb 10.1016/j.euromechflu.2011.04.002
+      \endverb
+      \verb{urlraw}
+      \verb http://dx.doi.org/10.1016/j.euromechflu.2011.04.002
+      \endverb
+      \verb{url}
+      \verb http://dx.doi.org/10.1016/j.euromechflu.2011.04.002
+      \endverb
+      \keyw{2D box,SPH,Turbulence}
+    \endentry
+    \entry{Monaghan2017}{article}{}
+      \name{author}{1}{}{%
+        {{un=2,uniquepart=given,hash=441fe88aa55fb5b33be74d8641d0d091}{%
+           family={Monaghan},
+           familyi={M\bibinitperiod},
+           given={J.\bibnamedelimi J.},
+           giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod},
+           givenun=2}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier Masson SAS.}%
+      }
+      \strng{namehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{fullhash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{bibnamehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{authorbibnamehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{authornamehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{authorfullhash}{441fe88aa55fb5b33be74d8641d0d091}
+      \field{extraname}{4}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{The aim of this paper is to describe how effectively a turbulence model for the particle method SPH (Monaghan 2011 denoted by SPH-$\epsilon$) simulates 2D turbulence driven by a moving cylinder inside a square box with no-slip walls. The model makes few assumptions, conserves linear and angular momentum, satisfies a discrete version of Kelvin's circulation theorem and is computationally efficient. Furthermore, the results from the model for decaying two dimensional turbulence are in good agreement with the experimental and computational results. The SPH turbulence model is based on a Lagrangian similar to that used for the Lagrangian averaged Navier–Stokes (LANS) turbulence model, but with a different smoothed velocity. The smoothed velocity preserves the shape of the spectrum of the unsmoothed velocity for short length scales, but reduces its magnitude by an amount which depends on a parameter $\epsilon$, where 0≤$\epsilon$≤1. When $\epsilon$=0, there is no smoothing, and when $\epsilon$=1 the smoothing is a maximum. We compare calculations with resolution given by the Reynolds length ℓR and those using SPH-$\epsilon$ with $\epsilon$=0.8, and a coarser resolution 2ℓR. The second and fourth order velocity correlation functions, the energy spectrum and the mixing calculated using SPH-$\epsilon$ and the coarse resolution 2ℓR, are in good agreement with those using the resolution ℓR, but requires 8 times less work to integrate to the same time. The mixing induced by the turbulence is in good agreement with high resolution calculations.}
+      \field{issn}{09977546}
+      \field{journaltitle}{European Journal of Mechanics, B/Fluids}
+      \field{title}{SPH-$\epsilon$ simulation of 2D turbulence driven by a moving cylinder}
+      \field{volume}{65}
+      \field{year}{2017}
+      \field{pages}{486\bibrangedash 493}
+      \range{pages}{8}
+      \verb{doi}
+      \verb 10.1016/j.euromechflu.2017.03.011
+      \endverb
+      \verb{urlraw}
+      \verb http://dx.doi.org/10.1016/j.euromechflu.2017.03.011
+      \endverb
+      \verb{url}
+      \verb http://dx.doi.org/10.1016/j.euromechflu.2017.03.011
+      \endverb
+    \endentry
+    \entry{monaghan1989problem}{article}{}
+      \name{author}{1}{}{%
+        {{un=1,uniquepart=given,hash=441fe88aa55fb5b33be74d8641d0d091}{%
+           family={Monaghan},
+           familyi={M\bibinitperiod},
+           given={JJ},
+           giveni={J\bibinitperiod},
+           givenun=1}}%
+      }
+      \list{publisher}{1}{%
+        {Academic Press Professional, Inc. San Diego, CA, USA}%
+      }
+      \strng{namehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{fullhash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{bibnamehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{authorbibnamehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{authornamehash}{441fe88aa55fb5b33be74d8641d0d091}
+      \strng{authorfullhash}{441fe88aa55fb5b33be74d8641d0d091}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Computational physics}
+      \field{number}{1}
+      \field{title}{On the problem of penetration in particle methods}
+      \field{volume}{82}
+      \field{year}{1989}
+      \field{pages}{1\bibrangedash 15}
+      \range{pages}{15}
     \endentry
     \entry{morris1997modeling}{article}{}
       \name{author}{3}{}{%
