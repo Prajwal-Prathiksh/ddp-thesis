@@ -58,6 +58,73 @@
       \field{title}{Simulating three-dimensional turbulence with SPH}
       \field{year}{2012}
     \endentry
+    \entry{chorin1968numerical}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=09aedb7d00518f00411f27147e3113ea}{%
+           family={Chorin},
+           familyi={C\bibinitperiod},
+           given={Alexandre\bibnamedelima Joel},
+           giveni={A\bibinitperiod\bibinitdelim J\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{09aedb7d00518f00411f27147e3113ea}
+      \strng{fullhash}{09aedb7d00518f00411f27147e3113ea}
+      \strng{bibnamehash}{09aedb7d00518f00411f27147e3113ea}
+      \strng{authorbibnamehash}{09aedb7d00518f00411f27147e3113ea}
+      \strng{authornamehash}{09aedb7d00518f00411f27147e3113ea}
+      \strng{authorfullhash}{09aedb7d00518f00411f27147e3113ea}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Mathematics of computation}
+      \field{number}{104}
+      \field{title}{Numerical solution of the Navier-Stokes equations}
+      \field{volume}{22}
+      \field{year}{1968}
+      \field{pages}{745\bibrangedash 762}
+      \range{pages}{18}
+    \endentry
+    \entry{cummins1999sph}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=b206036608239d91fad0891bbf2f3056}{%
+           family={Cummins},
+           familyi={C\bibinitperiod},
+           given={Sharen\bibnamedelima J},
+           giveni={S\bibinitperiod\bibinitdelim J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=33b7386d6d48b81c8ad90efd09b244da}{%
+           family={Rudman},
+           familyi={R\bibinitperiod},
+           given={Murray},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{e6bfa9b0ebe70679c09f19517671aa31}
+      \strng{fullhash}{e6bfa9b0ebe70679c09f19517671aa31}
+      \strng{bibnamehash}{e6bfa9b0ebe70679c09f19517671aa31}
+      \strng{authorbibnamehash}{e6bfa9b0ebe70679c09f19517671aa31}
+      \strng{authornamehash}{e6bfa9b0ebe70679c09f19517671aa31}
+      \strng{authorfullhash}{e6bfa9b0ebe70679c09f19517671aa31}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of computational physics}
+      \field{number}{2}
+      \field{title}{An SPH projection method}
+      \field{volume}{152}
+      \field{year}{1999}
+      \field{pages}{584\bibrangedash 607}
+      \range{pages}{24}
+    \endentry
     \entry{frigo2005design}{article}{}
       \name{author}{2}{}{%
         {{un=0,uniquepart=base,hash=26a5a1c098bdade790e2ee41c62dd36b}{%
@@ -123,6 +190,53 @@
       \field{title}{Moving Least-Squares: a numerical differentiation method for irregularly spaced calculation points}
       \field{type}{techreport}
       \field{year}{2001}
+    \endentry
+    \entry{Gotoh2004}{article}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=f98f1bda5cf82d31da069bbbd404d2aa}{%
+           family={Gotoh},
+           familyi={G\bibinitperiod},
+           given={Hitoshi},
+           giveni={H\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=4f99d32a6a71acc93a167e58bf3aae3c}{%
+           family={Shao},
+           familyi={S\bibinitperiod},
+           given={Songdong},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=a995c6ba5f9065419d1596332fe2d161}{%
+           family={Memita},
+           familyi={M\bibinitperiod},
+           given={Tetsu},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{8ae32893d95e3b85ca5450ad3dbb785a}
+      \strng{fullhash}{8ae32893d95e3b85ca5450ad3dbb785a}
+      \strng{bibnamehash}{8ae32893d95e3b85ca5450ad3dbb785a}
+      \strng{authorbibnamehash}{8ae32893d95e3b85ca5450ad3dbb785a}
+      \strng{authornamehash}{8ae32893d95e3b85ca5450ad3dbb785a}
+      \strng{authorfullhash}{8ae32893d95e3b85ca5450ad3dbb785a}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{The reflection and transmission characteristics of regular waves by a partially immersed curtain-type breakwater have been studied by the experiment and numerical model in the paper. Non-overtopping and overtopping of the breakwater by the incident wave were considered to compare different wave dissipation efficiencies. An incompressible Smoothed Particle Hydrodynamics (SPH) theory combined with a Large Eddy Simulation (LES) model was employed as the numerical tool. The SPH method is robust for tracking free surfaces without numerical diffusion and the LES model is capable of analyzing turbulence and eddy vortices during wave-breakwater interactions. A good agreement between computational and experimental wave profiles verifies the accuracy of the SPH-LES model. The computations also disclose that the wave energy dissipation is mainly attributed to the turbulence production and vortex shedding during the wave transmission and reflection processes.}
+      \field{issn}{17936292}
+      \field{issue}{1}
+      \field{journaltitle}{Coastal Engineering Journal}
+      \field{title}{SPH-LES model for numerical investigation of wave interaction with partially immersed breakwater}
+      \field{volume}{46}
+      \field{year}{2004}
+      \field{pages}{39\bibrangedash 63}
+      \range{pages}{25}
+      \verb{doi}
+      \verb 10.1142/S0578563404000872
+      \endverb
+      \keyw{Breakwater,Large eddy simulation,Partially immersed,Regular wave,Smoothed particle hydrodynamics}
     \endentry
     \entry{hu2006multi}{article}{}
       \name{author}{2}{}{%
@@ -269,6 +383,115 @@
       \field{year}{1994}
       \field{pages}{63}
       \range{pages}{1}
+    \endentry
+    \entry{Shao2005}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=4f99d32a6a71acc93a167e58bf3aae3c}{%
+           family={Shao},
+           familyi={S\bibinitperiod},
+           given={Songdong},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=f98f1bda5cf82d31da069bbbd404d2aa}{%
+           family={Gotoh},
+           familyi={G\bibinitperiod},
+           given={Hitoshi},
+           giveni={H\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{295c41061b5faa1672e56b2d491ff2f5}
+      \strng{fullhash}{295c41061b5faa1672e56b2d491ff2f5}
+      \strng{bibnamehash}{295c41061b5faa1672e56b2d491ff2f5}
+      \strng{authorbibnamehash}{295c41061b5faa1672e56b2d491ff2f5}
+      \strng{authornamehash}{295c41061b5faa1672e56b2d491ff2f5}
+      \strng{authorfullhash}{295c41061b5faa1672e56b2d491ff2f5}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0022-1686}
+      \field{journaltitle}{Journal of Hydraulic Research}
+      \field{month}{5}
+      \field{number}{3}
+      \field{title}{{Turbulence particle models for tracking free surfaces}}
+      \field{volume}{43}
+      \field{year}{2005}
+      \field{pages}{276\bibrangedash 289}
+      \range{pages}{14}
+      \verb{doi}
+      \verb 10.1080/00221680509500122
+      \endverb
+      \verb{file}
+      \verb :D$\backslash$:/IIT Bombay - Miscellaneous/Research Papers/Dual Degree Programme/Turbulence particle models for tracking free surfaces.pdf:pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://www.tandfonline.com/doi/full/10.1080/00221680509500122
+      \endverb
+      \verb{url}
+      \verb https://www.tandfonline.com/doi/full/10.1080/00221680509500122
+      \endverb
+    \endentry
+    \entry{smagorinsky1963general}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=c2a35c5f70908a69212ea4d01722083a}{%
+           family={Smagorinsky},
+           familyi={S\bibinitperiod},
+           given={Joseph},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {American Meteorological Society}%
+      }
+      \strng{namehash}{c2a35c5f70908a69212ea4d01722083a}
+      \strng{fullhash}{c2a35c5f70908a69212ea4d01722083a}
+      \strng{bibnamehash}{c2a35c5f70908a69212ea4d01722083a}
+      \strng{authorbibnamehash}{c2a35c5f70908a69212ea4d01722083a}
+      \strng{authornamehash}{c2a35c5f70908a69212ea4d01722083a}
+      \strng{authorfullhash}{c2a35c5f70908a69212ea4d01722083a}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Monthly weather review}
+      \field{number}{3}
+      \field{title}{General circulation experiments with the primitive equations: I. The basic experiment}
+      \field{volume}{91}
+      \field{year}{1963}
+      \field{pages}{99\bibrangedash 164}
+      \range{pages}{66}
+    \endentry
+    \entry{Synolakis1986}{thesis}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=53b2d6a6aa04299e6efe025931585c35}{%
+           family={Synolakis},
+           familyi={S\bibinitperiod},
+           given={Constantine\bibnamedelima Emmanuel},
+           giveni={C\bibinitperiod\bibinitdelim E\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{institution}{1}{%
+        {California Institute of Technology}%
+      }
+      \strng{namehash}{53b2d6a6aa04299e6efe025931585c35}
+      \strng{fullhash}{53b2d6a6aa04299e6efe025931585c35}
+      \strng{bibnamehash}{53b2d6a6aa04299e6efe025931585c35}
+      \strng{authorbibnamehash}{53b2d6a6aa04299e6efe025931585c35}
+      \strng{authornamehash}{53b2d6a6aa04299e6efe025931585c35}
+      \strng{authorfullhash}{53b2d6a6aa04299e6efe025931585c35}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{The runup of long waves}
+      \field{type}{phdthesis}
+      \field{year}{1986}
     \endentry
     \entry{VIOLEAU2002}{inproceedings}{}
       \name{author}{3}{}{%

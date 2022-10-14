@@ -12,6 +12,6 @@
 \contentsline {subsection}{\numberline {2.1.2}Generalized Langevin Model}{3}{subsection.22}%
 \contentsline {section}{\numberline {2.2}mSPH}{5}{section.30}%
 \contentsline {section}{\numberline {2.3}Large Eddy Simulation-based Models}{6}{section.40}%
-\contentsline {subsection}{\numberline {2.3.1}Implicit Pressure Poisson-based Solvers}{6}{subsection.41}%
-\contentsline {subsection}{\numberline {2.3.2}Explicit Pressure Equation of State-based Solvers}{6}{subsection.42}%
-\contentsline {chapter}{Bibliography}{8}{chapter*.43}%
+\contentsline {subsection}{\numberline {2.3.1}Implicit Pressure Poisson-based Models}{6}{subsection.41}%
+\contentsline {subsection}{\numberline {2.3.2}Explicit Pressure Equation of State-based Solvers}{10}{subsection.67}%
+\contentsline {chapter}{Bibliography}{13}{chapter*.68}%

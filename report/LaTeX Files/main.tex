@@ -65,18 +65,19 @@ style=authoryear]{biblatex}
 %	CUSTOM MATH COMMANDS
 %----------------------------------------------------------------------------------------
 \newcommand{\bb}[1]{\mathbb{#1}}
-\newcommand{\LagDerivative}[2][t]{\frac{\operatorname{d} #2}{\operatorname{d} #1}}
+\newcommand{\LagDerivative}[2][t]{\frac{\operatorname{D} #2}{\operatorname{D} #1}}
 \newcommand{\PartialDerivative}[2][t]{\frac{\partial #2}{\partial #1}}
 \newcommand{\vect}[1]{\mathbf{#1}}
 \newcommand{\tensor}[1]{\underline{\underline{\bm{#1}}}}
+\newcommand{\WIJ}{W_{h, ij}}
 \newcommand{\DWIJ}{\nabla_{i} W_{h, ij}}
 \newcommand{\VIJ}{\vect{v}_{ij}}
 \newcommand{\RIJ}{\vect{r}_{ij}}
 \newcommand{\RtwoIJ}[1][2]{|\vect{r}_{ij}|^{#1}}
 \newcommand{\MachineEpsilon}{\varepsilon}
 \newcommand{\RAProp}[1]{\langle #1 \rangle}
-\newcommand{\FrobeniusInnerProduct}[2]{\langle #1, #2 \rangle_F}
-\newcommand{\FrobeniusNorm}[1]{||#1||_F}
+\newcommand{\FrobeniusInnerProduct}[2]{\langle \tensor{#1}, \tensor{#2} \rangle_F}
+\newcommand{\FrobeniusNorm}[1]{||\tensor{#1}||_F}
 \newcommand{\BasisVect}[1][i]{\hat{\vect{e}}_{#1}}
 \newcommand{\HalfFrac}{\frac{1}{2}}
 \newcommand{\Vol}[1][V]{\mathcal{#1}}
