@@ -40,7 +40,7 @@ $\Delta x$           & Inter Particle Spacing            \\
 $W_{h}$              & SPH Interpolating Kernel          \\
 $h$                  & Kernel Smoothing Length           \\
 $\WIJ$               & $W(\RIJ, h)$                      \\
-$\DWIJ$              & $\nabla_i W(\RIJ,h)$              \\
+$\DWIJ$                        & $\nabla_i W(\RIJ,h) = \frac{\RIJ}{\RtwoIJ[]} \PartialDerivative[r_i]{\WIJ}$                 \\
 $\Vol_i$             & Volume of $i^{th}$ SPH particle   \\
 $\vect{F}$           & External Body Force               \\
 $\nu$                & Kinematic Viscosity               \\
@@ -55,5 +55,6 @@ $\tensor{S}$                   & Strain-Rate Tensor $(=[1/2][\nabla \vect{v} + \
 $\epsilon$           & Turbulent Dissipation Rate        \\
 $k$                  & Turbulent Kinetic Energy          \\
 $\tensor{\tau}$      & Stress Tensor                     \\
-$C_s $               & Smagorinsky Constant             
+$C_s $               & Smagorinsky Constant              \\
+$u_{max}$            & Maximum Particle Velocity        
 \end{longtable}

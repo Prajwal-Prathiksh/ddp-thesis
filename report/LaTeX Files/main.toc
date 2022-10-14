@@ -13,5 +13,10 @@
 \contentsline {section}{\numberline {2.2}mSPH}{5}{section.30}%
 \contentsline {section}{\numberline {2.3}Large Eddy Simulation-based Models}{6}{section.40}%
 \contentsline {subsection}{\numberline {2.3.1}Implicit Pressure Poisson-based Models}{6}{subsection.41}%
-\contentsline {subsection}{\numberline {2.3.2}Explicit Pressure Equation of State-based Solvers}{10}{subsection.67}%
-\contentsline {chapter}{Bibliography}{13}{chapter*.68}%
+\contentsline {subsection}{\numberline {2.3.2}Explicit Pressure Equation of State-based Solvers}{11}{subsection.67}%
+\contentsline {subsubsection}{Standard Smagorinsky Model}{11}{section*.68}%
+\contentsline {subsubsection}{Modified Smagorinsky Model}{13}{section*.78}%
+\contentsline {subsection}{\numberline {2.3.3}Quasi-Lagrangian Models}{15}{subsection.87}%
+\contentsline {subsection}{\numberline {2.3.4}RANS-based $k-\epsilon $ Models}{15}{subsection.88}%
+\contentsline {subsection}{\numberline {2.3.5}LANS-based Models}{19}{subsection.108}%
+\contentsline {chapter}{Bibliography}{20}{chapter*.109}%

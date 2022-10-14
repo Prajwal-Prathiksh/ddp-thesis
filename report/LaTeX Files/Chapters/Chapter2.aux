@@ -37,6 +37,7 @@
 \newlabel{fig:adami2012-energy-spectra-tgv}{{2.4}{6}{Comparison of energy spectra $t=10$. $+$ and $\times $ denote standard SPH results with quintic spline and MLS interpolation; $\circ $ and $\square $ denote mSPH results with quintic spline and MLS interpolation. Ref: \parencite {Adami2012} \relax }{figure.caption.37}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {2.3}Large Eddy Simulation-based Models}{6}{section.40}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.3.1}Implicit Pressure Poisson-based Models}{6}{subsection.41}\protected@file@percent }
+\newlabel{sec:Implicit-Pressure-Poisson-based-Models}{{2.3.1}{6}{Implicit Pressure Poisson-based Models}{subsection.41}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2.5}{\ignorespaces Dissipation rate at $Re = 400$ using DNS (solid line), Smagorinsky model (dashed line), standard SPH ($+$) and mSPH ($\circ $). Ref: \blx@tocontentsinit {0}\parencite {Adami2012}\relax }}{7}{figure.caption.38}\protected@file@percent }
 \newlabel{fig:adami2012-dissipation-re400}{{2.5}{7}{Dissipation rate at $Re = 400$ using DNS (solid line), Smagorinsky model (dashed line), standard SPH ($+$) and mSPH ($\circ $). Ref: \parencite {Adami2012}\relax }{figure.caption.38}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {2.6}{\ignorespaces Dissipation rate at $Re = 3000$ using DNS (solid line), Smagorinsky model (dashed line) and mSPH ($\circ $). Ref: \blx@tocontentsinit {0}\parencite {Adami2012}\relax }}{7}{figure.caption.39}\protected@file@percent }
@@ -59,16 +60,62 @@
 \newlabel{eq:Gotoh2004-div-tau-sph}{{2.37}{9}{Implicit Pressure Poisson-based Models}{equation.60}{}}
 \newlabel{eq:Gotoh2004-vel-laplacian-sph}{{2.38}{9}{Implicit Pressure Poisson-based Models}{equation.61}{}}
 \newlabel{eq:Shao2005-eddy-visc}{{2.39}{9}{Implicit Pressure Poisson-based Models}{equation.63}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.7}{\ignorespaces Time sequences of computational and experimental wave profiles near curtain wall (overtopping). Ref: \blx@tocontentsinit {0}\parencite {Gotoh2004}\relax }}{10}{figure.caption.62}\protected@file@percent }
+\newlabel{fig:gotoh2004-wave-profile-result}{{2.7}{10}{Time sequences of computational and experimental wave profiles near curtain wall (overtopping). Ref: \parencite {Gotoh2004}\relax }{figure.caption.62}{}}
 \newlabel{eq:Shao2005-P-laplacian-sph}{{2.40}{10}{Implicit Pressure Poisson-based Models}{equation.64}{}}
 \newlabel{eq:Shao2005-vel-laplacian-sph}{{2.41}{10}{Implicit Pressure Poisson-based Models}{equation.65}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.2}Explicit Pressure Equation of State-based Solvers}{10}{subsection.67}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {2.7}{\ignorespaces Time sequences of computational and experimental wave profiles near curtain wall (overtopping). Ref: \blx@tocontentsinit {0}\parencite {Gotoh2004}\relax }}{11}{figure.caption.62}\protected@file@percent }
-\newlabel{fig:gotoh2004-wave-profile-result}{{2.7}{11}{Time sequences of computational and experimental wave profiles near curtain wall (overtopping). Ref: \parencite {Gotoh2004}\relax }{figure.caption.62}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {2.8}{\ignorespaces Experimental and computational wave profiles by SPH and MPS model. Ref: \blx@tocontentsinit {0}\parencite {Shao2005}\relax }}{12}{figure.caption.66}\protected@file@percent }
-\newlabel{fig:shao2005-wave-profile-result}{{2.8}{12}{Experimental and computational wave profiles by SPH and MPS model. Ref: \parencite {Shao2005}\relax }{figure.caption.66}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.8}{\ignorespaces Experimental and computational wave profiles by SPH and MPS model. Ref: \blx@tocontentsinit {0}\parencite {Shao2005}\relax }}{11}{figure.caption.66}\protected@file@percent }
+\newlabel{fig:shao2005-wave-profile-result}{{2.8}{11}{Experimental and computational wave profiles by SPH and MPS model. Ref: \parencite {Shao2005}\relax }{figure.caption.66}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.2}Explicit Pressure Equation of State-based Solvers}{11}{subsection.67}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Standard Smagorinsky Model}{11}{section*.68}\protected@file@percent }
+\newlabel{eq:ROGERS2005-eos-b}{{2.42}{11}{Standard Smagorinsky Model}{equation.69}{}}
+\newlabel{eq:ROGERS2005-favre-averaging}{{2.43}{11}{Standard Smagorinsky Model}{equation.70}{}}
+\newlabel{eq:ROGERS2005-continuity-filtered}{{2.44}{12}{Standard Smagorinsky Model}{equation.71}{}}
+\newlabel{eq:ROGERS2005-mom-filtered}{{2.45}{12}{Standard Smagorinsky Model}{equation.72}{}}
+\newlabel{eq:ROGERS2005-tau}{{2.46}{12}{Standard Smagorinsky Model}{equation.73}{}}
+\newlabel{eq:ROGERS2005-turbulent-eddy-visc}{{2.47}{12}{Standard Smagorinsky Model}{equation.74}{}}
+\newlabel{eq:ROGERS2005-vel-laplacian-sph}{{2.48}{12}{Standard Smagorinsky Model}{equation.75}{}}
+\newlabel{eq:morris1997modeling-vel-laplacian-sph}{{2.49}{12}{Standard Smagorinsky Model}{equation.76}{}}
+\newlabel{eq:ROGERS2005-rho-shepard-filter}{{2.50}{12}{Standard Smagorinsky Model}{equation.77}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Modified Smagorinsky Model}{13}{section*.78}\protected@file@percent }
+\newlabel{eq:Canelas2016-continuity-sph}{{2.51}{13}{Modified Smagorinsky Model}{equation.79}{}}
+\newlabel{eq:Canelas2016-vel-laplacian-sph}{{2.52}{13}{Modified Smagorinsky Model}{equation.80}{}}
+\newlabel{eq:Canelas2016-tau}{{2.53}{13}{Modified Smagorinsky Model}{equation.81}{}}
+\newlabel{eq:Canelas2016-turbulent-eddy-visc}{{2.54}{13}{Modified Smagorinsky Model}{equation.82}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.9}{\ignorespaces Cylinder distribution and instantaneous velocity overlapped by velocity vectors. Velocity in $m/s$, at $t=20s$. The flow direction is from left to right. Ref: \blx@tocontentsinit {0}\parencite {Canelas2016}\relax }}{14}{figure.caption.84}\protected@file@percent }
+\newlabel{fig:Canelas2016-vel-field}{{2.9}{14}{Cylinder distribution and instantaneous velocity overlapped by velocity vectors. Velocity in $m/s$, at $t=20s$. The flow direction is from left to right. Ref: \parencite {Canelas2016}\relax }{figure.caption.84}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.10}{\ignorespaces Vorticity field. Vorticity in Hz, at $t = 20s$. Ref: \blx@tocontentsinit {0}\parencite {Canelas2016}\relax }}{14}{figure.caption.85}\protected@file@percent }
+\newlabel{fig:Canelas2016-vorticity-field}{{2.10}{14}{Vorticity field. Vorticity in Hz, at $t = 20s$. Ref: \parencite {Canelas2016}\relax }{figure.caption.85}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.11}{\ignorespaces FTLE field with negative integration time $(T = -0.4 s)$ (unstable manifolds - attracting LCS) at $t = 20s$. Ref: \blx@tocontentsinit {0}\parencite {Canelas2016}\relax }}{15}{figure.caption.86}\protected@file@percent }
+\newlabel{fig:Canelas2016-ftle-field}{{2.11}{15}{FTLE field with negative integration time $(T = -0.4 s)$ (unstable manifolds - attracting LCS) at $t = 20s$. Ref: \parencite {Canelas2016}\relax }{figure.caption.86}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.3}Quasi-Lagrangian Models}{15}{subsection.87}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.4}RANS-based $k-\epsilon $ Models}{15}{subsection.88}\protected@file@percent }
+\newlabel{eq:Shao2006-rans-continuity-governing}{{2.56}{15}{RANS-based $k-\epsilon $ Models}{equation.89}{}}
+\newlabel{eq:Shao2006-rans-mom-governing}{{2.57}{15}{RANS-based $k-\epsilon $ Models}{equation.90}{}}
+\newlabel{eq:Shao2006-turbulent-eddy-visc}{{2.58}{15}{RANS-based $k-\epsilon $ Models}{equation.91}{}}
+\newlabel{eq:Shao2006-k-transport-eq}{{2.59}{15}{RANS-based $k-\epsilon $ Models}{equation.92}{}}
+\newlabel{eq:Shao2006-eps-transport-eq}{{2.60}{16}{RANS-based $k-\epsilon $ Models}{equation.93}{}}
+\newlabel{eq:Shao2006-k-production-term}{{2.61}{16}{RANS-based $k-\epsilon $ Models}{equation.94}{}}
+\newlabel{eq:pope2000turbulent-k-production-relation}{{2.62}{16}{RANS-based $k-\epsilon $ Models}{equation.95}{}}
+\newlabel{eq:Shao2006-vel-laplacian-sph}{{2.63}{16}{RANS-based $k-\epsilon $ Models}{equation.96}{}}
+\newlabel{eq:Wang2020-correct-pressure-implicit}{{2.64}{16}{RANS-based $k-\epsilon $ Models}{equation.98}{}}
+\newlabel{eq:Wang2020-correct-end}{{2.65}{16}{RANS-based $k-\epsilon $ Models}{equation.99}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.12}{\ignorespaces Comparisons of computed water surface elevations by SPH (solid lines) with experimental ($\circ $) and numerical (dotted lines) data of Li et al. \blx@tocontentsinit {0}\parencite {li2004wave}. Ref: \blx@tocontentsinit {0}\parencite {Shao2006}\relax }}{17}{figure.caption.97}\protected@file@percent }
+\newlabel{fig:Shao2006-water-surf-elevations}{{2.12}{17}{Comparisons of computed water surface elevations by SPH (solid lines) with experimental ($\circ $) and numerical (dotted lines) data of Li et al. \parencite {li2004wave}. Ref: \parencite {Shao2006}\relax }{figure.caption.97}{}}
+\newlabel{eq:Wang2020-particle-density}{{2.66}{17}{RANS-based $k-\epsilon $ Models}{equation.100}{}}
+\newlabel{eq:Wang2020-k-laplacian}{{2.67}{17}{RANS-based $k-\epsilon $ Models}{equation.101}{}}
+\newlabel{eq:Wang2020-eps-laplacian}{{2.68}{17}{RANS-based $k-\epsilon $ Models}{equation.102}{}}
+\newlabel{eq:Wang2020-strain-rate-tensor}{{2.69}{17}{RANS-based $k-\epsilon $ Models}{equation.103}{}}
+\newlabel{eq:Wang2020-vel-grad-term}{{2.70}{17}{RANS-based $k-\epsilon $ Models}{equation.104}{}}
+\newlabel{eq:Wang2020-corrective-matrix}{{2.71}{17}{RANS-based $k-\epsilon $ Models}{equation.105}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.13}{\ignorespaces Comparisons between experimental data (left) and numerical results (right) for turbulence intensity $(m/s)$ at $t=0.6s$ (top panels) and the corresponding vertical cross-sections (lower panels). In the lower panels, solid lines and $\circ $ represent the numerical and experimental results, respectively. Ref: \blx@tocontentsinit {0}\parencite {Wang2020}\relax }}{18}{figure.caption.106}\protected@file@percent }
+\newlabel{fig:Wang2020-wave-propogation-result}{{2.13}{18}{Comparisons between experimental data (left) and numerical results (right) for turbulence intensity $(m/s)$ at $t=0.6s$ (top panels) and the corresponding vertical cross-sections (lower panels). In the lower panels, solid lines and $\circ $ represent the numerical and experimental results, respectively. Ref: \parencite {Wang2020}\relax }{figure.caption.106}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.14}{\ignorespaces Comparisons of numerical and experimental turbulent kinetic energy in x-direction and y-direction. Ref: \blx@tocontentsinit {0}\parencite {Wang2020}\relax }}{18}{figure.caption.107}\protected@file@percent }
+\newlabel{fig:Wang2020-wave-breaking-result}{{2.14}{18}{Comparisons of numerical and experimental turbulent kinetic energy in x-direction and y-direction. Ref: \parencite {Wang2020}\relax }{figure.caption.107}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.5}LANS-based Models}{19}{subsection.108}\protected@file@percent }
 \@setckpt{Chapters/Chapter2}{
-\setcounter{page}{13}
-\setcounter{equation}{41}
+\setcounter{page}{20}
+\setcounter{equation}{71}
 \setcounter{enumi}{0}
 \setcounter{enumii}{0}
 \setcounter{enumiii}{0}
@@ -78,11 +125,11 @@
 \setcounter{part}{0}
 \setcounter{chapter}{2}
 \setcounter{section}{3}
-\setcounter{subsection}{2}
+\setcounter{subsection}{5}
 \setcounter{subsubsection}{0}
 \setcounter{paragraph}{0}
 \setcounter{subparagraph}{0}
-\setcounter{figure}{8}
+\setcounter{figure}{14}
 \setcounter{table}{0}
 \setcounter{LT@tables}{1}
 \setcounter{LT@chunks}{3}
@@ -103,7 +150,7 @@
 \setcounter{citetotal}{0}
 \setcounter{multicitecount}{0}
 \setcounter{multicitetotal}{0}
-\setcounter{instcount}{38}
+\setcounter{instcount}{75}
 \setcounter{maxnames}{3}
 \setcounter{minnames}{1}
 \setcounter{maxitems}{3}
@@ -127,7 +174,7 @@
 \setcounter{parenlevel}{0}
 \setcounter{blx@maxsection}{0}
 \setcounter{blx@maxsegment@0}{0}
-\setcounter{blx@sectionciteorder@0}{38}
+\setcounter{blx@sectionciteorder@0}{74}
 \setcounter{mincomprange}{10}
 \setcounter{maxcomprange}{100000}
 \setcounter{mincompwidth}{1}
@@ -224,6 +271,6 @@
 \setcounter{blind@pangrammax}{1}
 \setcounter{Item}{0}
 \setcounter{Hfootnote}{0}
-\setcounter{bookmark@seq@number}{15}
+\setcounter{bookmark@seq@number}{20}
 \setcounter{section@level}{2}
 }

@@ -58,6 +58,101 @@
       \field{title}{Simulating three-dimensional turbulence with SPH}
       \field{year}{2012}
     \endentry
+    \entry{bonet1999variational}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=1f328278070b466b433976f886673f62}{%
+           family={Bonet},
+           familyi={B\bibinitperiod},
+           given={Javier},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=1b889a4de1e126ce84493aaac4bbbcdb}{%
+           family={Lok},
+           familyi={L\bibinitperiod},
+           given={T-SL},
+           giveni={T\bibinithyphendelim S\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{de89099ef73ff6a9fbcad2b3fcfd9a0a}
+      \strng{fullhash}{de89099ef73ff6a9fbcad2b3fcfd9a0a}
+      \strng{bibnamehash}{de89099ef73ff6a9fbcad2b3fcfd9a0a}
+      \strng{authorbibnamehash}{de89099ef73ff6a9fbcad2b3fcfd9a0a}
+      \strng{authornamehash}{de89099ef73ff6a9fbcad2b3fcfd9a0a}
+      \strng{authorfullhash}{de89099ef73ff6a9fbcad2b3fcfd9a0a}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Computer Methods in applied mechanics and engineering}
+      \field{number}{1-2}
+      \field{title}{Variational and momentum preservation aspects of smooth particle hydrodynamic formulations}
+      \field{volume}{180}
+      \field{year}{1999}
+      \field{pages}{97\bibrangedash 115}
+      \range{pages}{19}
+    \endentry
+    \entry{Canelas2016}{article}{}
+      \name{author}{5}{}{%
+        {{un=0,uniquepart=base,hash=f879a0cc40998c9e4eaa95c64bd02e0c}{%
+           family={Canelas},
+           familyi={C\bibinitperiod},
+           given={Ricardo\bibnamedelima B},
+           giveni={R\bibinitperiod\bibinitdelim B\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=260ccb95916008e654b8877a4c45f9ef}{%
+           family={Ricardo},
+           familyi={R\bibinitperiod},
+           given={Ana\bibnamedelima M.},
+           giveni={A\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=42e8a3a072cd5b3aa09dd73eeb55258d}{%
+           family={Ferreira},
+           familyi={F\bibinitperiod},
+           given={Rui\bibnamedelimb M.\bibnamedelimi L.},
+           giveni={R\bibinitperiod\bibinitdelim M\bibinitperiod\bibinitdelim L\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=008a0185a5e9149426155d58ac398dd2}{%
+           family={Domínguez},
+           familyi={D\bibinitperiod},
+           given={José\bibnamedelima Manuel},
+           giveni={J\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=fb946da8e182670f81a557d0876417a9}{%
+           family={Crespo},
+           familyi={C\bibinitperiod},
+           given={Alejandro\bibnamedelimb J.\bibnamedelimi C.},
+           giveni={A\bibinitperiod\bibinitdelim J\bibinitperiod\bibinitdelim C\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{824e52c052435400e88a21065c41462c}
+      \strng{fullhash}{54bef93efd3091e1ac94f6690def91d1}
+      \strng{bibnamehash}{824e52c052435400e88a21065c41462c}
+      \strng{authorbibnamehash}{824e52c052435400e88a21065c41462c}
+      \strng{authornamehash}{824e52c052435400e88a21065c41462c}
+      \strng{authorfullhash}{54bef93efd3091e1ac94f6690def91d1}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{The turbulent flow field through complex geometric configurations involves interactions between wakes, von K´arm´an vortex streets and shear layers. The mechanisms involved in both vortex loss of coherence and vortex interaction with cylinders require the identification of vortexes themselves. One of the most promising techniques, especially for essentially two-dimensional structures, is based on the definition of Lagrangian Coherent Structures (LCS). SPH is a particularly attractive method for the study of LCS since the technique itself provides the motion of individual fluid particles. This eliminates the need for expensive post-processing inherent to Eulerian solutions. SPH solutions may resolve large turbulent scales, however, dynamics of small scales and dissipative effects must be modelled for high Re flows. The typically employed SPS strategy for LES simulations, based on the standard Smagorinsky model, has severe downsides such as inability to correctly enforce wall conditions and non-vanishing stresses with laminar flows. As an alternative, the wall-adapting local eddy viscosity (WALE) model is cast in SPH formalism and used to perform the simulations under DualSPHysics, retaining the high-performance of the implementation. The results are drawn from 2D LES simulations on a cylinder array at Re=550. They allow for a brief and exploratory characterization of the used SPH formulation (weakly compressible) regarding its ability to resolve the flow at kernel and sub-kernel scales. A complex LCS system is studied in detail, showing the life of a group of eddies as they undergo changes due to interactions with each other, background turbulence and the channel geometry.}
+      \field{issue}{March 2017}
+      \field{journaltitle}{11th SPHERIC}
+      \field{title}{Hunting for Lagrangian Coherent Structures : SPH-LES turbulence simulations with Wall-adapting Local Eddy Viscosity ( WALE ) model}
+      \field{year}{2016}
+      \verb{urlraw}
+      \verb https://www.researchgate.net/publication/315665064_Hunting_for_Lagrangian_Coherent_Structures_SPH-LES_turbulence_simulations_with_Wall-adapting_Local_Eddy_Viscosity_WALE_model
+      \endverb
+      \verb{url}
+      \verb https://www.researchgate.net/publication/315665064_Hunting_for_Lagrangian_Coherent_Structures_SPH-LES_turbulence_simulations_with_Wall-adapting_Local_Eddy_Viscosity_WALE_model
+      \endverb
+    \endentry
     \entry{chorin1968numerical}{article}{}
       \name{author}{1}{}{%
         {{un=0,uniquepart=base,hash=09aedb7d00518f00411f27147e3113ea}{%
@@ -124,6 +219,44 @@
       \field{year}{1999}
       \field{pages}{584\bibrangedash 607}
       \range{pages}{24}
+    \endentry
+    \entry{Dalrymple2006}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=3a6bee5b057829bd496b62abc57a4307}{%
+           family={Dalrymple},
+           familyi={D\bibinitperiod},
+           given={R\bibnamedelima A},
+           giveni={R\bibinitperiod\bibinitdelim A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=fc7a4670f636ba36073af9882841b6d1}{%
+           family={Rogers},
+           familyi={R\bibinitperiod},
+           given={B\bibnamedelima D},
+           giveni={B\bibinitperiod\bibinitdelim D\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{7bd4d85a58987b55b9da30fa06efcc2f}
+      \strng{fullhash}{7bd4d85a58987b55b9da30fa06efcc2f}
+      \strng{bibnamehash}{7bd4d85a58987b55b9da30fa06efcc2f}
+      \strng{authorbibnamehash}{7bd4d85a58987b55b9da30fa06efcc2f}
+      \strng{authornamehash}{7bd4d85a58987b55b9da30fa06efcc2f}
+      \strng{authorfullhash}{7bd4d85a58987b55b9da30fa06efcc2f}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Favre-Averaging, Sub-Particle Scaling, Shepard Filtering}
+      \field{title}{Numerical modeling of water waves with the SPH method}
+      \field{volume}{53}
+      \field{year}{2006}
+      \field{pages}{141\bibrangedash 147}
+      \range{pages}{7}
+      \verb{doi}
+      \verb 10.1016/j.coastaleng.2005.10.004
+      \endverb
+      \keyw{hydrodynamics,numerical methods,sph,turbulence,waves}
     \endentry
     \entry{frigo2005design}{article}{}
       \name{author}{2}{}{%
@@ -193,18 +326,18 @@
     \endentry
     \entry{Gotoh2004}{article}{}
       \name{author}{3}{}{%
-        {{un=0,uniquepart=base,hash=f98f1bda5cf82d31da069bbbd404d2aa}{%
+        {{un=2,uniquepart=given,hash=f98f1bda5cf82d31da069bbbd404d2aa}{%
            family={Gotoh},
            familyi={G\bibinitperiod},
            given={Hitoshi},
            giveni={H\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=4f99d32a6a71acc93a167e58bf3aae3c}{%
+           givenun=2}}%
+        {{un=2,uniquepart=given,hash=4f99d32a6a71acc93a167e58bf3aae3c}{%
            family={Shao},
            familyi={S\bibinitperiod},
            given={Songdong},
            giveni={S\bibinitperiod},
-           givenun=0}}%
+           givenun=2}}%
         {{un=0,uniquepart=base,hash=a995c6ba5f9065419d1596332fe2d161}{%
            family={Memita},
            familyi={M\bibinitperiod},
@@ -314,6 +447,127 @@
       \field{pages}{264\bibrangedash 278}
       \range{pages}{15}
     \endentry
+    \entry{khayyer2008corrected}{article}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=88316222e97b180dd753bed1261be16e}{%
+           family={Khayyer},
+           familyi={K\bibinitperiod},
+           given={A},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5da2e0b4fec9877e9dd3ff8ba684997a}{%
+           family={Gotoh},
+           familyi={G\bibinitperiod},
+           given={H},
+           giveni={H\bibinitperiod},
+           givenun=0}}%
+        {{un=2,uniquepart=given,hash=cefe6a273ca7537f31ce01fb5e7e2d5e}{%
+           family={Shao},
+           familyi={S\bibinitperiod},
+           given={SD},
+           giveni={S\bibinitperiod},
+           givenun=2}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{2e7eae3a56b89edece99f05d89befac7}
+      \strng{fullhash}{2e7eae3a56b89edece99f05d89befac7}
+      \strng{bibnamehash}{2e7eae3a56b89edece99f05d89befac7}
+      \strng{authorbibnamehash}{2e7eae3a56b89edece99f05d89befac7}
+      \strng{authornamehash}{2e7eae3a56b89edece99f05d89befac7}
+      \strng{authorfullhash}{2e7eae3a56b89edece99f05d89befac7}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Coastal Engineering}
+      \field{number}{3}
+      \field{title}{Corrected incompressible SPH method for accurate water-surface tracking in breaking waves}
+      \field{volume}{55}
+      \field{year}{2008}
+      \field{pages}{236\bibrangedash 250}
+      \range{pages}{15}
+    \endentry
+    \entry{kubo2001large}{inproceedings}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=ffe7e4b1af3952d42e3a12d1c119ae63}{%
+           family={Kubo},
+           familyi={K\bibinitperiod},
+           given={Hidehito},
+           giveni={H\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=55666f3d18f6f09e7cf2a6f7da19a9d3}{%
+           family={Sunamura},
+           familyi={S\bibinitperiod},
+           given={Tsuguo},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{687bf086b4d4283e35c650682e126d70}
+      \strng{fullhash}{687bf086b4d4283e35c650682e126d70}
+      \strng{bibnamehash}{687bf086b4d4283e35c650682e126d70}
+      \strng{authorbibnamehash}{687bf086b4d4283e35c650682e126d70}
+      \strng{authornamehash}{687bf086b4d4283e35c650682e126d70}
+      \strng{authorfullhash}{687bf086b4d4283e35c650682e126d70}
+      \field{sortinit}{K}
+      \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Coastal Dynamics' 01}
+      \field{title}{Large-scale turbulence to facilitate sediment motion under spilling breakers}
+      \field{year}{2001}
+      \field{pages}{212\bibrangedash 221}
+      \range{pages}{10}
+    \endentry
+    \entry{li2004wave}{article}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=a3c04d6b15c10149a8e0bf09271050b2}{%
+           family={Li},
+           familyi={L\bibinitperiod},
+           given={Tingqiu},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=181e0057d1794c088acf6b3a4c6c2e2c}{%
+           family={Troch},
+           familyi={T\bibinitperiod},
+           given={Peter},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=5a2c8584c3d1b8d5b944c24f992fc5be}{%
+           family={De\bibnamedelima Rouck},
+           familyi={D\bibinitperiod\bibinitdelim R\bibinitperiod},
+           given={Julien},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{79fd575ac72cdbdacb6991102dc99d18}
+      \strng{fullhash}{79fd575ac72cdbdacb6991102dc99d18}
+      \strng{bibnamehash}{79fd575ac72cdbdacb6991102dc99d18}
+      \strng{authorbibnamehash}{79fd575ac72cdbdacb6991102dc99d18}
+      \strng{authornamehash}{79fd575ac72cdbdacb6991102dc99d18}
+      \strng{authorfullhash}{79fd575ac72cdbdacb6991102dc99d18}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Computational Physics}
+      \field{number}{2}
+      \field{title}{Wave overtopping over a sea dike}
+      \field{volume}{198}
+      \field{year}{2004}
+      \field{pages}{686\bibrangedash 726}
+      \range{pages}{41}
+    \endentry
     \entry{Monaghan1992}{article}{}
       \name{author}{1}{}{%
         {{un=0,uniquepart=base,hash=441fe88aa55fb5b33be74d8641d0d091}{%
@@ -356,14 +610,86 @@
       \endverb
       \keyw{Computational-fluid dynamics,Numerical analysis}
     \endentry
+    \entry{morris1997modeling}{article}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=f0401cbee521c27d9be2ec630aab0e82}{%
+           family={Morris},
+           familyi={M\bibinitperiod},
+           given={Joseph\bibnamedelima P},
+           giveni={J\bibinitperiod\bibinitdelim P\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=0d5e31d3c98f67748524ede4a0d54536}{%
+           family={Fox},
+           familyi={F\bibinitperiod},
+           given={Patrick\bibnamedelima J},
+           giveni={P\bibinitperiod\bibinitdelim J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=017c8fdccfa4d7fe6b3cf42ea7acad7a}{%
+           family={Zhu},
+           familyi={Z\bibinitperiod},
+           given={Yi},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{3e1aecda3ea4f3b17c8432e4b09c4c54}
+      \strng{fullhash}{3e1aecda3ea4f3b17c8432e4b09c4c54}
+      \strng{bibnamehash}{3e1aecda3ea4f3b17c8432e4b09c4c54}
+      \strng{authorbibnamehash}{3e1aecda3ea4f3b17c8432e4b09c4c54}
+      \strng{authornamehash}{3e1aecda3ea4f3b17c8432e4b09c4c54}
+      \strng{authorfullhash}{3e1aecda3ea4f3b17c8432e4b09c4c54}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of computational physics}
+      \field{number}{1}
+      \field{title}{Modeling low Reynolds number incompressible flows using SPH}
+      \field{volume}{136}
+      \field{year}{1997}
+      \field{pages}{214\bibrangedash 226}
+      \range{pages}{13}
+    \endentry
+    \entry{panizzo2004physical}{thesis}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=ed4ff864c766e2bc35b9c150e95204ae}{%
+           family={Panizzo},
+           familyi={P\bibinitperiod},
+           given={Andrea},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{institution}{1}{%
+        {PhD Thesis, Universita Degli Studi di L’Aquila, Italy}%
+      }
+      \strng{namehash}{ed4ff864c766e2bc35b9c150e95204ae}
+      \strng{fullhash}{ed4ff864c766e2bc35b9c150e95204ae}
+      \strng{bibnamehash}{ed4ff864c766e2bc35b9c150e95204ae}
+      \strng{authorbibnamehash}{ed4ff864c766e2bc35b9c150e95204ae}
+      \strng{authornamehash}{ed4ff864c766e2bc35b9c150e95204ae}
+      \strng{authorfullhash}{ed4ff864c766e2bc35b9c150e95204ae}
+      \field{sortinit}{P}
+      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Physical and numerical modelling of subaerial landslide generated waves}
+      \field{type}{phdthesis}
+      \field{year}{2004}
+    \endentry
     \entry{pope1994lagrangi}{article}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=0df85bf2c259df7fdc0a9a5bccfc8fd1}{%
+        {{un=1,uniquepart=given,hash=0df85bf2c259df7fdc0a9a5bccfc8fd1}{%
            family={Pope},
            familyi={P\bibinitperiod},
            given={SB},
            giveni={S\bibinitperiod},
-           givenun=0}}%
+           givenun=1}}%
       }
       \strng{namehash}{0df85bf2c259df7fdc0a9a5bccfc8fd1}
       \strng{fullhash}{0df85bf2c259df7fdc0a9a5bccfc8fd1}
@@ -384,20 +710,128 @@
       \field{pages}{63}
       \range{pages}{1}
     \endentry
-    \entry{Shao2005}{article}{}
+    \entry{pope2000turbulent}{book}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=4f99d32a6a71acc93a167e58bf3aae3c}{%
+        {{un=2,uniquepart=given,hash=43d7dcd70771120215c9bf615a5fa52f}{%
+           family={Pope},
+           familyi={P\bibinitperiod},
+           given={Stephen\bibnamedelima B},
+           giveni={S\bibinitperiod\bibinitdelim B\bibinitperiod},
+           givenun=2}}%
+        {{un=2,uniquepart=given,hash=43d7dcd70771120215c9bf615a5fa52f}{%
+           family={Pope},
+           familyi={P\bibinitperiod},
+           given={Stephen\bibnamedelima B},
+           giveni={S\bibinitperiod\bibinitdelim B\bibinitperiod},
+           givenun=2}}%
+      }
+      \list{publisher}{1}{%
+        {Cambridge university press}%
+      }
+      \strng{namehash}{2485b30bf61e35d403a45ed31d3cf566}
+      \strng{fullhash}{2485b30bf61e35d403a45ed31d3cf566}
+      \strng{bibnamehash}{2485b30bf61e35d403a45ed31d3cf566}
+      \strng{authorbibnamehash}{2485b30bf61e35d403a45ed31d3cf566}
+      \strng{authornamehash}{2485b30bf61e35d403a45ed31d3cf566}
+      \strng{authorfullhash}{2485b30bf61e35d403a45ed31d3cf566}
+      \field{sortinit}{P}
+      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Turbulent flows}
+      \field{year}{2000}
+    \endentry
+    \entry{ROGERS2005}{inproceedings}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=da66284ae91f46567517ecb6dca3b1fe}{%
+           family={ROGERS},
+           familyi={R\bibinitperiod},
+           given={BENEDICT\bibnamedelima D.},
+           giveni={B\bibinitperiod\bibinitdelim D\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=e785da359a583c2bae606b830123ff67}{%
+           family={DALRYMPLE},
+           familyi={D\bibinitperiod},
+           given={ROBERT\bibnamedelima A.},
+           giveni={R\bibinitperiod\bibinitdelim A\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {World Scientific Publishing Company}%
+      }
+      \strng{namehash}{e38c4937e7c054ecf4df705b75b4bfb1}
+      \strng{fullhash}{e38c4937e7c054ecf4df705b75b4bfb1}
+      \strng{bibnamehash}{e38c4937e7c054ecf4df705b75b4bfb1}
+      \strng{authorbibnamehash}{e38c4937e7c054ecf4df705b75b4bfb1}
+      \strng{authornamehash}{e38c4937e7c054ecf4df705b75b4bfb1}
+      \strng{authorfullhash}{e38c4937e7c054ecf4df705b75b4bfb1}
+      \field{sortinit}{R}
+      \field{sortinithash}{5e1c39a9d46ffb6bebd8f801023a9486}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Coastal Engineering 2004}
+      \field{isbn}{978-981-256-298-2}
+      \field{month}{4}
+      \field{title}{{SPH MODELING OF BREAKING WAVES}}
+      \field{year}{2005}
+      \field{pages}{415\bibrangedash 427}
+      \range{pages}{13}
+      \verb{doi}
+      \verb 10.1142/9789812701916_0032
+      \endverb
+      \verb{urlraw}
+      \verb http://www.worldscientific.com/doi/abs/10.1142/9789812701916{\_}0032
+      \endverb
+      \verb{url}
+      \verb http://www.worldscientific.com/doi/abs/10.1142/9789812701916%7B%5C_%7D0032
+      \endverb
+    \endentry
+    \entry{Shao2006}{article}{}
+      \name{author}{1}{}{%
+        {{un=2,uniquepart=given,hash=4f99d32a6a71acc93a167e58bf3aae3c}{%
            family={Shao},
            familyi={S\bibinitperiod},
            given={Songdong},
            giveni={S\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=f98f1bda5cf82d31da069bbbd404d2aa}{%
+           givenun=2}}%
+      }
+      \strng{namehash}{4f99d32a6a71acc93a167e58bf3aae3c}
+      \strng{fullhash}{4f99d32a6a71acc93a167e58bf3aae3c}
+      \strng{bibnamehash}{4f99d32a6a71acc93a167e58bf3aae3c}
+      \strng{authorbibnamehash}{4f99d32a6a71acc93a167e58bf3aae3c}
+      \strng{authornamehash}{4f99d32a6a71acc93a167e58bf3aae3c}
+      \strng{authorfullhash}{4f99d32a6a71acc93a167e58bf3aae3c}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issue}{May 2005}
+      \field{title}{Incompressible SPH simulation of wave breaking and overtopping with turbulence modelling}
+      \field{year}{2006}
+      \field{pages}{597\bibrangedash 621}
+      \range{pages}{25}
+      \keyw{incompressible scheme,k,model,sph,turbulence,wave breaking,wave overtopping}
+    \endentry
+    \entry{Shao2005}{article}{}
+      \name{author}{2}{}{%
+        {{un=2,uniquepart=given,hash=4f99d32a6a71acc93a167e58bf3aae3c}{%
+           family={Shao},
+           familyi={S\bibinitperiod},
+           given={Songdong},
+           giveni={S\bibinitperiod},
+           givenun=2}}%
+        {{un=2,uniquepart=given,hash=f98f1bda5cf82d31da069bbbd404d2aa}{%
            family={Gotoh},
            familyi={G\bibinitperiod},
            given={Hitoshi},
            giveni={H\bibinitperiod},
-           givenun=0}}%
+           givenun=2}}%
       }
       \strng{namehash}{295c41061b5faa1672e56b2d491ff2f5}
       \strng{fullhash}{295c41061b5faa1672e56b2d491ff2f5}
@@ -544,12 +978,61 @@
       \verb 10.1142/9789812777591_0041
       \endverb
       \verb{urlraw}
-      \verb http://guest.cnki.net/grid2008/brief/detailj.aspx?filename=DZDQ200901001251&dbname=CPFD2010 http://www.worldscientific.com/doi/abs/10.1142/9789812777591_0041
+      \verb http://guest.cnki.net/grid2008/brief/detailj.aspx?filename=DZDQ200901001251\&dbname=CPFD2010 http://www.worldscientific.com/doi/abs/10.1142/9789812777591_0041
       \endverb
       \verb{url}
-      \verb http://guest.cnki.net/grid2008/brief/detailj.aspx?filename=DZDQ200901001251&dbname=CPFD2010%20http://www.worldscientific.com/doi/abs/10.1142/9789812777591_0041
+      \verb http://guest.cnki.net/grid2008/brief/detailj.aspx?filename=DZDQ200901001251%5C&dbname=CPFD2010%20http://www.worldscientific.com/doi/abs/10.1142/9789812777591_0041
       \endverb
       \keyw{古土壤,古环境,太阳辐射,蜗牛化石,西峰S5}
+    \endentry
+    \entry{Wang2020}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=4695c12fc5e5638d83abfb67ab9d459c}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Dong},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=684774792811115904df9ed4f6655ed7}{%
+           family={Liu},
+           familyi={L\bibinitperiod},
+           given={Philip\bibnamedelima L.F.},
+           giveni={P\bibinitperiod\bibinitdelim L\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier B.V.}%
+      }
+      \strng{namehash}{2a970858fc73b56417e8e595a05e30c2}
+      \strng{fullhash}{2a970858fc73b56417e8e595a05e30c2}
+      \strng{bibnamehash}{2a970858fc73b56417e8e595a05e30c2}
+      \strng{authorbibnamehash}{2a970858fc73b56417e8e595a05e30c2}
+      \strng{authornamehash}{2a970858fc73b56417e8e595a05e30c2}
+      \strng{authorfullhash}{2a970858fc73b56417e8e595a05e30c2}
+      \field{sortinit}{W}
+      \field{sortinithash}{4315d78024d0cea9b57a0c6f0e35ed0d}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{03783839}
+      \field{issue}{July 2019}
+      \field{journaltitle}{Coastal Engineering}
+      \field{title}{An ISPH with $k–\epsilon$ closure for simulating turbulence under solitary waves}
+      \field{volume}{157}
+      \field{year}{2020}
+      \field{pages}{103657}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1016/j.coastaleng.2020.103657
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1016/j.coastaleng.2020.103657
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1016/j.coastaleng.2020.103657
+      \endverb
+      \keyw{2D ISPH,Adaptive boundary condition,Initial seeding,Solitary wave breaking,Turbulent kinetic energy,$k–\epsilon$ model}
     \endentry
   \enddatalist
 \endrefsection
