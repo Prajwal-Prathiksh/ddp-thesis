@@ -140,6 +140,57 @@
       \verb https://www.researchgate.net/publication/315665064_Hunting_for_Lagrangian_Coherent_Structures_SPH-LES_turbulence_simulations_with_Wall-adapting_Local_Eddy_Viscosity_WALE_model
       \endverb
     \endentry
+    \entry{Chola2021}{article}{}
+      \name{author}{2}{}{%
+        {{hash=a31faffc2ca86f8816c06012ffb26c08}{%
+           family={Chola},
+           familyi={C\bibinitperiod},
+           given={Kalale},
+           giveni={K\bibinitperiod}}}%
+        {{hash=9063202d89c4a09fda5ef7a9b8dfbc2d}{%
+           family={Shintake},
+           familyi={S\bibinitperiod},
+           given={Tsumoru},
+           giveni={T\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier Ltd}%
+      }
+      \strng{namehash}{2b60d1c370eaceb5c7d9e313a13b571e}
+      \strng{fullhash}{2b60d1c370eaceb5c7d9e313a13b571e}
+      \strng{bibnamehash}{2b60d1c370eaceb5c7d9e313a13b571e}
+      \strng{authorbibnamehash}{2b60d1c370eaceb5c7d9e313a13b571e}
+      \strng{authornamehash}{2b60d1c370eaceb5c7d9e313a13b571e}
+      \strng{authorfullhash}{2b60d1c370eaceb5c7d9e313a13b571e}
+      \field{labelalpha}{CS21}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{This paper presents a formulation of a general form of an equation for pressure using thermodynamic principles. The motivation for this is in large part due to the need for a pressure equation for smoothed particle hydrodynamics, SPH, that takes into account the role of entropy. This is necessary because the use of physical and artificial viscosity leads to an increase in entropy. While such an increase in entropy in liquids may be negligibly small, standard SPH formulations treat a liquid as a weakly compressible gas. Consequently, for fluid–fluid and fluid–structure impact flows, the resulting increase in entropy is not negligible anymore. The proposed pressure equation contains diffusion terms whose main role is to smooth out unphysically large numerical oscillations in the pressure field related to the shock during an impact event. One consequence of adopting this numerical scheme, however, is that there are new (free) parameters that must be set. Nevertheless, effort has been made to obtain their plausible estimators from physical principles. The proposed model is also applicable outside the domain of SPH.}
+      \field{annotation}{Check compressible EDAC and LES formulation}
+      \field{issn}{00457930}
+      \field{journaltitle}{Computers and Fluids}
+      \field{number}{July}
+      \field{title}{{Generalized entropically damped artificial compressibility for weakly compressible SPH}}
+      \field{volume}{229}
+      \field{year}{2021}
+      \field{pages}{105093}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1016/j.compfluid.2021.105093
+      \endverb
+      \verb{file}
+      \verb :D$\backslash$:/IIT Bombay - Miscellaneous/Research Papers/Dual Degree Programme/Generalized entropically damped artificial compressibility for weakly compressible SPH.pdf:pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1016/j.compfluid.2021.105093
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1016/j.compfluid.2021.105093
+      \endverb
+      \keyw{Generalized EDAC,Incompressibility modulus,Pressure equation,SPH,Thermodynamics}
+    \endentry
     \entry{chorin1968numerical}{article}{}
       \name{author}{1}{}{%
         {{hash=09aedb7d00518f00411f27147e3113ea}{%
@@ -650,6 +701,64 @@
       \verb 10.1142/S0578563404000872
       \endverb
       \keyw{Breakwater,Large eddy simulation,Partially immersed,Regular wave,Smoothed particle hydrodynamics}
+    \endentry
+    \entry{Haftu2022}{article}{}
+      \name{author}{3}{}{%
+        {{hash=bd2afb452f97fc04fcdb96f89e2ab592}{%
+           family={Haftu},
+           familyi={H\bibinitperiod},
+           given={Asmelash},
+           giveni={A\bibinitperiod}}}%
+        {{hash=2339871f7a465bcee3a658ba7146b5f7}{%
+           family={Muta},
+           familyi={M\bibinitperiod},
+           given={Abhinav},
+           giveni={A\bibinitperiod}}}%
+        {{hash=b256959149623f677ad5b3c134dbaea4}{%
+           family={Ramachandran},
+           familyi={R\bibinitperiod},
+           given={Prabhu},
+           giveni={P\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier B.V.}%
+      }
+      \strng{namehash}{d3c3a36f13877abd51b34cec4ce3e5f2}
+      \strng{fullhash}{d3c3a36f13877abd51b34cec4ce3e5f2}
+      \strng{bibnamehash}{d3c3a36f13877abd51b34cec4ce3e5f2}
+      \strng{authorbibnamehash}{d3c3a36f13877abd51b34cec4ce3e5f2}
+      \strng{authornamehash}{d3c3a36f13877abd51b34cec4ce3e5f2}
+      \strng{authorfullhash}{d3c3a36f13877abd51b34cec4ce3e5f2}
+      \field{labelalpha}{HMR22}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{The use of adaptive spatial resolution to simulate flows of practical interest using Smoothed Particle Hydrodynamics (SPH) is of considerable importance. Recently, Muta and Ramachandran [1] have proposed an efficient adaptive SPH method which is capable of handling large changes in particle resolution. This allows the authors to simulate problems with much fewer particles than was possible earlier. The method was not demonstrated or tested with moving bodies or multiple bodies. In addition, the original method employed a large number of background particles to determine the spatial resolution of the fluid particles. In the present work we establish the formulation's effectiveness for simulating flow around stationary and moving geometries. We eliminate the need for the background particles in order to specify the geometry-based or solution-based adaptivity and we discuss the algorithms employed in detail. We consider a variety of benchmark problems, including the flow past two stationary cylinders, flow past different NACA airfoils at a range of Reynolds numbers, a moving square at various Reynolds numbers, and the flow past an oscillating cylinder. We also demonstrate different types of motions using single and multiple bodies. The source code is made available under an open source license, and our results are reproducible. Program summary: Program Title: Parallel adaptive EDAC-SPH CPC Library link to program files: https://doi.org/10.17632/62rhbb9p4t.1 Developer's repository link: https://gitlab.com/pypr/asph{\_}motion. Code Ocean capsule: https://codeocean.com/capsule/4785489 Licensing provisions: BSD 3-clause Programming language: Python External routines/libraries:: PySPH (https://github.com/pypr/pysph), matplotlib (https://pypi.org/project/matplotlib/), NumPy (https://pypi.org/project/numpy/), automan (https://pypi.org/project/automan/), compyle (https://pypi.org/project/compyle/). Nature of problem: Simulating fluid flow around multiple moving bodies requires the local resolution to be automatically adapted in order to capture all the necessary flow features. If a single resolution is used throughout the domain, the number of particles would be excessively large. Solution method: We validate and demonstrate the accuracy of the adaptive particle refinement algorithm in simulating flow past moving multiple geometries. Our algorithm is fully parallel, and we provide an open-source implementation.}
+      \field{eprinttype}{arXiv}
+      \field{issn}{00104655}
+      \field{journaltitle}{Computer Physics Communications}
+      \field{title}{{Parallel adaptive weakly-compressible SPH for complex moving geometries}}
+      \field{volume}{277}
+      \field{year}{2022}
+      \field{pages}{108377}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1016/j.cpc.2022.108377
+      \endverb
+      \verb{eprint}
+      \verb 2201.00514
+      \endverb
+      \verb{file}
+      \verb :D$\backslash$:/IIT Bombay - Miscellaneous/Research Papers/Dual Degree Programme/Parallel adaptive weakly-compressible SPH for complex moving geometries.pdf:pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1016/j.cpc.2022.108377
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1016/j.cpc.2022.108377
+      \endverb
+      \keyw{Adaptive spatial resolution,Incompressible flow,Moving geometries,Multi body simulation,Smoothed particle hydrodynamics}
     \endentry
     \entry{haller2005objective}{article}{}
       \name{author}{1}{}{%
@@ -1183,6 +1292,34 @@
       \endverb
       \keyw{Averaging,Euler equations,Large-scale flow,Navier-Stokes,Turbulence}
     \endentry
+    \entry{Mayrhofer2014}{thesis}{}
+      \name{author}{1}{}{%
+        {{hash=9e8d1c7c0feb45af91b447c1e43b6407}{%
+           family={Mayrhofer},
+           familyi={M\bibinitperiod},
+           given={Arno},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {The University of Manchester (United Kingdom)}%
+      }
+      \strng{namehash}{9e8d1c7c0feb45af91b447c1e43b6407}
+      \strng{fullhash}{9e8d1c7c0feb45af91b447c1e43b6407}
+      \strng{bibnamehash}{9e8d1c7c0feb45af91b447c1e43b6407}
+      \strng{authorbibnamehash}{9e8d1c7c0feb45af91b447c1e43b6407}
+      \strng{authornamehash}{9e8d1c7c0feb45af91b447c1e43b6407}
+      \strng{authorfullhash}{9e8d1c7c0feb45af91b447c1e43b6407}
+      \field{labelalpha}{May14}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{This thesis investigates turbulent wall-bounded flows using the Smoothed Particle Hydro- dynamics (SPH) method. The first part focuses on the SPH method itself in the context of the Navier-Stokes equations with a special emphasis on wall boundary conditions. After dis- cussing classical wall boundary conditions a detailed introduction to unified semi-analytical wall boundary conditions is given where the key parameter is a renormalization factor that accounts for the truncated kernel support in wall-bounded flows. In the following chapter it is shown that these boundary conditions fulfill energy conser- vation only approximately. This leads to numerical noise which, interpreted as form of Brownian motion, is treated using an additional volume diffusion term in the continuity equation where it is shown to be equivalent to an approximate Riemann solver. Two exten- sions to the boundary conditions are presented dealing with variable driving forces and a generalization to Robin type and arbitrary-order interpolation. Two modifications for free- surface flows are then presented, one for the volume diffusion term and the other for the algorithm that imposes Robin boundary conditions. The variable driving force is validated using a Poiseuille flow and the results indicate an error which is five orders of magnitude smaller than with the previous formulation. Discretising the wave equation with Robin boundary conditions proves that these are correctly imposed and that increasing the order of the interpolation decreases the error. The two modifications for flows under the influence of external forces significantly reduce the error at the free-surface. Finally, a dam break over a wedge demonstrates the capabilities of all the proposed modifications. With the aim of simulating turbulent flows in channels, the thesis moves on to extending the unified semi-analytical wall-boundary conditions to three dimensions. The thesis first presents the consistent computation of the vertex particle mass. Then, the computation of the kernel renormalization factor is considered, which in 3-D consists of solving an integral over a two dimensional manifold where the smoothing kernel intersects the boundary. Us- ing a domain decomposition algorithm special integration areas are obtained for which this integral can be solved for the 5th-order Wendland kernel. This algorithm is successfully applied to several validation cases including a dam break with an obstacle which show a significant improvement compared to other approximative methods and boundary condi- tions. The second part of this thesis investigates turbulent flows, in particular turbulent channel flow. This test case is introduced in detail showing both the physical properties as well as established numerical methods such as direct numerical simulation (DNS) and large eddy simulation (LES). In the penultimate chapter several SPH simulations of the turbulent channel flow are shown. The first section deals with a quasi DNS of the minimal-flow unit, a channel flow with a minimal domain size to sustain turbulent flow structures. The Eulerian statistics are compared to literature and show good agreement except for some wall-normal quantities. Furthermore, preliminary Lagrangian statistics are shown and com- pared to results obtained from a mesh-based DNS. The final simulation shows a LES of a full-sized channel at Reynolds number Reτ = 1000. The Eulerian statistics are compared to literature and the discrepancies found are explained using simulations of the Taylor-Green vortex, indicating that the momentum is not transferred appropriately due to an unresolved velocity-pressure-gradient tensor.}
+      \field{title}{An investigation into wall boundary conditions and three-dimensional turbulent flows using smoothed particle hydrodynamics}
+      \field{year}{2014}
+      \field{pages}{181}
+      \range{pages}{1}
+    \endentry
     \entry{minion1997performance}{article}{}
       \name{author}{2}{}{%
         {{hash=54b5958334469e46f39808e2a3d7e3a5}{%
@@ -1500,6 +1637,146 @@
       \field{year}{1997}
       \field{pages}{214\bibrangedash 226}
       \range{pages}{13}
+    \endentry
+    \entry{Muta2022}{book}{}
+      \name{author}{2}{}{%
+        {{hash=2339871f7a465bcee3a658ba7146b5f7}{%
+           family={Muta},
+           familyi={M\bibinitperiod},
+           given={Abhinav},
+           giveni={A\bibinitperiod}}}%
+        {{hash=b256959149623f677ad5b3c134dbaea4}{%
+           family={Ramachandran},
+           familyi={R\bibinitperiod},
+           given={Prabhu},
+           giveni={P\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier B.V.}%
+      }
+      \strng{namehash}{45224e23918080bcbb58276146799696}
+      \strng{fullhash}{45224e23918080bcbb58276146799696}
+      \strng{bibnamehash}{45224e23918080bcbb58276146799696}
+      \strng{authorbibnamehash}{45224e23918080bcbb58276146799696}
+      \strng{authornamehash}{45224e23918080bcbb58276146799696}
+      \strng{authorfullhash}{45224e23918080bcbb58276146799696}
+      \field{labelalpha}{MR22}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{In this paper we propose an accurate, and computationally efficient method for incorporating adaptive spatial resolution into weakly-compressible Smoothed Particle Hydrodynamics (SPH) schemes. Particles are adaptively split and merged in an accurate manner. Critically, the method ensures that the number of neighbors of each particle is optimal, leading to an efficient algorithm. A set of background particles is used to specify either geometry-based spatial resolution, where the resolution is a function of distance to a solid body, or solution-based adaptive resolution, where the resolution is a function of the computed solution. This allows us to simulate problems using particles having length variations of the order of 1:250 with much fewer particles than currently reported with other techniques. The method is designed to automatically adapt when any solid bodies move. The algorithms employed are fully parallel. We consider a suite of benchmark problems to demonstrate the accuracy of the approach. We then consider the classic problem of the flow past a circular cylinder at a range of Reynolds numbers and show that the proposed method produces accurate results with a significantly reduced number of particles. We provide an open source implementation and a fully reproducible manuscript.}
+      \field{booktitle}{Computer Methods in Applied Mechanics and Engineering}
+      \field{eprinttype}{arXiv}
+      \field{isbn}{7592984807384}
+      \field{issn}{00457825}
+      \field{title}{{Efficient and accurate adaptive resolution for weakly-compressible SPH}}
+      \field{volume}{395}
+      \field{year}{2022}
+      \field{pages}{115019}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1016/j.cma.2022.115019
+      \endverb
+      \verb{eprint}
+      \verb 2107.01276
+      \endverb
+      \verb{file}
+      \verb :D$\backslash$:/IIT Bombay - Miscellaneous/Research Papers/Dual Degree Programme/Efficient and accurate adaptive resolution for weakly-compressible SPH.pdf:pdf
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1016/j.cma.2022.115019
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1016/j.cma.2022.115019
+      \endverb
+      \keyw{Adaptivity,Incompressible,SPH,Solution adaptivity,Variable spatial resolution,Weakly-compressible SPH}
+    \endentry
+    \entry{Negi2022Techniques}{article}{}
+      \name{author}{2}{}{%
+        {{hash=5dc5f7f14d86feaed4a7b5a8f8e8d22e}{%
+           family={Negi},
+           familyi={N\bibinitperiod},
+           given={Pawan},
+           giveni={P\bibinitperiod}}}%
+        {{hash=b256959149623f677ad5b3c134dbaea4}{%
+           family={Ramachandran},
+           familyi={R\bibinitperiod},
+           given={Prabhu},
+           giveni={P\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {AIP Publishing LLC}%
+      }
+      \strng{namehash}{ac78cebd53c3c90c84afb859b8404398}
+      \strng{fullhash}{ac78cebd53c3c90c84afb859b8404398}
+      \strng{bibnamehash}{ac78cebd53c3c90c84afb859b8404398}
+      \strng{authorbibnamehash}{ac78cebd53c3c90c84afb859b8404398}
+      \strng{authornamehash}{ac78cebd53c3c90c84afb859b8404398}
+      \strng{authorfullhash}{ac78cebd53c3c90c84afb859b8404398}
+      \field{labelalpha}{NR22}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Despite the many advances in the use of weakly compressible smoothed particle hydrodynamics (SPH) for the simulation of incompressible fluid flow, it is still challenging to obtain second-order convergence even for simple periodic domains. In this paper, we perform a systematic numerical study of convergence and accuracy of kernel-based approximation, discretization operators, and weakly compressible SPH (WCSPH) schemes. We explore the origins of the errors and issues preventing second-order convergence despite having a periodic domain. Based on the study, we propose several new variations of the basic WCSPH scheme that are all second-order accurate. Additionally, we investigate the linear and angular momentum conservation property of the WCSPH schemes. Our results show that one may construct accurate WCSPH schemes that demonstrate second-order convergence through a judicious choice of kernel, smoothing length, and discretization operators in the discretization of the governing equations.}
+      \field{eprinttype}{arXiv}
+      \field{issn}{1070-6631}
+      \field{journaltitle}{Physics of Fluids}
+      \field{number}{8}
+      \field{title}{{Techniques for second-order convergent weakly compressible smoothed particle hydrodynamics schemes without boundaries}}
+      \field{volume}{34}
+      \field{year}{2022}
+      \field{pages}{087125}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1063/5.0098352
+      \endverb
+      \verb{eprint}
+      \verb 2107.11859
+      \endverb
+      \verb{file}
+      \verb :D$\backslash$:/IIT Bombay - Miscellaneous/Research Papers/Dual Degree Programme/Techniques for second order convergent weakly-compressible smoothed particle hydrodynamics schemes without boundaries.pdf:pdf
+      \endverb
+    \endentry
+    \entry{negi2020improved}{article}{}
+      \name{author}{3}{}{%
+        {{hash=5dc5f7f14d86feaed4a7b5a8f8e8d22e}{%
+           family={Negi},
+           familyi={N\bibinitperiod},
+           given={Pawan},
+           giveni={P\bibinitperiod}}}%
+        {{hash=b256959149623f677ad5b3c134dbaea4}{%
+           family={Ramachandran},
+           familyi={R\bibinitperiod},
+           given={Prabhu},
+           giveni={P\bibinitperiod}}}%
+        {{hash=bd2afb452f97fc04fcdb96f89e2ab592}{%
+           family={Haftu},
+           familyi={H\bibinitperiod},
+           given={Asmelash},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{b728bb19f6952a761a274f9df0213f20}
+      \strng{fullhash}{b728bb19f6952a761a274f9df0213f20}
+      \strng{bibnamehash}{b728bb19f6952a761a274f9df0213f20}
+      \strng{authorbibnamehash}{b728bb19f6952a761a274f9df0213f20}
+      \strng{authornamehash}{b728bb19f6952a761a274f9df0213f20}
+      \strng{authorfullhash}{b728bb19f6952a761a274f9df0213f20}
+      \field{labelalpha}{NRH20}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Computer Methods in Applied Mechanics and Engineering}
+      \field{title}{An improved non-reflecting outlet boundary condition for weakly-compressible SPH}
+      \field{volume}{367}
+      \field{year}{2020}
+      \field{pages}{113119}
+      \range{pages}{1}
     \endentry
     \entry{nicoud2011using}{article}{}
       \name{author}{5}{}{%

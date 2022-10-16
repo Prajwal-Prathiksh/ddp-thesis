@@ -1,7 +1,8 @@
 \babel@toc {english}{}\relax 
 \contentsline {chapter}{Abstract}{i}{section*.2}%
-\contentsline {chapter}{List of Figures}{iii}{chapter*.4}%
-\contentsline {chapter}{List of Symbols}{v}{chapter*.5}%
+\contentsline {chapter}{Contents}{ii}{chapter*.3}%
+\contentsline {chapter}{List of Figures}{iv}{chapter*.4}%
+\contentsline {chapter}{List of Symbols}{vi}{chapter*.5}%
 \contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.7}%
 \contentsline {section}{\numberline {1.1}Smoothed Particle Hydrodynamics}{2}{section.9}%
 \contentsline {section}{\numberline {1.2}Project Motivation \& Objectives}{2}{section.10}%

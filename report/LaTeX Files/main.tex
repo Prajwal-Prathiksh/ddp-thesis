@@ -30,7 +30,7 @@ singlespacing, % Single line spacing, alternatives: onehalfspacing or doublespac
 %draft, % Uncomment to enable draft mode (no pictures, no links, overfull hboxes indicated)
 %nolistspacing, % If the document is onehalfspacing or doublespacing, uncomment this to set spacing in lists to single
 liststotoc, % Uncomment to add the list of figures/tables/etc to the table of contents
-%toctotoc, % Uncomment to add the main table of contents to the table of contents
+toctotoc, % Uncomment to add the main table of contents to the table of contents
 %parskip, % Uncomment to add space between paragraphs
 %nohyperref, % Uncomment to not load the hyperref package
 headsepline, % Uncomment to get a line under the header
@@ -43,7 +43,6 @@ headsepline, % Uncomment to get a line under the header
 \RestyleAlgo{ruled}
 \usepackage[utf8]{inputenc} % Required for inputting international characters
 \usepackage[T1]{fontenc} % Output font encoding for international characters
-\usepackage{epigraph} 
 
 \usepackage{mathpazo} % Use the Palatino font by default
 \usepackage{float}
@@ -58,6 +57,8 @@ headsepline, % Uncomment to get a line under the header
 \usepackage{bbm}
 \usepackage{amssymb}
 \usepackage{hyperref}
+\usepackage{epigraph} 
+\usepackage{xstring}
 
 %----------------------------------------------------------------------------------------
 %	CUSTOM MATH COMMANDS
@@ -95,7 +96,6 @@ headsepline, % Uncomment to get a line under the header
 
 
 
-
 %----------------------------------------------------------------------------------------
 %	MARGIN SETTINGS
 %----------------------------------------------------------------------------------------
@@ -122,7 +122,7 @@ headsepline, % Uncomment to get a line under the header
 \addresses{} % Your address, this is not currently used anywhere in the template, print it elsewhere with \addressname
 
 \subject{Biological Sciences} % Your subject area, this is not currently used anywhere in the template, print it elsewhere with \subjectname
-\keywords{Fluid Mechanics, Turbulence Modelling, Smoothed Particle Hydrodynamics, Reynolds Averaging, Large Eddy Simulation, Lagrangian Averaging} % Keywords for your thesis, this is not currently used anywhere in the template, print it elsewhere with \keywordnames
+\keywords{Fluid Mechanics, Turbulence Modelling, Smoothed Particle Hydrodynamics, Reynolds Averaging, Large Eddy Simulation, Lagrangian Averaging, Coherent Structures} % Keywords for your thesis, this is not currently used anywhere in the template, print it elsewhere with \keywordnames
 \university{{Indian Institute of Technology Bombay}} % Your university's name and URL, this is used in the title page and abstract, print it elsewhere with \univname
 \department{{Department of Aerospace Engineering}} % Your department's name and URL, this is used in the title page and abstract, print it elsewhere with \deptname
 \group{\href{http://researchgroup.university.com}{ }} % Your research group's name and URL, this is used in the title page, print it elsewhere with \groupname
@@ -197,8 +197,9 @@ headsepline, % Uncomment to get a line under the header
 
 \begin{abstract}
 \addchaptertocentry{\abstractname} % Add the abstract to the table of contents
-
-\blindtext
+Turbulence modelling is a challenging problem, particularly for a Lagrangian method such as Smoothed Particle Hydrodynamics (SPH) which lacks the years of theoretical and practical research that conventional CFD solvers based on FEM/FVM enjoy. However, work based on translating existing Eulerian-based turbulence methods to SPH and Lagrangian-specific models has started making inroads in the general understanding of the topic in an SPH setting. Ultimately, a rigorous and robust model can be devised, which is well-suitable to a wide variety of $2D$ and $3D$ problems.
+This project aims to survey and review the state-of-the-art turbulence models that SPH offers and help subsequently provide a comparative analysis detailing the advantages and limitations of these models.
+It also intends to extend the best-equipped models to robust and accurate SPH schemes and incorporate some of the latest developments in the field of SPH to refine further the machinery required to model turbulence.
 
 \textbf{Keywords:} \keywordnames
 

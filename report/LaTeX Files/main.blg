@@ -1,17 +1,18 @@
 [0] Config.pm:307> INFO - This is Biber 2.17
-[0] Config.pm:310> INFO - Logfile is 'main.blg'
-[178] biber-MSWIN64:340> INFO - === 
-[224] Biber.pm:418> INFO - Reading 'main.bcf'
-[403] Biber.pm:972> INFO - Found 61 citekeys in bib section 0
-[423] Biber.pm:4383> INFO - Processing section 0
-[439] Biber.pm:4574> INFO - Looking for bibtex file 'references.bib' for section 0
-[509] bibtex.pm:1713> INFO - LaTeX decoding ...
-[699] bibtex.pm:1518> INFO - Found BibTeX data source 'references.bib'
-[1188] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[1188] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[1188] Biber.pm:4203> INFO - Sorting list 'nyvt/global//global/global' of type 'entry' with template 'nyvt' and locale 'en-US'
-[1188] Biber.pm:4209> INFO - No sort tailoring available for locale 'en-US'
-[1268] bbl.pm:654> INFO - Writing 'main.bbl' with encoding 'UTF-8'
-[1312] bbl.pm:757> INFO - Output to main.bbl
-[1313] Biber.pm:130> WARN - legacy month field 'dec' in entry 'Ramachandran2019' is not an integer - this will probably not sort properly.
-[1313] Biber.pm:132> INFO - WARNINGS: 1
+[1] Config.pm:310> INFO - Logfile is 'main.blg'
+[165] biber-MSWIN64:340> INFO - === 
+[212] Biber.pm:418> INFO - Reading 'main.bcf'
+[449] Biber.pm:972> INFO - Found 67 citekeys in bib section 0
+[470] Biber.pm:4383> INFO - Processing section 0
+[487] Biber.pm:4574> INFO - Looking for bibtex file 'references.bib' for section 0
+[562] bibtex.pm:1713> INFO - LaTeX decoding ...
+[767] bibtex.pm:1518> INFO - Found BibTeX data source 'references.bib'
+[1669] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[1669] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[1669] Biber.pm:4203> INFO - Sorting list 'nyvt/global//global/global' of type 'entry' with template 'nyvt' and locale 'en-US'
+[1669] Biber.pm:4209> INFO - No sort tailoring available for locale 'en-US'
+[1847] bbl.pm:654> INFO - Writing 'main.bbl' with encoding 'UTF-8'
+[1976] bbl.pm:757> INFO - Output to main.bbl
+[1977] Biber.pm:130> WARN - legacy month field 'dec' in entry 'Ramachandran2019' is not an integer - this will probably not sort properly.
+[1977] Biber.pm:130> WARN - ISBN '7592984807384' in entry 'Muta2022' is invalid - run biber with '--validate_datamodel' for details.
+[1977] Biber.pm:132> INFO - WARNINGS: 2

@@ -670,15 +670,16 @@ As seen from the results of the simulations in \ref{fig:Colagrossi2021QuasiLagra
 The authors conclude that the $\delta$-LES-SPH model would need to be validated for flows with a Reynolds number larger than $10e6$ with experimental or numerical data. They believe that the inclusion of wall functions to deal with solid boundaries and the extension of the model to free-surface flows can further improve the model’s effectiveness. Finally, the authors believe that a higher-order approach could significantly improve the model results.
 
 \subsection{Extension to EDAC-SPH Scheme}
+\label{sec:Extension-to-EDAC-SPH-Scheme}
 The Entropically Damped Artificial Compressibility (EDAC) SPH scheme, based on the work of \parencite{Clausen2013}, is an explicit SPH method devised for incompressible flow by \parencite{Ramachandran2019}.
-In this scheme, the authors consider a transport equation for pressure instead of density derived from the continuity equation, as given in \ref{eq:Ramachandran2019-p-transport}.
+In this scheme, the authors consider a transport equation for pressure instead of density derived from the continuity equation, as given in \ref{eq:Ramachandran2019-edac-p-transport}.
 \begin{equation}
     \LagDerivative{P} = -c_s^2 \rho \nabla \cdot \vect{v} + \nu \nabla^2 P
-    \label{eq:Ramachandran2019-p-transport}
+    \label{eq:Ramachandran2019-edac-p-transport}
 \end{equation}
 
 Considering the pressure evolution equation above, an equation of state is longer for the scheme.
-By filtering \ref{eq:Ramachandran2019-p-transport} with the Lagrangian LES technique \parencite{DiMascio2017}, we arrive at the result given by \ref{eq:edac-filtered} (Refer Appendix \ref{AppendixA} for derivation).
+By filtering \ref{eq:Ramachandran2019-edac-p-transport} with the Lagrangian LES technique \parencite{DiMascio2017}, we arrive at the result given by \ref{eq:edac-filtered} (Refer Appendix \ref{AppendixA} for derivation).
 \begin{equation}
     \LagDerivative{\TildeP} = -c_s^2 \rho \nabla \cdot \TildeV + \nu \nabla^2 \TildeP + \TildeV \cdot \nabla \TildeP - \widetilde{\vect{v}\cdot\nabla P}
     \label{eq:edac-filtered}
