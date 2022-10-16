@@ -18,27 +18,24 @@
 
 
 \refsection{0}
-  \datalist[entry]{nyt/global//global/global}
+  \datalist[entry]{nyvt/global//global/global}
     \entry{Adami2012}{report}{}
       \name{author}{3}{}{%
-        {{un=0,uniquepart=base,hash=0d4775fea8584fd7956c5b505c8108dd}{%
+        {{hash=0d4775fea8584fd7956c5b505c8108dd}{%
            family={Adami},
            familyi={A\bibinitperiod},
            given={S.},
-           giveni={S\bibinitperiod},
-           givenun=0}}%
-        {{un=2,uniquepart=given,hash=0759110aae1a8818e2ece48dd7eaba54}{%
+           giveni={S\bibinitperiod}}}%
+        {{hash=0759110aae1a8818e2ece48dd7eaba54}{%
            family={Hu},
            familyi={H\bibinitperiod},
            given={X.\bibnamedelimi Y.},
-           giveni={X\bibinitperiod\bibinitdelim Y\bibinitperiod},
-           givenun=2}}%
-        {{un=2,uniquepart=given,hash=e77df22f865b327edf41941aa19f4ca1}{%
+           giveni={X\bibinitperiod\bibinitdelim Y\bibinitperiod}}}%
+        {{hash=e77df22f865b327edf41941aa19f4ca1}{%
            family={Adams},
            familyi={A\bibinitperiod},
            given={N.\bibnamedelimi A.},
-           giveni={N\bibinitperiod\bibinitdelim A\bibinitperiod},
-           givenun=2}}%
+           giveni={N\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
       }
       \list{institution}{1}{%
         {Lehrstuhl für Aerodynamik}%
@@ -49,10 +46,9 @@
       \strng{authorbibnamehash}{ebf3da8bfbea42f40b5a84143741ba7a}
       \strng{authornamehash}{ebf3da8bfbea42f40b5a84143741ba7a}
       \strng{authorfullhash}{ebf3da8bfbea42f40b5a84143741ba7a}
+      \field{labelalpha}{AHA12}
       \field{sortinit}{A}
       \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Simulating three-dimensional turbulence with SPH}
@@ -60,18 +56,16 @@
     \endentry
     \entry{bonet1999variational}{article}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=1f328278070b466b433976f886673f62}{%
+        {{hash=1f328278070b466b433976f886673f62}{%
            family={Bonet},
            familyi={B\bibinitperiod},
            given={Javier},
-           giveni={J\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=1b889a4de1e126ce84493aaac4bbbcdb}{%
+           giveni={J\bibinitperiod}}}%
+        {{hash=1b889a4de1e126ce84493aaac4bbbcdb}{%
            family={Lok},
            familyi={L\bibinitperiod},
            given={T-SL},
-           giveni={T\bibinithyphendelim S\bibinitperiod},
-           givenun=0}}%
+           giveni={T\bibinithyphendelim S\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier}%
@@ -82,10 +76,9 @@
       \strng{authorbibnamehash}{de89099ef73ff6a9fbcad2b3fcfd9a0a}
       \strng{authornamehash}{de89099ef73ff6a9fbcad2b3fcfd9a0a}
       \strng{authorfullhash}{de89099ef73ff6a9fbcad2b3fcfd9a0a}
+      \field{labelalpha}{BL99}
       \field{sortinit}{B}
       \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Computer Methods in applied mechanics and engineering}
@@ -98,36 +91,31 @@
     \endentry
     \entry{Canelas2016}{article}{}
       \name{author}{5}{}{%
-        {{un=0,uniquepart=base,hash=f879a0cc40998c9e4eaa95c64bd02e0c}{%
+        {{hash=f879a0cc40998c9e4eaa95c64bd02e0c}{%
            family={Canelas},
            familyi={C\bibinitperiod},
            given={Ricardo\bibnamedelima B},
-           giveni={R\bibinitperiod\bibinitdelim B\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=260ccb95916008e654b8877a4c45f9ef}{%
+           giveni={R\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+        {{hash=260ccb95916008e654b8877a4c45f9ef}{%
            family={Ricardo},
            familyi={R\bibinitperiod},
            given={Ana\bibnamedelima M.},
-           giveni={A\bibinitperiod\bibinitdelim M\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=42e8a3a072cd5b3aa09dd73eeb55258d}{%
+           giveni={A\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+        {{hash=42e8a3a072cd5b3aa09dd73eeb55258d}{%
            family={Ferreira},
            familyi={F\bibinitperiod},
            given={Rui\bibnamedelimb M.\bibnamedelimi L.},
-           giveni={R\bibinitperiod\bibinitdelim M\bibinitperiod\bibinitdelim L\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=008a0185a5e9149426155d58ac398dd2}{%
+           giveni={R\bibinitperiod\bibinitdelim M\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=008a0185a5e9149426155d58ac398dd2}{%
            family={Domínguez},
            familyi={D\bibinitperiod},
            given={José\bibnamedelima Manuel},
-           giveni={J\bibinitperiod\bibinitdelim M\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=fb946da8e182670f81a557d0876417a9}{%
+           giveni={J\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+        {{hash=fb946da8e182670f81a557d0876417a9}{%
            family={Crespo},
            familyi={C\bibinitperiod},
            given={Alejandro\bibnamedelimb J.\bibnamedelimi C.},
-           giveni={A\bibinitperiod\bibinitdelim J\bibinitperiod\bibinitdelim C\bibinitperiod},
-           givenun=0}}%
+           giveni={A\bibinitperiod\bibinitdelim J\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
       }
       \strng{namehash}{824e52c052435400e88a21065c41462c}
       \strng{fullhash}{54bef93efd3091e1ac94f6690def91d1}
@@ -135,10 +123,9 @@
       \strng{authorbibnamehash}{824e52c052435400e88a21065c41462c}
       \strng{authornamehash}{824e52c052435400e88a21065c41462c}
       \strng{authorfullhash}{54bef93efd3091e1ac94f6690def91d1}
+      \field{labelalpha}{Can+16}
       \field{sortinit}{C}
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{The turbulent flow field through complex geometric configurations involves interactions between wakes, von K´arm´an vortex streets and shear layers. The mechanisms involved in both vortex loss of coherence and vortex interaction with cylinders require the identification of vortexes themselves. One of the most promising techniques, especially for essentially two-dimensional structures, is based on the definition of Lagrangian Coherent Structures (LCS). SPH is a particularly attractive method for the study of LCS since the technique itself provides the motion of individual fluid particles. This eliminates the need for expensive post-processing inherent to Eulerian solutions. SPH solutions may resolve large turbulent scales, however, dynamics of small scales and dissipative effects must be modelled for high Re flows. The typically employed SPS strategy for LES simulations, based on the standard Smagorinsky model, has severe downsides such as inability to correctly enforce wall conditions and non-vanishing stresses with laminar flows. As an alternative, the wall-adapting local eddy viscosity (WALE) model is cast in SPH formalism and used to perform the simulations under DualSPHysics, retaining the high-performance of the implementation. The results are drawn from 2D LES simulations on a cylinder array at Re=550. They allow for a brief and exploratory characterization of the used SPH formulation (weakly compressible) regarding its ability to resolve the flow at kernel and sub-kernel scales. A complex LCS system is studied in detail, showing the life of a group of eddies as they undergo changes due to interactions with each other, background turbulence and the channel geometry.}
@@ -155,12 +142,11 @@
     \endentry
     \entry{chorin1968numerical}{article}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=09aedb7d00518f00411f27147e3113ea}{%
+        {{hash=09aedb7d00518f00411f27147e3113ea}{%
            family={Chorin},
            familyi={C\bibinitperiod},
            given={Alexandre\bibnamedelima Joel},
-           giveni={A\bibinitperiod\bibinitdelim J\bibinitperiod},
-           givenun=0}}%
+           giveni={A\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
       }
       \strng{namehash}{09aedb7d00518f00411f27147e3113ea}
       \strng{fullhash}{09aedb7d00518f00411f27147e3113ea}
@@ -168,10 +154,9 @@
       \strng{authorbibnamehash}{09aedb7d00518f00411f27147e3113ea}
       \strng{authornamehash}{09aedb7d00518f00411f27147e3113ea}
       \strng{authorfullhash}{09aedb7d00518f00411f27147e3113ea}
+      \field{labelalpha}{Cho68}
       \field{sortinit}{C}
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Mathematics of computation}
@@ -184,12 +169,11 @@
     \endentry
     \entry{Clausen2013}{article}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=5a18b4743508ceefdbefb8edcb485a60}{%
+        {{hash=5a18b4743508ceefdbefb8edcb485a60}{%
            family={Clausen},
            familyi={C\bibinitperiod},
            given={Jonathan\bibnamedelima R.},
-           giveni={J\bibinitperiod\bibinitdelim R\bibinitperiod},
-           givenun=0}}%
+           giveni={J\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
       }
       \strng{namehash}{5a18b4743508ceefdbefb8edcb485a60}
       \strng{fullhash}{5a18b4743508ceefdbefb8edcb485a60}
@@ -197,10 +181,9 @@
       \strng{authorbibnamehash}{5a18b4743508ceefdbefb8edcb485a60}
       \strng{authornamehash}{5a18b4743508ceefdbefb8edcb485a60}
       \strng{authorfullhash}{5a18b4743508ceefdbefb8edcb485a60}
+      \field{labelalpha}{Cla13}
       \field{sortinit}{C}
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{An alternative artificial compressibility (AC) scheme is proposed to allow the explicit simulation of the incompressible Navier-Stokes (INS) equations. Traditional AC schemes rely on an artificial equation of state that gives the pressure as a function of the density, which is known to enforce isentropic behavior. This behavior is nonideal, especially in viscously dominated flows. An alternative, the entropically damped artificial compressibility (EDAC) method, is proposed that employs a thermodynamic constraint to damp the pressure oscillations inherent to AC methods. The EDAC method converges to the INS in the low-Mach limit, and is consistent in both the low- and high-Reynolds-number limits, unlike standard AC schemes. The proposed EDAC method is discretized using a simple finite-difference scheme and is compared with traditional AC schemes as well as the lattice-Boltzmann method for steady lid-driven cavity flow and a transient traveling-wave problem. The EDAC method is shown to be beneficial in damping pressure and velocity-divergence oscillations when performing transient simulations. The EDAC method follows a similar derivation to the kinetically reduced local Navier-Stokes (KRLNS) method [Borok, Phys. Rev. EPLEEE81539-375510.1103/PhysRevE.76.066704 76, 066704 (2007)]; however, the EDAC method does not rely on the grand potential as the thermodynamic variable, but instead uses the more common pressure-velocity system. Additionally, a term neglected in the KRLNS is identified that is important for accurately approximating the INS equations. {©} 2013 American Physical Society.}
@@ -221,18 +204,16 @@
     \endentry
     \entry{cleary1999conduction}{article}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=acb2f5e6028b0a2760a5493c0e8bacc5}{%
+        {{hash=acb2f5e6028b0a2760a5493c0e8bacc5}{%
            family={Cleary},
            familyi={C\bibinitperiod},
            given={Paul\bibnamedelima W},
-           giveni={P\bibinitperiod\bibinitdelim W\bibinitperiod},
-           givenun=0}}%
-        {{un=2,uniquepart=given,hash=622cf6924c4dfcc2f3cfb16cd7558e48}{%
+           giveni={P\bibinitperiod\bibinitdelim W\bibinitperiod}}}%
+        {{hash=622cf6924c4dfcc2f3cfb16cd7558e48}{%
            family={Monaghan},
            familyi={M\bibinitperiod},
            given={Joseph\bibnamedelima J},
-           giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod},
-           givenun=2}}%
+           giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier}%
@@ -243,10 +224,9 @@
       \strng{authorbibnamehash}{d31b93811e54e07c1ab52633409ed5ff}
       \strng{authornamehash}{d31b93811e54e07c1ab52633409ed5ff}
       \strng{authorfullhash}{d31b93811e54e07c1ab52633409ed5ff}
+      \field{labelalpha}{CM99}
       \field{sortinit}{C}
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Journal of Computational Physics}
@@ -259,12 +239,11 @@
     \endentry
     \entry{Colagrossi2021QuasiLagrangian}{article}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=72f6d6cdd32c1742c8e022c0422b8ce5}{%
+        {{hash=72f6d6cdd32c1742c8e022c0422b8ce5}{%
            family={Colagrossi},
            familyi={C\bibinitperiod},
            given={A},
-           giveni={A\bibinitperiod},
-           givenun=0}}%
+           giveni={A\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {AIP Publishing, LLC}%
@@ -275,10 +254,9 @@
       \strng{authorbibnamehash}{72f6d6cdd32c1742c8e022c0422b8ce5}
       \strng{authornamehash}{72f6d6cdd32c1742c8e022c0422b8ce5}
       \strng{authorfullhash}{72f6d6cdd32c1742c8e022c0422b8ce5}
+      \field{labelalpha}{Col21}
       \field{sortinit}{C}
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{issue}{December 2020}
@@ -297,30 +275,26 @@
     \endentry
     \entry{Colagrossi2021DaVinci}{article}{}
       \name{author}{4}{}{%
-        {{un=2,uniquepart=given,hash=72f6d6cdd32c1742c8e022c0422b8ce5}{%
+        {{hash=72f6d6cdd32c1742c8e022c0422b8ce5}{%
            family={Colagrossi},
            familyi={C\bibinitperiod},
            given={A.},
-           giveni={A\bibinitperiod},
-           givenun=2}}%
-        {{un=0,uniquepart=base,hash=7eea05138c86a898c791a2beeb567fef}{%
+           giveni={A\bibinitperiod}}}%
+        {{hash=7eea05138c86a898c791a2beeb567fef}{%
            family={Marrone},
            familyi={M\bibinitperiod},
            given={S.},
-           giveni={S\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=414bbdb927e18829e3300b552a62fa34}{%
+           giveni={S\bibinitperiod}}}%
+        {{hash=414bbdb927e18829e3300b552a62fa34}{%
            family={Colagrossi},
            familyi={C\bibinitperiod},
            given={P.},
-           giveni={P\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=947db61c2be5cf81302541def937e4c2}{%
+           giveni={P\bibinitperiod}}}%
+        {{hash=947db61c2be5cf81302541def937e4c2}{%
            family={Touzé},
            familyi={T\bibinitperiod},
            given={D.\bibnamedelimi Le},
-           giveni={D\bibinitperiod\bibinitdelim L\bibinitperiod},
-           givenun=0}}%
+           giveni={D\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
       }
       \strng{namehash}{9b00a29c7b36cd38b4bea32829388217}
       \strng{fullhash}{ed16a2135963420d1436ee73bf36b295}
@@ -328,10 +302,9 @@
       \strng{authorbibnamehash}{9b00a29c7b36cd38b4bea32829388217}
       \strng{authornamehash}{9b00a29c7b36cd38b4bea32829388217}
       \strng{authorfullhash}{ed16a2135963420d1436ee73bf36b295}
+      \field{labelalpha}{Col+21}
       \field{sortinit}{C}
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{issn}{1070-6631}
@@ -355,18 +328,16 @@
     \endentry
     \entry{cummins1999sph}{article}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=b206036608239d91fad0891bbf2f3056}{%
+        {{hash=b206036608239d91fad0891bbf2f3056}{%
            family={Cummins},
            familyi={C\bibinitperiod},
            given={Sharen\bibnamedelima J},
-           giveni={S\bibinitperiod\bibinitdelim J\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=33b7386d6d48b81c8ad90efd09b244da}{%
+           giveni={S\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+        {{hash=33b7386d6d48b81c8ad90efd09b244da}{%
            family={Rudman},
            familyi={R\bibinitperiod},
            given={Murray},
-           giveni={M\bibinitperiod},
-           givenun=0}}%
+           giveni={M\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier}%
@@ -377,10 +348,9 @@
       \strng{authorbibnamehash}{e6bfa9b0ebe70679c09f19517671aa31}
       \strng{authornamehash}{e6bfa9b0ebe70679c09f19517671aa31}
       \strng{authorfullhash}{e6bfa9b0ebe70679c09f19517671aa31}
+      \field{labelalpha}{CR99}
       \field{sortinit}{C}
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Journal of computational physics}
@@ -393,18 +363,16 @@
     \endentry
     \entry{Dalrymple2006}{article}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=3a6bee5b057829bd496b62abc57a4307}{%
+        {{hash=3a6bee5b057829bd496b62abc57a4307}{%
            family={Dalrymple},
            familyi={D\bibinitperiod},
            given={R\bibnamedelima A},
-           giveni={R\bibinitperiod\bibinitdelim A\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=fc7a4670f636ba36073af9882841b6d1}{%
+           giveni={R\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+        {{hash=fc7a4670f636ba36073af9882841b6d1}{%
            family={Rogers},
            familyi={R\bibinitperiod},
            given={B\bibnamedelima D},
-           giveni={B\bibinitperiod\bibinitdelim D\bibinitperiod},
-           givenun=0}}%
+           giveni={B\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
       }
       \strng{namehash}{7bd4d85a58987b55b9da30fa06efcc2f}
       \strng{fullhash}{7bd4d85a58987b55b9da30fa06efcc2f}
@@ -412,10 +380,9 @@
       \strng{authorbibnamehash}{7bd4d85a58987b55b9da30fa06efcc2f}
       \strng{authornamehash}{7bd4d85a58987b55b9da30fa06efcc2f}
       \strng{authorfullhash}{7bd4d85a58987b55b9da30fa06efcc2f}
+      \field{labelalpha}{DR06}
       \field{sortinit}{D}
       \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{note}{Favre-Averaging, Sub-Particle Scaling, Shepard Filtering}
@@ -431,60 +398,51 @@
     \endentry
     \entry{dauch2018highly}{article}{}
       \name{author}{9}{}{%
-        {{un=0,uniquepart=base,hash=36ace034aa5f0e676efd0075f6e96738}{%
+        {{hash=36ace034aa5f0e676efd0075f6e96738}{%
            family={Dauch},
            familyi={D\bibinitperiod},
            given={TF},
-           giveni={T\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=73607868b94857e789fdd9350935c87f}{%
+           giveni={T\bibinitperiod}}}%
+        {{hash=73607868b94857e789fdd9350935c87f}{%
            family={Rapp},
            familyi={R\bibinitperiod},
            given={T},
-           giveni={T\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=de8a3c698f578f8ce53d65b44ed68501}{%
+           giveni={T\bibinitperiod}}}%
+        {{hash=de8a3c698f578f8ce53d65b44ed68501}{%
            family={Chaussonnet},
            familyi={C\bibinitperiod},
            given={G},
-           giveni={G\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=60f2e8869298555296553f9d8622e54b}{%
+           giveni={G\bibinitperiod}}}%
+        {{hash=60f2e8869298555296553f9d8622e54b}{%
            family={Braun},
            familyi={B\bibinitperiod},
            given={S},
-           giveni={S\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=833394cc85b6f7a4f3ecf755133fba63}{%
+           giveni={S\bibinitperiod}}}%
+        {{hash=833394cc85b6f7a4f3ecf755133fba63}{%
            family={Keller},
            familyi={K\bibinitperiod},
            given={MC},
-           giveni={M\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=48896ededcce818105869ca6443d05ec}{%
+           giveni={M\bibinitperiod}}}%
+        {{hash=48896ededcce818105869ca6443d05ec}{%
            family={Kaden},
            familyi={K\bibinitperiod},
            given={J},
-           giveni={J\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=21daa6bd5890853ac502dca42c74cce4}{%
+           giveni={J\bibinitperiod}}}%
+        {{hash=21daa6bd5890853ac502dca42c74cce4}{%
            family={Koch},
            familyi={K\bibinitperiod},
            given={R},
-           giveni={R\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=a78e88021b356efaa2f2fa44903c88ec}{%
+           giveni={R\bibinitperiod}}}%
+        {{hash=a78e88021b356efaa2f2fa44903c88ec}{%
            family={Dachsbacher},
            familyi={D\bibinitperiod},
            given={C},
-           giveni={C\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=c1b9b9687d1b7cfd67ed93442be74767}{%
+           giveni={C\bibinitperiod}}}%
+        {{hash=c1b9b9687d1b7cfd67ed93442be74767}{%
            family={Bauer},
            familyi={B\bibinitperiod},
            given={H-J},
-           giveni={H\bibinithyphendelim J\bibinitperiod},
-           givenun=0}}%
+           giveni={H\bibinithyphendelim J\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier}%
@@ -495,10 +453,9 @@
       \strng{authorbibnamehash}{255fe08c30f5d815cb6909b23326025b}
       \strng{authornamehash}{255fe08c30f5d815cb6909b23326025b}
       \strng{authorfullhash}{31754ce46d99d65a17e649239909d2cb}
+      \field{labelalpha}{Dau+18}
       \field{sortinit}{D}
       \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Computers \& Fluids}
@@ -510,30 +467,26 @@
     \endentry
     \entry{DiMascio2017}{article}{}
       \name{author}{4}{}{%
-        {{un=0,uniquepart=base,hash=b05e8b58baaad76da315491056fb98dd}{%
+        {{hash=b05e8b58baaad76da315491056fb98dd}{%
            family={{Di Mascio}},
            familyi={D\bibinitperiod},
            given={A.},
-           giveni={A\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=e120b87127fc7fefaff9d87948a57643}{%
+           giveni={A\bibinitperiod}}}%
+        {{hash=e120b87127fc7fefaff9d87948a57643}{%
            family={Antuono},
            familyi={A\bibinitperiod},
            given={M.},
-           giveni={M\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=72f6d6cdd32c1742c8e022c0422b8ce5}{%
+           giveni={M\bibinitperiod}}}%
+        {{hash=72f6d6cdd32c1742c8e022c0422b8ce5}{%
            family={Colagrossi},
            familyi={C\bibinitperiod},
            given={A.},
-           giveni={A\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=7eea05138c86a898c791a2beeb567fef}{%
+           giveni={A\bibinitperiod}}}%
+        {{hash=7eea05138c86a898c791a2beeb567fef}{%
            family={Marrone},
            familyi={M\bibinitperiod},
            given={S.},
-           giveni={S\bibinitperiod},
-           givenun=0}}%
+           giveni={S\bibinitperiod}}}%
       }
       \strng{namehash}{465c56cf3efc85be3f2c710361d1e875}
       \strng{fullhash}{9aa8d8bfb5cfc9c541b55348d441a910}
@@ -541,10 +494,9 @@
       \strng{authorbibnamehash}{465c56cf3efc85be3f2c710361d1e875}
       \strng{authornamehash}{465c56cf3efc85be3f2c710361d1e875}
       \strng{authorfullhash}{9aa8d8bfb5cfc9c541b55348d441a910}
+      \field{labelalpha}{Di +17}
       \field{sortinit}{D}
       \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{The Smoothed Particle Hydrodynamics (SPH) method, often used for the modelling of the Navier-Stokes equations by a meshless Lagrangian approach, is revisited from the point of view of Large Eddy Simulation (LES). To this aim, the LES filtering procedure is recast in a Lagrangian framework by defining a filter that moves with the positions of the fluid particles at the filtered velocity. It is shown that the SPH smoothing procedure can be reinterpreted as a sort of LES Lagrangian filtering, and that, besides the terms coming from the LES convolution, additional contributions (never accounted for in the SPH literature) appear in the equations when formulated in a filtered fashion. Appropriate closure formulas are derived for the additional terms and a preliminary numerical test is provided to show the main features of the proposed LES-SPH model.}
@@ -562,18 +514,16 @@
     \endentry
     \entry{drikakis2001spurious}{article}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=67d7db7053642cc1830e3b2630400eea}{%
+        {{hash=67d7db7053642cc1830e3b2630400eea}{%
            family={Drikakis},
            familyi={D\bibinitperiod},
            given={Dimitris},
-           giveni={D\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=ac870be4d590a1f1008633458cf641c5}{%
+           giveni={D\bibinitperiod}}}%
+        {{hash=ac870be4d590a1f1008633458cf641c5}{%
            family={Smolarkiewicz},
            familyi={S\bibinitperiod},
            given={Piotr\bibnamedelima K},
-           giveni={P\bibinitperiod\bibinitdelim K\bibinitperiod},
-           givenun=0}}%
+           giveni={P\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier}%
@@ -584,10 +534,9 @@
       \strng{authorbibnamehash}{c5c4a4e720660da608f572b4802afa1b}
       \strng{authornamehash}{c5c4a4e720660da608f572b4802afa1b}
       \strng{authorfullhash}{c5c4a4e720660da608f572b4802afa1b}
+      \field{labelalpha}{DS01}
       \field{sortinit}{D}
       \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Journal of Computational physics}
@@ -600,18 +549,16 @@
     \endentry
     \entry{frigo2005design}{article}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=26a5a1c098bdade790e2ee41c62dd36b}{%
+        {{hash=26a5a1c098bdade790e2ee41c62dd36b}{%
            family={Frigo},
            familyi={F\bibinitperiod},
            given={Matteo},
-           giveni={M\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=f271cef1e5ae0aff0d07deccf21fd368}{%
+           giveni={M\bibinitperiod}}}%
+        {{hash=f271cef1e5ae0aff0d07deccf21fd368}{%
            family={Johnson},
            familyi={J\bibinitperiod},
            given={Steven\bibnamedelima G},
-           giveni={S\bibinitperiod\bibinitdelim G\bibinitperiod},
-           givenun=0}}%
+           giveni={S\bibinitperiod\bibinitdelim G\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {IEEE}%
@@ -622,10 +569,9 @@
       \strng{authorbibnamehash}{534f6e9a353fb1ac07e7f8e33d067b91}
       \strng{authornamehash}{534f6e9a353fb1ac07e7f8e33d067b91}
       \strng{authorfullhash}{534f6e9a353fb1ac07e7f8e33d067b91}
+      \field{labelalpha}{FJ05}
       \field{sortinit}{F}
       \field{sortinithash}{2638baaa20439f1b5a8f80c6c08a13b4}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Proceedings of the IEEE}
@@ -638,12 +584,11 @@
     \endentry
     \entry{gossler2001moving}{report}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=6257315889bc47eaa09152b21d9f0ea7}{%
+        {{hash=6257315889bc47eaa09152b21d9f0ea7}{%
            family={GOSSLER},
            familyi={G\bibinitperiod},
            given={ALBERT\bibnamedelima A},
-           giveni={A\bibinitperiod\bibinitdelim A\bibinitperiod},
-           givenun=0}}%
+           giveni={A\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
       }
       \list{institution}{1}{%
         {Sandia National Lab.(SNL-NM), Albuquerque, NM (United States); Sandia~…}%
@@ -654,10 +599,9 @@
       \strng{authorbibnamehash}{6257315889bc47eaa09152b21d9f0ea7}
       \strng{authornamehash}{6257315889bc47eaa09152b21d9f0ea7}
       \strng{authorfullhash}{6257315889bc47eaa09152b21d9f0ea7}
+      \field{labelalpha}{GOS01}
       \field{sortinit}{G}
       \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Moving Least-Squares: a numerical differentiation method for irregularly spaced calculation points}
@@ -666,24 +610,21 @@
     \endentry
     \entry{Gotoh2004}{article}{}
       \name{author}{3}{}{%
-        {{un=2,uniquepart=given,hash=f98f1bda5cf82d31da069bbbd404d2aa}{%
+        {{hash=f98f1bda5cf82d31da069bbbd404d2aa}{%
            family={Gotoh},
            familyi={G\bibinitperiod},
            given={Hitoshi},
-           giveni={H\bibinitperiod},
-           givenun=2}}%
-        {{un=2,uniquepart=given,hash=4f99d32a6a71acc93a167e58bf3aae3c}{%
+           giveni={H\bibinitperiod}}}%
+        {{hash=4f99d32a6a71acc93a167e58bf3aae3c}{%
            family={Shao},
            familyi={S\bibinitperiod},
            given={Songdong},
-           giveni={S\bibinitperiod},
-           givenun=2}}%
-        {{un=0,uniquepart=base,hash=a995c6ba5f9065419d1596332fe2d161}{%
+           giveni={S\bibinitperiod}}}%
+        {{hash=a995c6ba5f9065419d1596332fe2d161}{%
            family={Memita},
            familyi={M\bibinitperiod},
            given={Tetsu},
-           giveni={T\bibinitperiod},
-           givenun=0}}%
+           giveni={T\bibinitperiod}}}%
       }
       \strng{namehash}{8ae32893d95e3b85ca5450ad3dbb785a}
       \strng{fullhash}{8ae32893d95e3b85ca5450ad3dbb785a}
@@ -691,10 +632,9 @@
       \strng{authorbibnamehash}{8ae32893d95e3b85ca5450ad3dbb785a}
       \strng{authornamehash}{8ae32893d95e3b85ca5450ad3dbb785a}
       \strng{authorfullhash}{8ae32893d95e3b85ca5450ad3dbb785a}
+      \field{labelalpha}{GSM04}
       \field{sortinit}{G}
       \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{The reflection and transmission characteristics of regular waves by a partially immersed curtain-type breakwater have been studied by the experiment and numerical model in the paper. Non-overtopping and overtopping of the breakwater by the incident wave were considered to compare different wave dissipation efficiencies. An incompressible Smoothed Particle Hydrodynamics (SPH) theory combined with a Large Eddy Simulation (LES) model was employed as the numerical tool. The SPH method is robust for tracking free surfaces without numerical diffusion and the LES model is capable of analyzing turbulence and eddy vortices during wave-breakwater interactions. A good agreement between computational and experimental wave profiles verifies the accuracy of the SPH-LES model. The computations also disclose that the wave energy dissipation is mainly attributed to the turbulence production and vortex shedding during the wave transmission and reflection processes.}
@@ -713,12 +653,11 @@
     \endentry
     \entry{haller2005objective}{article}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=60b58400f1ee801211a968ce965c35f6}{%
+        {{hash=60b58400f1ee801211a968ce965c35f6}{%
            family={Haller},
            familyi={H\bibinitperiod},
            given={George},
-           giveni={G\bibinitperiod},
-           givenun=0}}%
+           giveni={G\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Cambridge University Press}%
@@ -729,10 +668,9 @@
       \strng{authorbibnamehash}{60b58400f1ee801211a968ce965c35f6}
       \strng{authornamehash}{60b58400f1ee801211a968ce965c35f6}
       \strng{authorfullhash}{60b58400f1ee801211a968ce965c35f6}
+      \field{labelalpha}{Hal05}
       \field{sortinit}{H}
       \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Journal of fluid mechanics}
@@ -744,12 +682,11 @@
     \endentry
     \entry{hardy1982formulas}{article}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=d9c241105714dbff9064816e61d0ade6}{%
+        {{hash=d9c241105714dbff9064816e61d0ade6}{%
            family={Hardy},
            familyi={H\bibinitperiod},
            given={Robert\bibnamedelima J},
-           giveni={R\bibinitperiod\bibinitdelim J\bibinitperiod},
-           givenun=0}}%
+           giveni={R\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {American Institute of Physics}%
@@ -760,10 +697,9 @@
       \strng{authorbibnamehash}{d9c241105714dbff9064816e61d0ade6}
       \strng{authornamehash}{d9c241105714dbff9064816e61d0ade6}
       \strng{authorfullhash}{d9c241105714dbff9064816e61d0ade6}
+      \field{labelalpha}{Har82}
       \field{sortinit}{H}
       \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{The Journal of Chemical Physics}
@@ -776,24 +712,21 @@
     \endentry
     \entry{holm1998euler}{article}{}
       \name{author}{3}{}{%
-        {{un=0,uniquepart=base,hash=54da33665d182072fc9af545bafcc456}{%
+        {{hash=54da33665d182072fc9af545bafcc456}{%
            family={Holm},
            familyi={H\bibinitperiod},
            given={Darryl\bibnamedelima D},
-           giveni={D\bibinitperiod\bibinitdelim D\bibinitperiod},
-           givenun=0}}%
-        {{un=2,uniquepart=given,hash=ec03988d2dd9d918b4d7f236b192cc6a}{%
+           giveni={D\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+        {{hash=ec03988d2dd9d918b4d7f236b192cc6a}{%
            family={Marsden},
            familyi={M\bibinitperiod},
            given={Jerrold\bibnamedelima E},
-           giveni={J\bibinitperiod\bibinitdelim E\bibinitperiod},
-           givenun=2}}%
-        {{un=0,uniquepart=base,hash=7ff78e76bb4945ce84765cf37b43c723}{%
+           giveni={J\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
+        {{hash=7ff78e76bb4945ce84765cf37b43c723}{%
            family={Ratiu},
            familyi={R\bibinitperiod},
            given={Tudor\bibnamedelima S},
-           giveni={T\bibinitperiod\bibinitdelim S\bibinitperiod},
-           givenun=0}}%
+           giveni={T\bibinitperiod\bibinitdelim S\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {APS}%
@@ -804,10 +737,9 @@
       \strng{authorbibnamehash}{8d1f06635f7a6c3f902633bf4f23e402}
       \strng{authornamehash}{8d1f06635f7a6c3f902633bf4f23e402}
       \strng{authorfullhash}{8d1f06635f7a6c3f902633bf4f23e402}
+      \field{labelalpha}{HMR98}
       \field{sortinit}{H}
       \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Physical Review Letters}
@@ -820,18 +752,16 @@
     \endentry
     \entry{Hu2015}{article}{}
       \name{author}{2}{}{%
-        {{un=2,uniquepart=given,hash=0759110aae1a8818e2ece48dd7eaba54}{%
+        {{hash=0759110aae1a8818e2ece48dd7eaba54}{%
            family={Hu},
            familyi={H\bibinitperiod},
            given={X.\bibnamedelimi Y.},
-           giveni={X\bibinitperiod\bibinitdelim Y\bibinitperiod},
-           givenun=2}}%
-        {{un=2,uniquepart=given,hash=e77df22f865b327edf41941aa19f4ca1}{%
+           giveni={X\bibinitperiod\bibinitdelim Y\bibinitperiod}}}%
+        {{hash=e77df22f865b327edf41941aa19f4ca1}{%
            family={Adams},
            familyi={A\bibinitperiod},
            given={N.\bibnamedelimi A.},
-           giveni={N\bibinitperiod\bibinitdelim A\bibinitperiod},
-           givenun=2}}%
+           giveni={N\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
       }
       \strng{namehash}{30e01312abecc844a72031774a67455e}
       \strng{fullhash}{30e01312abecc844a72031774a67455e}
@@ -839,10 +769,10 @@
       \strng{authorbibnamehash}{30e01312abecc844a72031774a67455e}
       \strng{authornamehash}{30e01312abecc844a72031774a67455e}
       \strng{authorfullhash}{30e01312abecc844a72031774a67455e}
+      \field{extraname}{1}
+      \field{labelalpha}{HA15}
       \field{sortinit}{H}
       \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{A coarse-grained particle model for incompressible Navier-Stokes (NS) equation is proposed based on spatial filtering by utilizing smoothed particle hydrodynamics (SPH) approximations. This model is similar to our previous developed SPH discretization of NS equation (Hu X.Y. {\&} N.A. Adams, J. Comput. Physics, 227:264-278, 2007 and 228:2082-2091, 2009) and the Lagrangian averaged NS (LANS-$\alpha$) turbulence model. Other than using smoothing approaches, this model obtains particle transport velocity by imposing constant $\sigma$ which is associated with the particle density, and is called SPH-$\sigma$ model. Numerical tests on two-dimensional decay and forced turbulences with high Reynolds number suggest that the model is able to reproduce both the inverse energy cascade and direct enstrophy cascade of the kinetic energy spectrum, the time scaling of enstrophy decay and the non-Guassian probability density function (PDF) of particle acceleration.}
@@ -867,18 +797,16 @@
     \endentry
     \entry{hu2006multi}{article}{}
       \name{author}{2}{}{%
-        {{un=2,uniquepart=given,hash=c6eb881cdcb54b88b3e9df86976a99d1}{%
+        {{hash=c6eb881cdcb54b88b3e9df86976a99d1}{%
            family={Hu},
            familyi={H\bibinitperiod},
            given={Xiang\bibnamedelima Yu},
-           giveni={X\bibinitperiod\bibinitdelim Y\bibinitperiod},
-           givenun=2}}%
-        {{un=2,uniquepart=given,hash=54d047106356f745398344726a0428ec}{%
+           giveni={X\bibinitperiod\bibinitdelim Y\bibinitperiod}}}%
+        {{hash=54d047106356f745398344726a0428ec}{%
            family={Adams},
            familyi={A\bibinitperiod},
            given={Nikolaus\bibnamedelima A},
-           giveni={N\bibinitperiod\bibinitdelim A\bibinitperiod},
-           givenun=2}}%
+           giveni={N\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier}%
@@ -889,10 +817,10 @@
       \strng{authorbibnamehash}{cea6b15e2357207784e80819b805d36e}
       \strng{authornamehash}{cea6b15e2357207784e80819b805d36e}
       \strng{authorfullhash}{cea6b15e2357207784e80819b805d36e}
+      \field{extraname}{2}
+      \field{labelalpha}{HA06}
       \field{sortinit}{H}
       \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Journal of Computational Physics}
@@ -905,18 +833,16 @@
     \endentry
     \entry{hu2007incompressible}{article}{}
       \name{author}{2}{}{%
-        {{un=1,uniquepart=given,hash=0759110aae1a8818e2ece48dd7eaba54}{%
+        {{hash=0759110aae1a8818e2ece48dd7eaba54}{%
            family={Hu},
            familyi={H\bibinitperiod},
            given={XY},
-           giveni={X\bibinitperiod},
-           givenun=1}}%
-        {{un=2,uniquepart=given,hash=54d047106356f745398344726a0428ec}{%
+           giveni={X\bibinitperiod}}}%
+        {{hash=54d047106356f745398344726a0428ec}{%
            family={Adams},
            familyi={A\bibinitperiod},
            given={Nikolaus\bibnamedelima A},
-           giveni={N\bibinitperiod\bibinitdelim A\bibinitperiod},
-           givenun=2}}%
+           giveni={N\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier}%
@@ -927,10 +853,10 @@
       \strng{authorbibnamehash}{f8a6f3066c5f11bbfdabb8231a7698a6}
       \strng{authornamehash}{f8a6f3066c5f11bbfdabb8231a7698a6}
       \strng{authorfullhash}{f8a6f3066c5f11bbfdabb8231a7698a6}
+      \field{extraname}{3}
+      \field{labelalpha}{HA07}
       \field{sortinit}{H}
       \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Journal of computational physics}
@@ -943,24 +869,21 @@
     \endentry
     \entry{khayyer2008corrected}{article}{}
       \name{author}{3}{}{%
-        {{un=0,uniquepart=base,hash=88316222e97b180dd753bed1261be16e}{%
+        {{hash=88316222e97b180dd753bed1261be16e}{%
            family={Khayyer},
            familyi={K\bibinitperiod},
            given={A},
-           giveni={A\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=5da2e0b4fec9877e9dd3ff8ba684997a}{%
+           giveni={A\bibinitperiod}}}%
+        {{hash=5da2e0b4fec9877e9dd3ff8ba684997a}{%
            family={Gotoh},
            familyi={G\bibinitperiod},
            given={H},
-           giveni={H\bibinitperiod},
-           givenun=0}}%
-        {{un=2,uniquepart=given,hash=cefe6a273ca7537f31ce01fb5e7e2d5e}{%
+           giveni={H\bibinitperiod}}}%
+        {{hash=cefe6a273ca7537f31ce01fb5e7e2d5e}{%
            family={Shao},
            familyi={S\bibinitperiod},
            given={SD},
-           giveni={S\bibinitperiod},
-           givenun=2}}%
+           giveni={S\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier}%
@@ -971,10 +894,9 @@
       \strng{authorbibnamehash}{2e7eae3a56b89edece99f05d89befac7}
       \strng{authornamehash}{2e7eae3a56b89edece99f05d89befac7}
       \strng{authorfullhash}{2e7eae3a56b89edece99f05d89befac7}
+      \field{labelalpha}{KGS08}
       \field{sortinit}{K}
       \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Coastal Engineering}
@@ -987,18 +909,16 @@
     \endentry
     \entry{kubo2001large}{inproceedings}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=ffe7e4b1af3952d42e3a12d1c119ae63}{%
+        {{hash=ffe7e4b1af3952d42e3a12d1c119ae63}{%
            family={Kubo},
            familyi={K\bibinitperiod},
            given={Hidehito},
-           giveni={H\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=55666f3d18f6f09e7cf2a6f7da19a9d3}{%
+           giveni={H\bibinitperiod}}}%
+        {{hash=55666f3d18f6f09e7cf2a6f7da19a9d3}{%
            family={Sunamura},
            familyi={S\bibinitperiod},
            given={Tsuguo},
-           giveni={T\bibinitperiod},
-           givenun=0}}%
+           giveni={T\bibinitperiod}}}%
       }
       \strng{namehash}{687bf086b4d4283e35c650682e126d70}
       \strng{fullhash}{687bf086b4d4283e35c650682e126d70}
@@ -1006,10 +926,9 @@
       \strng{authorbibnamehash}{687bf086b4d4283e35c650682e126d70}
       \strng{authornamehash}{687bf086b4d4283e35c650682e126d70}
       \strng{authorfullhash}{687bf086b4d4283e35c650682e126d70}
+      \field{labelalpha}{KS01}
       \field{sortinit}{K}
       \field{sortinithash}{c02bf6bff1c488450c352b40f5d853ab}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{booktitle}{Coastal Dynamics' 01}
@@ -1020,18 +939,16 @@
     \endentry
     \entry{lancaster1981surfaces}{article}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=f8069af10f00083d34bfc39fd26ee7b3}{%
+        {{hash=f8069af10f00083d34bfc39fd26ee7b3}{%
            family={Lancaster},
            familyi={L\bibinitperiod},
            given={Peter},
-           giveni={P\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=ef80ce34365ca991d3a3e03dd6b9a513}{%
+           giveni={P\bibinitperiod}}}%
+        {{hash=ef80ce34365ca991d3a3e03dd6b9a513}{%
            family={Salkauskas},
            familyi={S\bibinitperiod},
            given={Kes},
-           giveni={K\bibinitperiod},
-           givenun=0}}%
+           giveni={K\bibinitperiod}}}%
       }
       \strng{namehash}{4dc521cb28607111eee10da1a116a99e}
       \strng{fullhash}{4dc521cb28607111eee10da1a116a99e}
@@ -1039,10 +956,9 @@
       \strng{authorbibnamehash}{4dc521cb28607111eee10da1a116a99e}
       \strng{authornamehash}{4dc521cb28607111eee10da1a116a99e}
       \strng{authorfullhash}{4dc521cb28607111eee10da1a116a99e}
+      \field{labelalpha}{LS81}
       \field{sortinit}{L}
       \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Mathematics of computation}
@@ -1055,24 +971,21 @@
     \endentry
     \entry{li2004wave}{article}{}
       \name{author}{3}{}{%
-        {{un=1,uniquepart=given,hash=a3c04d6b15c10149a8e0bf09271050b2}{%
+        {{hash=a3c04d6b15c10149a8e0bf09271050b2}{%
            family={Li},
            familyi={L\bibinitperiod},
            given={Tingqiu},
-           giveni={T\bibinitperiod},
-           givenun=1}}%
-        {{un=0,uniquepart=base,hash=181e0057d1794c088acf6b3a4c6c2e2c}{%
+           giveni={T\bibinitperiod}}}%
+        {{hash=181e0057d1794c088acf6b3a4c6c2e2c}{%
            family={Troch},
            familyi={T\bibinitperiod},
            given={Peter},
-           giveni={P\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=5a2c8584c3d1b8d5b944c24f992fc5be}{%
+           giveni={P\bibinitperiod}}}%
+        {{hash=5a2c8584c3d1b8d5b944c24f992fc5be}{%
            family={De\bibnamedelima Rouck},
            familyi={D\bibinitperiod\bibinitdelim R\bibinitperiod},
            given={Julien},
-           giveni={J\bibinitperiod},
-           givenun=0}}%
+           giveni={J\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier}%
@@ -1083,10 +996,9 @@
       \strng{authorbibnamehash}{79fd575ac72cdbdacb6991102dc99d18}
       \strng{authornamehash}{79fd575ac72cdbdacb6991102dc99d18}
       \strng{authorfullhash}{79fd575ac72cdbdacb6991102dc99d18}
+      \field{labelalpha}{LTD04}
       \field{sortinit}{L}
       \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Journal of Computational Physics}
@@ -1099,60 +1011,51 @@
     \endentry
     \entry{li2008public}{article}{}
       \name{author}{9}{}{%
-        {{un=1,uniquepart=given,hash=cf1f0547c288eff0857572dcc12516bb}{%
+        {{hash=cf1f0547c288eff0857572dcc12516bb}{%
            family={Li},
            familyi={L\bibinitperiod},
            given={Yi},
-           giveni={Y\bibinitperiod},
-           givenun=1}}%
-        {{un=0,uniquepart=base,hash=afa026d7d83cd858c802cc5c1866bfff}{%
+           giveni={Y\bibinitperiod}}}%
+        {{hash=afa026d7d83cd858c802cc5c1866bfff}{%
            family={Perlman},
            familyi={P\bibinitperiod},
            given={Eric},
-           giveni={E\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=bcd0273bba861912d486a4938c7627e2}{%
+           giveni={E\bibinitperiod}}}%
+        {{hash=bcd0273bba861912d486a4938c7627e2}{%
            family={Wan},
            familyi={W\bibinitperiod},
            given={Minping},
-           giveni={M\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=28869e55c4dee13b61518844a27290e3}{%
+           giveni={M\bibinitperiod}}}%
+        {{hash=28869e55c4dee13b61518844a27290e3}{%
            family={Yang},
            familyi={Y\bibinitperiod},
            given={Yunke},
-           giveni={Y\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=58a9ae49c9f5acec6314c7fe3760b938}{%
+           giveni={Y\bibinitperiod}}}%
+        {{hash=58a9ae49c9f5acec6314c7fe3760b938}{%
            family={Meneveau},
            familyi={M\bibinitperiod},
            given={Charles},
-           giveni={C\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=e4052db41a87cae56addb18d98501100}{%
+           giveni={C\bibinitperiod}}}%
+        {{hash=e4052db41a87cae56addb18d98501100}{%
            family={Burns},
            familyi={B\bibinitperiod},
            given={Randal},
-           giveni={R\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=2af8af9ddb27d1fbb827b4f9306ed10f}{%
+           giveni={R\bibinitperiod}}}%
+        {{hash=2af8af9ddb27d1fbb827b4f9306ed10f}{%
            family={Chen},
            familyi={C\bibinitperiod},
            given={Shiyi},
-           giveni={S\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=1c47715bd1910b45a34509d7d3736935}{%
+           giveni={S\bibinitperiod}}}%
+        {{hash=1c47715bd1910b45a34509d7d3736935}{%
            family={Szalay},
            familyi={S\bibinitperiod},
            given={Alexander},
-           giveni={A\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=4aed97fe991de4cb82bc3cf1c2d64abf}{%
+           giveni={A\bibinitperiod}}}%
+        {{hash=4aed97fe991de4cb82bc3cf1c2d64abf}{%
            family={Eyink},
            familyi={E\bibinitperiod},
            given={Gregory},
-           giveni={G\bibinitperiod},
-           givenun=0}}%
+           giveni={G\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Taylor \& Francis}%
@@ -1163,10 +1066,9 @@
       \strng{authorbibnamehash}{677a69f08dadda0d77c611bf2804acaa}
       \strng{authornamehash}{677a69f08dadda0d77c611bf2804acaa}
       \strng{authorfullhash}{8467ca9864a49ecee1b15d437619a81c}
+      \field{labelalpha}{Li+08}
       \field{sortinit}{L}
       \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Journal of Turbulence}
@@ -1178,42 +1080,36 @@
     \endentry
     \entry{Liu2019}{inproceedings}{}
       \name{author}{6}{}{%
-        {{un=1,uniquepart=given,hash=15a80aa3eb9db8fae7158651efed9e69}{%
+        {{hash=15a80aa3eb9db8fae7158651efed9e69}{%
            family={Liu},
            familyi={L\bibinitperiod},
            given={Sinuo},
-           giveni={S\bibinitperiod},
-           givenun=1}}%
-        {{un=0,uniquepart=base,hash=f642ce1ec35e27f6f876d4f99c4c6f4f}{%
+           giveni={S\bibinitperiod}}}%
+        {{hash=f642ce1ec35e27f6f876d4f99c4c6f4f}{%
            family={Wang},
            familyi={W\bibinitperiod},
            given={Xiaokun},
-           giveni={X\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=641f39b23be47c7d15bea4cb88fa9543}{%
+           giveni={X\bibinitperiod}}}%
+        {{hash=641f39b23be47c7d15bea4cb88fa9543}{%
            family={Ban},
            familyi={B\bibinitperiod},
            given={Xiaojuan},
-           giveni={X\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=3eaa0ee4a635b42a469c816ed50ac335}{%
+           giveni={X\bibinitperiod}}}%
+        {{hash=3eaa0ee4a635b42a469c816ed50ac335}{%
            family={Xu},
            familyi={X\bibinitperiod},
            given={Yanrui},
-           giveni={Y\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=ac696aa3d4b6ac91f76d77e438aadcbf}{%
+           giveni={Y\bibinitperiod}}}%
+        {{hash=ac696aa3d4b6ac91f76d77e438aadcbf}{%
            family={Zhou},
            familyi={Z\bibinitperiod},
            given={Jing},
-           giveni={J\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=fdfeb4b1b07696243cfb318e3e24984a}{%
+           giveni={J\bibinitperiod}}}%
+        {{hash=fdfeb4b1b07696243cfb318e3e24984a}{%
            family={Zhang},
            familyi={Z\bibinitperiod},
            given={Yalan},
-           giveni={Y\bibinitperiod},
-           givenun=0}}%
+           giveni={Y\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {IEEE}%
@@ -1224,10 +1120,9 @@
       \strng{authorbibnamehash}{6e45fc11f6a18db8adf3e6aedb9944d2}
       \strng{authornamehash}{6e45fc11f6a18db8adf3e6aedb9944d2}
       \strng{authorfullhash}{1523b488a7e2b9249ce0047c0bd45f20}
+      \field{labelalpha}{Liu+19}
       \field{sortinit}{L}
       \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{isbn}{978-1-7281-1377-7}
@@ -1249,18 +1144,16 @@
     \endentry
     \entry{Marsden2001}{article}{}
       \name{author}{2}{}{%
-        {{un=2,uniquepart=given,hash=a109e64d7dd72d3d3700a1a0216efd4b}{%
+        {{hash=a109e64d7dd72d3d3700a1a0216efd4b}{%
            family={Marsden},
            familyi={M\bibinitperiod},
            given={J.\bibnamedelimi E.},
-           giveni={J\bibinitperiod\bibinitdelim E\bibinitperiod},
-           givenun=2}}%
-        {{un=0,uniquepart=base,hash=4be76fe72bb64bc6bb5f4b541044f9b3}{%
+           giveni={J\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
+        {{hash=4be76fe72bb64bc6bb5f4b541044f9b3}{%
            family={Shkoller},
            familyi={S\bibinitperiod},
            given={S.},
-           giveni={S\bibinitperiod},
-           givenun=0}}%
+           giveni={S\bibinitperiod}}}%
       }
       \strng{namehash}{de03d2d03ea974ca7a8cff087339c773}
       \strng{fullhash}{de03d2d03ea974ca7a8cff087339c773}
@@ -1268,10 +1161,9 @@
       \strng{authorbibnamehash}{de03d2d03ea974ca7a8cff087339c773}
       \strng{authornamehash}{de03d2d03ea974ca7a8cff087339c773}
       \strng{authorfullhash}{de03d2d03ea974ca7a8cff087339c773}
+      \field{labelalpha}{MS01}
       \field{sortinit}{M}
       \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{We prove the global well-posedness and regularity of the (isotropic) Lagrangian averaged Navier-Stokes (LANS-$\alpha$) equations on a three-dimensional bounded domain with a smooth boundary with no-slip boundary conditions for initial data in the set {\{}u ∈ Hs ∩ H01 | Au = 0 on $\delta$$\Omega$, div u = 0{\}}, s ∈ [3, 5), where A is the Stokes operator. As with the Navier-Stokes equations, one has parabolic-type regularity; that is, the solutions instantaneously become space-time smooth when the forcing is smooth (or zero). The equations are an ensemble average of the Navier-Stokes equations over initial data in an $\alpha$-radius phase-space ball, and converge to the Navier-Stokes equations as $\alpha$ → 0. We also show that classical solutions of the LANS-$\alpha$ equations converge almost all in Hs for s ∈ (2.5, 3), to solutions of the inviscid equations (v = 0), called the Lagrangian averaged Euler (LAE-$\alpha$) equations, even on domains with boundary, for time-intervals governed by the time of existence of solutions of the LAE-$\alpha$ equations.}
@@ -1293,18 +1185,16 @@
     \endentry
     \entry{minion1997performance}{article}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=54b5958334469e46f39808e2a3d7e3a5}{%
+        {{hash=54b5958334469e46f39808e2a3d7e3a5}{%
            family={Minion},
            familyi={M\bibinitperiod},
            given={Michael\bibnamedelima L},
-           giveni={M\bibinitperiod\bibinitdelim L\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=c8e5e49ac2907aad172e4a9412e593e3}{%
+           giveni={M\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=c8e5e49ac2907aad172e4a9412e593e3}{%
            family={Brown},
            familyi={B\bibinitperiod},
            given={David\bibnamedelima L},
-           giveni={D\bibinitperiod\bibinitdelim L\bibinitperiod},
-           givenun=0}}%
+           giveni={D\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier}%
@@ -1315,10 +1205,9 @@
       \strng{authorbibnamehash}{d33f0cb4c1ee25df17b8961efdf3c67a}
       \strng{authornamehash}{d33f0cb4c1ee25df17b8961efdf3c67a}
       \strng{authorfullhash}{d33f0cb4c1ee25df17b8961efdf3c67a}
+      \field{labelalpha}{MB97}
       \field{sortinit}{M}
       \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Journal of Computational Physics}
@@ -1331,30 +1220,26 @@
     \endentry
     \entry{Mohseni2003}{article}{}
       \name{author}{4}{}{%
-        {{un=0,uniquepart=base,hash=9d9e22a8870a29f641f30556652588e5}{%
+        {{hash=9d9e22a8870a29f641f30556652588e5}{%
            family={Mohseni},
            familyi={M\bibinitperiod},
            given={Kamran},
-           giveni={K\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=19056edff4db78debf6f97209e9d6038}{%
+           giveni={K\bibinitperiod}}}%
+        {{hash=19056edff4db78debf6f97209e9d6038}{%
            family={Kosović},
            familyi={K\bibinitperiod},
            given={Branko},
-           giveni={B\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=51614fc0849d7f794aca19ce8ef33482}{%
+           giveni={B\bibinitperiod}}}%
+        {{hash=51614fc0849d7f794aca19ce8ef33482}{%
            family={Shkoller},
            familyi={S\bibinitperiod},
            given={Steve},
-           giveni={S\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=ec03988d2dd9d918b4d7f236b192cc6a}{%
+           giveni={S\bibinitperiod}}}%
+        {{hash=ec03988d2dd9d918b4d7f236b192cc6a}{%
            family={Marsden},
            familyi={M\bibinitperiod},
            given={Jerrold\bibnamedelima E.},
-           giveni={J\bibinitperiod\bibinitdelim E\bibinitperiod},
-           givenun=0}}%
+           giveni={J\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
       }
       \strng{namehash}{e7a98bfac9e7924e6076c6be8bf7dce2}
       \strng{fullhash}{cac37ad16ad36557126c97b4a3f6517e}
@@ -1362,10 +1247,9 @@
       \strng{authorbibnamehash}{e7a98bfac9e7924e6076c6be8bf7dce2}
       \strng{authornamehash}{e7a98bfac9e7924e6076c6be8bf7dce2}
       \strng{authorfullhash}{cac37ad16ad36557126c97b4a3f6517e}
+      \field{labelalpha}{Moh+03}
       \field{sortinit}{M}
       \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{Capabilities for turbulence calculations of the Lagrangian averaged Navier-Stokes (LANS-$\alpha$) equations are investigated in decaying and statistically stationary three-dimensional homogeneous and isotropic turbulence. Results of the LANS-$\alpha$ computations are analyzed by comparison with direct numerical simulation (DNS) data and large eddy simulations. Two different decaying turbulence cases at moderate and high Reynolds numbers are studied. In statistically stationary turbulence two different forcing techniques are implemented to model the energetics of the energy-containing scales. The resolved flows are examined by comparison of the energy spectra of the LANS-$\alpha$ with the DNS computations. The energy transfer and the capability of the LANS-$\alpha$ equations in representing the backscatter of energy is analyzed by comparison with the DNS data. Furthermore, the correlation between the vorticity and the eigenvectors of the rate of the resolved strain tensor is studied. We find that the LANS-$\alpha$ equations capture the gross features of the flow, while the wave activity below the scale $\alpha$ is filtered by a nonlinear redistribution of energy. {©} 2003 American Institute of Physics.}
@@ -1386,12 +1270,11 @@
     \endentry
     \entry{Monaghan1992}{article}{}
       \name{author}{1}{}{%
-        {{un=2,uniquepart=given,hash=441fe88aa55fb5b33be74d8641d0d091}{%
+        {{hash=441fe88aa55fb5b33be74d8641d0d091}{%
            family={Monaghan},
            familyi={M\bibinitperiod},
            given={J.\bibnamedelimi J.},
-           giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod},
-           givenun=2}}%
+           giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
       }
       \strng{namehash}{441fe88aa55fb5b33be74d8641d0d091}
       \strng{fullhash}{441fe88aa55fb5b33be74d8641d0d091}
@@ -1400,10 +1283,9 @@
       \strng{authornamehash}{441fe88aa55fb5b33be74d8641d0d091}
       \strng{authorfullhash}{441fe88aa55fb5b33be74d8641d0d091}
       \field{extraname}{1}
+      \field{labelalpha}{Mon92}
       \field{sortinit}{M}
       \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{Smoothed particle hydrodynamics (SPH) was invented to simulate nonaxisymmetric phenomena in astrophysics (Lucy 1977, Gingold {\&} Monaghan 1977). We wanted a method that was easy to work with and could give reasonable accuracy. The SPH method satisfied these require- ments. As a bonus we found the SPH was rugged, gave sensible answers in difficult situations, and could be extended to complicated physics with- out much trouble. The SPH method is a particle method. Unlike the particle in cell method (PIC) (Harlow 1957, 1974, 1988), SPH does not need a grid to calculate spatial derivatives. Instead, they are found by analytical differentiation of interpolation formulae. The equations of momentum and energy become sets of ordinary differential equations which are easy to understand in mechanical and thermodynamical terms. For example, the pressure gradi- ent becomes a force between pairs of particles. The astrophysicist can then use intuition in a way which is difficult with the original partial differential equations. This intuition, coupled with detailed analysis, has allowed SPH to be extended to a wide variety of astrophysical problems. Although very accurate finite-difference methods exist-and these are better than SPH for some problems-they cannot handle complex physics in three dimensions with the same ease. Various aspects of SPH have been reviewed by Monaghan (1985, 1988a) and Benz (1988, 1989).}
@@ -1429,12 +1311,11 @@
     \endentry
     \entry{Monaghan2002}{article}{}
       \name{author}{1}{}{%
-        {{un=2,uniquepart=given,hash=441fe88aa55fb5b33be74d8641d0d091}{%
+        {{hash=441fe88aa55fb5b33be74d8641d0d091}{%
            family={Monaghan},
            familyi={M\bibinitperiod},
            given={J.\bibnamedelimi J.},
-           giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod},
-           givenun=2}}%
+           giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
       }
       \strng{namehash}{441fe88aa55fb5b33be74d8641d0d091}
       \strng{fullhash}{441fe88aa55fb5b33be74d8641d0d091}
@@ -1443,10 +1324,9 @@
       \strng{authornamehash}{441fe88aa55fb5b33be74d8641d0d091}
       \strng{authorfullhash}{441fe88aa55fb5b33be74d8641d0d091}
       \field{extraname}{2}
+      \field{labelalpha}{Mon02}
       \field{sortinit}{M}
       \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{In this paper an SPH version of the alpha turbulence model devised by Holm and his colleagues is formulated for compressible flow with a resolution that varies in space and time. The alpha model involves two velocity fields. One velocity field is obtained from the momentum equation, the other by averaging this velocity field as in the version of SPH called XSPH. The particles (fluid elements) are moved with the averaged velocity. In analogy to the continuum alpha model we obtain a particle Lagrangian from which the SPH alpha equations can be derived. The system satisfies a discrete Kelvin circulation theorem identical to that obtained with no velocity averaging. In addition, the energy, linear and angular momentum are conserved. We show that the continuum equivalent of the SPH equations are identical to the continuum alpha model, and we conjecture that they will have the same desirable features of the continuum modelincluding the reduction of energy in the high wave number modes even when the dissipation is zero. Regardless of issues concerning turbulence modelling, the SPH alpha model is a powerful extension of the XSPH algorithm which reduces disorder at short length scales and retains the constants of the motion. The SPH alpha model is simple to implement.}
@@ -1469,12 +1349,11 @@
     \endentry
     \entry{Monaghan2011}{article}{}
       \name{author}{1}{}{%
-        {{un=2,uniquepart=given,hash=441fe88aa55fb5b33be74d8641d0d091}{%
+        {{hash=441fe88aa55fb5b33be74d8641d0d091}{%
            family={Monaghan},
            familyi={M\bibinitperiod},
            given={J.\bibnamedelimi J.},
-           giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod},
-           givenun=2}}%
+           giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier Masson SAS.}%
@@ -1486,10 +1365,9 @@
       \strng{authornamehash}{441fe88aa55fb5b33be74d8641d0d091}
       \strng{authorfullhash}{441fe88aa55fb5b33be74d8641d0d091}
       \field{extraname}{3}
+      \field{labelalpha}{Mon11}
       \field{sortinit}{M}
       \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{issn}{09977546}
@@ -1513,12 +1391,11 @@
     \endentry
     \entry{Monaghan2017}{article}{}
       \name{author}{1}{}{%
-        {{un=2,uniquepart=given,hash=441fe88aa55fb5b33be74d8641d0d091}{%
+        {{hash=441fe88aa55fb5b33be74d8641d0d091}{%
            family={Monaghan},
            familyi={M\bibinitperiod},
            given={J.\bibnamedelimi J.},
-           giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod},
-           givenun=2}}%
+           giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier Masson SAS.}%
@@ -1530,10 +1407,9 @@
       \strng{authornamehash}{441fe88aa55fb5b33be74d8641d0d091}
       \strng{authorfullhash}{441fe88aa55fb5b33be74d8641d0d091}
       \field{extraname}{4}
+      \field{labelalpha}{Mon17}
       \field{sortinit}{M}
       \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{The aim of this paper is to describe how effectively a turbulence model for the particle method SPH (Monaghan 2011 denoted by SPH-$\epsilon$) simulates 2D turbulence driven by a moving cylinder inside a square box with no-slip walls. The model makes few assumptions, conserves linear and angular momentum, satisfies a discrete version of Kelvin's circulation theorem and is computationally efficient. Furthermore, the results from the model for decaying two dimensional turbulence are in good agreement with the experimental and computational results. The SPH turbulence model is based on a Lagrangian similar to that used for the Lagrangian averaged Navier–Stokes (LANS) turbulence model, but with a different smoothed velocity. The smoothed velocity preserves the shape of the spectrum of the unsmoothed velocity for short length scales, but reduces its magnitude by an amount which depends on a parameter $\epsilon$, where 0≤$\epsilon$≤1. When $\epsilon$=0, there is no smoothing, and when $\epsilon$=1 the smoothing is a maximum. We compare calculations with resolution given by the Reynolds length ℓR and those using SPH-$\epsilon$ with $\epsilon$=0.8, and a coarser resolution 2ℓR. The second and fourth order velocity correlation functions, the energy spectrum and the mixing calculated using SPH-$\epsilon$ and the coarse resolution 2ℓR, are in good agreement with those using the resolution ℓR, but requires 8 times less work to integrate to the same time. The mixing induced by the turbulence is in good agreement with high resolution calculations.}
@@ -1556,12 +1432,11 @@
     \endentry
     \entry{monaghan1989problem}{article}{}
       \name{author}{1}{}{%
-        {{un=1,uniquepart=given,hash=441fe88aa55fb5b33be74d8641d0d091}{%
+        {{hash=441fe88aa55fb5b33be74d8641d0d091}{%
            family={Monaghan},
            familyi={M\bibinitperiod},
            given={JJ},
-           giveni={J\bibinitperiod},
-           givenun=1}}%
+           giveni={J\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Academic Press Professional, Inc. San Diego, CA, USA}%
@@ -1572,10 +1447,10 @@
       \strng{authorbibnamehash}{441fe88aa55fb5b33be74d8641d0d091}
       \strng{authornamehash}{441fe88aa55fb5b33be74d8641d0d091}
       \strng{authorfullhash}{441fe88aa55fb5b33be74d8641d0d091}
+      \field{extraname}{5}
+      \field{labelalpha}{Mon89}
       \field{sortinit}{M}
       \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Journal of Computational physics}
@@ -1588,24 +1463,21 @@
     \endentry
     \entry{morris1997modeling}{article}{}
       \name{author}{3}{}{%
-        {{un=0,uniquepart=base,hash=f0401cbee521c27d9be2ec630aab0e82}{%
+        {{hash=f0401cbee521c27d9be2ec630aab0e82}{%
            family={Morris},
            familyi={M\bibinitperiod},
            given={Joseph\bibnamedelima P},
-           giveni={J\bibinitperiod\bibinitdelim P\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=0d5e31d3c98f67748524ede4a0d54536}{%
+           giveni={J\bibinitperiod\bibinitdelim P\bibinitperiod}}}%
+        {{hash=0d5e31d3c98f67748524ede4a0d54536}{%
            family={Fox},
            familyi={F\bibinitperiod},
            given={Patrick\bibnamedelima J},
-           giveni={P\bibinitperiod\bibinitdelim J\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=017c8fdccfa4d7fe6b3cf42ea7acad7a}{%
+           giveni={P\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+        {{hash=017c8fdccfa4d7fe6b3cf42ea7acad7a}{%
            family={Zhu},
            familyi={Z\bibinitperiod},
            given={Yi},
-           giveni={Y\bibinitperiod},
-           givenun=0}}%
+           giveni={Y\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier}%
@@ -1616,10 +1488,9 @@
       \strng{authorbibnamehash}{3e1aecda3ea4f3b17c8432e4b09c4c54}
       \strng{authornamehash}{3e1aecda3ea4f3b17c8432e4b09c4c54}
       \strng{authorfullhash}{3e1aecda3ea4f3b17c8432e4b09c4c54}
+      \field{labelalpha}{MFZ97}
       \field{sortinit}{M}
       \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Journal of computational physics}
@@ -1632,36 +1503,31 @@
     \endentry
     \entry{nicoud2011using}{article}{}
       \name{author}{5}{}{%
-        {{un=0,uniquepart=base,hash=d3a7c219cb3df768ca8bf1c1db19107e}{%
+        {{hash=d3a7c219cb3df768ca8bf1c1db19107e}{%
            family={Nicoud},
            familyi={N\bibinitperiod},
            given={Franck},
-           giveni={F\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=d9e8bc5ab89991c5b321d4620f75d2dc}{%
+           giveni={F\bibinitperiod}}}%
+        {{hash=d9e8bc5ab89991c5b321d4620f75d2dc}{%
            family={Toda},
            familyi={T\bibinitperiod},
            given={Hubert\bibnamedelima Baya},
-           giveni={H\bibinitperiod\bibinitdelim B\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=741856746abaa5a40f6a9eb9fb23c8c9}{%
+           giveni={H\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+        {{hash=741856746abaa5a40f6a9eb9fb23c8c9}{%
            family={Cabrit},
            familyi={C\bibinitperiod},
            given={Olivier},
-           giveni={O\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=deb6d4231b6bb0beb2b54dfbdab68871}{%
+           giveni={O\bibinitperiod}}}%
+        {{hash=deb6d4231b6bb0beb2b54dfbdab68871}{%
            family={Bose},
            familyi={B\bibinitperiod},
            given={Sanjeeb},
-           giveni={S\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=4065db6f66ee07365dbb9f3eb964f207}{%
+           giveni={S\bibinitperiod}}}%
+        {{hash=4065db6f66ee07365dbb9f3eb964f207}{%
            family={Lee},
            familyi={L\bibinitperiod},
            given={Jungil},
-           giveni={J\bibinitperiod},
-           givenun=0}}%
+           giveni={J\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {American Institute of Physics}%
@@ -1672,10 +1538,9 @@
       \strng{authorbibnamehash}{e529f67212e7d26285a8474939a684a1}
       \strng{authornamehash}{e529f67212e7d26285a8474939a684a1}
       \strng{authorfullhash}{6d34c87e543094ed300e2ff125cd5ee1}
+      \field{labelalpha}{Nic+11}
       \field{sortinit}{N}
       \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Physics of fluids}
@@ -1688,18 +1553,16 @@
     \endentry
     \entry{Obeidat2018}{article}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=c8ac04c4e5f2c0ce7264aa3b2f7c9d2d}{%
+        {{hash=c8ac04c4e5f2c0ce7264aa3b2f7c9d2d}{%
            family={Obeidat},
            familyi={O\bibinitperiod},
            given={Anas},
-           giveni={A\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=a6105a6431a5d62dc6519e53d78a0c09}{%
+           giveni={A\bibinitperiod}}}%
+        {{hash=a6105a6431a5d62dc6519e53d78a0c09}{%
            family={Bordas},
            familyi={B\bibinitperiod},
            given={Stéphane\bibnamedelima P.A.},
-           giveni={S\bibinitperiod\bibinitdelim P\bibinitperiod},
-           givenun=0}}%
+           giveni={S\bibinitperiod\bibinitdelim P\bibinitperiod}}}%
       }
       \strng{namehash}{6e62f40452f058d17f92a117dc4d9a10}
       \strng{fullhash}{6e62f40452f058d17f92a117dc4d9a10}
@@ -1707,10 +1570,9 @@
       \strng{authorbibnamehash}{6e62f40452f058d17f92a117dc4d9a10}
       \strng{authornamehash}{6e62f40452f058d17f92a117dc4d9a10}
       \strng{authorfullhash}{6e62f40452f058d17f92a117dc4d9a10}
+      \field{labelalpha}{OB18}
       \field{sortinit}{O}
       \field{sortinithash}{2cd7140a07aea5341f9e2771efe90aae}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{We present a remeshed particle-mesh method for the simulation of three-dimensional compressible turbulent flow. The method is related to the meshfree smoothed particle hydrodynamics method, but the present method introduces a mesh for efficient calculation of the pressure gradient, and laminar and turbulent diffusion. In addition, the mesh is used to remesh (reorganise uniformly) the particles to ensure a regular particle distribution and convergence of the method. The accuracy of the presented methodology is tested for a number of benchmark problems involving two- and three-dimensional Taylor-Green flow, thin double shear layer, and three-dimensional isotropic turbulence. Two models were implemented, direct numerical simulations, and Smagorinsky model. Taking advantage of the Lagrangian advection, and the finite difference efficiency, the method is capable of providing quality simulations while maintaining its robustness and versatility.}
@@ -1729,30 +1591,26 @@
     \endentry
     \entry{Okraschevski2022}{article}{}
       \name{author}{4}{}{%
-        {{un=0,uniquepart=base,hash=5c618f9db506feb147f2ab56eb37d1f4}{%
+        {{hash=5c618f9db506feb147f2ab56eb37d1f4}{%
            family={Okraschevski},
            familyi={O\bibinitperiod},
            given={Max},
-           giveni={M\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=e94f3900c6327e7775bd811c41468136}{%
+           giveni={M\bibinitperiod}}}%
+        {{hash=e94f3900c6327e7775bd811c41468136}{%
            family={Bürkle},
            familyi={B\bibinitperiod},
            given={Niklas},
-           giveni={N\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=7d1a14ef4311ed96a24399c579c84ac4}{%
+           giveni={N\bibinitperiod}}}%
+        {{hash=7d1a14ef4311ed96a24399c579c84ac4}{%
            family={Koch},
            familyi={K\bibinitperiod},
            given={Rainer},
-           giveni={R\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=15d8640a348129ccb668ee673aa2cc28}{%
+           giveni={R\bibinitperiod}}}%
+        {{hash=15d8640a348129ccb668ee673aa2cc28}{%
            family={Bauer},
            familyi={B\bibinitperiod},
            given={Hans-Jörg},
-           giveni={H\bibinithyphendelim J\bibinitperiod},
-           givenun=0}}%
+           giveni={H\bibinithyphendelim J\bibinitperiod}}}%
       }
       \strng{namehash}{3689551363bfda1572ea555aac12418f}
       \strng{fullhash}{eba0023515c80722eb754259283509ef}
@@ -1760,10 +1618,9 @@
       \strng{authorbibnamehash}{3689551363bfda1572ea555aac12418f}
       \strng{authornamehash}{3689551363bfda1572ea555aac12418f}
       \strng{authorfullhash}{eba0023515c80722eb754259283509ef}
+      \field{labelalpha}{Okr+22}
       \field{sortinit}{O}
       \field{sortinithash}{2cd7140a07aea5341f9e2771efe90aae}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{In this work we will identify a novel relation between Smoothed Particle Hydrodynamics (SPH) and explicit Large Eddy Simulation (LES) using a coarse-graining method from Non-Equilibrium Molecular Dynamics (NEMD). While the current literature points at the conclusion that characteristic SPH issues become restrictive for subsonic turbulent flows, we see the potential to mitigate these SPH issues by explicit subfilter stress (SFS) modelling. We verify our theory by various simulations of homogeneous, isotropic turbulence (HIT) at $Re=10^4$ and compare the results to a Direct Numerical Simulation (DNS) reported by Dairay et al. (2017). Although the simulations substantiate our theory, we see another issue arising, which is conceptually rooted in the particle itself, termed as Particle Duality. Finally, we conclude our work by acknowledging SPH as coarse-graining method for turbulent flows, highlighting its capabilities and limitations.}
@@ -1778,12 +1635,11 @@
     \endentry
     \entry{panizzo2004physical}{thesis}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=ed4ff864c766e2bc35b9c150e95204ae}{%
+        {{hash=ed4ff864c766e2bc35b9c150e95204ae}{%
            family={Panizzo},
            familyi={P\bibinitperiod},
            given={Andrea},
-           giveni={A\bibinitperiod},
-           givenun=0}}%
+           giveni={A\bibinitperiod}}}%
       }
       \list{institution}{1}{%
         {PhD Thesis, Universita Degli Studi di L’Aquila, Italy}%
@@ -1794,10 +1650,9 @@
       \strng{authorbibnamehash}{ed4ff864c766e2bc35b9c150e95204ae}
       \strng{authornamehash}{ed4ff864c766e2bc35b9c150e95204ae}
       \strng{authorfullhash}{ed4ff864c766e2bc35b9c150e95204ae}
+      \field{labelalpha}{Pan04}
       \field{sortinit}{P}
       \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Physical and numerical modelling of subaerial landslide generated waves}
@@ -1806,36 +1661,31 @@
     \endentry
     \entry{pereira2021modeling}{article}{}
       \name{author}{5}{}{%
-        {{un=0,uniquepart=base,hash=084ca3c9ccf13bdd405928c2211d727e}{%
+        {{hash=084ca3c9ccf13bdd405928c2211d727e}{%
            family={Pereira},
            familyi={P\bibinitperiod},
            given={Filipe\bibnamedelima S},
-           giveni={F\bibinitperiod\bibinitdelim S\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=e6f5c2f750313b8292f7dd5f0f78294f}{%
+           giveni={F\bibinitperiod\bibinitdelim S\bibinitperiod}}}%
+        {{hash=e6f5c2f750313b8292f7dd5f0f78294f}{%
            family={Grinstein},
            familyi={G\bibinitperiod},
            given={FF},
-           giveni={F\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=2df539644a86c5d645b56edba7e768f3}{%
+           giveni={F\bibinitperiod}}}%
+        {{hash=2df539644a86c5d645b56edba7e768f3}{%
            family={Israel},
            familyi={I\bibinitperiod},
            given={Daniel\bibnamedelima M},
-           giveni={D\bibinitperiod\bibinitdelim M\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=90ea96906ed760514aae20948bbb47be}{%
+           giveni={D\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+        {{hash=90ea96906ed760514aae20948bbb47be}{%
            family={Rauenzahn},
            familyi={R\bibinitperiod},
            given={Rick},
-           giveni={R\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=cb4491dd61d10d000b88faa4fff3ae88}{%
+           giveni={R\bibinitperiod}}}%
+        {{hash=cb4491dd61d10d000b88faa4fff3ae88}{%
            family={Girimaji},
            familyi={G\bibinitperiod},
            given={Sharath\bibnamedelima S},
-           giveni={S\bibinitperiod\bibinitdelim S\bibinitperiod},
-           givenun=0}}%
+           giveni={S\bibinitperiod\bibinitdelim S\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {APS}%
@@ -1846,10 +1696,9 @@
       \strng{authorbibnamehash}{4751107c03e270ad1dccd5228cebbb9e}
       \strng{authornamehash}{4751107c03e270ad1dccd5228cebbb9e}
       \strng{authorfullhash}{aaedae7029504526e3c94c4832890134}
+      \field{labelalpha}{Per+21}
       \field{sortinit}{P}
       \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Physical Review Fluids}
@@ -1862,12 +1711,11 @@
     \endentry
     \entry{pope1994lagrangi}{article}{}
       \name{author}{1}{}{%
-        {{un=1,uniquepart=given,hash=0df85bf2c259df7fdc0a9a5bccfc8fd1}{%
+        {{hash=0df85bf2c259df7fdc0a9a5bccfc8fd1}{%
            family={Pope},
            familyi={P\bibinitperiod},
            given={SB},
-           giveni={S\bibinitperiod},
-           givenun=1}}%
+           giveni={S\bibinitperiod}}}%
       }
       \strng{namehash}{0df85bf2c259df7fdc0a9a5bccfc8fd1}
       \strng{fullhash}{0df85bf2c259df7fdc0a9a5bccfc8fd1}
@@ -1875,10 +1723,9 @@
       \strng{authorbibnamehash}{0df85bf2c259df7fdc0a9a5bccfc8fd1}
       \strng{authornamehash}{0df85bf2c259df7fdc0a9a5bccfc8fd1}
       \strng{authorfullhash}{0df85bf2c259df7fdc0a9a5bccfc8fd1}
+      \field{labelalpha}{Pop94}
       \field{sortinit}{P}
       \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Annu. Rev. Fluid Mech}
@@ -1890,18 +1737,16 @@
     \endentry
     \entry{pope2000turbulent}{book}{}
       \name{author}{2}{}{%
-        {{un=2,uniquepart=given,hash=43d7dcd70771120215c9bf615a5fa52f}{%
+        {{hash=43d7dcd70771120215c9bf615a5fa52f}{%
            family={Pope},
            familyi={P\bibinitperiod},
            given={Stephen\bibnamedelima B},
-           giveni={S\bibinitperiod\bibinitdelim B\bibinitperiod},
-           givenun=2}}%
-        {{un=2,uniquepart=given,hash=43d7dcd70771120215c9bf615a5fa52f}{%
+           giveni={S\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+        {{hash=43d7dcd70771120215c9bf615a5fa52f}{%
            family={Pope},
            familyi={P\bibinitperiod},
            given={Stephen\bibnamedelima B},
-           giveni={S\bibinitperiod\bibinitdelim B\bibinitperiod},
-           givenun=2}}%
+           giveni={S\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Cambridge university press}%
@@ -1912,10 +1757,9 @@
       \strng{authorbibnamehash}{2485b30bf61e35d403a45ed31d3cf566}
       \strng{authornamehash}{2485b30bf61e35d403a45ed31d3cf566}
       \strng{authorfullhash}{2485b30bf61e35d403a45ed31d3cf566}
+      \field{labelalpha}{PP00}
       \field{sortinit}{P}
       \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{Turbulent flows}
@@ -1923,18 +1767,16 @@
     \endentry
     \entry{Ramachandran2019}{article}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=b256959149623f677ad5b3c134dbaea4}{%
+        {{hash=b256959149623f677ad5b3c134dbaea4}{%
            family={Ramachandran},
            familyi={R\bibinitperiod},
            given={Prabhu},
-           giveni={P\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=74d9f9361c0121b8dbed8c33273ecba8}{%
+           giveni={P\bibinitperiod}}}%
+        {{hash=74d9f9361c0121b8dbed8c33273ecba8}{%
            family={Puri},
            familyi={P\bibinitperiod},
            given={Kunal},
-           giveni={K\bibinitperiod},
-           givenun=0}}%
+           giveni={K\bibinitperiod}}}%
       }
       \strng{namehash}{e1053a612e6a2ef9d3c01022871a93ac}
       \strng{fullhash}{e1053a612e6a2ef9d3c01022871a93ac}
@@ -1942,10 +1784,9 @@
       \strng{authorbibnamehash}{e1053a612e6a2ef9d3c01022871a93ac}
       \strng{authornamehash}{e1053a612e6a2ef9d3c01022871a93ac}
       \strng{authorfullhash}{e1053a612e6a2ef9d3c01022871a93ac}
+      \field{labelalpha}{RP19}
       \field{sortinit}{R}
       \field{sortinithash}{5e1c39a9d46ffb6bebd8f801023a9486}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{In this paper, the Entropically Damped Artificial Compressibility (EDAC) formulation of Clausen (2013) is used in the context of the Smoothed Particle Hydrodynamics (SPH) method for the simulation of incompressible fluids. Traditionally, weakly-compressible SPH (WCSPH) formulations have employed artificial compressiblity to simulate incompressible fluids. EDAC is an alternative to the artificial compressiblity scheme wherein a pressure evolution equation is solved in lieu of coupling the fluid density to the pressure by an equation of state. The method is explicit and is easy to incorporate into existing SPH solvers using the WCSPH formulation. This is demonstrated by coupling the EDAC scheme with the recently proposed Transport Velocity Formulation (TVF) of Adami et al. (2013). The method works for both internal flows and for flows with a free surface. Several benchmark problems are considered to evaluate the proposed scheme and it is found that the EDAC scheme gives results that are as good or sometimes better than those produced by the TVF or standard WCSPH. The scheme is robust and produces smooth pressure distributions and does not require the use of an artificial viscosity in the momentum equation although using some artificial viscosity is beneficial.}
@@ -1977,12 +1818,11 @@
     \endentry
     \entry{rennehan2021mixing}{article}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=ce429480fafe03bc493a1d47c908e002}{%
+        {{hash=ce429480fafe03bc493a1d47c908e002}{%
            family={Rennehan},
            familyi={R\bibinitperiod},
            given={Douglas},
-           giveni={D\bibinitperiod},
-           givenun=0}}%
+           giveni={D\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Oxford University Press}%
@@ -1993,10 +1833,9 @@
       \strng{authorbibnamehash}{ce429480fafe03bc493a1d47c908e002}
       \strng{authornamehash}{ce429480fafe03bc493a1d47c908e002}
       \strng{authorfullhash}{ce429480fafe03bc493a1d47c908e002}
+      \field{labelalpha}{Ren21}
       \field{sortinit}{R}
       \field{sortinithash}{5e1c39a9d46ffb6bebd8f801023a9486}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Monthly Notices of the Royal Astronomical Society}
@@ -2009,18 +1848,16 @@
     \endentry
     \entry{ROGERS2005}{inproceedings}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=da66284ae91f46567517ecb6dca3b1fe}{%
+        {{hash=da66284ae91f46567517ecb6dca3b1fe}{%
            family={ROGERS},
            familyi={R\bibinitperiod},
            given={BENEDICT\bibnamedelima D.},
-           giveni={B\bibinitperiod\bibinitdelim D\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=e785da359a583c2bae606b830123ff67}{%
+           giveni={B\bibinitperiod\bibinitdelim D\bibinitperiod}}}%
+        {{hash=e785da359a583c2bae606b830123ff67}{%
            family={DALRYMPLE},
            familyi={D\bibinitperiod},
            given={ROBERT\bibnamedelima A.},
-           giveni={R\bibinitperiod\bibinitdelim A\bibinitperiod},
-           givenun=0}}%
+           giveni={R\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {World Scientific Publishing Company}%
@@ -2031,10 +1868,9 @@
       \strng{authorbibnamehash}{e38c4937e7c054ecf4df705b75b4bfb1}
       \strng{authornamehash}{e38c4937e7c054ecf4df705b75b4bfb1}
       \strng{authorfullhash}{e38c4937e7c054ecf4df705b75b4bfb1}
+      \field{labelalpha}{RD05}
       \field{sortinit}{R}
       \field{sortinithash}{5e1c39a9d46ffb6bebd8f801023a9486}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{booktitle}{Coastal Engineering 2004}
@@ -2054,14 +1890,71 @@
       \verb http://www.worldscientific.com/doi/abs/10.1142/9789812701916%7B%5C_%7D0032
       \endverb
     \endentry
+    \entry{sagaut2002statistical}{incollection}{}
+      \name{author}{1}{}{%
+        {{hash=4d8f3cd5017acab6fb62663bf4fa4237}{%
+           family={Sagaut},
+           familyi={S\bibinitperiod},
+           given={Pierre},
+           giveni={P\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer}%
+      }
+      \strng{namehash}{4d8f3cd5017acab6fb62663bf4fa4237}
+      \strng{fullhash}{4d8f3cd5017acab6fb62663bf4fa4237}
+      \strng{bibnamehash}{4d8f3cd5017acab6fb62663bf4fa4237}
+      \strng{authorbibnamehash}{4d8f3cd5017acab6fb62663bf4fa4237}
+      \strng{authornamehash}{4d8f3cd5017acab6fb62663bf4fa4237}
+      \strng{authorfullhash}{4d8f3cd5017acab6fb62663bf4fa4237}
+      \field{labelalpha}{Sag02}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Large Eddy Simulation for Incompressible Flows}
+      \field{title}{Statistical and Spectral Analysis of Turbulence}
+      \field{year}{2002}
+      \field{pages}{379\bibrangedash 390}
+      \range{pages}{12}
+    \endentry
+    \entry{schmitt2017turbulence}{article}{}
+      \name{author}{1}{}{%
+        {{hash=6b9830314c9b73a749ac21cc667d2d8b}{%
+           family={Schmitt},
+           familyi={S\bibinitperiod},
+           given={Francois\bibnamedelima G},
+           giveni={F\bibinitperiod\bibinitdelim G\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{6b9830314c9b73a749ac21cc667d2d8b}
+      \strng{fullhash}{6b9830314c9b73a749ac21cc667d2d8b}
+      \strng{bibnamehash}{6b9830314c9b73a749ac21cc667d2d8b}
+      \strng{authorbibnamehash}{6b9830314c9b73a749ac21cc667d2d8b}
+      \strng{authornamehash}{6b9830314c9b73a749ac21cc667d2d8b}
+      \strng{authorfullhash}{6b9830314c9b73a749ac21cc667d2d8b}
+      \field{labelalpha}{Sch17}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Comptes Rendus Mécanique}
+      \field{number}{9}
+      \field{title}{Turbulence from 1870 to 1920: The birth of a noun and of a concept}
+      \field{volume}{345}
+      \field{year}{2017}
+      \field{pages}{620\bibrangedash 626}
+      \range{pages}{7}
+    \endentry
     \entry{Shao2006}{article}{}
       \name{author}{1}{}{%
-        {{un=2,uniquepart=given,hash=4f99d32a6a71acc93a167e58bf3aae3c}{%
+        {{hash=4f99d32a6a71acc93a167e58bf3aae3c}{%
            family={Shao},
            familyi={S\bibinitperiod},
            given={Songdong},
-           giveni={S\bibinitperiod},
-           givenun=2}}%
+           giveni={S\bibinitperiod}}}%
       }
       \strng{namehash}{4f99d32a6a71acc93a167e58bf3aae3c}
       \strng{fullhash}{4f99d32a6a71acc93a167e58bf3aae3c}
@@ -2069,10 +1962,9 @@
       \strng{authorbibnamehash}{4f99d32a6a71acc93a167e58bf3aae3c}
       \strng{authornamehash}{4f99d32a6a71acc93a167e58bf3aae3c}
       \strng{authorfullhash}{4f99d32a6a71acc93a167e58bf3aae3c}
+      \field{labelalpha}{Sha06}
       \field{sortinit}{S}
       \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{issue}{May 2005}
@@ -2084,18 +1976,16 @@
     \endentry
     \entry{Shao2005}{article}{}
       \name{author}{2}{}{%
-        {{un=2,uniquepart=given,hash=4f99d32a6a71acc93a167e58bf3aae3c}{%
+        {{hash=4f99d32a6a71acc93a167e58bf3aae3c}{%
            family={Shao},
            familyi={S\bibinitperiod},
            given={Songdong},
-           giveni={S\bibinitperiod},
-           givenun=2}}%
-        {{un=2,uniquepart=given,hash=f98f1bda5cf82d31da069bbbd404d2aa}{%
+           giveni={S\bibinitperiod}}}%
+        {{hash=f98f1bda5cf82d31da069bbbd404d2aa}{%
            family={Gotoh},
            familyi={G\bibinitperiod},
            given={Hitoshi},
-           giveni={H\bibinitperiod},
-           givenun=2}}%
+           giveni={H\bibinitperiod}}}%
       }
       \strng{namehash}{295c41061b5faa1672e56b2d491ff2f5}
       \strng{fullhash}{295c41061b5faa1672e56b2d491ff2f5}
@@ -2103,10 +1993,9 @@
       \strng{authorbibnamehash}{295c41061b5faa1672e56b2d491ff2f5}
       \strng{authornamehash}{295c41061b5faa1672e56b2d491ff2f5}
       \strng{authorfullhash}{295c41061b5faa1672e56b2d491ff2f5}
+      \field{labelalpha}{SG05}
       \field{sortinit}{S}
       \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{issn}{0022-1686}
@@ -2133,12 +2022,11 @@
     \endentry
     \entry{shepard1968two}{inproceedings}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=78cd126471284a5ffdeda7e8bf88b8ff}{%
+        {{hash=78cd126471284a5ffdeda7e8bf88b8ff}{%
            family={Shepard},
            familyi={S\bibinitperiod},
            given={Donald},
-           giveni={D\bibinitperiod},
-           givenun=0}}%
+           giveni={D\bibinitperiod}}}%
       }
       \strng{namehash}{78cd126471284a5ffdeda7e8bf88b8ff}
       \strng{fullhash}{78cd126471284a5ffdeda7e8bf88b8ff}
@@ -2146,10 +2034,9 @@
       \strng{authorbibnamehash}{78cd126471284a5ffdeda7e8bf88b8ff}
       \strng{authornamehash}{78cd126471284a5ffdeda7e8bf88b8ff}
       \strng{authorfullhash}{78cd126471284a5ffdeda7e8bf88b8ff}
+      \field{labelalpha}{She68}
       \field{sortinit}{S}
       \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{booktitle}{Proceedings of the 1968 23rd ACM national conference}
@@ -2160,30 +2047,26 @@
     \endentry
     \entry{Shi2013}{article}{}
       \name{author}{4}{}{%
-        {{un=0,uniquepart=base,hash=ea96b0ef965cf45b9f6a525d9fbbd085}{%
+        {{hash=ea96b0ef965cf45b9f6a525d9fbbd085}{%
            family={Shi},
            familyi={S\bibinitperiod},
            given={Yilei},
-           giveni={Y\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=e5e6aebfefcbe0d7c5db556334617b20}{%
+           giveni={Y\bibinitperiod}}}%
+        {{hash=e5e6aebfefcbe0d7c5db556334617b20}{%
            family={Zhu},
            familyi={Z\bibinitperiod},
            given={Xiao\bibnamedelima Xiang},
-           giveni={X\bibinitperiod\bibinitdelim X\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=ddfacdb2781cba5b497065b8a4d0387f}{%
+           giveni={X\bibinitperiod\bibinitdelim X\bibinitperiod}}}%
+        {{hash=ddfacdb2781cba5b497065b8a4d0387f}{%
            family={Ellero},
            familyi={E\bibinitperiod},
            given={Marco},
-           giveni={M\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=54d047106356f745398344726a0428ec}{%
+           giveni={M\bibinitperiod}}}%
+        {{hash=54d047106356f745398344726a0428ec}{%
            family={Adams},
            familyi={A\bibinitperiod},
            given={Nikolaus\bibnamedelima A.},
-           giveni={N\bibinitperiod\bibinitdelim A\bibinitperiod},
-           givenun=0}}%
+           giveni={N\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier Ltd}%
@@ -2194,10 +2077,9 @@
       \strng{authorbibnamehash}{4056c9f6e9ca4c072272590e7a721351}
       \strng{authornamehash}{4056c9f6e9ca4c072272590e7a721351}
       \strng{authorfullhash}{7d9441d78d0d5304d72ba4712da7a3a8}
+      \field{labelalpha}{Shi+13}
       \field{sortinit}{S}
       \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{Direct evaluation of energy spectra in purely Lagrangian meshless methods is a challenging task. On the other hand, improvement of turbulence modeling in a Lagrangian framework relies strongly on our ability to estimate energy spectra up to the maximally resolved wavenumber. In this paper we compare different strategies to extract energy spectra from a velocity field defined on a scattered set of points. Spectra can be directly evaluated from irregularly distributed sample by using Discrete Fourier Transform (DFT) and their regularized versions. Alternative procedures require a preliminary interpolation into a grid where, on a second stage, a Fourier analysis can be performed. As a last approach a Moving Least Squares (MLSs) technique for preliminary interpolation is investigated and the results are discussed. Although exhibiting good accuracy in the low-moderate wavenumber window, the first two strategies introduce unacceptable large errors in the near-maximal-resolved wavenumber, where the highest accuracy is often required. Here we propose a second-order Moving Least Squares (MLSs) scheme as an optimal tool that allows us to reproduce precisely the energy spectrum over the entire wavenumber window. We discuss the importance of this result with respect to the development of accurate turbulence models for purely Lagrangian meshless methods. © 2013 Elsevier Ltd.}
@@ -2221,12 +2103,11 @@
     \endentry
     \entry{smagorinsky1963general}{article}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=c2a35c5f70908a69212ea4d01722083a}{%
+        {{hash=c2a35c5f70908a69212ea4d01722083a}{%
            family={Smagorinsky},
            familyi={S\bibinitperiod},
            given={Joseph},
-           giveni={J\bibinitperiod},
-           givenun=0}}%
+           giveni={J\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {American Meteorological Society}%
@@ -2237,10 +2118,9 @@
       \strng{authorbibnamehash}{c2a35c5f70908a69212ea4d01722083a}
       \strng{authornamehash}{c2a35c5f70908a69212ea4d01722083a}
       \strng{authorfullhash}{c2a35c5f70908a69212ea4d01722083a}
+      \field{labelalpha}{Sma63}
       \field{sortinit}{S}
       \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Monthly weather review}
@@ -2252,45 +2132,41 @@
       \range{pages}{66}
     \endentry
     \entry{sun2016detection}{article}{}
-      \name{author}{4}{ul=2}{%
-        {{un=0,uniquepart=base,hash=0442f0db88267b71ac41b306c92c6a8c}{%
+      \name{author}{4}{}{%
+        {{hash=0442f0db88267b71ac41b306c92c6a8c}{%
            family={Sun},
            familyi={S\bibinitperiod},
            given={PN},
-           giveni={P\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=72f6d6cdd32c1742c8e022c0422b8ce5}{%
+           giveni={P\bibinitperiod}}}%
+        {{hash=72f6d6cdd32c1742c8e022c0422b8ce5}{%
            family={Colagrossi},
            familyi={C\bibinitperiod},
            given={A},
-           giveni={A\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=7eea05138c86a898c791a2beeb567fef}{%
+           giveni={A\bibinitperiod}}}%
+        {{hash=7eea05138c86a898c791a2beeb567fef}{%
            family={Marrone},
            familyi={M\bibinitperiod},
            given={S},
-           giveni={S\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=e5204a16bbfe7b8f58650062c6ecf5e5}{%
+           giveni={S\bibinitperiod}}}%
+        {{hash=e5204a16bbfe7b8f58650062c6ecf5e5}{%
            family={Zhang},
            familyi={Z\bibinitperiod},
            given={AM},
-           giveni={A\bibinitperiod},
-           givenun=0}}%
+           giveni={A\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier}%
       }
-      \strng{namehash}{9136642804e89fc1a365180c7aa345aa}
+      \strng{namehash}{6c24e274a419c0a242a74cfdf564b8dd}
       \strng{fullhash}{b32f3e3bf27efc53aad0b2768f28e7d0}
-      \strng{bibnamehash}{9136642804e89fc1a365180c7aa345aa}
-      \strng{authorbibnamehash}{9136642804e89fc1a365180c7aa345aa}
-      \strng{authornamehash}{9136642804e89fc1a365180c7aa345aa}
+      \strng{bibnamehash}{6c24e274a419c0a242a74cfdf564b8dd}
+      \strng{authorbibnamehash}{6c24e274a419c0a242a74cfdf564b8dd}
+      \strng{authornamehash}{6c24e274a419c0a242a74cfdf564b8dd}
       \strng{authorfullhash}{b32f3e3bf27efc53aad0b2768f28e7d0}
+      \field{extraname}{1}
+      \field{labelalpha}{Sun+16}
       \field{sortinit}{S}
       \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Computer Methods in Applied Mechanics and Engineering}
@@ -2301,51 +2177,46 @@
       \range{pages}{20}
     \endentry
     \entry{sun2018multi}{article}{}
-      \name{author}{5}{ul=2}{%
-        {{un=0,uniquepart=base,hash=0442f0db88267b71ac41b306c92c6a8c}{%
+      \name{author}{5}{}{%
+        {{hash=0442f0db88267b71ac41b306c92c6a8c}{%
            family={Sun},
            familyi={S\bibinitperiod},
            given={PN},
-           giveni={P\bibinitperiod},
-           givenun=0}}%
-        {{un=2,uniquepart=given,hash=29801d4418d5a181343463050d5f1844}{%
+           giveni={P\bibinitperiod}}}%
+        {{hash=29801d4418d5a181343463050d5f1844}{%
            family={Colagrossi},
            familyi={C\bibinitperiod},
            given={Andrea},
-           giveni={A\bibinitperiod},
-           givenun=2}}%
-        {{un=0,uniquepart=base,hash=d212092d16dbf0d5565ee6e34fd6cfe3}{%
+           giveni={A\bibinitperiod}}}%
+        {{hash=d212092d16dbf0d5565ee6e34fd6cfe3}{%
            family={Marrone},
            familyi={M\bibinitperiod},
            given={Salvatore},
-           giveni={S\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=cd8dfa1eb95d9d2160f66601e4f23f2d}{%
+           giveni={S\bibinitperiod}}}%
+        {{hash=cd8dfa1eb95d9d2160f66601e4f23f2d}{%
            family={Antuono},
            familyi={A\bibinitperiod},
            given={Matteo},
-           giveni={M\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=e5204a16bbfe7b8f58650062c6ecf5e5}{%
+           giveni={M\bibinitperiod}}}%
+        {{hash=e5204a16bbfe7b8f58650062c6ecf5e5}{%
            family={Zhang},
            familyi={Z\bibinitperiod},
            given={AM},
-           giveni={A\bibinitperiod},
-           givenun=0}}%
+           giveni={A\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier}%
       }
-      \strng{namehash}{946f54800affab0e90a88066bd7d79bf}
+      \strng{namehash}{6c24e274a419c0a242a74cfdf564b8dd}
       \strng{fullhash}{4243f69708cdcb7cf326a0d942bb1086}
-      \strng{bibnamehash}{946f54800affab0e90a88066bd7d79bf}
-      \strng{authorbibnamehash}{946f54800affab0e90a88066bd7d79bf}
-      \strng{authornamehash}{946f54800affab0e90a88066bd7d79bf}
+      \strng{bibnamehash}{6c24e274a419c0a242a74cfdf564b8dd}
+      \strng{authorbibnamehash}{6c24e274a419c0a242a74cfdf564b8dd}
+      \strng{authornamehash}{6c24e274a419c0a242a74cfdf564b8dd}
       \strng{authorfullhash}{4243f69708cdcb7cf326a0d942bb1086}
+      \field{extraname}{2}
+      \field{labelalpha}{Sun+18}
       \field{sortinit}{S}
       \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Computer Physics Communications}
@@ -2357,12 +2228,11 @@
     \endentry
     \entry{Synolakis1986}{thesis}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=53b2d6a6aa04299e6efe025931585c35}{%
+        {{hash=53b2d6a6aa04299e6efe025931585c35}{%
            family={Synolakis},
            familyi={S\bibinitperiod},
            given={Constantine\bibnamedelima Emmanuel},
-           giveni={C\bibinitperiod\bibinitdelim E\bibinitperiod},
-           givenun=0}}%
+           giveni={C\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
       }
       \list{institution}{1}{%
         {California Institute of Technology}%
@@ -2373,10 +2243,9 @@
       \strng{authorbibnamehash}{53b2d6a6aa04299e6efe025931585c35}
       \strng{authornamehash}{53b2d6a6aa04299e6efe025931585c35}
       \strng{authorfullhash}{53b2d6a6aa04299e6efe025931585c35}
+      \field{labelalpha}{Syn86}
       \field{sortinit}{S}
       \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{title}{The runup of long waves}
@@ -2385,12 +2254,11 @@
     \endentry
     \entry{taneda1977visual}{article}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=9ec15015b496b23d3de616866c9da807}{%
+        {{hash=9ec15015b496b23d3de616866c9da807}{%
            family={Taneda},
            familyi={T\bibinitperiod},
            given={Sadatoshi},
-           giveni={S\bibinitperiod},
-           givenun=0}}%
+           giveni={S\bibinitperiod}}}%
       }
       \strng{namehash}{9ec15015b496b23d3de616866c9da807}
       \strng{fullhash}{9ec15015b496b23d3de616866c9da807}
@@ -2398,10 +2266,9 @@
       \strng{authorbibnamehash}{9ec15015b496b23d3de616866c9da807}
       \strng{authornamehash}{9ec15015b496b23d3de616866c9da807}
       \strng{authorfullhash}{9ec15015b496b23d3de616866c9da807}
+      \field{labelalpha}{Tan77}
       \field{sortinit}{T}
       \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Progress in Aerospace Sciences}
@@ -2414,24 +2281,21 @@
     \endentry
     \entry{VIOLEAU2002}{inproceedings}{}
       \name{author}{3}{}{%
-        {{un=0,uniquepart=base,hash=983d240830bb1a407a1bb0ed4f0ed8d4}{%
+        {{hash=983d240830bb1a407a1bb0ed4f0ed8d4}{%
            family={VIOLEAU},
            familyi={V\bibinitperiod},
            given={D.},
-           giveni={D\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=30f95c9ab8680741e4ffde28426642b2}{%
+           giveni={D\bibinitperiod}}}%
+        {{hash=30f95c9ab8680741e4ffde28426642b2}{%
            family={PICCON},
            familyi={P\bibinitperiod},
            given={S.},
-           giveni={S\bibinitperiod},
-           givenun=0}}%
-        {{un=0,uniquepart=base,hash=990c015775013eb8ad37ca3ff6893a55}{%
+           giveni={S\bibinitperiod}}}%
+        {{hash=990c015775013eb8ad37ca3ff6893a55}{%
            family={CHABARD},
            familyi={C\bibinitperiod},
            given={J.-P.},
-           giveni={J\bibinithyphendelim P\bibinitperiod},
-           givenun=0}}%
+           giveni={J\bibinithyphendelim P\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {WORLD SCIENTIFIC}%
@@ -2442,10 +2306,9 @@
       \strng{authorbibnamehash}{fd6d8f95f4fb13464fe4733aa09214fd}
       \strng{authornamehash}{fd6d8f95f4fb13464fe4733aa09214fd}
       \strng{authorfullhash}{fd6d8f95f4fb13464fe4733aa09214fd}
+      \field{labelalpha}{VPC02}
       \field{sortinit}{V}
       \field{sortinithash}{afb52128e5b4dc4b843768c0113d673b}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{abstract}{通过对黄土高原西峰黄土剖面S5古土壤层的蜗牛化石组合研究发现,西峰地区在S5形成时(对应海洋氧同位素MIS15~13期)气候环境经历了几次显著的波动。MIS15期地层中绝大多数蜗牛壳体被溶蚀,气候非常暖湿,夏季风强盛;MIS14是个弱冰期,蜗牛组合显示气候以凉湿为主,仍然有较强的夏季风影响;MIS13期以暖湿的气候为主,夏季风增强。对温湿蜗牛种类冠状砂螺(Gastrocopta coreana)含量变化的功率谱分析显示出明显的23ka周期,表明岁差轨道驱动的低纬太阳辐射是控制黄土高原夏季风变化的主导因素;冷干种类杂色虹蛹螺(Pupilla aeoli)含量变化具有明显的100ka和弱的43ka周期,说明即使在气候特征总体暖湿的背景下,冬季风仍具有以全球冰量(100ka)为主导周期的变化特征。在海洋和冰芯记录中MIS13和MIS15时期并不是最温暖的间冰期,但在黄土高原受到强夏季风的持续影响,这可能与此时北半球夏季太阳辐射量的增强和北大西洋深层流强度的加强有关。S5中S5SS1与S5SS3两层强烈发育的古土壤可能有着不同的发育机制,S5SS1因其较发育的母质、超长的成壤期,形成了比S5SS3更强的成壤特征。分析认为全球冰量与轨道驱动的北半球太阳辐射对MIS15~13时期黄土高原气候环境的演替和冬、夏季风的消长起了主导作用。}
@@ -2472,18 +2335,16 @@
     \endentry
     \entry{Wang2020}{article}{}
       \name{author}{2}{}{%
-        {{un=0,uniquepart=base,hash=4695c12fc5e5638d83abfb67ab9d459c}{%
+        {{hash=4695c12fc5e5638d83abfb67ab9d459c}{%
            family={Wang},
            familyi={W\bibinitperiod},
            given={Dong},
-           giveni={D\bibinitperiod},
-           givenun=0}}%
-        {{un=1,uniquepart=given,hash=684774792811115904df9ed4f6655ed7}{%
+           giveni={D\bibinitperiod}}}%
+        {{hash=684774792811115904df9ed4f6655ed7}{%
            family={Liu},
            familyi={L\bibinitperiod},
            given={Philip\bibnamedelima L.F.},
-           giveni={P\bibinitperiod\bibinitdelim L\bibinitperiod},
-           givenun=1}}%
+           giveni={P\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {Elsevier B.V.}%
@@ -2494,10 +2355,9 @@
       \strng{authorbibnamehash}{2a970858fc73b56417e8e595a05e30c2}
       \strng{authornamehash}{2a970858fc73b56417e8e595a05e30c2}
       \strng{authorfullhash}{2a970858fc73b56417e8e595a05e30c2}
+      \field{labelalpha}{WL20}
       \field{sortinit}{W}
       \field{sortinithash}{4315d78024d0cea9b57a0c6f0e35ed0d}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{issn}{03783839}
@@ -2521,12 +2381,11 @@
     \endentry
     \entry{yoshizawa1986statistical}{article}{}
       \name{author}{1}{}{%
-        {{un=0,uniquepart=base,hash=8d53764b8b206216616f2622ad5f3f29}{%
+        {{hash=8d53764b8b206216616f2622ad5f3f29}{%
            family={Yoshizawa},
            familyi={Y\bibinitperiod},
            given={Akira},
-           giveni={A\bibinitperiod},
-           givenun=0}}%
+           giveni={A\bibinitperiod}}}%
       }
       \list{publisher}{1}{%
         {American Institute of Physics}%
@@ -2537,10 +2396,9 @@
       \strng{authorbibnamehash}{8d53764b8b206216616f2622ad5f3f29}
       \strng{authornamehash}{8d53764b8b206216616f2622ad5f3f29}
       \strng{authorfullhash}{8d53764b8b206216616f2622ad5f3f29}
+      \field{labelalpha}{Yos86}
       \field{sortinit}{Y}
       \field{sortinithash}{fd67ad5a9ef0f7456bdd9aab10fe1495}
-      \field{extradatescope}{labelyear}
-      \field{labeldatesource}{year}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{The Physics of fluids}
