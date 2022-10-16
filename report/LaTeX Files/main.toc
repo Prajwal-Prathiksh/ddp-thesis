@@ -1,22 +1,36 @@
 \babel@toc {english}{}\relax 
 \contentsline {chapter}{Abstract}{i}{section*.2}%
 \contentsline {chapter}{List of Figures}{iii}{chapter*.4}%
-\contentsline {chapter}{List of Symbols}{iv}{chapter*.5}%
+\contentsline {chapter}{List of Symbols}{v}{chapter*.5}%
 \contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.7}%
-\contentsline {section}{\numberline {1.1}Project Motivation}{1}{section.8}%
-\contentsline {section}{\numberline {1.2}Research Aims \& Objectives}{1}{section.9}%
-\contentsline {section}{\numberline {1.3}Report Structure}{1}{section.10}%
-\contentsline {chapter}{\numberline {2}Turbulence Modelling}{2}{chapter.11}%
-\contentsline {section}{\numberline {2.1}Viscosity-Based Models}{2}{section.12}%
-\contentsline {subsection}{\numberline {2.1.1}Eddy Viscosity Model}{2}{subsection.17}%
-\contentsline {subsection}{\numberline {2.1.2}Generalized Langevin Model}{3}{subsection.22}%
-\contentsline {section}{\numberline {2.2}mSPH}{5}{section.30}%
-\contentsline {section}{\numberline {2.3}Large Eddy Simulation-based Models}{6}{section.40}%
-\contentsline {subsection}{\numberline {2.3.1}Implicit Pressure Poisson-based Models}{6}{subsection.41}%
-\contentsline {subsection}{\numberline {2.3.2}Explicit Pressure Equation of State-based Solvers}{11}{subsection.67}%
-\contentsline {subsubsection}{Standard Smagorinsky Model}{11}{section*.68}%
-\contentsline {subsubsection}{Modified Smagorinsky Model}{13}{section*.78}%
-\contentsline {subsection}{\numberline {2.3.3}Quasi-Lagrangian Models}{15}{subsection.87}%
-\contentsline {subsection}{\numberline {2.3.4}RANS-based $k-\epsilon $ Models}{15}{subsection.88}%
-\contentsline {subsection}{\numberline {2.3.5}LANS-based Models}{19}{subsection.108}%
-\contentsline {chapter}{Bibliography}{22}{chapter*.118}%
+\contentsline {section}{\numberline {1.1}Project Motivation}{2}{section.8}%
+\contentsline {section}{\numberline {1.2}Research Aims \& Objectives}{2}{section.9}%
+\contentsline {section}{\numberline {1.3}Report Structure}{2}{section.10}%
+\contentsline {chapter}{\numberline {2}Turbulence Modelling}{3}{chapter.11}%
+\contentsline {section}{\numberline {2.1}Viscosity-Based Models}{3}{section.12}%
+\contentsline {subsection}{\numberline {2.1.1}Eddy Viscosity Model}{3}{subsection.17}%
+\contentsline {subsection}{\numberline {2.1.2}Generalized Langevin Model}{4}{subsection.22}%
+\contentsline {subsection}{\numberline {2.1.3}mSPH}{6}{subsection.30}%
+\contentsline {section}{\numberline {2.2}Large Eddy Simulation-based Models}{7}{section.40}%
+\contentsline {subsection}{\numberline {2.2.1}Implicit Pressure Poisson-based Models}{7}{subsection.41}%
+\contentsline {subsection}{\numberline {2.2.2}Explicit Pressure Equation of State-based Models}{12}{subsection.67}%
+\contentsline {subsubsection}{Standard Smagorinsky Model}{12}{section*.68}%
+\contentsline {subsubsection}{Modified Smagorinsky Model}{14}{section*.78}%
+\contentsline {section}{\numberline {2.3}Lagrangian LES-based Models}{19}{section.98}%
+\contentsline {subsection}{\numberline {2.3.1}Extension to EDAC-SPH Scheme}{23}{subsection.133}%
+\contentsline {section}{\numberline {2.4}RANS-based $k-\epsilon $ Models}{24}{section.136}%
+\contentsline {section}{\numberline {2.5}LANS-based Models}{27}{section.156}%
+\contentsline {section}{\numberline {2.6}Miscellaneous Models}{30}{section.166}%
+\contentsline {chapter}{\numberline {3}Turbulence Analysis}{31}{chapter.173}%
+\contentsline {section}{\numberline {3.1}Benchmark Problems}{31}{section.174}%
+\contentsline {subsection}{\numberline {3.1.1}Taylor-Green Vortex Problem}{31}{subsection.175}%
+\contentsline {subsection}{\numberline {3.1.2}Thin Double-Shear Layer}{32}{subsection.184}%
+\contentsline {subsection}{\numberline {3.1.3}$3D$ Isotropic Turbulence}{32}{subsection.187}%
+\contentsline {subsection}{\numberline {3.1.4}$2D$ Confined \& Driven Turbulence}{32}{subsection.188}%
+\contentsline {subsection}{\numberline {3.1.5}Free Surface Flows}{32}{subsection.191}%
+\contentsline {section}{\numberline {3.2}Post-Simulation Analysis}{33}{section.192}%
+\contentsline {subsection}{\numberline {3.2.1}Energy Spectral Density}{33}{subsection.193}%
+\contentsline {subsection}{\numberline {3.2.2}Lagrangian Coherent Structures}{34}{subsection.199}%
+\contentsline {chapter}{\numberline {4}Conclusion \& Future Work}{36}{chapter.201}%
+\contentsline {chapter}{\numberline {A}Lagrangian LES Filtering of EDAC}{37}{appendix.202}%
+\contentsline {chapter}{Bibliography}{39}{appendix*.215}%

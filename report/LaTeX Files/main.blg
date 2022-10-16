@@ -1,15 +1,17 @@
 [0] Config.pm:307> INFO - This is Biber 2.17
 [0] Config.pm:310> INFO - Logfile is 'main.blg'
-[141] biber-MSWIN64:340> INFO - === 
-[187] Biber.pm:418> INFO - Reading 'main.bcf'
-[349] Biber.pm:972> INFO - Found 34 citekeys in bib section 0
-[368] Biber.pm:4383> INFO - Processing section 0
-[385] Biber.pm:4574> INFO - Looking for bibtex file 'references.bib' for section 0
-[477] bibtex.pm:1713> INFO - LaTeX decoding ...
-[643] bibtex.pm:1518> INFO - Found BibTeX data source 'references.bib'
-[924] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[924] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[924] Biber.pm:4203> INFO - Sorting list 'nyt/global//global/global' of type 'entry' with template 'nyt' and locale 'en-US'
-[924] Biber.pm:4209> INFO - No sort tailoring available for locale 'en-US'
-[975] bbl.pm:654> INFO - Writing 'main.bbl' with encoding 'UTF-8'
-[1001] bbl.pm:757> INFO - Output to main.bbl
+[321] biber-MSWIN64:340> INFO - === 
+[450] Biber.pm:418> INFO - Reading 'main.bcf'
+[860] Biber.pm:972> INFO - Found 59 citekeys in bib section 0
+[897] Biber.pm:4383> INFO - Processing section 0
+[924] Biber.pm:4574> INFO - Looking for bibtex file 'references.bib' for section 0
+[1058] bibtex.pm:1713> INFO - LaTeX decoding ...
+[1578] bibtex.pm:1518> INFO - Found BibTeX data source 'references.bib'
+[2375] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[2375] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[2375] Biber.pm:4203> INFO - Sorting list 'nyt/global//global/global' of type 'entry' with template 'nyt' and locale 'en-US'
+[2375] Biber.pm:4209> INFO - No sort tailoring available for locale 'en-US'
+[2472] bbl.pm:654> INFO - Writing 'main.bbl' with encoding 'UTF-8'
+[2541] bbl.pm:757> INFO - Output to main.bbl
+[2542] Biber.pm:130> WARN - legacy month field 'dec' in entry 'Ramachandran2019' is not an integer - this will probably not sort properly.
+[2542] Biber.pm:132> INFO - WARNINGS: 1

@@ -75,13 +75,25 @@ style=authoryear]{biblatex}
 \newcommand{\RIJ}{\vect{r}_{ij}}
 \newcommand{\RtwoIJ}[1][2]{|\vect{r}_{ij}|^{#1}}
 \newcommand{\MachineEpsilon}{\bm{\xi}}
-\newcommand{\RAProp}[1]{\langle #1 \rangle}
-\newcommand{\FrobeniusInnerProduct}[2]{\langle \tensor{#1}, \tensor{#2} \rangle_F}
+\newcommand{\EncAngBrk}[2][]{#1\langle #2 #1\rangle}
+\newcommand{\RAProp}[1]{\EncAngBrk{#1}}
+\newcommand{\FrobeniusInnerProduct}[2]{\EncAngBrk{\tensor{#1}, \tensor{#2}}}
 \newcommand{\FrobeniusNorm}[1]{||\tensor{#1}||_F}
 \newcommand{\BasisVect}[1][i]{\hat{\vect{e}}_{#1}}
 \newcommand{\HalfFrac}{\frac{1}{2}}
 \newcommand{\Vol}[1][V]{\mathcal{#1}}
 \newcommand{\Vorticity}{\bm{\omega}}
+\newcommand{\Boundary}{\bm{\Omega}}
+\newcommand{\WaveNumber}{\mathrm{k}}
+\newcommand{\WaveNumberVector}{\vect{k}}
+\newcommand{\TildeR}{\widetilde{\vect{r}}}
+\newcommand{\TildeV}{\widetilde{\vect{v}}}
+\newcommand{\TildeDeltaV}{\delta\TildeV}
+\newcommand{\TildeRho}{\widetilde{\rho}}
+\newcommand{\TildeP}{\widetilde{P}}
+\newcommand{\IntRThreeAndT}{\int_{\mathbf{R}^3} \int_{-\infty}^{\infty}}
+
+
 
 
 
@@ -261,20 +273,19 @@ style=authoryear]{biblatex}
 
 \include{Chapters/Chapter1}
 \include{Chapters/Chapter2} 
-%\include{Chapters/Chapter3}
-%\include{Chapters/Chapter4}
-%\include{Chapters/Chapter5}
+\include{Chapters/Chapter3}
+\include{Chapters/Chapter4}
 
 %----------------------------------------------------------------------------------------
 %	THESIS CONTENT - APPENDICES
 %----------------------------------------------------------------------------------------
 
-%\appendix % Cue to tell LaTeX that the following "chapters" are Appendices
+\appendix % Cue to tell LaTeX that the following "chapters" are Appendices
 
 % Include the appendices of the thesis as separate files from the Appendices folder
 % Uncomment the lines as you write the Appendices
 
-%\include{Appendices/AppendixA}
+\include{Appendices/AppendixA}
 %\include{Appendices/AppendixB}
 %\include{Appendices/AppendixC}
 

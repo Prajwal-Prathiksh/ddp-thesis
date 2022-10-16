@@ -182,6 +182,177 @@
       \field{pages}{745\bibrangedash 762}
       \range{pages}{18}
     \endentry
+    \entry{Clausen2013}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=5a18b4743508ceefdbefb8edcb485a60}{%
+           family={Clausen},
+           familyi={C\bibinitperiod},
+           given={Jonathan\bibnamedelima R.},
+           giveni={J\bibinitperiod\bibinitdelim R\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{5a18b4743508ceefdbefb8edcb485a60}
+      \strng{fullhash}{5a18b4743508ceefdbefb8edcb485a60}
+      \strng{bibnamehash}{5a18b4743508ceefdbefb8edcb485a60}
+      \strng{authorbibnamehash}{5a18b4743508ceefdbefb8edcb485a60}
+      \strng{authornamehash}{5a18b4743508ceefdbefb8edcb485a60}
+      \strng{authorfullhash}{5a18b4743508ceefdbefb8edcb485a60}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{An alternative artificial compressibility (AC) scheme is proposed to allow the explicit simulation of the incompressible Navier-Stokes (INS) equations. Traditional AC schemes rely on an artificial equation of state that gives the pressure as a function of the density, which is known to enforce isentropic behavior. This behavior is nonideal, especially in viscously dominated flows. An alternative, the entropically damped artificial compressibility (EDAC) method, is proposed that employs a thermodynamic constraint to damp the pressure oscillations inherent to AC methods. The EDAC method converges to the INS in the low-Mach limit, and is consistent in both the low- and high-Reynolds-number limits, unlike standard AC schemes. The proposed EDAC method is discretized using a simple finite-difference scheme and is compared with traditional AC schemes as well as the lattice-Boltzmann method for steady lid-driven cavity flow and a transient traveling-wave problem. The EDAC method is shown to be beneficial in damping pressure and velocity-divergence oscillations when performing transient simulations. The EDAC method follows a similar derivation to the kinetically reduced local Navier-Stokes (KRLNS) method [Borok, Phys. Rev. EPLEEE81539-375510.1103/PhysRevE.76.066704 76, 066704 (2007)]; however, the EDAC method does not rely on the grand potential as the thermodynamic variable, but instead uses the more common pressure-velocity system. Additionally, a term neglected in the KRLNS is identified that is important for accurately approximating the INS equations. {©} 2013 American Physical Society.}
+      \field{issn}{15393755}
+      \field{journaltitle}{Physical Review E - Statistical, Nonlinear, and Soft Matter Physics}
+      \field{number}{1}
+      \field{title}{{Entropically damped form of artificial compressibility for explicit simulation of incompressible flow}}
+      \field{volume}{87}
+      \field{year}{2013}
+      \field{pages}{1\bibrangedash 12}
+      \range{pages}{12}
+      \verb{doi}
+      \verb 10.1103/PhysRevE.87.013309
+      \endverb
+      \verb{file}
+      \verb :D$\backslash$:/IIT Bombay - Miscellaneous/Research Papers/Dual Degree Programme/Entropically damped form of artificial compressibility for explicit simulation of incompressible flow.pdf:pdf
+      \endverb
+    \endentry
+    \entry{cleary1999conduction}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=acb2f5e6028b0a2760a5493c0e8bacc5}{%
+           family={Cleary},
+           familyi={C\bibinitperiod},
+           given={Paul\bibnamedelima W},
+           giveni={P\bibinitperiod\bibinitdelim W\bibinitperiod},
+           givenun=0}}%
+        {{un=2,uniquepart=given,hash=622cf6924c4dfcc2f3cfb16cd7558e48}{%
+           family={Monaghan},
+           familyi={M\bibinitperiod},
+           given={Joseph\bibnamedelima J},
+           giveni={J\bibinitperiod\bibinitdelim J\bibinitperiod},
+           givenun=2}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{d31b93811e54e07c1ab52633409ed5ff}
+      \strng{fullhash}{d31b93811e54e07c1ab52633409ed5ff}
+      \strng{bibnamehash}{d31b93811e54e07c1ab52633409ed5ff}
+      \strng{authorbibnamehash}{d31b93811e54e07c1ab52633409ed5ff}
+      \strng{authornamehash}{d31b93811e54e07c1ab52633409ed5ff}
+      \strng{authorfullhash}{d31b93811e54e07c1ab52633409ed5ff}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Computational Physics}
+      \field{number}{1}
+      \field{title}{Conduction modelling using smoothed particle hydrodynamics}
+      \field{volume}{148}
+      \field{year}{1999}
+      \field{pages}{227\bibrangedash 264}
+      \range{pages}{38}
+    \endentry
+    \entry{Colagrossi2021QuasiLagrangian}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=72f6d6cdd32c1742c8e022c0422b8ce5}{%
+           family={Colagrossi},
+           familyi={C\bibinitperiod},
+           given={A},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {AIP Publishing, LLC}%
+      }
+      \strng{namehash}{72f6d6cdd32c1742c8e022c0422b8ce5}
+      \strng{fullhash}{72f6d6cdd32c1742c8e022c0422b8ce5}
+      \strng{bibnamehash}{72f6d6cdd32c1742c8e022c0422b8ce5}
+      \strng{authorbibnamehash}{72f6d6cdd32c1742c8e022c0422b8ce5}
+      \strng{authornamehash}{72f6d6cdd32c1742c8e022c0422b8ce5}
+      \strng{authorfullhash}{72f6d6cdd32c1742c8e022c0422b8ce5}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issue}{December 2020}
+      \field{title}{Smoothed particle hydrodynamics method from a large eddy simulation perspective . Generalization to a quasi-Lagrangian model Smoothed particle hydrodynamics method from a large eddy simulation perspective . Generalization to a quasi-Lagrangian model}
+      \field{volume}{015102}
+      \field{year}{2021}
+      \verb{doi}
+      \verb 10.1063/5.0034568
+      \endverb
+      \verb{urlraw}
+      \verb https://doi.org/10.1063/5.0034568
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1063/5.0034568
+      \endverb
+    \endentry
+    \entry{Colagrossi2021DaVinci}{article}{}
+      \name{author}{4}{}{%
+        {{un=2,uniquepart=given,hash=72f6d6cdd32c1742c8e022c0422b8ce5}{%
+           family={Colagrossi},
+           familyi={C\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod},
+           givenun=2}}%
+        {{un=0,uniquepart=base,hash=7eea05138c86a898c791a2beeb567fef}{%
+           family={Marrone},
+           familyi={M\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=414bbdb927e18829e3300b552a62fa34}{%
+           family={Colagrossi},
+           familyi={C\bibinitperiod},
+           given={P.},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=947db61c2be5cf81302541def937e4c2}{%
+           family={Touzé},
+           familyi={T\bibinitperiod},
+           given={D.\bibnamedelimi Le},
+           giveni={D\bibinitperiod\bibinitdelim L\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{9b00a29c7b36cd38b4bea32829388217}
+      \strng{fullhash}{ed16a2135963420d1436ee73bf36b295}
+      \strng{bibnamehash}{9b00a29c7b36cd38b4bea32829388217}
+      \strng{authorbibnamehash}{9b00a29c7b36cd38b4bea32829388217}
+      \strng{authornamehash}{9b00a29c7b36cd38b4bea32829388217}
+      \strng{authorfullhash}{ed16a2135963420d1436ee73bf36b295}
+      \field{sortinit}{C}
+      \field{sortinithash}{4d103a86280481745c9c897c925753c0}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{1070-6631}
+      \field{issue}{11}
+      \field{journaltitle}{Physics of Fluids}
+      \field{month}{11}
+      \field{title}{Da Vinci's observation of turbulence: A French-Italian study aiming at numerically reproducing the physics behind one of his drawings, 500 years later}
+      \field{volume}{33}
+      \field{year}{2021}
+      \field{pages}{115122}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.1063/5.0070984
+      \endverb
+      \verb{urlraw}
+      \verb https://aip.scitation.org/doi/10.1063/5.0070984
+      \endverb
+      \verb{url}
+      \verb https://aip.scitation.org/doi/10.1063/5.0070984
+      \endverb
+    \endentry
     \entry{cummins1999sph}{article}{}
       \name{author}{2}{}{%
         {{un=0,uniquepart=base,hash=b206036608239d91fad0891bbf2f3056}{%
@@ -257,6 +428,175 @@
       \verb 10.1016/j.coastaleng.2005.10.004
       \endverb
       \keyw{hydrodynamics,numerical methods,sph,turbulence,waves}
+    \endentry
+    \entry{dauch2018highly}{article}{}
+      \name{author}{9}{}{%
+        {{un=0,uniquepart=base,hash=36ace034aa5f0e676efd0075f6e96738}{%
+           family={Dauch},
+           familyi={D\bibinitperiod},
+           given={TF},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=73607868b94857e789fdd9350935c87f}{%
+           family={Rapp},
+           familyi={R\bibinitperiod},
+           given={T},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=de8a3c698f578f8ce53d65b44ed68501}{%
+           family={Chaussonnet},
+           familyi={C\bibinitperiod},
+           given={G},
+           giveni={G\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=60f2e8869298555296553f9d8622e54b}{%
+           family={Braun},
+           familyi={B\bibinitperiod},
+           given={S},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=833394cc85b6f7a4f3ecf755133fba63}{%
+           family={Keller},
+           familyi={K\bibinitperiod},
+           given={MC},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=48896ededcce818105869ca6443d05ec}{%
+           family={Kaden},
+           familyi={K\bibinitperiod},
+           given={J},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=21daa6bd5890853ac502dca42c74cce4}{%
+           family={Koch},
+           familyi={K\bibinitperiod},
+           given={R},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=a78e88021b356efaa2f2fa44903c88ec}{%
+           family={Dachsbacher},
+           familyi={D\bibinitperiod},
+           given={C},
+           giveni={C\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c1b9b9687d1b7cfd67ed93442be74767}{%
+           family={Bauer},
+           familyi={B\bibinitperiod},
+           given={H-J},
+           giveni={H\bibinithyphendelim J\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{255fe08c30f5d815cb6909b23326025b}
+      \strng{fullhash}{31754ce46d99d65a17e649239909d2cb}
+      \strng{bibnamehash}{255fe08c30f5d815cb6909b23326025b}
+      \strng{authorbibnamehash}{255fe08c30f5d815cb6909b23326025b}
+      \strng{authornamehash}{255fe08c30f5d815cb6909b23326025b}
+      \strng{authorfullhash}{31754ce46d99d65a17e649239909d2cb}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Computers \& Fluids}
+      \field{title}{Highly efficient computation of Finite-Time Lyapunov Exponents (FTLE) on GPUs based on three-dimensional SPH datasets}
+      \field{volume}{175}
+      \field{year}{2018}
+      \field{pages}{129\bibrangedash 141}
+      \range{pages}{13}
+    \endentry
+    \entry{DiMascio2017}{article}{}
+      \name{author}{4}{}{%
+        {{un=0,uniquepart=base,hash=b05e8b58baaad76da315491056fb98dd}{%
+           family={{Di Mascio}},
+           familyi={D\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=e120b87127fc7fefaff9d87948a57643}{%
+           family={Antuono},
+           familyi={A\bibinitperiod},
+           given={M.},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=72f6d6cdd32c1742c8e022c0422b8ce5}{%
+           family={Colagrossi},
+           familyi={C\bibinitperiod},
+           given={A.},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=7eea05138c86a898c791a2beeb567fef}{%
+           family={Marrone},
+           familyi={M\bibinitperiod},
+           given={S.},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{465c56cf3efc85be3f2c710361d1e875}
+      \strng{fullhash}{9aa8d8bfb5cfc9c541b55348d441a910}
+      \strng{bibnamehash}{465c56cf3efc85be3f2c710361d1e875}
+      \strng{authorbibnamehash}{465c56cf3efc85be3f2c710361d1e875}
+      \strng{authornamehash}{465c56cf3efc85be3f2c710361d1e875}
+      \strng{authorfullhash}{9aa8d8bfb5cfc9c541b55348d441a910}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{The Smoothed Particle Hydrodynamics (SPH) method, often used for the modelling of the Navier-Stokes equations by a meshless Lagrangian approach, is revisited from the point of view of Large Eddy Simulation (LES). To this aim, the LES filtering procedure is recast in a Lagrangian framework by defining a filter that moves with the positions of the fluid particles at the filtered velocity. It is shown that the SPH smoothing procedure can be reinterpreted as a sort of LES Lagrangian filtering, and that, besides the terms coming from the LES convolution, additional contributions (never accounted for in the SPH literature) appear in the equations when formulated in a filtered fashion. Appropriate closure formulas are derived for the additional terms and a preliminary numerical test is provided to show the main features of the proposed LES-SPH model.}
+      \field{annotation}{Has detailed derivation}
+      \field{isbn}{0351010351}
+      \field{issn}{10897666}
+      \field{journaltitle}{Physics of Fluids}
+      \field{number}{3}
+      \field{title}{{Smoothed particle hydrodynamics method from a large eddy simulation perspective}}
+      \field{volume}{29}
+      \field{year}{2017}
+      \verb{doi}
+      \verb 10.1063/1.4978274
+      \endverb
+    \endentry
+    \entry{drikakis2001spurious}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=67d7db7053642cc1830e3b2630400eea}{%
+           family={Drikakis},
+           familyi={D\bibinitperiod},
+           given={Dimitris},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=ac870be4d590a1f1008633458cf641c5}{%
+           family={Smolarkiewicz},
+           familyi={S\bibinitperiod},
+           given={Piotr\bibnamedelima K},
+           giveni={P\bibinitperiod\bibinitdelim K\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{c5c4a4e720660da608f572b4802afa1b}
+      \strng{fullhash}{c5c4a4e720660da608f572b4802afa1b}
+      \strng{bibnamehash}{c5c4a4e720660da608f572b4802afa1b}
+      \strng{authorbibnamehash}{c5c4a4e720660da608f572b4802afa1b}
+      \strng{authornamehash}{c5c4a4e720660da608f572b4802afa1b}
+      \strng{authorfullhash}{c5c4a4e720660da608f572b4802afa1b}
+      \field{sortinit}{D}
+      \field{sortinithash}{6f385f66841fb5e82009dc833c761848}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Computational physics}
+      \field{number}{1}
+      \field{title}{On spurious vortical structures}
+      \field{volume}{172}
+      \field{year}{2001}
+      \field{pages}{309\bibrangedash 325}
+      \range{pages}{17}
     \endentry
     \entry{frigo2005design}{article}{}
       \name{author}{2}{}{%
@@ -370,6 +710,69 @@
       \verb 10.1142/S0578563404000872
       \endverb
       \keyw{Breakwater,Large eddy simulation,Partially immersed,Regular wave,Smoothed particle hydrodynamics}
+    \endentry
+    \entry{haller2005objective}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=60b58400f1ee801211a968ce965c35f6}{%
+           family={Haller},
+           familyi={H\bibinitperiod},
+           given={George},
+           giveni={G\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Cambridge University Press}%
+      }
+      \strng{namehash}{60b58400f1ee801211a968ce965c35f6}
+      \strng{fullhash}{60b58400f1ee801211a968ce965c35f6}
+      \strng{bibnamehash}{60b58400f1ee801211a968ce965c35f6}
+      \strng{authorbibnamehash}{60b58400f1ee801211a968ce965c35f6}
+      \strng{authornamehash}{60b58400f1ee801211a968ce965c35f6}
+      \strng{authorfullhash}{60b58400f1ee801211a968ce965c35f6}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of fluid mechanics}
+      \field{title}{An objective definition of a vortex}
+      \field{volume}{525}
+      \field{year}{2005}
+      \field{pages}{1\bibrangedash 26}
+      \range{pages}{26}
+    \endentry
+    \entry{hardy1982formulas}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=d9c241105714dbff9064816e61d0ade6}{%
+           family={Hardy},
+           familyi={H\bibinitperiod},
+           given={Robert\bibnamedelima J},
+           giveni={R\bibinitperiod\bibinitdelim J\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {American Institute of Physics}%
+      }
+      \strng{namehash}{d9c241105714dbff9064816e61d0ade6}
+      \strng{fullhash}{d9c241105714dbff9064816e61d0ade6}
+      \strng{bibnamehash}{d9c241105714dbff9064816e61d0ade6}
+      \strng{authorbibnamehash}{d9c241105714dbff9064816e61d0ade6}
+      \strng{authornamehash}{d9c241105714dbff9064816e61d0ade6}
+      \strng{authorfullhash}{d9c241105714dbff9064816e61d0ade6}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{The Journal of Chemical Physics}
+      \field{number}{1}
+      \field{title}{Formulas for determining local properties in molecular-dynamics simulations: Shock waves}
+      \field{volume}{76}
+      \field{year}{1982}
+      \field{pages}{622\bibrangedash 628}
+      \range{pages}{7}
     \endentry
     \entry{holm1998euler}{article}{}
       \name{author}{3}{}{%
@@ -615,14 +1018,49 @@
       \field{pages}{212\bibrangedash 221}
       \range{pages}{10}
     \endentry
+    \entry{lancaster1981surfaces}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=f8069af10f00083d34bfc39fd26ee7b3}{%
+           family={Lancaster},
+           familyi={L\bibinitperiod},
+           given={Peter},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=ef80ce34365ca991d3a3e03dd6b9a513}{%
+           family={Salkauskas},
+           familyi={S\bibinitperiod},
+           given={Kes},
+           giveni={K\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{4dc521cb28607111eee10da1a116a99e}
+      \strng{fullhash}{4dc521cb28607111eee10da1a116a99e}
+      \strng{bibnamehash}{4dc521cb28607111eee10da1a116a99e}
+      \strng{authorbibnamehash}{4dc521cb28607111eee10da1a116a99e}
+      \strng{authornamehash}{4dc521cb28607111eee10da1a116a99e}
+      \strng{authorfullhash}{4dc521cb28607111eee10da1a116a99e}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Mathematics of computation}
+      \field{number}{155}
+      \field{title}{Surfaces generated by moving least squares methods}
+      \field{volume}{37}
+      \field{year}{1981}
+      \field{pages}{141\bibrangedash 158}
+      \range{pages}{18}
+    \endentry
     \entry{li2004wave}{article}{}
       \name{author}{3}{}{%
-        {{un=0,uniquepart=base,hash=a3c04d6b15c10149a8e0bf09271050b2}{%
+        {{un=1,uniquepart=given,hash=a3c04d6b15c10149a8e0bf09271050b2}{%
            family={Li},
            familyi={L\bibinitperiod},
            given={Tingqiu},
            giveni={T\bibinitperiod},
-           givenun=0}}%
+           givenun=1}}%
         {{un=0,uniquepart=base,hash=181e0057d1794c088acf6b3a4c6c2e2c}{%
            family={Troch},
            familyi={T\bibinitperiod},
@@ -658,6 +1096,156 @@
       \field{year}{2004}
       \field{pages}{686\bibrangedash 726}
       \range{pages}{41}
+    \endentry
+    \entry{li2008public}{article}{}
+      \name{author}{9}{}{%
+        {{un=1,uniquepart=given,hash=cf1f0547c288eff0857572dcc12516bb}{%
+           family={Li},
+           familyi={L\bibinitperiod},
+           given={Yi},
+           giveni={Y\bibinitperiod},
+           givenun=1}}%
+        {{un=0,uniquepart=base,hash=afa026d7d83cd858c802cc5c1866bfff}{%
+           family={Perlman},
+           familyi={P\bibinitperiod},
+           given={Eric},
+           giveni={E\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=bcd0273bba861912d486a4938c7627e2}{%
+           family={Wan},
+           familyi={W\bibinitperiod},
+           given={Minping},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=28869e55c4dee13b61518844a27290e3}{%
+           family={Yang},
+           familyi={Y\bibinitperiod},
+           given={Yunke},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=58a9ae49c9f5acec6314c7fe3760b938}{%
+           family={Meneveau},
+           familyi={M\bibinitperiod},
+           given={Charles},
+           giveni={C\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=e4052db41a87cae56addb18d98501100}{%
+           family={Burns},
+           familyi={B\bibinitperiod},
+           given={Randal},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=2af8af9ddb27d1fbb827b4f9306ed10f}{%
+           family={Chen},
+           familyi={C\bibinitperiod},
+           given={Shiyi},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=1c47715bd1910b45a34509d7d3736935}{%
+           family={Szalay},
+           familyi={S\bibinitperiod},
+           given={Alexander},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=4aed97fe991de4cb82bc3cf1c2d64abf}{%
+           family={Eyink},
+           familyi={E\bibinitperiod},
+           given={Gregory},
+           giveni={G\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Taylor \& Francis}%
+      }
+      \strng{namehash}{677a69f08dadda0d77c611bf2804acaa}
+      \strng{fullhash}{8467ca9864a49ecee1b15d437619a81c}
+      \strng{bibnamehash}{677a69f08dadda0d77c611bf2804acaa}
+      \strng{authorbibnamehash}{677a69f08dadda0d77c611bf2804acaa}
+      \strng{authornamehash}{677a69f08dadda0d77c611bf2804acaa}
+      \strng{authorfullhash}{8467ca9864a49ecee1b15d437619a81c}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Turbulence}
+      \field{number}{9}
+      \field{title}{A public turbulence database cluster and applications to study Lagrangian evolution of velocity increments in turbulence}
+      \field{year}{2008}
+      \field{pages}{N31}
+      \range{pages}{-1}
+    \endentry
+    \entry{Liu2019}{inproceedings}{}
+      \name{author}{6}{}{%
+        {{un=1,uniquepart=given,hash=15a80aa3eb9db8fae7158651efed9e69}{%
+           family={Liu},
+           familyi={L\bibinitperiod},
+           given={Sinuo},
+           giveni={S\bibinitperiod},
+           givenun=1}}%
+        {{un=0,uniquepart=base,hash=f642ce1ec35e27f6f876d4f99c4c6f4f}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Xiaokun},
+           giveni={X\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=641f39b23be47c7d15bea4cb88fa9543}{%
+           family={Ban},
+           familyi={B\bibinitperiod},
+           given={Xiaojuan},
+           giveni={X\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=3eaa0ee4a635b42a469c816ed50ac335}{%
+           family={Xu},
+           familyi={X\bibinitperiod},
+           given={Yanrui},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=ac696aa3d4b6ac91f76d77e438aadcbf}{%
+           family={Zhou},
+           familyi={Z\bibinitperiod},
+           given={Jing},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=fdfeb4b1b07696243cfb318e3e24984a}{%
+           family={Zhang},
+           familyi={Z\bibinitperiod},
+           given={Yalan},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {IEEE}%
+      }
+      \strng{namehash}{6e45fc11f6a18db8adf3e6aedb9944d2}
+      \strng{fullhash}{1523b488a7e2b9249ce0047c0bd45f20}
+      \strng{bibnamehash}{6e45fc11f6a18db8adf3e6aedb9944d2}
+      \strng{authorbibnamehash}{6e45fc11f6a18db8adf3e6aedb9944d2}
+      \strng{authornamehash}{6e45fc11f6a18db8adf3e6aedb9944d2}
+      \strng{authorfullhash}{1523b488a7e2b9249ce0047c0bd45f20}
+      \field{sortinit}{L}
+      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{978-1-7281-1377-7}
+      \field{journaltitle}{2019 IEEE Conference on Virtual Reality and 3D User Interfaces (VR)}
+      \field{month}{3}
+      \field{title}{Viscosity-based Vorticity Correction for Turbulent SPH Fluids}
+      \field{year}{2019}
+      \field{pages}{1048\bibrangedash 1049}
+      \range{pages}{2}
+      \verb{doi}
+      \verb 10.1109/VR.2019.8798224
+      \endverb
+      \verb{urlraw}
+      \verb https://ieeexplore.ieee.org/document/8798224/
+      \endverb
+      \verb{url}
+      \verb https://ieeexplore.ieee.org/document/8798224/
+      \endverb
     \endentry
     \entry{Marsden2001}{article}{}
       \name{author}{2}{}{%
@@ -702,6 +1290,44 @@
       \verb :D$\backslash$:/IIT Bombay - Miscellaneous/Research Papers/Dual Degree Programme/Global well–posedness for the Lagrangian averaged Navier–Stokes (LANS–$\alpha$) equations on bounded domains.pdf:pdf
       \endverb
       \keyw{Averaging,Euler equations,Large-scale flow,Navier-Stokes,Turbulence}
+    \endentry
+    \entry{minion1997performance}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=54b5958334469e46f39808e2a3d7e3a5}{%
+           family={Minion},
+           familyi={M\bibinitperiod},
+           given={Michael\bibnamedelima L},
+           giveni={M\bibinitperiod\bibinitdelim L\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=c8e5e49ac2907aad172e4a9412e593e3}{%
+           family={Brown},
+           familyi={B\bibinitperiod},
+           given={David\bibnamedelima L},
+           giveni={D\bibinitperiod\bibinitdelim L\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{d33f0cb4c1ee25df17b8961efdf3c67a}
+      \strng{fullhash}{d33f0cb4c1ee25df17b8961efdf3c67a}
+      \strng{bibnamehash}{d33f0cb4c1ee25df17b8961efdf3c67a}
+      \strng{authorbibnamehash}{d33f0cb4c1ee25df17b8961efdf3c67a}
+      \strng{authornamehash}{d33f0cb4c1ee25df17b8961efdf3c67a}
+      \strng{authorfullhash}{d33f0cb4c1ee25df17b8961efdf3c67a}
+      \field{sortinit}{M}
+      \field{sortinithash}{4625c616857f13d17ce56f7d4f97d451}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of Computational Physics}
+      \field{number}{2}
+      \field{title}{Performance of under-resolved two-dimensional incompressible flow simulations, II}
+      \field{volume}{138}
+      \field{year}{1997}
+      \field{pages}{734\bibrangedash 765}
+      \range{pages}{32}
     \endentry
     \entry{Mohseni2003}{article}{}
       \name{author}{4}{}{%
@@ -1004,6 +1630,152 @@
       \field{pages}{214\bibrangedash 226}
       \range{pages}{13}
     \endentry
+    \entry{nicoud2011using}{article}{}
+      \name{author}{5}{}{%
+        {{un=0,uniquepart=base,hash=d3a7c219cb3df768ca8bf1c1db19107e}{%
+           family={Nicoud},
+           familyi={N\bibinitperiod},
+           given={Franck},
+           giveni={F\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=d9e8bc5ab89991c5b321d4620f75d2dc}{%
+           family={Toda},
+           familyi={T\bibinitperiod},
+           given={Hubert\bibnamedelima Baya},
+           giveni={H\bibinitperiod\bibinitdelim B\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=741856746abaa5a40f6a9eb9fb23c8c9}{%
+           family={Cabrit},
+           familyi={C\bibinitperiod},
+           given={Olivier},
+           giveni={O\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=deb6d4231b6bb0beb2b54dfbdab68871}{%
+           family={Bose},
+           familyi={B\bibinitperiod},
+           given={Sanjeeb},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=4065db6f66ee07365dbb9f3eb964f207}{%
+           family={Lee},
+           familyi={L\bibinitperiod},
+           given={Jungil},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {American Institute of Physics}%
+      }
+      \strng{namehash}{e529f67212e7d26285a8474939a684a1}
+      \strng{fullhash}{6d34c87e543094ed300e2ff125cd5ee1}
+      \strng{bibnamehash}{e529f67212e7d26285a8474939a684a1}
+      \strng{authorbibnamehash}{e529f67212e7d26285a8474939a684a1}
+      \strng{authornamehash}{e529f67212e7d26285a8474939a684a1}
+      \strng{authorfullhash}{6d34c87e543094ed300e2ff125cd5ee1}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Physics of fluids}
+      \field{number}{8}
+      \field{title}{Using singular values to build a subgrid-scale model for large eddy simulations}
+      \field{volume}{23}
+      \field{year}{2011}
+      \field{pages}{085106}
+      \range{pages}{1}
+    \endentry
+    \entry{Obeidat2018}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=c8ac04c4e5f2c0ce7264aa3b2f7c9d2d}{%
+           family={Obeidat},
+           familyi={O\bibinitperiod},
+           given={Anas},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=a6105a6431a5d62dc6519e53d78a0c09}{%
+           family={Bordas},
+           familyi={B\bibinitperiod},
+           given={Stéphane\bibnamedelima P.A.},
+           giveni={S\bibinitperiod\bibinitdelim P\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{6e62f40452f058d17f92a117dc4d9a10}
+      \strng{fullhash}{6e62f40452f058d17f92a117dc4d9a10}
+      \strng{bibnamehash}{6e62f40452f058d17f92a117dc4d9a10}
+      \strng{authorbibnamehash}{6e62f40452f058d17f92a117dc4d9a10}
+      \strng{authornamehash}{6e62f40452f058d17f92a117dc4d9a10}
+      \strng{authorfullhash}{6e62f40452f058d17f92a117dc4d9a10}
+      \field{sortinit}{O}
+      \field{sortinithash}{2cd7140a07aea5341f9e2771efe90aae}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{We present a remeshed particle-mesh method for the simulation of three-dimensional compressible turbulent flow. The method is related to the meshfree smoothed particle hydrodynamics method, but the present method introduces a mesh for efficient calculation of the pressure gradient, and laminar and turbulent diffusion. In addition, the mesh is used to remesh (reorganise uniformly) the particles to ensure a regular particle distribution and convergence of the method. The accuracy of the presented methodology is tested for a number of benchmark problems involving two- and three-dimensional Taylor-Green flow, thin double shear layer, and three-dimensional isotropic turbulence. Two models were implemented, direct numerical simulations, and Smagorinsky model. Taking advantage of the Lagrangian advection, and the finite difference efficiency, the method is capable of providing quality simulations while maintaining its robustness and versatility.}
+      \field{issn}{10970363}
+      \field{issue}{1}
+      \field{journaltitle}{International Journal for Numerical Methods in Fluids}
+      \field{title}{Three-dimensional remeshed smoothed particle hydrodynamics for the simulation of isotropic turbulence}
+      \field{volume}{86}
+      \field{year}{2018}
+      \field{pages}{1\bibrangedash 19}
+      \range{pages}{19}
+      \verb{doi}
+      \verb 10.1002/fld.4405
+      \endverb
+      \keyw{remesh smoothed particle hydrodynamics,three-dimensional isotropic decaying turbulence,turbulent flow}
+    \endentry
+    \entry{Okraschevski2022}{article}{}
+      \name{author}{4}{}{%
+        {{un=0,uniquepart=base,hash=5c618f9db506feb147f2ab56eb37d1f4}{%
+           family={Okraschevski},
+           familyi={O\bibinitperiod},
+           given={Max},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=e94f3900c6327e7775bd811c41468136}{%
+           family={Bürkle},
+           familyi={B\bibinitperiod},
+           given={Niklas},
+           giveni={N\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=7d1a14ef4311ed96a24399c579c84ac4}{%
+           family={Koch},
+           familyi={K\bibinitperiod},
+           given={Rainer},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=15d8640a348129ccb668ee673aa2cc28}{%
+           family={Bauer},
+           familyi={B\bibinitperiod},
+           given={Hans-Jörg},
+           giveni={H\bibinithyphendelim J\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{3689551363bfda1572ea555aac12418f}
+      \strng{fullhash}{eba0023515c80722eb754259283509ef}
+      \strng{bibnamehash}{3689551363bfda1572ea555aac12418f}
+      \strng{authorbibnamehash}{3689551363bfda1572ea555aac12418f}
+      \strng{authornamehash}{3689551363bfda1572ea555aac12418f}
+      \strng{authorfullhash}{eba0023515c80722eb754259283509ef}
+      \field{sortinit}{O}
+      \field{sortinithash}{2cd7140a07aea5341f9e2771efe90aae}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{In this work we will identify a novel relation between Smoothed Particle Hydrodynamics (SPH) and explicit Large Eddy Simulation (LES) using a coarse-graining method from Non-Equilibrium Molecular Dynamics (NEMD). While the current literature points at the conclusion that characteristic SPH issues become restrictive for subsonic turbulent flows, we see the potential to mitigate these SPH issues by explicit subfilter stress (SFS) modelling. We verify our theory by various simulations of homogeneous, isotropic turbulence (HIT) at $Re=10^4$ and compare the results to a Direct Numerical Simulation (DNS) reported by Dairay et al. (2017). Although the simulations substantiate our theory, we see another issue arising, which is conceptually rooted in the particle itself, termed as Particle Duality. Finally, we conclude our work by acknowledging SPH as coarse-graining method for turbulent flows, highlighting its capabilities and limitations.}
+      \field{title}{Smoothed Particle Hydrodynamics Physically Reconsidered -- The Relation to Explicit Large Eddy Simulation and the Issue of Particle Duality}
+      \field{year}{2022}
+      \verb{urlraw}
+      \verb http://arxiv.org/abs/2206.10127
+      \endverb
+      \verb{url}
+      \verb http://arxiv.org/abs/2206.10127
+      \endverb
+    \endentry
     \entry{panizzo2004physical}{thesis}{}
       \name{author}{1}{}{%
         {{un=0,uniquepart=base,hash=ed4ff864c766e2bc35b9c150e95204ae}{%
@@ -1031,6 +1803,62 @@
       \field{title}{Physical and numerical modelling of subaerial landslide generated waves}
       \field{type}{phdthesis}
       \field{year}{2004}
+    \endentry
+    \entry{pereira2021modeling}{article}{}
+      \name{author}{5}{}{%
+        {{un=0,uniquepart=base,hash=084ca3c9ccf13bdd405928c2211d727e}{%
+           family={Pereira},
+           familyi={P\bibinitperiod},
+           given={Filipe\bibnamedelima S},
+           giveni={F\bibinitperiod\bibinitdelim S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=e6f5c2f750313b8292f7dd5f0f78294f}{%
+           family={Grinstein},
+           familyi={G\bibinitperiod},
+           given={FF},
+           giveni={F\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=2df539644a86c5d645b56edba7e768f3}{%
+           family={Israel},
+           familyi={I\bibinitperiod},
+           given={Daniel\bibnamedelima M},
+           giveni={D\bibinitperiod\bibinitdelim M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=90ea96906ed760514aae20948bbb47be}{%
+           family={Rauenzahn},
+           familyi={R\bibinitperiod},
+           given={Rick},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=cb4491dd61d10d000b88faa4fff3ae88}{%
+           family={Girimaji},
+           familyi={G\bibinitperiod},
+           given={Sharath\bibnamedelima S},
+           giveni={S\bibinitperiod\bibinitdelim S\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {APS}%
+      }
+      \strng{namehash}{4751107c03e270ad1dccd5228cebbb9e}
+      \strng{fullhash}{aaedae7029504526e3c94c4832890134}
+      \strng{bibnamehash}{4751107c03e270ad1dccd5228cebbb9e}
+      \strng{authorbibnamehash}{4751107c03e270ad1dccd5228cebbb9e}
+      \strng{authornamehash}{4751107c03e270ad1dccd5228cebbb9e}
+      \strng{authorfullhash}{aaedae7029504526e3c94c4832890134}
+      \field{sortinit}{P}
+      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Physical Review Fluids}
+      \field{number}{5}
+      \field{title}{Modeling and simulation of transitional Taylor-Green vortex flow with partially averaged Navier-Stokes equations}
+      \field{volume}{6}
+      \field{year}{2021}
+      \field{pages}{054611}
+      \range{pages}{1}
     \endentry
     \entry{pope1994lagrangi}{article}{}
       \name{author}{1}{}{%
@@ -1092,6 +1920,92 @@
       \field{labeltitlesource}{title}
       \field{title}{Turbulent flows}
       \field{year}{2000}
+    \endentry
+    \entry{Ramachandran2019}{article}{}
+      \name{author}{2}{}{%
+        {{un=0,uniquepart=base,hash=b256959149623f677ad5b3c134dbaea4}{%
+           family={Ramachandran},
+           familyi={R\bibinitperiod},
+           given={Prabhu},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=74d9f9361c0121b8dbed8c33273ecba8}{%
+           family={Puri},
+           familyi={P\bibinitperiod},
+           given={Kunal},
+           giveni={K\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{e1053a612e6a2ef9d3c01022871a93ac}
+      \strng{fullhash}{e1053a612e6a2ef9d3c01022871a93ac}
+      \strng{bibnamehash}{e1053a612e6a2ef9d3c01022871a93ac}
+      \strng{authorbibnamehash}{e1053a612e6a2ef9d3c01022871a93ac}
+      \strng{authornamehash}{e1053a612e6a2ef9d3c01022871a93ac}
+      \strng{authorfullhash}{e1053a612e6a2ef9d3c01022871a93ac}
+      \field{sortinit}{R}
+      \field{sortinithash}{5e1c39a9d46ffb6bebd8f801023a9486}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{In this paper, the Entropically Damped Artificial Compressibility (EDAC) formulation of Clausen (2013) is used in the context of the Smoothed Particle Hydrodynamics (SPH) method for the simulation of incompressible fluids. Traditionally, weakly-compressible SPH (WCSPH) formulations have employed artificial compressiblity to simulate incompressible fluids. EDAC is an alternative to the artificial compressiblity scheme wherein a pressure evolution equation is solved in lieu of coupling the fluid density to the pressure by an equation of state. The method is explicit and is easy to incorporate into existing SPH solvers using the WCSPH formulation. This is demonstrated by coupling the EDAC scheme with the recently proposed Transport Velocity Formulation (TVF) of Adami et al. (2013). The method works for both internal flows and for flows with a free surface. Several benchmark problems are considered to evaluate the proposed scheme and it is found that the EDAC scheme gives results that are as good or sometimes better than those produced by the TVF or standard WCSPH. The scheme is robust and produces smooth pressure distributions and does not require the use of an artificial viscosity in the momentum equation although using some artificial viscosity is beneficial.}
+      \field{eprinttype}{arXiv}
+      \field{issn}{00457930}
+      \field{journaltitle}{Computers and Fluids}
+      \field{month}{12}
+      \field{title}{{Entropically damped artificial compressibility for SPH}}
+      \field{volume}{179}
+      \field{year}{2019}
+      \field{pages}{579\bibrangedash 594}
+      \range{pages}{16}
+      \verb{doi}
+      \verb 10.1016/j.compfluid.2018.11.023
+      \endverb
+      \verb{eprint}
+      \verb 1612.05901
+      \endverb
+      \verb{file}
+      \verb :D$\backslash$:/IIT Bombay - Miscellaneous/Research Papers/Dual Degree Programme/Entropically Damped Artificial Compressibility for SPH.pdf:pdf
+      \endverb
+      \verb{urlraw}
+      \verb http://arxiv.org/abs/1612.05901 http://dx.doi.org/10.1016/j.compfluid.2018.11.023
+      \endverb
+      \verb{url}
+      \verb http://arxiv.org/abs/1612.05901%20http://dx.doi.org/10.1016/j.compfluid.2018.11.023
+      \endverb
+      \keyw{Artificial Compressibility,Entropically Damped Artificial Compressibility,Free Surface Flows,SPH}
+    \endentry
+    \entry{rennehan2021mixing}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=ce429480fafe03bc493a1d47c908e002}{%
+           family={Rennehan},
+           familyi={R\bibinitperiod},
+           given={Douglas},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Oxford University Press}%
+      }
+      \strng{namehash}{ce429480fafe03bc493a1d47c908e002}
+      \strng{fullhash}{ce429480fafe03bc493a1d47c908e002}
+      \strng{bibnamehash}{ce429480fafe03bc493a1d47c908e002}
+      \strng{authorbibnamehash}{ce429480fafe03bc493a1d47c908e002}
+      \strng{authornamehash}{ce429480fafe03bc493a1d47c908e002}
+      \strng{authorfullhash}{ce429480fafe03bc493a1d47c908e002}
+      \field{sortinit}{R}
+      \field{sortinithash}{5e1c39a9d46ffb6bebd8f801023a9486}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Monthly Notices of the Royal Astronomical Society}
+      \field{number}{2}
+      \field{title}{Mixing matters}
+      \field{volume}{506}
+      \field{year}{2021}
+      \field{pages}{2836\bibrangedash 2852}
+      \range{pages}{17}
     \endentry
     \entry{ROGERS2005}{inproceedings}{}
       \name{author}{2}{}{%
@@ -1217,6 +2131,94 @@
       \verb https://www.tandfonline.com/doi/full/10.1080/00221680509500122
       \endverb
     \endentry
+    \entry{shepard1968two}{inproceedings}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=78cd126471284a5ffdeda7e8bf88b8ff}{%
+           family={Shepard},
+           familyi={S\bibinitperiod},
+           given={Donald},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{78cd126471284a5ffdeda7e8bf88b8ff}
+      \strng{fullhash}{78cd126471284a5ffdeda7e8bf88b8ff}
+      \strng{bibnamehash}{78cd126471284a5ffdeda7e8bf88b8ff}
+      \strng{authorbibnamehash}{78cd126471284a5ffdeda7e8bf88b8ff}
+      \strng{authornamehash}{78cd126471284a5ffdeda7e8bf88b8ff}
+      \strng{authorfullhash}{78cd126471284a5ffdeda7e8bf88b8ff}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 1968 23rd ACM national conference}
+      \field{title}{A two-dimensional interpolation function for irregularly-spaced data}
+      \field{year}{1968}
+      \field{pages}{517\bibrangedash 524}
+      \range{pages}{8}
+    \endentry
+    \entry{Shi2013}{article}{}
+      \name{author}{4}{}{%
+        {{un=0,uniquepart=base,hash=ea96b0ef965cf45b9f6a525d9fbbd085}{%
+           family={Shi},
+           familyi={S\bibinitperiod},
+           given={Yilei},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=e5e6aebfefcbe0d7c5db556334617b20}{%
+           family={Zhu},
+           familyi={Z\bibinitperiod},
+           given={Xiao\bibnamedelima Xiang},
+           giveni={X\bibinitperiod\bibinitdelim X\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=ddfacdb2781cba5b497065b8a4d0387f}{%
+           family={Ellero},
+           familyi={E\bibinitperiod},
+           given={Marco},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=54d047106356f745398344726a0428ec}{%
+           family={Adams},
+           familyi={A\bibinitperiod},
+           given={Nikolaus\bibnamedelima A.},
+           giveni={N\bibinitperiod\bibinitdelim A\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier Ltd}%
+      }
+      \strng{namehash}{4056c9f6e9ca4c072272590e7a721351}
+      \strng{fullhash}{7d9441d78d0d5304d72ba4712da7a3a8}
+      \strng{bibnamehash}{4056c9f6e9ca4c072272590e7a721351}
+      \strng{authorbibnamehash}{4056c9f6e9ca4c072272590e7a721351}
+      \strng{authornamehash}{4056c9f6e9ca4c072272590e7a721351}
+      \strng{authorfullhash}{7d9441d78d0d5304d72ba4712da7a3a8}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{abstract}{Direct evaluation of energy spectra in purely Lagrangian meshless methods is a challenging task. On the other hand, improvement of turbulence modeling in a Lagrangian framework relies strongly on our ability to estimate energy spectra up to the maximally resolved wavenumber. In this paper we compare different strategies to extract energy spectra from a velocity field defined on a scattered set of points. Spectra can be directly evaluated from irregularly distributed sample by using Discrete Fourier Transform (DFT) and their regularized versions. Alternative procedures require a preliminary interpolation into a grid where, on a second stage, a Fourier analysis can be performed. As a last approach a Moving Least Squares (MLSs) technique for preliminary interpolation is investigated and the results are discussed. Although exhibiting good accuracy in the low-moderate wavenumber window, the first two strategies introduce unacceptable large errors in the near-maximal-resolved wavenumber, where the highest accuracy is often required. Here we propose a second-order Moving Least Squares (MLSs) scheme as an optimal tool that allows us to reproduce precisely the energy spectrum over the entire wavenumber window. We discuss the importance of this result with respect to the development of accurate turbulence models for purely Lagrangian meshless methods. © 2013 Elsevier Ltd.}
+      \field{issn}{00457930}
+      \field{journaltitle}{Computers and Fluids}
+      \field{title}{Analysis of interpolation schemes for the accurate estimation of energy spectrum in Lagrangian methods}
+      \field{volume}{82}
+      \field{year}{2013}
+      \field{pages}{122\bibrangedash 131}
+      \range{pages}{10}
+      \verb{doi}
+      \verb 10.1016/j.compfluid.2013.05.003
+      \endverb
+      \verb{urlraw}
+      \verb http://dx.doi.org/10.1016/j.compfluid.2013.05.003
+      \endverb
+      \verb{url}
+      \verb http://dx.doi.org/10.1016/j.compfluid.2013.05.003
+      \endverb
+      \keyw{Energy spectrum,Lagrangian methods,Turbulence modelling}
+    \endentry
     \entry{smagorinsky1963general}{article}{}
       \name{author}{1}{}{%
         {{un=0,uniquepart=base,hash=c2a35c5f70908a69212ea4d01722083a}{%
@@ -1249,6 +2251,110 @@
       \field{pages}{99\bibrangedash 164}
       \range{pages}{66}
     \endentry
+    \entry{sun2016detection}{article}{}
+      \name{author}{4}{ul=2}{%
+        {{un=0,uniquepart=base,hash=0442f0db88267b71ac41b306c92c6a8c}{%
+           family={Sun},
+           familyi={S\bibinitperiod},
+           given={PN},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=72f6d6cdd32c1742c8e022c0422b8ce5}{%
+           family={Colagrossi},
+           familyi={C\bibinitperiod},
+           given={A},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=7eea05138c86a898c791a2beeb567fef}{%
+           family={Marrone},
+           familyi={M\bibinitperiod},
+           given={S},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=e5204a16bbfe7b8f58650062c6ecf5e5}{%
+           family={Zhang},
+           familyi={Z\bibinitperiod},
+           given={AM},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{9136642804e89fc1a365180c7aa345aa}
+      \strng{fullhash}{b32f3e3bf27efc53aad0b2768f28e7d0}
+      \strng{bibnamehash}{9136642804e89fc1a365180c7aa345aa}
+      \strng{authorbibnamehash}{9136642804e89fc1a365180c7aa345aa}
+      \strng{authornamehash}{9136642804e89fc1a365180c7aa345aa}
+      \strng{authorfullhash}{b32f3e3bf27efc53aad0b2768f28e7d0}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Computer Methods in Applied Mechanics and Engineering}
+      \field{title}{Detection of Lagrangian coherent structures in the SPH framework}
+      \field{volume}{305}
+      \field{year}{2016}
+      \field{pages}{849\bibrangedash 868}
+      \range{pages}{20}
+    \endentry
+    \entry{sun2018multi}{article}{}
+      \name{author}{5}{ul=2}{%
+        {{un=0,uniquepart=base,hash=0442f0db88267b71ac41b306c92c6a8c}{%
+           family={Sun},
+           familyi={S\bibinitperiod},
+           given={PN},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+        {{un=2,uniquepart=given,hash=29801d4418d5a181343463050d5f1844}{%
+           family={Colagrossi},
+           familyi={C\bibinitperiod},
+           given={Andrea},
+           giveni={A\bibinitperiod},
+           givenun=2}}%
+        {{un=0,uniquepart=base,hash=d212092d16dbf0d5565ee6e34fd6cfe3}{%
+           family={Marrone},
+           familyi={M\bibinitperiod},
+           given={Salvatore},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=cd8dfa1eb95d9d2160f66601e4f23f2d}{%
+           family={Antuono},
+           familyi={A\bibinitperiod},
+           given={Matteo},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=e5204a16bbfe7b8f58650062c6ecf5e5}{%
+           family={Zhang},
+           familyi={Z\bibinitperiod},
+           given={AM},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{946f54800affab0e90a88066bd7d79bf}
+      \strng{fullhash}{4243f69708cdcb7cf326a0d942bb1086}
+      \strng{bibnamehash}{946f54800affab0e90a88066bd7d79bf}
+      \strng{authorbibnamehash}{946f54800affab0e90a88066bd7d79bf}
+      \strng{authornamehash}{946f54800affab0e90a88066bd7d79bf}
+      \strng{authorfullhash}{4243f69708cdcb7cf326a0d942bb1086}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Computer Physics Communications}
+      \field{title}{Multi-resolution Delta-plus-SPH with tensile instability control: Towards high Reynolds number flows}
+      \field{volume}{224}
+      \field{year}{2018}
+      \field{pages}{63\bibrangedash 80}
+      \range{pages}{18}
+    \endentry
     \entry{Synolakis1986}{thesis}{}
       \name{author}{1}{}{%
         {{un=0,uniquepart=base,hash=53b2d6a6aa04299e6efe025931585c35}{%
@@ -1276,6 +2382,35 @@
       \field{title}{The runup of long waves}
       \field{type}{phdthesis}
       \field{year}{1986}
+    \endentry
+    \entry{taneda1977visual}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=9ec15015b496b23d3de616866c9da807}{%
+           family={Taneda},
+           familyi={T\bibinitperiod},
+           given={Sadatoshi},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{9ec15015b496b23d3de616866c9da807}
+      \strng{fullhash}{9ec15015b496b23d3de616866c9da807}
+      \strng{bibnamehash}{9ec15015b496b23d3de616866c9da807}
+      \strng{authorbibnamehash}{9ec15015b496b23d3de616866c9da807}
+      \strng{authornamehash}{9ec15015b496b23d3de616866c9da807}
+      \strng{authorfullhash}{9ec15015b496b23d3de616866c9da807}
+      \field{sortinit}{T}
+      \field{sortinithash}{9af77f0292593c26bde9a56e688eaee9}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Progress in Aerospace Sciences}
+      \field{number}{4}
+      \field{title}{Visual study of unsteady separated flows around bodies}
+      \field{volume}{17}
+      \field{year}{1977}
+      \field{pages}{287\bibrangedash 348}
+      \range{pages}{62}
     \endentry
     \entry{VIOLEAU2002}{inproceedings}{}
       \name{author}{3}{}{%
@@ -1343,12 +2478,12 @@
            given={Dong},
            giveni={D\bibinitperiod},
            givenun=0}}%
-        {{un=0,uniquepart=base,hash=684774792811115904df9ed4f6655ed7}{%
+        {{un=1,uniquepart=given,hash=684774792811115904df9ed4f6655ed7}{%
            family={Liu},
            familyi={L\bibinitperiod},
            given={Philip\bibnamedelima L.F.},
            giveni={P\bibinitperiod\bibinitdelim L\bibinitperiod},
-           givenun=0}}%
+           givenun=1}}%
       }
       \list{publisher}{1}{%
         {Elsevier B.V.}%
@@ -1383,6 +2518,38 @@
       \verb https://doi.org/10.1016/j.coastaleng.2020.103657
       \endverb
       \keyw{2D ISPH,Adaptive boundary condition,Initial seeding,Solitary wave breaking,Turbulent kinetic energy,$k–\epsilon$ model}
+    \endentry
+    \entry{yoshizawa1986statistical}{article}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=8d53764b8b206216616f2622ad5f3f29}{%
+           family={Yoshizawa},
+           familyi={Y\bibinitperiod},
+           given={Akira},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {American Institute of Physics}%
+      }
+      \strng{namehash}{8d53764b8b206216616f2622ad5f3f29}
+      \strng{fullhash}{8d53764b8b206216616f2622ad5f3f29}
+      \strng{bibnamehash}{8d53764b8b206216616f2622ad5f3f29}
+      \strng{authorbibnamehash}{8d53764b8b206216616f2622ad5f3f29}
+      \strng{authornamehash}{8d53764b8b206216616f2622ad5f3f29}
+      \strng{authorfullhash}{8d53764b8b206216616f2622ad5f3f29}
+      \field{sortinit}{Y}
+      \field{sortinithash}{fd67ad5a9ef0f7456bdd9aab10fe1495}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{The Physics of fluids}
+      \field{number}{7}
+      \field{title}{Statistical theory for compressible turbulent shear flows, with the application to subgrid modeling}
+      \field{volume}{29}
+      \field{year}{1986}
+      \field{pages}{2152\bibrangedash 2164}
+      \range{pages}{13}
     \endentry
   \enddatalist
 \endrefsection

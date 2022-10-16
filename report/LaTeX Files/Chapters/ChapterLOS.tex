@@ -21,27 +21,31 @@
 $\vect{a}$              & Vector Field                      \\
 $\tensor{A}$            & Second-rank Tensor Field          \\
 $\BasisVect$            & $i^{th}$ Basis                    \\
+$\otimes$               & Tensor Product                    \\
 $\LagDerivative{()}$    & Lagrangian Derivative             \\
 $\FrobeniusInnerProduct{A}{B}$ & Frobenius Inner Product of $\tensor{A}$ and $\tensor{B}$                                    \\
 $\FrobeniusNorm{A}$            & Frobenius Norm of $\tensor{A}$ $( = \sqrt{\FrobeniusInnerProduct{\tensor{A}}{\tensor{A}}})$ \\
+$\nabla^2$              & Laplacian Operator                \\
 $\Delta ()$             & Component-wise Laplacian Operator \\
 $(1 - \alpha^2 \Delta)$ & Helmholtz Operator                \\
 $i$                     & Reference Particle                \\
-$j$                     & Neighboring Particle              \\
+$j$                     & Neighbouring Particle             \\
 $(...)_{i}$             & Property of $i^{th}$ SPH particle \\
 $(...)_{j}$             & Property of $j^{th}$ SPH particle \\
 $(...)_{ij}$            & $(...)_{i} - (...)_{j}$           \\
 $t$                     & Time                              \\
-$\vect{r}$              & Position                          \\
-$\vect{v}$              & Velocity                          \\
+$\vect{r}$              & Position $=(x, y, z)$             \\
+$\vect{v}$              & Velocity $=(v_x, v_y, v_z)$       \\
 $m$                     & Mass                              \\
 $P$                     & Pressure                          \\
 $\rho$                  & Density                           \\
+$(...)_0$                      & Initial Condition ($(t=0$ of Specified Property                                             \\
 $\Delta t$              & Time Step                         \\
 $\Delta x$              & Inter Particle Spacing            \\
+$\delta (x)$            & Dirac Delta Function              \\
 $W_{h}$                 & SPH Interpolating Kernel          \\
 $h$                     & Kernel Smoothing Length           \\
-$\WIJ$                  & $W(\RIJ, h)$                      \\
+$\WIJ$                  & $W(|\RIJ|, h)$                    \\
 $\DWIJ$                        & $\nabla_i W(\RIJ,h) = \frac{\RIJ}{\RtwoIJ[]} \PartialDerivative[r_i]{\WIJ}$                 \\
 $\Vol_i$                & Volume of $i^{th}$ SPH particle   \\
 $\varphi_i$                    & Particle Density of $i^{th}$ SPH particle                                                   \\
@@ -49,9 +53,9 @@ $\vect{F}$              & External Body Force               \\
 $\nu$                   & Kinematic Viscosity               \\
 $\eta$                  & Dynamic Viscosity $(=\nu \rho)$   \\
 $\MachineEpsilon$       & Machine Epsilon                   \\
-$M_0$                   & Reference Mass                    \\
-$P_0$                   & Reference Pressure                \\
-$\rho_0$                & Reference Density                 \\
+$M_o$                   & Reference Mass                    \\
+$P_o$                   & Reference Pressure                \\
+$\rho_o$                & Reference Density                 \\
 $c_s$                   & Speed of Sound                    \\
 $\gamma$                & Exponent - Equation of State      \\
 $\Vorticity$                   & Vorticity $(=\nabla \times \vect{v})$                                                       \\
@@ -63,5 +67,6 @@ $k$                     & Turbulent Kinetic Energy          \\
 $\tensor{\tau}$         & Stress Tensor                     \\
 $C_s $                  & Smagorinsky Constant              \\
 $u_{max}$               & Maximum Particle Velocity         \\
-$\varepsilon$           & Smoothing Parameter (XSPH)       
+$\varepsilon$           & Smoothing Parameter (XSPH)        \\
+$\WaveNumber$           & Wave Number                      
 \end{longtable}
