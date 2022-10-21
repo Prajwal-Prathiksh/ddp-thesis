@@ -54,8 +54,9 @@
       <file>blx-compat.def</file>
       <file>biblatex.def</file>
       <file>standard.bbx</file>
-      <file>alphabetic.bbx</file>
-      <file>alphabetic.cbx</file>
+      <file>authoryear.bbx</file>
+      <file>authoryear-comp.bbx</file>
+      <file>authoryear-comp.cbx</file>
       <file>biblatex.cfg</file>
       <file>english.lbx</file>
     </requires>
@@ -79,7 +80,7 @@
       <file>main.bcf</file>
     </requires>
     <requires type="editable">
-      <file>references.bib</file>
+      <file>sources.bib</file>
     </requires>
   </external>
 </requests>

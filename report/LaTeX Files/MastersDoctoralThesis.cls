@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Masters/Doctoral Thesis 
+% Masters/Doctoral Thesis
 % Class File
-% Version 1.6 (27/8/17)
+% Version 1.7 (2020-07-20)
 %
 % This class was downloaded from:
 % http://www.LaTeXTemplates.com
@@ -9,6 +9,8 @@
 % Authors:
 % Vel (vel@latextemplates.com)
 % Johannes Böttcher
+%
+% Modified by Nils Höll
 %
 % Notes:
 % 1) This class file defines the structure and layout of the template file (main.tex).
@@ -27,7 +29,7 @@
 
 \NeedsTeXFormat{LaTeX2e}[1996/12/01]
 \newcommand{\classname}{MastersDoctoralThesis}
-\ProvidesClass{\classname}[2017/08/27 v1.6 LaTeXTemplates.com]
+\ProvidesClass{\classname}[2021/01/19 v1.7.2 Thesis]
 \providecommand{\baseclass}{book}
 \RequirePackage{etoolbox}
 \RequirePackage{xparse}
@@ -55,7 +57,7 @@
 
 \LoadClass{\baseclass}
 
-%  Simple interface for the user  to customize the chapter titles 
+%  Simple interface for the user  to customize the chapter titles
 \ProvideDocumentCommand{\abovechapterskip}{}{\vspace*{20pt}}
 \ProvideDocumentCommand{\chapterbelowskip}{}{\vspace*{40pt}}
 \ProvideDocumentCommand{\chapterinbetweenskip}{}{\vspace*{20pt}}
@@ -131,7 +133,7 @@
 %	CLASS OPTIONS
 %----------------------------------------------------------------------------------------
 
-\ifbool{parskip}{\RequirePackage{parskip}} % If the parskip option is passed to the class, require the parskip package 
+\ifbool{parskip}{\RequirePackage{parskip}} % If the parskip option is passed to the class, require the parskip package
 
 
 \ifbool{listtoc}{% If the liststotoc option has been passed to the class, add the lists to the table of contents
@@ -219,12 +221,13 @@
 \NewDocumentCommand{\addresses}{m}{\newcommand{\addressname}{#1}}
 \NewDocumentCommand{\university}{m}{\newcommand{\univname}{#1}}
 \NewDocumentCommand{\department}{m}{\newcommand{\deptname}{#1}}
-\NewDocumentCommand{\group}{m}{\newcommand{\groupname}{#1}}
 \NewDocumentCommand{\faculty}{m}{\newcommand{\facname}{#1}}
 \NewDocumentCommand{\subject}{m}{\newcommand{\subjectname}{#1}}
 \NewDocumentCommand{\keywords}{m}{\newcommand{\keywordnames}{#1}}
+\NewDocumentCommand{\matnr}{m}{\newcommand{\matnumber}{#1}}
+\NewDocumentCommand{\mailaddress}{m}{\newcommand{\email}{#1}}
 
-\newcommand{\checktoopen}{% New command to move content to the next page which prints to the next odd page if twosided mode is active  
+\newcommand{\checktoopen}{% New command to move content to the next page which prints to the next odd page if twosided mode is active
 	\if@openright\cleardoublepage\else\clearpage\fi
 	\ifdef{\phantomsection}{\phantomsection}{}% The \phantomsection command is necessary for hyperref to jump to the correct page
 }
@@ -295,8 +298,8 @@
 \pagestyle{thesis}
 \ifbool{headsepline}{\KOMAoption{headsepline}{true}}{}
 \PreventPackageFromLoading[\ClassError{\classname}{Package `fancyhdr' is
-incompatible\MessageBreak with this class}{The pagesyles are defined 
-	using package `scrlayer-scrpage', please consult the\MessageBreak 
+incompatible\MessageBreak with this class}{The pagesyles are defined
+	using package `scrlayer-scrpage', please consult the\MessageBreak
 KOMA-script documentation for details.}]{fancyhdr}
 
 
@@ -359,11 +362,11 @@ KOMA-script documentation for details.}]{fancyhdr}
 		#1%added to be able to have abstract more than one page long
 		\thispagestyle{plain}
 		\begin{center}
-			{\normalsize \MakeUppercase{\deptname} \par}% University name in capitals
-			\bigskip
-			{\normalsize \univname \par}% Department name
+			{\normalsize \MakeUppercase{\univname} \par}% University name in capitals
 			\bigskip
 			{\huge\textit{\abstractname} \par}
+			\bigskip
+			{\normalsize \facname \par}% Faculty name
 			\bigskip
 			{\normalsize \degreename\par}% Degree name
 			\bigskip
@@ -389,7 +392,6 @@ KOMA-script documentation for details.}]{fancyhdr}
 		{\huge\textit{\abstractname} \par}
 		\bigskip
 		{\normalsize \facname \par}% Faculty name
-		{\normalsize \deptname \par}% Department name
 		\bigskip
 		{\normalsize \degreename\par}% Degree name
 		\bigskip
@@ -430,6 +432,13 @@ KOMA-script documentation for details.}]{fancyhdr}
 		\vfil\vfil\null
 	}
 }
+
+%----------------------------------------------------------------------------------------
+%	GLOSSARY
+%----------------------------------------------------------------------------------------
+\newcommand{\glossaryname}{Glossary}
+\providecaptionname{english,british,american}{\glossaryname}{Glossary}
+\providecaptionname{ngerman,german,austrian,naustrian}{\glossaryname}{Glossar}
 
 %----------------------------------------------------------------------------------------
 %	DECLARATION PAGE DESIGN

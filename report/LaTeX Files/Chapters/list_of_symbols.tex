@@ -1,0 +1,71 @@
+% Chapter* List of Symbols
+
+\chapter*{List of Symbols} % Main chapter title
+\addcontentsline{toc}{chapter}{List of Symbols}
+
+\label{chap:list-of-symbols}
+
+\setlength{\tabcolsep}{10pt} % Default value: 6pt - Column Spacing
+\renewcommand{\arraystretch}{1.7} % Default value: 1 - Row Spacing
+
+\begin{longtable}{ll}
+\textbf{Symbol}         & \textbf{Description}              \\
+\endfirsthead
+%
+\multicolumn{2}{c}%
+{{\bfseries Table \thetable\ continued from previous page}} \\
+\textbf{Symbol}         & \textbf{Description}              \\
+\endhead
+%
+$\vect{a}$              & Vector Field                      \\
+$\tensor{A}$            & Second-rank Tensor Field          \\
+$\BasisVect$            & $i^{th}$ Basis                    \\
+$\otimes$               & Tensor Product                    \\
+$\LagDerivative{()}$    & Lagrangian Derivative             \\
+$\FrobeniusInnerProduct{A}{B}$ & Frobenius Inner Product of $\tensor{A}$ and $\tensor{B}$                                    \\
+$\FrobeniusNorm{A}$            & Frobenius Norm of $\tensor{A}$ $( = \sqrt{\FrobeniusInnerProduct{A}{A}})$ \\
+$\nabla^2$              & Laplacian Operator                \\
+$\Delta ()$             & Component-wise Laplacian Operator \\
+$(1 - \alpha^2 \Delta)$ & Helmholtz Operator                \\
+$i$                     & Reference Particle                \\
+$j$                     & Neighbouring Particle             \\
+$(...)_{i}$             & Property of $i^{th}$ SPH particle \\
+$(...)_{j}$             & Property of $j^{th}$ SPH particle \\
+$(...)_{ij}$            & $(...)_{i} - (...)_{j}$           \\
+$t$                     & Time                              \\
+$\vect{r}$              & Position $=(x, y, z)$             \\
+$\vect{v}$              & Velocity $=(v_x, v_y, v_z)$       \\
+$m$                     & Mass                              \\
+$P$                     & Pressure                          \\
+$\rho$                  & Density                           \\
+$(...)_0$                      & Initial Condition ($(t=0$ of Specified Property                                             \\
+$\Delta t$              & Time Step                         \\
+$\Delta x$              & Inter Particle Spacing            \\
+$\delta (x)$            & Dirac Delta Function              \\
+$W_{h}$                 & SPH Interpolating Kernel          \\
+$h$                     & Kernel Smoothing Length           \\
+$\WIJ$                  & $W(|\RIJ|, h)$                    \\
+$\DWIJ$                        & $\nabla_i W(\RIJ,h) = \frac{\RIJ}{\RtwoIJ[]} \PartialDerivative[r_i]{\WIJ}$                 \\
+$\Vol_i$                & Volume of $i^{th}$ SPH particle   \\
+$\varphi_i$                    & Particle Density of $i^{th}$ SPH particle                                                   \\
+$\vect{F}$              & External Body Force               \\
+$\nu$                   & Kinematic Viscosity               \\
+$\eta$                  & Dynamic Viscosity $(=\nu \rho)$   \\
+$\MachineEpsilon$       & Machine Epsilon                   \\
+$M_o$                   & Reference Mass                    \\
+$P_o$                   & Reference Pressure                \\
+$\rho_o$                & Reference Density                 \\
+$c_s$                   & Speed of Sound                    \\
+$\gamma$                & Exponent - Equation of State      \\
+$\Vorticity$                   & Vorticity $(=\nabla \times \vect{v})$                                                       \\
+$\nu_t$                 & Turbulent Eddy Viscosity          \\
+$\tensor{S}$                   & Strain-Rate Tensor $(=[1/2][\nabla \vect{v} + \nabla \vect{v}^T])$                          \\
+$\tensor{R}$                   & Rate of Rotation Tensor $(=[1/2][\nabla \vect{v} - \nabla \vect{v}^T])$                     \\
+$\epsilon$              & Turbulent Dissipation Rate        \\
+$k$                     & Turbulent Kinetic Energy          \\
+$\tensor{\tau}$         & Stress Tensor                     \\
+$C_s $                  & Smagorinsky Constant              \\
+$u_{max}$               & Maximum Particle Velocity         \\
+$\varepsilon$           & Smoothing Parameter (XSPH)        \\
+$\WaveNumber$           & Wave Number                      
+\end{longtable}

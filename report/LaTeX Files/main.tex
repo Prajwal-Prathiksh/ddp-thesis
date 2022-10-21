@@ -1,266 +1,280 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Masters/Doctoral Thesis 
-% LaTeX Template
-% Version 2.5 (27/8/17)
+% Version 1.7.2 (2021-01-19)
 %
-% This template was downloaded from:
-% http://www.LaTeXTemplates.com
+% Created by Vel (vel@latextemplates.com) and Johannes Böttcher
+% Based on https://www.latextemplates.com/template/masters-doctoral-thesis
 %
-% Version 2.x major modifications by:
-% Vel (vel@latextemplates.com)
-%
-% This template is based on a template by:
-% Steve Gunn (http://users.ecs.soton.ac.uk/srg/softwaretools/document/templates/)
-% Sunil Patel (http://www.sunilpatel.co.uk/thesis-template/)
+% Modified by Nils Höll & Christian Hauff (@christianhauff)
 %
 % Template license:
-% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
-%
+% CC BY-NC-SA 4.0 (https://creativecommons.org/licenses/by-nc-sa/4.0/)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %----------------------------------------------------------------------------------------
-%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%  BASIC DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
 \documentclass[
-11pt, % The default document font size, options: 10pt, 11pt, 12pt
-oneside, % Two side (alternating margins) for binding by default, uncomment to switch to one side
-english, % ngerman for German
-singlespacing, % Single line spacing, alternatives: onehalfspacing or doublespacing
-%draft, % Uncomment to enable draft mode (no pictures, no links, overfull hboxes indicated)
-%nolistspacing, % If the document is onehalfspacing or doublespacing, uncomment this to set spacing in lists to single
-liststotoc, % Uncomment to add the list of figures/tables/etc to the table of contents
-toctotoc, % Uncomment to add the main table of contents to the table of contents
-%parskip, % Uncomment to add space between paragraphs
-%nohyperref, % Uncomment to not load the hyperref package
-headsepline, % Uncomment to get a line under the header
-%chapterinoneline, % Uncomment to place the chapter title next to the number on one line
-%consistentlayout, % Uncomment to change the layout of the declaration, abstract and acknowledgements pages to match the default layout
+  11pt, % The default document font size, options: 10pt, 11pt, 12pt
+  oneside, % One side output by default, comment it out to switch to two side with alternating margins
+  english, % AE: american, BE: english ngerman for (new) German -> (New spelling, important for line breaks in a word)
+  singlespacing, % Single line spacing, alternatives: onehalfspacing or doublespacing
+  % draft, % Uncomment to enable draft mode (no pictures, no links, overfull hboxes indicated)
+  % nolistspacing, % If the document is onehalfspacing or doublespacing, uncomment this to set spacing in lists to single
+  liststotoc, % Uncomment to add the list of figures/tables/etc to the table of contents
+  toctotoc, % Uncomment to add the main table of contents to the table of contents
+  % parskip, % Uncomment to add space between paragraphs
+  % nohyperref, % Uncomment to not load the hyperref package
+  headsepline, % Uncomment to get a line under the header
+  chapterinoneline, % Uncomment to place the chapter title next to the number on one line
+  % consistentlayout, % Uncomment to change the layout of the declaration, abstract and acknowledgements pages to match the default layout
 ]{MastersDoctoralThesis} % The class file specifying the document structure
-\usepackage{amsmath}
-\usepackage{bm}
-\usepackage{algorithm2e}
-\RestyleAlgo{ruled}
-\usepackage[utf8]{inputenc} % Required for inputting international characters
-\usepackage[T1]{fontenc} % Output font encoding for international characters
 
-\usepackage{mathpazo} % Use the Palatino font by default
-\usepackage{float}
-\usepackage[backend=biber,style=alphabetic, sorting=nyvt]{biblatex}
-
-\addbibresource{references.bib} % The filename of the bibliography
-
-\usepackage[autostyle=true]{csquotes} % Required to generate language-dependent quotes in the bibliography
-
-% Custom packages
-\usepackage{blindtext}
-\usepackage{bbm}
-\usepackage{amssymb}
-\usepackage{hyperref}
-\usepackage{epigraph} 
-\usepackage{xstring}
+% Change depth of section numbering and table of contents representation
+\setcounter{secnumdepth}{2} % Numbers down to \subsection; no \subsubsection
+\setcounter{tocdepth}{2} % Printed in toc down to \subsection; no \subsubsection
 
 %----------------------------------------------------------------------------------------
-%	CUSTOM MATH COMMANDS
-%----------------------------------------------------------------------------------------
-\newcommand{\bb}[1]{\mathbb{#1}}
-\newcommand{\LagDerivative}[2][t]{\frac{\operatorname{D} #2}{\operatorname{D} #1}}
-\newcommand{\PartialDerivative}[2][t]{\frac{\partial #2}{\partial #1}}
-\newcommand{\vect}[1]{\mathbf{#1}}
-\newcommand{\tensor}[1]{\underline{\underline{\bm{#1}}}}
-\newcommand{\WIJ}{W_{h, ij}}
-\newcommand{\DWIJ}{\nabla_{i} W_{h, ij}}
-\newcommand{\VIJ}{\vect{v}_{ij}}
-\newcommand{\RIJ}{\vect{r}_{ij}}
-\newcommand{\RtwoIJ}[1][2]{|\vect{r}_{ij}|^{#1}}
-\newcommand{\MachineEpsilon}{\bm{\xi}}
-\newcommand{\EncAngBrk}[2][]{#1\langle #2 #1\rangle}
-\newcommand{\RAProp}[1]{\EncAngBrk{#1}}
-\newcommand{\FrobeniusInnerProduct}[2]{\EncAngBrk{\tensor{#1}, \tensor{#2}}}
-\newcommand{\FrobeniusNorm}[1]{||\tensor{#1}||_F}
-\newcommand{\BasisVect}[1][i]{\hat{\vect{e}}_{#1}}
-\newcommand{\HalfFrac}{\frac{1}{2}}
-\newcommand{\Vol}[1][V]{\mathcal{#1}}
-\newcommand{\Vorticity}{\bm{\omega}}
-\newcommand{\Boundary}{\bm{\Omega}}
-\newcommand{\WaveNumber}{\mathrm{k}}
-\newcommand{\WaveNumberVector}{\vect{k}}
-\newcommand{\TildeR}{\widetilde{\vect{r}}}
-\newcommand{\TildeV}{\widetilde{\vect{v}}}
-\newcommand{\TildeDeltaV}{\delta\TildeV}
-\newcommand{\TildeRho}{\widetilde{\rho}}
-\newcommand{\TildeP}{\widetilde{P}}
-\newcommand{\IntRThreeAndT}{\int_{\mathbf{R}^3} \int_{-\infty}^{\infty}}
-
-
-
-
-
-%----------------------------------------------------------------------------------------
-%	MARGIN SETTINGS
+%  MARGIN SETTINGS
 %----------------------------------------------------------------------------------------
 
 \geometry{
-	paper=a4paper, % Change to letterpaper for US letter
-	inner=2.5cm, % Inner margin
-	outer=3.8cm, % Outer margin
-	bindingoffset=.5cm, % Binding offset
-	top=1.5cm, % Top margin
-	bottom=1.5cm, % Bottom margin
-	%showframe, % Uncomment to show how the type block is set on the page
+  paper=a4paper, % Change to letterpaper for US letter
+  inner=2.5cm, % Inner margin
+  outer=3.8cm, % Outer margin
+  bindingoffset=.5cm, % Binding offset
+  top=1.5cm, % Top margin
+  bottom=1.5cm, % Bottom margin
+  % showframe, % Uncomment to show how the type block is set on the page
 }
 
+
 %----------------------------------------------------------------------------------------
-%	THESIS INFORMATION
+%  THESIS INFORMATION
 %----------------------------------------------------------------------------------------
 
-\thesistitle{A Comparative Study of Turbulence Modelling for Smoothed Particle Hydrodynamics} % Your thesis title, this is used in the title and abstract, print it elsewhere with \ttitle
-\supervisor{Prof. Prabhu Ramachandran} % Your supervisor's name, this is used in the title page, print it elsewhere with \supname
-\examiner{} % Your examiner's name, this is not currently used anywhere in the template, print it elsewhere with \examname
-\degree{ } % Your degree name, this is used in the title page and abstract, print it elsewhere with \degreename
-\author{K T Prajwal Prathiksh} % Your name, this is used in the title page and abstract, print it elsewhere with \authorname
-\addresses{} % Your address, this is not currently used anywhere in the template, print it elsewhere with \addressname
+% Author information
+% Copy `Base/author_info.dist.tex` into `Base/author_info.tex` and set the values
+% if you do not want personal data to end up in a public git repository
+\IfFileExists{Base/author_info.tex}{\input{Base/author_info.tex}}{\input{Base/author_info.dist.tex}}
 
+% Thesis information
+\thesistitle{Turbulence Modelling for Smoothed Particle Hydrodynamics} % Your thesis title, print it elsewhere with \ttitle
+\degree{Master of Technology} % Your degree name, print it elsewhere with \degreename
 \subject{Biological Sciences} % Your subject area, this is not currently used anywhere in the template, print it elsewhere with \subjectname
-\keywords{Fluid Mechanics, Turbulence Modelling, Smoothed Particle Hydrodynamics, Reynolds Averaging, Large Eddy Simulation, Lagrangian Averaging, Coherent Structures} % Keywords for your thesis, this is not currently used anywhere in the template, print it elsewhere with \keywordnames
-\university{{Indian Institute of Technology Bombay}} % Your university's name and URL, this is used in the title page and abstract, print it elsewhere with \univname
-\department{{Department of Aerospace Engineering}} % Your department's name and URL, this is used in the title page and abstract, print it elsewhere with \deptname
-\group{\href{http://researchgroup.university.com}{ }} % Your research group's name and URL, this is used in the title page, print it elsewhere with \groupname
-\faculty{\href{http://faculty.university.com}{ }} % Your faculty's name and URL, this is used in the title page and abstract, print it elsewhere with \facname
+\keywords{Fluid Mechanics, Turbulence Modelling, Smoothed Particle Hydrodynamics, Reynolds Averaging, Large Eddy Simulation, Lagrangian Averaging, Coherent Structures} % List of keywords, print it elsewhere with \keywordnames
 
-\AtBeginDocument{
-\hypersetup{pdftitle=\ttitle} % Set the PDF's title to your title
-\hypersetup{pdfauthor=\authorname} % Set the PDF's author to your name
-\hypersetup{pdfkeywords=\keywordnames} % Set the PDF's keywords to your keywords
+% Environment information
+\supervisor{\href{https://www.aero.iitb.ac.in/~prabhu/}{Prof. Prabhu Ramachandran}} % Your supervisor's name, print it elsewhere with \supname
+\examiner{} % Your examiner's name, print it elsewhere with \examname
+\university{\href{https://www.iitb.ac.in/}{Indian Institute of Technology Bombay}} % Your university's name and URL, this is used in the title page and abstract, print it elsewhere with \univname
+\department{\href{https://www.aero.iitb.ac.in/home/}{Department of Aerospace Engineering}} % Your department's name and URL, this is used in the title page and abstract, print it elsewhere with \deptname
+\faculty{\href{https://www.aero.iitb.ac.in/~prabhu/}{Prof. Prabhu Ramachandran}} % Your faculty's name and URL, this is used in the title page and abstract, print it elsewhere with \facname
+
+
+%----------------------------------------------------------------------------------------
+%  PACKAGES
+%----------------------------------------------------------------------------------------
+
+% ------ FONTS ------
+\usepackage[T1]{fontenc} % Output font encoding
+\usepackage[utf8]{inputenc} % Required for inputting international characters
+\usepackage{lmodern,textcomp} % Latin modern font
+\usepackage{mathpazo} % Use the Palatino font by default
+
+
+% ------ BIBLIOGRAPHY ------
+\usepackage[backend=biber,style=authoryear-comp, sorting=nyvt]{biblatex}
+\addbibresource{sources.bib} % The filename of the bibliography
+
+
+% ------ FIGURES ------
+\usepackage{graphicx}
+\usepackage[font=small,labelfont=bf]{caption} % Required for specifying captions to tables and figures
+\usepackage{subcaption} % Required for nested captions
+\usepackage{wrapfig} % Required for wrapping text around figures
+
+
+% ------ ACRONYMS ------
+\usepackage[nohyperlinks, printonlyused]{acronym}
+
+
+% ------ OTHER ------
+\usepackage{shortvrb}
+\PassOptionsToPackage{hyphens}{url}\usepackage{hyperref}
+
+\usepackage{float}
+\restylefloat{table}
+
+\usepackage[autostyle=true]{csquotes} % Required to generate language-dependent quotes in the bibliography; generates quotes with \enquote{Text}
+\hbadness=99999 %suppresses most underfull hbox warnings
+\usepackage{blindtext}
+\usepackage{bbm}
+\usepackage{bm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{epigraph}
+
+
+% ------ LISTINGS ------
+\usepackage{listings}
+
+% Define JavaScript language support
+\lstdefinelanguage{JavaScript}{
+  keywords={break, case, catch, continue, debugger, default, delete, do, else, false, finally, for, function, if, in, instanceof, new, null, return, switch, this, throw, true, try, typeof, var, void, while, with},
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]',
+  morestring=[b]",
+  sensitive=true
 }
+
+% Load required languages
+\lstloadlanguages{PHP, XML, HTML, Java, JavaScript, SQL}
+
+% Define colors for highlighting
+\definecolor{lstbg}{gray}{0.95}
+\definecolor{lstComment}{RGB}{51, 102, 0}
+\definecolor{lstKey}{RGB}{0, 51, 204}
+\definecolor{lstStr}{RGB}{162, 43, 43}
+
+% Styling
+\lstset{
+  showtabs=false,
+  showspaces=false,
+  %tabsize=4,
+  %tab=\rightarrowfill,
+  showstringspaces=false,
+  basicstyle=\ttfamily,
+  columns=fullflexible,
+  frame=single,
+  %frameround=tttt,
+  breaklines=true,
+  backgroundcolor=\color{lstbg},
+  commentstyle=\color{lstComment},
+  stringstyle=\color{lstStr},
+  keywordstyle=\color{lstKey},
+  %prebreak=\mbox{\textbackslash}%,
+  literate=
+  {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+  {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+  {à}{{\`a}}1 {è}{{\`e}}1 {ì}{{\`i}}1 {ò}{{\`o}}1 {ù}{{\`u}}1
+  {À}{{\`A}}1 {È}{{\'E}}1 {Ì}{{\`I}}1 {Ò}{{\`O}}1 {Ù}{{\`U}}1
+  {ä}{{\"a}}1 {ë}{{\"e}}1 {ï}{{\"i}}1 {ö}{{\"o}}1 {ü}{{\"u}}1
+  {Ä}{{\"A}}1 {Ë}{{\"E}}1 {Ï}{{\"I}}1 {Ö}{{\"O}}1 {Ü}{{\"U}}1
+  {â}{{\^a}}1 {ê}{{\^e}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {ß}{{\ss}}1
+}
+
+
+%----------------------------------------------------------------------------------------
+%  ADDITIONAL COMMANDS
+%----------------------------------------------------------------------------------------
+
+\input{commands.tex}
+
+
+% ------ HYPERSETUP ------
+\AtBeginDocument{
+  \hypersetup{
+    pdftitle=\ttitle, % Set the PDF's title to your title
+    pdfauthor=\authorname, % Set the PDF's author to your name
+    % hidelinks % Prints all links black; comment out the following color defs
+    linkcolor=cyan,
+    citecolor=magenta,
+    filecolor=olive,
+    urlcolor=black,
+    }
+}
+
+
+%----------------------------------------------------------------------------------------
+%  DOCUMENT START
+%----------------------------------------------------------------------------------------
 
 \begin{document}
 
-\frontmatter % Use roman page numbering style (i, ii, iii, iv...) for the pre-content pages
+% ------ PAGE NUMBERING ------
+\frontmatter % Use roman page numbering style (I, II, III, IV...) for the pre-content pages
+\pagenumbering{Roman} % Capital roman numbers, use "roman" or comment for lower case (i, ii, iii, iv...)
 
 \pagestyle{plain} % Default to the plain heading style until the thesis style is called for the body content
 
-%----------------------------------------------------------------------------------------
-%	TITLE PAGE
-%----------------------------------------------------------------------------------------
+\sloppy
 
-\begin{titlepage}
-\begin{center}
+% ------ PRELIMINARY PAGES ------
 
+% Include title page
+\input{Base/titlepage.tex}
 
-\begin{figure}[H]
-\centering
-\includegraphics[scale=0.12]{Figures/iitb-logo}
-\end{figure}
+% Include declaration of independence
+\input{Base/declaration.tex}
 
-\vspace*{.06\textheight}
-{\scshape\LARGE \univname\par}\vspace{1.5cm} % University name
-\textsc{\Large AE 593 - Dual Degree Project I }\\[0.5cm] % Thesis type
+\cleardoublepage
 
-\HRule \\[0.4cm] % Horizontal line
-{\huge \bfseries \ttitle\par}\vspace{0.4cm} % Thesis title
-\HRule \\[1.5cm] % Horizontal line
- 
-\begin{minipage}[t]{0.4\textwidth}
-\begin{flushleft} \large
-\emph{Submitted By:}\\
-{\authorname \\ 180010027} % Author name - remove the \href bracket to remove the link
-\end{flushleft}
-\end{minipage}
-\begin{minipage}[t]{0.4\textwidth}
-\begin{flushright} \large
-\emph{Supervisor:} \\
-{\supname} % Supervisor name - remove the \href bracket to remove the link  
-\end{flushright}
-\end{minipage}\\[1cm]
- 
-\vfill
+% Include quotation page
+% \input{Base/quotation.tex}
 
-\large \textit{Report submitted in fulfillment of the requirements for Dual Degree Project I}\\[0.3cm] % University requirement text
-\textit{in the}\\[0.05cm]
-\groupname\\\deptname\\[2cm] % Research group name and department name
- 
-\vfill
+% Include abstract page
+\input{Base/abstract.tex}
 
-{\large \today}\\[2cm] % Date
-%\includegraphics{Logo} % University/department logo - uncomment to place it
- 
-\vfill
-\end{center}
-\end{titlepage}
-
+% Include acknowledgements page
+% \input{Base/acknowledgements.tex}
 
 
 %----------------------------------------------------------------------------------------
-%	ABSTRACT PAGE
+%  LIST OF CONTENTS/FIGURES/TABLES PAGES
 %----------------------------------------------------------------------------------------
 
-\begin{abstract}
-\addchaptertocentry{\abstractname} % Add the abstract to the table of contents
-Turbulence modelling is a challenging problem, particularly for a Lagrangian method such as Smoothed Particle Hydrodynamics (SPH) which lacks the years of theoretical and practical research that conventional CFD solvers based on FEM/FVM enjoy. However, work based on translating existing Eulerian-based turbulence methods to SPH and Lagrangian-specific models has started making inroads in the general understanding of the topic in an SPH setting. Ultimately, a rigorous and robust model can be devised, which is well-suitable to a wide variety of $2D$ and $3D$ problems.
-This project aims to survey and review the state-of-the-art turbulence models that SPH offers and help subsequently provide a comparative analysis detailing the advantages and limitations of these models.
-It also intends to extend the best-equipped models to robust and accurate SPH schemes and incorporate some of the latest developments in the field of SPH to refine further the machinery required to model turbulence.
-
-\textbf{Keywords:} \keywordnames
-
-
-
-\end{abstract}
+{\hypersetup{linkcolor=black} % Black links in all lists
+  \tableofcontents % Prints the main table of contents
+  \listoffigures % Prints the list of figures
+  \include{Chapters/list_of_symbols} % Prints the list of 
+%   \listoftables % Prints the list of tables
+%   \lstlistoflistings % Prints the list of (code) listings
+%   \addchaptertocentry{Listings} % Add the list of listings to the table of contents
+}
 
 
 %----------------------------------------------------------------------------------------
-%	LIST OF CONTENTS/FIGURES/TABLES PAGES
+%  ABBREVIATIONS
 %----------------------------------------------------------------------------------------
+  
+% \chapter{\abbrevname}
+% \begin{acronym}[AAAAAA]
+%   \acro{acl}[ACL]{Access Control List}
+%   \acro{ajax}[AJAX]{Asynchronous JavaScript and XML}
+%   \acro{api}[API]{Application Programming Interface}
+%   \acro{css}[CSS]{Cascading Style Sheets}
+%   \acro{gui}[GUI]{Graphical User Interface}
+%   \acro{html}[HTML]{Hypertext Markup Language}
+%   \acro{json}[JSON]{JavaScript Object Notation}
+%   \acro{php}[PHP]{PHP Hypertext Preprocessor}
+%   \acro{sql}[SQL]{Structured Query Language}
+%   \acro{uid}[UID]{User Identifier}
+%   \acro{url}[URL]{Uniform Resource Locator}
+%   \acro{ux}[UX]{User Experience}
+%   % \acro{}[]{}
+% \end{acronym}
+% Use 
+% - \ac{id} for standard behavior (\Ac{id} for first letter capitalized)
+% - \acs{id} for acronym
+% - \acl{id} for long version
+% - \acp{id} for plural (with 's' at the end)
+% - \acf{id} for the full version (long name + acronym in parentheses)
+% - \newacro{id}[Acronym]{Long Name} to define acronyms outside the abbreviations list; e.g. for shorthands
+% See https://ctan.mirror.norbert-ruehl.de/macros/latex/contrib/acronym/acronym.pdf
 
-\tableofcontents % Prints the main table of contents
-
-\listoffigures % Prints the list of figures
-
-\include{Chapters/ChapterLOS}
-
-%\listoftables % Prints the list of tables
-
-%----------------------------------------------------------------------------------------
-%	ABBREVIATIONS
-%----------------------------------------------------------------------------------------
-
-
-%----------------------------------------------------------------------------------------
-%	PHYSICAL CONSTANTS/OTHER DEFINITIONS
-%----------------------------------------------------------------------------------------
-
-% \begin{constants}{lr@{${}={}$}l} % The list of physical constants is a three column table
-
-% % The \SI{}{} command is provided by the siunitx package, see its documentation for instructions on how to use it
-% \textcolor{red}{FILL IN Later!!}\\
-
-% Sea-level gravitational acceleration & $g_{0}$ & \SI{9.81}{\meter\per\second\squared}\\
-% Planck's constant & $h$ & \SI{6.62607004e-34}{\meter\squared\kg\per\second}\\
-% Boltzmann constant& $k$ &\SI{1.38064852e-23}{\meter\squared\kg\per\second\squared\per\kelvin}\\
-% %Constant Name & $Symbol$ & $Constant Value$ with units\\
-
-% \end{constants}
-
-%----------------------------------------------------------------------------------------
-%	SYMBOLS
-%----------------------------------------------------------------------------------------
-
-% \begin{symbols}{lll} % Include a list of Symbols (a three column table)
-
-% $r$ & radial distance & \si{\meter} \\
-% $\theta$ & azimuthal angle & \si{\radian} \\
-% $z$ & axial distance & \si{\meter} \\
-% $\#$ & number & - \\
-% $r$ & radial direction & \si{\meter} \\
-% $r$ & radial direction & \si{\meter} \\
-% $r$ & radial direction & \si{\meter} \\
+% \newpage
 
 
-% \end{symbols}
+% ------ GLOSSARY ------
+
+% \input{Base/glossary.tex}
 
 
 %----------------------------------------------------------------------------------------
-%	THESIS CONTENT - CHAPTERS
+%  THESIS CONTENT - CHAPTERS
 %----------------------------------------------------------------------------------------
 
 \mainmatter % Begin numeric (1,2,3...) page numbering
@@ -270,13 +284,14 @@ It also intends to extend the best-equipped models to robust and accurate SPH sc
 % Include the chapters of the thesis as separate files from the Chapters folder
 % Uncomment the lines as you write the chapters
 
-\include{Chapters/Chapter1}
-\include{Chapters/Chapter2} 
-\include{Chapters/Chapter3}
-\include{Chapters/Chapter4}
+\include{Chapters/01-introduction}
+\include{Chapters/02-turbulence-modelling}
+\include{Chapters/03-evaluation-of-turbulence-models}
+\include{Chapters/04-conclusions-and-future-work}
+
 
 %----------------------------------------------------------------------------------------
-%	THESIS CONTENT - APPENDICES
+%  THESIS CONTENT - APPENDICES
 %----------------------------------------------------------------------------------------
 
 \appendix % Cue to tell LaTeX that the following "chapters" are Appendices
@@ -284,16 +299,17 @@ It also intends to extend the best-equipped models to robust and accurate SPH sc
 % Include the appendices of the thesis as separate files from the Appendices folder
 % Uncomment the lines as you write the Appendices
 
-\include{Appendices/AppendixA}
-%\include{Appendices/AppendixB}
-%\include{Appendices/AppendixC}
+\include{Appendices/A-lagrangian-les-filtering-of-edac}
+% \include{Appendices/AppendixB}
+% \include{Appendices/AppendixC}
+
 
 %----------------------------------------------------------------------------------------
-%	BIBLIOGRAPHY
+%  BIBLIOGRAPHY
 %----------------------------------------------------------------------------------------
 
 \printbibliography[heading=bibintoc]
 
 %----------------------------------------------------------------------------------------
 
-\end{document}  
+\end{document}
