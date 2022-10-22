@@ -140,18 +140,17 @@ dmypy.json
 config*.json*
 .ipynb_checkpoints/
 .automan/
-# *.log
-# *.pyd
-# *.pdf
-# *.out
-# *_output
-# *.aux
-# *.bbl
-# *.blg
-# *.spl
-# *.synctex.gz
-# *.bcf
-# *.lof
-# *.lot
-# *.run.xml
-# *.toc
+*.log
+*.pyd
+*.out
+*_output
+*.aux
+*.bbl
+*.blg
+*.spl
+*.synctex.gz
+*.bcf
+*.lof
+*.lot
+*.run.xml
+*.toc

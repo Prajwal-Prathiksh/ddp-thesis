@@ -1,5 +1,0 @@
-\begin{gathered}
-\bar{\rho}_i=M_i \sum_{j=1}^{N_{n g b}} W_{h, i j}=\frac{M_i}{V_i} \quad \& \quad V_i:=\frac{1}{\sum_{j=1}^{N_{n g b} W_{h, i j}}}, \\
-\bar{\rho}_i \frac{\mathrm{d} \tilde{\mathbf{v}}_i}{\mathrm{~d} t}=-\sum_{j=1}^{N_{n g b}}\left(\bar{p}_j+\bar{p}_i\right) \nabla W_{h, i j} V_j+2(2+n) \eta \sum_{j=1}^{N_{n g b}} \frac{\left(\tilde{\mathbf{v}}_i-\tilde{\mathbf{v}}_j\right) \cdot\left(\mathbf{x}_i-\mathbf{y}_j\right)}{\left(\mathbf{x}_i-\mathbf{y}_j\right)^2} \nabla W_{h, i j} V_j-\operatorname{div}\left[\boldsymbol{\tau}_{S F S}\right]_i, \\
-\bar{p}_i\left(\bar{\rho}_i\right)=p_{r e f}+K\left(\frac{\bar{\rho}_i}{\rho_{r e f}}-1\right), \quad \rho_{r e f}, p_{r e f}, K \in \mathbb{R}^{+},
-\end{gathered}
