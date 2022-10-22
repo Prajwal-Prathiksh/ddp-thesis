@@ -37,6 +37,8 @@
 }
 
 %% Math Commands
+\newcommand{\abs}[1]{\mid #1 \mid}
+
 \newcommand{\bb}[1]{\mathbb{#1}}
 
 \newcommand{\LagDerivative}[2][t]{\frac{\operatorname{D} #2}{\operatorname{D} #1}}
@@ -55,7 +57,9 @@
 
 \newcommand{\RIJ}{\vect{r}_{ij}}
 
-\newcommand{\RtwoIJ}[1][2]{|\vect{r}_{ij}|^{#1}}
+\newcommand{\RtwoIJ}[1][2]{\abs{\vect{r}_{ij}}^{#1}}
+
+\newcommand{\VtwoIJ}[1][2]{\abs{\vect{v}_{ij}}^{#1}}
 
 \newcommand{\MachineEpsilon}{\bm{\xi}}
 
@@ -91,7 +95,7 @@
 
 \newcommand{\TildeP}{\widetilde{P}}
 
-\newcommand{\IntRThreeAndT}{\int_{\mathbf{R}^3}
+\newcommand{\IntRThreeAndT}{\int_{\mathbb{R}^3}
 \int_{-\infty}^{\infty}}
 
 \newcommand{\SciNot}[3][10]{#2 \times {#1}^{#3}}

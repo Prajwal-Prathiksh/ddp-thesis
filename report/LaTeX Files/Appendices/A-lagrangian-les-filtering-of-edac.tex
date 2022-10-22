@@ -3,13 +3,12 @@
 \chapter{Lagrangian LES Filtering of EDAC} % Main appendix title
 
 \label{appendix:lagrangian-les-filtering-of-edac} % 
-EDAC Pressure evolution equation
+EDAC Pressure evolution equation:
 \begin{equation}
     \LagDerivative{P} = -c_s^2 \rho \nabla \cdot \vect{v} + \nu \nabla^2 P
     \label{eq:P-evolution}
 \end{equation}
-
-Lagrangian LES filter \parencite{DiMascio2017}
+Lagrangian LES filter \parencite{DiMascio2017}:
 \begin{equation}
     \phi = \phi\big(\TildeR_p(t)-\vect{y}, t-\tau  \big)
     \label{eq:lag-les-filter}
@@ -30,32 +29,32 @@ Commuting the Lagrangian derivative operator and the integral operator
     \LagDerivative{\TilePArgRp} = \IntRThreeAndT \LagDerivative{\bigg(\PhiRY \PY\bigg)} \IntD
 \end{equation}
 
-Applying chain rule
+Applying chain rule and introducing $(\mathcal{I}_1, \mathcal{I}_2)$
 \begin{equation}
     \begin{split}
         \LagDerivative{\TilePArgRp} & = \IntRThreeAndT \Bigg( \PartialDerivative{\PhiRY} + \LagDerivative{\TildeR_p} \cdot \nabla \PhiRY \Bigg) \PY \IntD \\
-        & = \IntRThreeAndT \Bigg( \PartialDerivative{\PhiRY} + \TildeVArgRp \cdot \nabla \PhiRY \Bigg) \PY \IntD \\
+        & = \IntRThreeAndT \Bigg( \underbrace{\PartialDerivative{\PhiRY}}_{\mathcal{I}_1} + \underbrace{\TildeVArgRp \cdot \nabla \PhiRY}_{\mathcal{I}_2} \Bigg) \PY \IntD \\
         & = \IntRThreeAndT (\mathcal{I}_1 + \mathcal{I}_2) \PY \IntD
     \end{split}
     \label{eq:integral-phi-complex}
 \end{equation}
 
-Rewriting $(\mathcal{I}_1)$ as a function of $(\PhiRY)$ using integration by parts
+Rewriting $(\mathcal{I}_1)$ as a function of $[\PhiRY]$ using integration by parts
 \begin{multline}
-    \IntRThreeAndT \PartialDerivative{\PhiRY} \PY \IntD =\\ \IntRThreeAndT \PhiRY \PartialDerivative[\tau]{\PY} \IntD
+    \IntRThreeAndT \mathcal{I}_1 \PY \IntD = \IntRThreeAndT \PartialDerivative{\PhiRY} \PY \IntD =\\ \IntRThreeAndT \PhiRY \PartialDerivative[\tau]{\PY} \IntD
     \label{eq:i1-phi}
 \end{multline}
 
-Rewriting $(\mathcal{I}_2)$ as a function of $(\PhiRY)$ using integration by parts
+Rewriting $(\mathcal{I}_2)$ as a function of $[\PhiRY]$ using integration by parts
 \begin{multline}
-    \IntRThreeAndT \bigg(\TildeVArgRp \cdot \nabla \PhiRY \bigg) \PartialDerivative[\tau]{\PY} \IntD =\\ \IntRThreeAndT \PhiRY \TildeVArgRp \cdot  \nabla_y \PY \IntD
+    \IntRThreeAndT \mathcal{I}_2 \PY \IntD = \IntRThreeAndT \bigg(\TildeVArgRp \cdot \nabla \PhiRY \bigg) \PY \IntD =\\ \IntRThreeAndT \PhiRY \TildeVArgRp \cdot  \nabla_y \PY \IntD
     \label{eq:i2-phi}
 \end{multline}
 
-Substituting \Eqref{eq:i1-phi} and \Eqref{eq:i2-phi} in \Eqref{eq:integral-phi-complex}
+Substituting \Eqref{eq:i1-phi} and \Eqref{eq:i2-phi} in \Eqref{eq:integral-phi-complex} and introducing $(\mathcal{I})$
 \begin{equation}
     \begin{split}
-        \LagDerivative{\TilePArgRp} & = \IntRThreeAndT \PhiRY \bigg(\PartialDerivative[\tau]{\PY} + \TildeVArgRp \cdot \nabla_y \PY \bigg)\IntD \\
+        \LagDerivative{\TilePArgRp} & = \IntRThreeAndT \PhiRY \bigg( \underbrace{\PartialDerivative[\tau]{\PY} + \TildeVArgRp \cdot \nabla_y \PY}_{\mathcal{I}} \bigg) \IntD \\
         & = \IntRThreeAndT \PhiRY (\mathcal{I}) \IntD
     \end{split}
     \label{eq:phi-simplified-P-eq}
@@ -73,7 +72,7 @@ Rewriting $(\mathcal{I})$ by incorporating \Eqref{eq:P-evolution}
     \label{eq:simplified-integrand}
 \end{equation}
 
-Substituting \Eqref{eq:simplified-integrand} in \Eqref{eq:phi-simplified-P-eq}
+Substituting \Eqref{eq:simplified-integrand} in \Eqref{eq:phi-simplified-P-eq}, and making use of the fact that the differential and spatial filtering operator commute far from the boundaries $[\nabla \widetilde{a} = \widetilde{\nabla a}]$ \parencite{DiMascio2017}
 \begin{equation}
     \begin{split}
         \LagDerivative{\TilePArgRp} & = \IntRThreeAndT \PhiRY (\mathcal{I}) \IntD \\

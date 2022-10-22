@@ -48,7 +48,7 @@ The $3D$ case of the problem, defined for a tri-periodic domain with boundary $(
     v_{z, 0} = 0
     \label{eq:3d-tgv-vz}
 \end{equation}
-The corresponding pressure field obtained from solving the pressure Poisson equation for incompressible flow is given by \Eqref{eq:3d-tgv-p} \parencite{pereira2021modeling}.
+The corresponding initial pressure field $(P_0)$ obtained from solving the pressure Poisson equation for incompressible flow is given by \Eqref{eq:3d-tgv-p} \parencite{pereira2021modeling}.
 \begin{equation}
     P_{0} = P_o + \frac{\rho_o \nu_o^2}{16} \bigg(2 + \cos(2z) \bigg) \bigg(\cos(2x) + \cos(2y) \bigg)
     \label{eq:3d-tgv-p}
@@ -69,14 +69,14 @@ The initial conditions for the $2D$ periodic flow is given by \Eqref{eq:2d-tdsl-
     \label{eq:2d-tdsl-vy}
 \end{equation}
 
-\subsection{$3D$ Isotropic Turbulence}
+\subsection[3D Isotropic Turbulence]{$3D$ Isotropic Turbulence}
 The JHU Turbulence Database Cluster \parencite{li2008public} provide a direct numerical simulation (DNS) data set for isotropic, forced turbulence. The data set consists of the DNS output on $1024^3$ spatial points and $1024$ time samples spanning about one large-scale turnover time.
 
 The entire $1024^4$ space-time history of the incompressible DNS simulation $(Re\approx1460)$ is accessible to users remotely through an interface based on the Web-services model. 
 The data from the database contains the three velocity components and the pressure. A uniform non-dimensionalised pressure $(P^* = \frac{P}{\rho U^2} + 1)$ is added to the
 database pressure, with Mach number Ma 0.1. 
 
-\subsection{$2D$ Confined \& Driven Turbulence}
+\subsection[2D Confined and Driven Turbulence]{$2D$ Confined \& Driven Turbulence}
 Based on the test case employed by Monaghan \parencite{Monaghan2017}, a $2D$ fluid confined to a square solid impenetrable boundary is considered $(\Boundary = [0,1]^2)$. A cylinder of radius $(r=0.7)$ is placed at the centre of the box. The circle is subsequently provided with a Lissajous trajectory to follow given by \Eqref{eq:2d-cdt-x} - \Eqref{eq:2d-cdt-y}.
 \begin{equation}
     x = 0.5 + 0.25 \sin \bigg( \frac{2\pi t}{5} \bigg)
@@ -96,19 +96,20 @@ As seen in numerous works involving turbulence models in the previous chapter, t
 \section{Post-Simulation Analysis}
 \subsection{Energy Spectral Density}
 In order to analyse the predicted flow and validate the turbulent model, energy spectra are the most used description since it has to fall off as prescribed by the  Kolmogorov - $5/3$ Law.
-Typical mesh or grid-based methods facilitate the calculation of $(E[\WaveNumber])$ by using the Fourier transform of the velocity field as given in \Eqref{eq:Shi2013-vel-FT}, to obtain the velocity spectrum as defined in \Eqref{eq:Shi2013-vel-spectrum}.
+Typical mesh or grid-based methods facilitate the calculation of the energy spectrum $(E[\WaveNumber])$ by using the Fourier transform of the velocity field as given in \Eqref{eq:Shi2013-vel-FT}, to obtain the velocity spectrum as defined in \Eqref{eq:Shi2013-vel-spectrum}.
 \begin{equation}
-    \vect{V}(\vect{k}) = \frac{1}{L^3} \int i \exp(\vect{k} \cdot \vect{r}) \vect{v}(r\vect{r}) d\vect{r}
+    \vect{V}(\vect{k}) = \frac{1}{L^3} \int \exp(-i \vect{k} \cdot \vect{r}) \vect{v}(\vect{r}) d\vect{r}
     \label{eq:Shi2013-vel-FT}
 \end{equation}
-Where $(d\vect{r}=dxdy)$ for $2D$ and $(d\vect{r}=dxdydz)$ for $3D$.
+Where $(d\vect{r}=dxdy)$ for $2D$ and $(d\vect{r}=dxdydz)$ for $3D$, and $[\vect{k} = (\WaveNumber_x, \WaveNumber_y, \WaveNumber_z)]$ is the wave-number vector.
 \begin{equation}
-    E(\vect{k}) = \HalfFrac |\vect{V}(\vect{k}) \cdot \vect{V}^*(\vect{k}) |
+    E(\vect{k}) = \HalfFrac \abs{ \vect{V}(\vect{k}) \cdot \vect{V}^*(\vect{k}) }
     \label{eq:Shi2013-vel-spectrum}
 \end{equation}
+
 The energy spectrum is subsequently defined as given by \Eqref{eq:Shi2013-energy-spectrum} for the case of isotropic turbulence.
 \begin{equation}
-    E(\WaveNumber) = B \langle E(\vect{k} \rangle, \WaveNumber = |\vect{k}|
+    E(\WaveNumber) = B \langle E(\vect{k}) \rangle \quad , \quad \WaveNumber = \abs{\vect{k}}
     \label{eq:Shi2013-energy-spectrum}
 \end{equation}
 Where $(B=2\pi k)$ for $2D$ and $(B=4\pi k^2)$ for $3D$.
@@ -117,13 +118,14 @@ However, SPH does not have such grid-like data to calculate the energy spectrum 
 The authors provide three distinct methods of interpolating the data across a grid-like space. 
 The SPH interpolation method specified by the authors is given in \Eqref{eq:Shi2013-sph-interpolation}.
 \begin{equation}
-    A(\vect{r}) \approx \sum_j A_j W(|\vect{r} - \vect{r}_j|, h) \Vol_j
+    A(\vect{r}) \approx \sum_j A_j W(\abs{\vect{r} - \vect{r}_j}, h) \Vol_j
     \label{eq:Shi2013-sph-interpolation}
 \end{equation}
+
 The remeshed interpolation method is outlined in \Eqref{eq:Shi2013-remeshed-interpolation}.
 Remeshed Interpolation
 \begin{equation}
-    A(\vect{r}) \approx \sum_j A_j \Tilde{W}(|x-x_j|, h) \Tilde{W}(|y-y_j|, h) \Tilde{W}(|z-z_j|, h)
+    A(\vect{r}) \approx \sum_j A_j \Tilde{W}(\abs{x-x_j}, h) \Tilde{W}(\abs{y-y_j}, h) \Tilde{W}(\abs{z-z_j}, h)
     \label{eq:Shi2013-remeshed-interpolation}
 \end{equation}
 Where $(\Tilde{W})$ represents the kernel where the volume of the particle $(\Vol_j)$ has been absorbed.
@@ -145,7 +147,7 @@ The authors summarise the main advantages of FTLEs over different velocity gradi
     \item FTLE can identify LCSs with an accuracy that, in some cases, resemble those obtained from advanced experimental techniques.
 \end{itemize}
 
-\begin{figure}[h!]
+\begin{figure}[H]
     \centering
     \includegraphics{Figures/research_papers/sun2016detection-fig-1.png}
     \caption{Viscous flow past a circular cylinder at $Re = 105$. Top: Attracting FTLE contour plot from SPH simulation. Bottom: Photo from experiments conducted by Taneda \parencite{taneda1977visual} with electrolytic precipitation in water technique for vortex street visualisation. Reproduced from \cite{sun2016detection}}
