@@ -71,11 +71,11 @@ Where $\Vec{\xi}$ is a random vector statistically non-correlated with velocitie
 Where $(k)$ is the turbulent kinetic energy, $(\epsilon)$ the dissipation rate, and $(C_i)$ being constants - $(C_1=1.8, C_2=0.6)$. $(\tensor{I})$, here, denotes the identity tensor.
 By modelling turbulence as GLM in SPH, the momentum equation derived was given by:
 \begin{equation}
-    \LagDerivative{\vect{v}_i} = -\sum_j m_j \bigg( \frac{\RAProp{P}_i}{\rho_i^2} + \frac{\RAProp{P}_j}{\rho_j^2} \bigg) \DWIJ - \HalfFrac C_1 \frac{\epsilon_i}{k_i} \vect{v}'_i + C_2 \nabla \RAProp{\vect{v}}_i \cdot \vect{v}'_i + \sqrt{\frac{C_0 \epsilon_i}{\delta t}} \Vec{\xi}_i
+    \LagDerivative{\vect{v}_i} = -\sum_j m_j \bigg( \frac{\RAProp{P}_i}{\rho_i^2} + \frac{\RAProp{P}_j}{\rho_j^2} \bigg) \DWIJ - \HalfFrac C_1 \frac{\epsilon_i}{k_i} \vect{v}'_i + C_2 \nabla \RAProp{\vect{v}}_i \cdot \vect{v}'_i + \sqrt{\frac{C_0 \epsilon_i}{\Delta t}} \Vec{\xi}_i
     \label{eq:violeau-mom-glm}
 \end{equation}
 \begin{equation}
-    \RAProp{\vect{v}} = \sum_j \frac{m_j}{\rho_j}\vect{u}_j W_h (\vect{r}_j)
+    \RAProp{\vect{v}} = \sum_j \frac{m_j}{\rho_j}\vect{v}_j W_h (\vect{r}_j)
     \label{eq:violeau-ra-vel}
 \end{equation}
 Where the fluctuations are defined as $\vect{v}' = \vect{v} - \RAProp{\vect{v}}$, and the local values of turbulent kinetic energy and dissipation rate are:
@@ -367,8 +367,7 @@ The authors derived the SPH formulations of the aforementioned governing equatio
     \label{eq:morris1997modeling-vel-laplacian-sph}
 \end{equation}
 
-The authors noted that the LES description of viscous effects in
-slightly compressible SPH could lead to unphysical behaviour at free surfaces due to density variations being magnified by the equation of state. The lack of artificial viscosity implies that such variations are not damped. They subsequently noted that averaging the density would ensure smooth and physically acceptable free surfaces, based on the work of Panizzo \parencite{panizzo2004physical}. Hence, they performed Shepard filtering of the density as defined in \Eqref{eq:ROGERS2005-rho-shepard-filter} every 40-time steps.
+The authors noted that the LES description of viscous effects in slightly compressible SPH could lead to unphysical behaviour at free surfaces due to density variations being magnified by the equation of state. The lack of artificial viscosity implies that such variations are not damped. They subsequently noted that averaging the density would ensure smooth and physically acceptable free surfaces, based on the work of Panizzo \parencite{panizzo2004physical}. Hence, they performed Shepard filtering of the density as defined in \Eqref{eq:ROGERS2005-rho-shepard-filter} every 40-time steps.
 \begin{equation}
     \rho_i = \frac{\sum_j \rho_j \WIJ \Vol_j}{\sum_j \WIJ \Vol_j}
     \label{eq:ROGERS2005-rho-shepard-filter}
