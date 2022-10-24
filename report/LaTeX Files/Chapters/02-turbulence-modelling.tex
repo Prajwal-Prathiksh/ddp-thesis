@@ -410,6 +410,7 @@ The WALE model redefines the turbulent eddy viscosity as given by \Eqref{eq:Cane
 \end{equation}
 
 In order to test their model, the authors considered an array of cylinders in fluid flow as shown in \figref{fig:Canelas2016-vel-field}, with a constant body force. They computed the vorticity field and the Finite-Time Lyapunov Exponents (FTLE) field to study the LCSs in the flow. These fields are shown in \figref{fig:Canelas2016-vorticity-field} and \figref{fig:Canelas2016-ftle-field} respectively.
+
  \begin{figure}[H]
     \centering
     \includegraphics{Figures/research_papers/Canelas2016-vel-field.png}
@@ -428,6 +429,8 @@ In order to test their model, the authors considered an array of cylinders in fl
     \caption{FTLE field with negative integration time $(T = -0.4 s)$ (unstable manifolds - attracting LCS) at $t = 20s$. Reproduced from \cite{Canelas2016}}
     \label{fig:Canelas2016-ftle-field}
 \end{figure}
+
+The authors observed that the vortices produced, would evolve to recombine into larger structures. However, since vortex stretching is absent in $2D$, the authors believe that the recombination signifies \textit{energy injection} which leads to inverse cascade. They also observed that vortices with opposing strengths would interact and subsequently lead to vorticity cancellation. Hence, the authors note that such complex interactions lead to difficulties in interpreting the energy spectrum. Therefore, they believe that studies based on coherent structures would be required going forward.
 
 Okraschevski et al. \parencite{Okraschevski2022}, building on the work of Hardy \parencite{hardy1982formulas}, show that SPH should be viewed as a Lagrangian quadrature technique for the governing equations of explicit LES, raising interesting implications for SPH as a method itself. Firstly, the kernel scale limits SPH’s physical resolution, rendering it unsuitable as a DNS alternative. Secondly, any deficits introduced below the kernel scale could be resolved by consideration of the stress term, from which structures above the kernel scale could benefit. The authors consider this second implication a working hypothesis to try and prove or disprove.
 
