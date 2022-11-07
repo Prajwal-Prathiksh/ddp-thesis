@@ -9,7 +9,7 @@ except ImportError:
 import numpy as np
 
 # Local imports.
-from energy_spectrum import calculate_energy_spectrum
+from energy_spectrum import calculate_energy_spectrum, calculate_scalar_energy_spectrum
 
 
 def check_if_coords_are_in_indices(coords, indices):
@@ -36,6 +36,9 @@ def check_if_coords_are_in_indices(coords, indices):
 
 
 class TestCalculateEnergySpectrum(unittest.TestCase):
+    """
+    Test the function calculate_energy_spectrum.
+    """
     def test_should_work_for_1d_data(self):
         """
         Test that the function works for 1D data.
@@ -48,16 +51,16 @@ class TestCalculateEnergySpectrum(unittest.TestCase):
         U0 = 1.
 
         # When
-        Ek_U, Ek_V, Ek_W, u_spectrum, v_spectrum, w_spectrum =\
+        EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum =\
             calculate_energy_spectrum(
                 u, v=None, w=None, U0=U0, debug=True
             )
 
         # Then
         # Shape check
-        self.assertEqual(Ek_U.shape, u.shape)
-        self.assertEqual(Ek_V.shape[0], 1)
-        self.assertEqual(Ek_W.shape[0], 1)
+        self.assertEqual(EK_U.shape, u.shape)
+        self.assertEqual(EK_V.shape[0], 1)
+        self.assertEqual(EK_W.shape[0], 1)
         self.assertEqual(u_spectrum.shape, u.shape)
         self.assertEqual(v_spectrum.shape[0], 1)
         self.assertEqual(w_spectrum.shape[0], 1)
@@ -72,13 +75,13 @@ class TestCalculateEnergySpectrum(unittest.TestCase):
         self.assertTrue(np.allclose(w_spectrum, 0., atol=tol))
 
         # Energy spectrum check
-        Ek_U_shifted = np.fft.fftshift(Ek_U)
-        self.assertTrue(np.allclose(Ek_U_shifted[0], 0., atol=tol))
-        self.assertTrue(np.allclose(Ek_U_shifted[1], 0.25, atol=tol))
-        self.assertTrue(np.allclose(Ek_U_shifted[2:-1], 0., atol=tol))
-        self.assertTrue(np.allclose(Ek_U_shifted[-1], 0.25, atol=tol))
-        self.assertTrue(np.allclose(Ek_V, 0., atol=tol))
-        self.assertTrue(np.allclose(Ek_W, 0., atol=tol))
+        EK_U_shifted = np.fft.fftshift(EK_U)
+        self.assertTrue(np.allclose(EK_U_shifted[0], 0., atol=tol))
+        self.assertTrue(np.allclose(EK_U_shifted[1], 0.25, atol=tol))
+        self.assertTrue(np.allclose(EK_U_shifted[2:-1], 0., atol=tol))
+        self.assertTrue(np.allclose(EK_U_shifted[-1], 0.25, atol=tol))
+        self.assertTrue(np.allclose(EK_V, 0., atol=tol))
+        self.assertTrue(np.allclose(EK_W, 0., atol=tol))
 
         # Given
         sr = 30
@@ -87,14 +90,14 @@ class TestCalculateEnergySpectrum(unittest.TestCase):
         U0 = 0.5
 
         # When
-        Ek_U, Ek_V, Ek_W, u_spectrum, v_spectrum, w_spectrum =\
+        EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum =\
             calculate_energy_spectrum(
                 u, v=None, w=None, U0=U0, debug=True
             )
 
         # Then
         # Shape check
-        self.assertEqual(Ek_U.shape, u.shape)
+        self.assertEqual(EK_U.shape, u.shape)
 
         # Velocity spectrum check
         tol = 1e-10
@@ -104,11 +107,11 @@ class TestCalculateEnergySpectrum(unittest.TestCase):
         self.assertTrue(np.allclose(u_spectrum[-2:], 1., atol=tol))
 
         # Energy spectrum check
-        Ek_U_shifted = np.fft.fftshift(Ek_U)
-        self.assertTrue(np.allclose(Ek_U_shifted[0], 0., atol=tol))
-        self.assertTrue(np.allclose(Ek_U_shifted[1:2], 1., atol=tol))
-        self.assertTrue(np.allclose(Ek_U_shifted[3:-2], 0., atol=tol))
-        self.assertTrue(np.allclose(Ek_U_shifted[-2:], 1., atol=tol))
+        EK_U_shifted = np.fft.fftshift(EK_U)
+        self.assertTrue(np.allclose(EK_U_shifted[0], 0., atol=tol))
+        self.assertTrue(np.allclose(EK_U_shifted[1:2], 1., atol=tol))
+        self.assertTrue(np.allclose(EK_U_shifted[3:-2], 0., atol=tol))
+        self.assertTrue(np.allclose(EK_U_shifted[-2:], 1., atol=tol))
 
     def test_should_work_for_2d_data(self):
         """
@@ -123,16 +126,16 @@ class TestCalculateEnergySpectrum(unittest.TestCase):
         U0 = 0.5
 
         # When
-        Ek_U, Ek_V, Ek_W, u_spectrum, v_spectrum, w_spectrum =\
+        EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum =\
             calculate_energy_spectrum(
                 u=u, v=u, w=None, U0=U0, debug=True
             )
 
         # Then
         # Shape check
-        self.assertEqual(Ek_U.shape, u.shape)
-        self.assertEqual(Ek_V.shape, u.shape)
-        self.assertEqual(Ek_W.shape[0], 1)
+        self.assertEqual(EK_U.shape, u.shape)
+        self.assertEqual(EK_V.shape, u.shape)
+        self.assertEqual(EK_W.shape[0], 1)
         self.assertEqual(u_spectrum.shape, u.shape)
         self.assertEqual(v_spectrum.shape, u.shape)
         self.assertEqual(w_spectrum.shape[0], 1)
@@ -142,16 +145,16 @@ class TestCalculateEnergySpectrum(unittest.TestCase):
         ind = np.where(np.abs(u_spectrum - 1.) < tol)
         self.assertEqual(np.shape(ind), (2, 4))
         coords = [
-            [0, 1], [0, sr - 1],  # Coefficients for x-axis
-            [2, 0], [sr - 2, 0]  # Coefficients for y-axis
+            [0, 1], [0, sr - 1], # Coefficients for x-axis
+            [2, 0], [sr - 2, 0] # Coefficients for y-axis
         ]
         self.assertTrue(
             check_if_coords_are_in_indices(coords=coords, indices=ind), True
         )
 
         # Energy spectrum check
-        Ek_U_shifted = np.fft.fftshift(Ek_U)
-        ind = np.where(np.abs(Ek_U_shifted - 1.) < tol)
+        EK_U_shifted = np.fft.fftshift(EK_U)
+        ind = np.where(np.abs(EK_U_shifted - 1.) < tol)
         self.assertEqual(np.shape(ind), (2, 4))
         self.assertTrue(
             check_if_coords_are_in_indices(coords=coords, indices=ind), True
@@ -159,7 +162,7 @@ class TestCalculateEnergySpectrum(unittest.TestCase):
 
         # Check that the spectrum is the same for u and v
         self.assertTrue(np.allclose(u_spectrum, v_spectrum, atol=tol))
-        self.assertTrue(np.allclose(Ek_U, Ek_V, atol=tol))
+        self.assertTrue(np.allclose(EK_U, EK_V, atol=tol))
 
     def test_should_work_for_3d_data(self):
         """
@@ -174,16 +177,16 @@ class TestCalculateEnergySpectrum(unittest.TestCase):
         U0 = 0.5
 
         # When
-        Ek_U, Ek_V, Ek_W, u_spectrum, v_spectrum, w_spectrum =\
+        EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum =\
             calculate_energy_spectrum(
                 u=u, v=u, w=u, U0=U0, debug=True
             )
 
         # Then
         # Shape check
-        self.assertEqual(Ek_U.shape, u.shape)
-        self.assertEqual(Ek_V.shape, u.shape)
-        self.assertEqual(Ek_W.shape, u.shape)
+        self.assertEqual(EK_U.shape, u.shape)
+        self.assertEqual(EK_V.shape, u.shape)
+        self.assertEqual(EK_W.shape, u.shape)
         self.assertEqual(u_spectrum.shape, u.shape)
         self.assertEqual(v_spectrum.shape, u.shape)
         self.assertEqual(w_spectrum.shape, u.shape)
@@ -193,8 +196,8 @@ class TestCalculateEnergySpectrum(unittest.TestCase):
         ind = np.where(np.abs(u_spectrum - 1.) < tol)
         self.assertEqual(np.shape(ind), (3, 6))
         coords = [
-            [0, 0, 3], [0, 0, 27],  # Coefficients for x-axis
-            [0, 1, 0], [0, 29, 0],  # Coefficients for y-axis
+            [0, 0, 3], [0, 0, 27], # Coefficients for x-axis
+            [0, 1, 0], [0, 29, 0], # Coefficients for y-axis
             [2, 0, 0], [28, 0, 0]  # Coefficients for z-axis
         ]
         self.assertTrue(
@@ -202,12 +205,176 @@ class TestCalculateEnergySpectrum(unittest.TestCase):
         )
 
         # Energy spectrum check
-        Ek_U_shifted = np.fft.fftshift(Ek_U)
-        ind = np.where(np.abs(Ek_U_shifted - 1.) < tol)
+        EK_U_shifted = np.fft.fftshift(EK_U)
+        ind = np.where(np.abs(EK_U_shifted - 1.) < tol)
         self.assertEqual(np.shape(ind), (3, 6))
         self.assertTrue(
             check_if_coords_are_in_indices(coords=coords, indices=ind), True
         )
+
+class TestCalculateScalarEnergySpectrum(unittest.TestCase):
+    """
+    Test the function calculate_scalar_energy_spectrum.
+    """
+    def test_should_work_for_1d_data(self):
+        """
+        Test that the function works for 1D data.
+        """
+        # Given
+        N = 20
+        EK_U = [1] * N
+        EK_U = np.array(EK_U[::-1] + [0.] + EK_U)
+
+        # When
+        k, Ek = calculate_scalar_energy_spectrum(
+            EK_U=EK_U, debug=False
+        )
+
+        # Then
+        # Shape check
+        self.assertEqual(k.shape, Ek.shape)
+        self.assertEqual(k.shape, (N + 2,))
+
+        # Check the energy spectrum
+        tol = 1e-10
+        self.assertTrue(np.allclose(Ek[0], 0, atol=tol))
+        self.assertTrue(np.allclose(Ek[1:-1], 1, atol=tol))
+        self.assertTrue(np.allclose(Ek[-1], 0., atol=tol))
+
+        # Check the wavenumber = arange(N + 2)
+        self.assertTrue(np.allclose(k, np.arange(N + 2), atol=tol))
+
+        # Given
+        N = 20
+        EK_U = list(np.arange(N)+1)
+        EK_U = np.array(EK_U[::-1] + [0.] + EK_U)
+
+        # When
+        k, Ek = calculate_scalar_energy_spectrum(
+            EK_U=EK_U, debug=False
+        )
+
+        # Then
+        # Shape check
+        self.assertEqual(k.shape, Ek.shape)
+        self.assertEqual(k.shape, (N + 2,))
+
+        # Energy spectrum check
+        tol = 1e-10
+        # Sum of Ek and 0.5*(EK_U) must be same
+        self.assertTrue(np.allclose(np.sum(Ek), 0.5*np.sum(EK_U), atol=tol))
+        # Check the energy spectrum
+        self.assertTrue(np.allclose(Ek[:-1], np.arange(N+1), atol=tol))
+        self.assertTrue(np.allclose(Ek[-1], 0., atol=tol))
+
+        # Check the wavenumber = arange(N + 2)
+        self.assertTrue(np.allclose(k, np.arange(N + 2), atol=tol))
+
+    def test_should_work_for_2d_data(self):
+        """
+        Test that the function works for 2D data.
+        """
+        # Given
+        EK_U = np.array([
+            [0, 1, 0],
+            [1, 1, 1],
+            [0, 1, 0]
+        ])
+
+        # When
+        k, Ek = calculate_scalar_energy_spectrum(
+            EK_U=EK_U, EK_V=EK_U, debug=False
+        )
+
+        # Then
+        # Shape check
+        self.assertEqual(k.shape, Ek.shape)
+        self.assertEqual(k.shape, (4,))
+
+        # Energy spectrum check
+        tol = 1e-10
+        # Sum of Ek and 0.5*(EK_U + EK_V) must be same
+        self.assertTrue(np.allclose(np.sum(Ek), 0.5*(np.sum(EK_U + EK_U)), atol=tol))
+        # Check the energy spectrum
+        self.assertTrue(np.allclose(Ek, [1, 4, 0, 0], atol=tol))
+
+        # Given
+        EK_U = np.array([
+            [0., 0., 1., 0., 0.],
+            [0., 0., 0., 0., 0.],
+            [0., 1., 0., 1., 0.],
+            [0., 0., 0., 0., 0.],
+            [0., 0., 1., 0., 0.]
+        ])
+
+        # When
+        k, Ek = calculate_scalar_energy_spectrum(
+            EK_U=EK_U, EK_V=EK_U, debug=False
+        )
+
+        # Then
+        # Shape check
+        self.assertEqual(k.shape, Ek.shape)
+        self.assertEqual(k.shape, (5,))
+        
+        # Energy spectrum check
+        tol = 1e-10
+        # Sum of Ek and 0.5*(EK_U + EK_V) must be same
+        self.assertTrue(np.allclose(np.sum(Ek), 0.5*np.sum(EK_U+EK_U), atol=tol))
+        # Check the energy spectrum
+        self.assertTrue(np.allclose(Ek, [0, 2, 2, 0, 0], atol=tol))
+
+
+    def test_should_work_for_3d_data(self):
+        """
+        Test that the function works for 3D data.
+        """
+        # Given
+        EK_U = np.array([
+            [
+                [0, 1, 0],
+                [1, 1, 1],
+                [0, 1, 0]
+            ],
+            [
+                [1, 1, 1],
+                [1, 1, 1],
+                [1, 1, 1]
+            ],
+            [
+                [1, 0, 1],
+                [0, 1, 0],
+                [1, 0, 1]
+            ]
+        ])
+
+        # When
+        k, Ek = calculate_scalar_energy_spectrum(
+            EK_U=EK_U, EK_V=EK_U, EK_W=EK_U, debug=False
+        )
+
+        # Then
+        # Shape check
+        self.assertEqual(k.shape, Ek.shape)
+        self.assertEqual(k.shape, (4,))
+
+        # Energy spectrum check
+        tol = 1e-10
+        # Sum of Ek and 0.5*(EK_U + EK_V + EK_W) must be same
+        self.assertTrue(np.allclose(np.sum(Ek), 0.5*np.sum(EK_U+ EK_U + EK_U), atol=tol))
+        # Check the energy spectrum
+        
+
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == '__main__':
