@@ -97,6 +97,7 @@ def calculate_energy_spectrum(
     else:
         return EK_U, EK_V, EK_W
 
+
 def calculate_scalar_energy_spectrum(
     EK_U, EK_V=None, EK_W=None, debug=False
 ):
@@ -147,7 +148,7 @@ def calculate_scalar_energy_spectrum(
     elif dim == 3:
         if EK_V is None or EK_W is None:
             raise ValueError(
-                "Energy components EK_V or EK_W should not be None for 3D data."
+                "Energy component EK_V or EK_W should not be None for 3D data."
             )
         EK_U, EK_V, EK_W = np.array(EK_U), np.array(EK_V), np.array(EK_W)
 
@@ -182,32 +183,32 @@ def calculate_scalar_energy_spectrum(
             wn = int(wn)
 
             EK_U_sphere[wn] += EK_U[i]
-    
+
     elif dim == 2:
         for i in range(box_side_x):
             for j in range(box_side_y):
-                wn = np.round(norm([i-center_x, j-center_y]))
+                wn = np.round(norm([i - center_x, j - center_y]))
                 wn = int(wn)
 
                 EK_U_sphere[wn] += EK_U[i, j]
                 EK_V_sphere[wn] += EK_V[i, j]
-    
+
     elif dim == 3:
         for i in range(box_side_x):
             for j in range(box_side_y):
                 for k in range(box_side_z):
-                    wn = np.round(norm([i-center_x, j-center_y, k-center_z]))
+                    wn = np.round(
+                        norm([i - center_x, j - center_y, k - center_z]))
                     wn = int(wn)
 
                     EK_U_sphere[wn] += EK_U[i, j, k]
                     EK_V_sphere[wn] += EK_V[i, j, k]
                     EK_W_sphere[wn] += EK_W[i, j, k]
 
-    Ek = 0.5*(EK_U_sphere + EK_V_sphere + EK_W_sphere)
+    Ek = 0.5 * (EK_U_sphere + EK_V_sphere + EK_W_sphere)
     k = np.arange(0, len(Ek))
 
     if debug:
         return k, Ek, EK_U_sphere, EK_V_sphere, EK_W_sphere
     else:
         return k, Ek
-
