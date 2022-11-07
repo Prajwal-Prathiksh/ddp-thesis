@@ -57,6 +57,28 @@ def calculate_energy_spectrum(
     from numpy.fft import fftn as fftn
     from numpy.fft import fftshift as fftshift
 
+    # Check shape of velocity components for given dimensions
+    dim = len(u.shape)
+    if dim == 1:
+        if v is not None or w is not None:
+            raise ValueError(
+                "Velocity components v and w should be None for 1D data."
+            )
+    elif dim == 2:
+        if v is None:
+            raise ValueError(
+                "Velocity component v should not be None for 2D data."
+            )
+        if w is not None:
+            raise ValueError(
+                "Velocity component w should be None for 2D data."
+            )
+    elif dim == 3:
+        if v is None or w is None:
+            raise ValueError(
+                "Velocity components v or w should not be None for 3D data."
+            )
+
     # Velocity field data
     v = v if v is not None else np.array([0.])
     w = w if w is not None else np.array([0.])
@@ -76,7 +98,7 @@ def calculate_energy_spectrum(
         return EK_U, EK_V, EK_W
 
 def calculate_scalar_energy_spectrum(
-    EK_U, EK_V=np.array([0.]), EK_W=np.array([0.]), debug=False
+    EK_U, EK_V=None, EK_W=None, debug=False
 ):
     """
     Calculate 1D energy spectrum of the flow E(k), from the point-wise energy
@@ -104,9 +126,32 @@ def calculate_scalar_energy_spectrum(
     # Import numpy functions
     from numpy.linalg import norm as norm
 
-    # Code
-    dim = len(EK_U.shape)
-    print(f"Dimension: {dim}")
+    # Check shape of velocity components for given dimensions
+    dim = len(np.shape(EK_U))
+    if dim == 1:
+        if EK_V is not None or EK_W is not None:
+            raise ValueError(
+                "Energy components EK_V and EK_W should be None for 1D data."
+            )
+        EK_U = np.array(EK_U)
+    elif dim == 2:
+        if EK_V is None:
+            raise ValueError(
+                "Energy component EK_V should not be None for 2D data."
+            )
+        if EK_W is not None:
+            raise ValueError(
+                "Energy component EK_W should be None for 2D data."
+            )
+        EK_U, EK_V = np.array(EK_U), np.array(EK_V)
+    elif dim == 3:
+        if EK_V is None or EK_W is None:
+            raise ValueError(
+                "Energy components EK_V or EK_W should not be None for 3D data."
+            )
+        EK_U, EK_V, EK_W = np.array(EK_U), np.array(EK_V), np.array(EK_W)
+
+    # print(f"Dimension: {dim}")
     eps = 1e-50
 
     box_side_x = np.shape(EK_U)[0]
@@ -127,9 +172,9 @@ def calculate_scalar_energy_spectrum(
     EK_V_sphere = np.zeros((box_radius, )) + eps
     EK_W_sphere = np.zeros((box_radius, )) + eps
 
-    print(f"Box radius: {box_radius}")
-    print(f"Center: {center_x}, {center_y}, {center_z}")
-    print(f"Box sides: {box_side_x}, {box_side_y}, {box_side_z}")
+    # print(f"Box radius: {box_radius}")
+    # print(f"Center: {center_x}, {center_y}, {center_z}")
+    # print(f"Box sides: {box_side_x}, {box_side_y}, {box_side_z}")
 
     if dim == 1:
         for i in range(box_side_x):
@@ -165,4 +210,4 @@ def calculate_scalar_energy_spectrum(
         return k, Ek, EK_U_sphere, EK_V_sphere, EK_W_sphere
     else:
         return k, Ek
-              
+
