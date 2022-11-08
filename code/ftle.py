@@ -8,9 +8,9 @@ References
     Methods Appl. Mech. Eng., vol. 305, pp. 849-868, 2016,
     doi: 10.1016/j.cma.2016.03.027.
 """
-###########################################################################
-#
-###########################################################################
+# Library imports.
+
+# Method 1 
 def calculate_flow_ftle(time_evolution, t_range=[], dim, bounded_flow=True):
     if not bounded_flow:
         raise Exception("FTLE calculation not modelled for inflow/outflow")

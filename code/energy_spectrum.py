@@ -3,11 +3,6 @@ Energy Spectrum of the Flow
 #####################
 References
 -----------
-    .. [navah2020high] Navah, Farshad, Marta de la Llave Plata, and Vincent
-    Couaillier. "A high-order multiscale approach to turbulence for compact
-    nodal schemes." Computer methods in applied mechanics and engineering 363
-    (2020): 112885.
-
     .. [energyspectrum] Energy_Spectrum: Script (with Example) to Compute the
     Kinetic Energy Spectrum of Periodic Turbulent Flows. Accessed 7 Nov. 2022.
 """
@@ -15,11 +10,7 @@ References
 import numpy as np
 from compyle.api import annotate, Elementwise, wrap
 
-# DONE: Get normalised velocity spectrum (numpy fft)
-# DONE: Get E(kx...)
-# Compyle iterative functions (backend)
-# Get E(k)
-
+#TODO: Compyle iterative functions
 
 def calculate_energy_spectrum(
     u, v=None, w=None, U0=1., debug=False
@@ -152,7 +143,6 @@ def calculate_scalar_energy_spectrum(
             )
         EK_U, EK_V, EK_W = np.array(EK_U), np.array(EK_V), np.array(EK_W)
 
-    # print(f"Dimension: {dim}")
     eps = 1e-50
 
     box_side_x = np.shape(EK_U)[0]
@@ -172,10 +162,6 @@ def calculate_scalar_energy_spectrum(
     EK_U_sphere = np.zeros((box_radius, )) + eps
     EK_V_sphere = np.zeros((box_radius, )) + eps
     EK_W_sphere = np.zeros((box_radius, )) + eps
-
-    # print(f"Box radius: {box_radius}")
-    # print(f"Center: {center_x}, {center_y}, {center_z}")
-    # print(f"Box sides: {box_side_x}, {box_side_y}, {box_side_z}")
 
     if dim == 1:
         for i in range(box_side_x):
