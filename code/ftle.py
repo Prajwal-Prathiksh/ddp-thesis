@@ -10,10 +10,7 @@ References
 """
 # Library imports.
 
-# Method 1 
-def calculate_flow_ftle(time_evolution, t_range=[], dim, bounded_flow=True):
-    if not bounded_flow:
-        raise Exception("FTLE calculation not modelled for inflow/outflow")
+# Method 1 (Postprocessing-based)
+# Forward-in-time FTLE and Backward-in-time FTLE
 
-def calculate_deformation_gradient():
     
