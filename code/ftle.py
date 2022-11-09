@@ -12,5 +12,3 @@ References
 
 # Method 1 (Postprocessing-based)
 # Forward-in-time FTLE and Backward-in-time FTLE
-
-    

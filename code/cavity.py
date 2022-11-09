@@ -146,16 +146,16 @@ class LidDrivenCavity(Application):
         info = self.read_info(info_fname)
         if len(self.output_files) == 0:
             return
-        
+
         # Plot KE history
         t, ke = self._plot_ke_history()
 
         # Plot the velocity profile
         tf, x, ui, vi, ui_c, vi_c = self._plot_velocity()
-        
+
         # Plot energy spectrum
         k, Ek0, Ekf = self._plot_energy_spectrum()
-        
+
         # Save data
         res = os.path.join(self.output_dir, "results.npz")
         np.savez(
@@ -254,42 +254,25 @@ class LidDrivenCavity(Application):
         plt.savefig(fig, dpi=300)
         return tf, _x, ui, vi, ui_c, vi_c
 
-    def _plot_energy_spectrum(self):
-        from pysph.tools.interpolator import Interpolator
-        from pysph.solver.utils import load
+    def _plot_energy_spectrum(self, Ni=101):
         from energy_spectrum import (
-            calculate_energy_spectrum, calculate_scalar_energy_spectrum
+            calculate_energy_spectrum, calculate_scalar_energy_spectrum,
+            velocity_intepolator
+        )
+        from pysph.base.kernels import WendlandQuinticC4
+
+        # Interpolate initial and final states of velocity.
+        t0, u0, v0 = velocity_intepolator(
+            self.output_files[0], dim=2, Ni=Ni,
+            kernel=WendlandQuinticC4(dim=2),
+            domain_manager=self.create_domain()
         )
 
-        # interpolated velocities
-        _x = np.linspace(0, 1, 101)
-        xx, yy = np.meshgrid(_x, _x)
-
-        # Take the first solution data
-        fname = self.output_files[0]
-        data = load(fname)
-        t0 = data['solver_data']['t']
-        interp = Interpolator(list(data['arrays'].values()), x=xx, y=yy)
-        # ui = np.zeros_like(xx) # vi = np.zeros_like(xx)
-        _u = interp.interpolate('u')
-        _v = interp.interpolate('v')
-        _u.shape = 101, 101
-        _v.shape = 101, 101
-        u0 = _u
-        v0 = _v
-
-        # Take the last solution data
-        fname = self.output_files[-1]
-        data = load(fname)
-        tf = data['solver_data']['t']
-        interp = Interpolator(list(data['arrays'].values()), x=xx, y=yy)
-        # ui = np.zeros_like(xx) # vi = np.zeros_like(xx)
-        _u = interp.interpolate('u')
-        _v = interp.interpolate('v')
-        _u.shape = 101, 101
-        _v.shape = 101, 101
-        uf = _u
-        vf = _v
+        tf, uf, vf = velocity_intepolator(
+            self.output_files[-1], dim=2, Ni=Ni,
+            kernel=WendlandQuinticC4(dim=2),
+            domain_manager=self.create_domain()
+        )
 
         # Inital energy spectrum
         EK_U0, EK_V0, _ = calculate_energy_spectrum(u0, v0, w=None, U0=1)
@@ -299,6 +282,15 @@ class LidDrivenCavity(Application):
         EK_Uf, EK_Vf, _ = calculate_energy_spectrum(uf, vf, w=None, U0=1)
         kf, Ekf = calculate_scalar_energy_spectrum(EK_Uf, EK_Vf, EK_W=None)
 
+        # Save npz file
+        fname = os.path.join(self.output_dir, 'energy_spectrum.npz')
+        np.savez(
+            fname,
+            Ni=Ni, h=self.h0,
+            t0=t0, u0=u0, v0=v0, EK_U0=EK_U0, EK_V0=EK_V0, k0=k0, Ek0=Ek0,
+            tf=tf, uf=uf, vf=vf, EK_Uf=EK_Uf, EK_Vf=EK_Vf, kf=kf, Ekf=Ekf
+        )
+
         # Plotting
         import matplotlib.pyplot as plt
         plt.clf()
@@ -306,12 +298,11 @@ class LidDrivenCavity(Application):
         plt.loglog(kf, Ekf, 'k-', label=f't={tf:.2f}')
         plt.xlabel(r'$k$')
         plt.ylabel(r'$E(k)$')
-        plt.legend()
-        plt.title(f'Energy spectrum comparison (Re={self.re})')
+        plt.legend(loc='lower left')
+        plt.title(f'Energy spectrum comparison (Re={self.options.re})')
         fig = os.path.join(self.output_dir, 'energy_spectrum.png')
         plt.savefig(fig, dpi=300)
         return kf, Ek0, Ekf
-
 
 
 if __name__ == '__main__':

@@ -42,9 +42,9 @@ def m4p(x=0.0):
     if x < 0.0:
         return 0.0
     elif x < 1.0:
-        return 1.0 - 0.5*x*x*(5.0 - 3.0*x)
+        return 1.0 - 0.5 * x * x * (5.0 - 3.0 * x)
     elif x < 2.0:
-        return (1 - x)*(2 - x)*(2 - x)*0.5
+        return (1 - x) * (2 - x) * (2 - x) * 0.5
     else:
         return 0.0
 
@@ -60,17 +60,17 @@ class M4(Equation):
         return [m4p]
 
     def loop(self, s_idx, d_idx, s_temp_prop, d_prop, d_h, XIJ):
-        xij = abs(XIJ[0]/d_h[d_idx])
-        yij = abs(XIJ[1]/d_h[d_idx])
-        d_prop[d_idx] += m4p(xij)*m4p(yij)*s_temp_prop[s_idx]
+        xij = abs(XIJ[0] / d_h[d_idx])
+        yij = abs(XIJ[1] / d_h[d_idx])
+        d_prop[d_idx] += m4p(xij) * m4p(yij) * s_temp_prop[s_idx]
 
 
 def exact_solution(U, b, t, x, y):
-    factor = U * exp(b*t)
+    factor = U * exp(b * t)
 
-    u = -cos(2*pi*x) * sin(2*pi*y)
-    v = sin(2*pi*x) * cos(2*pi*y)
-    p = -0.25 * (cos(4*pi*x) + cos(4*pi*y))
+    u = -cos(2 * pi * x) * sin(2 * pi * y)
+    v = sin(2 * pi * x) * cos(2 * pi * y)
+    p = -0.25 * (cos(4 * pi * x) + cos(4 * pi * y))
 
     return factor * u, factor * v, factor * factor * p
 
@@ -227,9 +227,9 @@ class TaylorGreen(Application):
         m = self.volume * rho0
         h = self.hdx * dx
         re = self.options.re
-        b = -8.0*pi*pi / re
+        b = -8.0 * pi * pi / re
         u0, v0, p0 = exact_solution(U=U, b=b, t=0, x=x, y=y)
-        color0 = cos(2*pi*x) * cos(4*pi*y)
+        color0 = cos(2 * pi * x) * cos(4 * pi * y)
 
         # create the arrays
         fluid = get_particle_array(name='fluid', x=x, y=y, m=m, h=h, u=u0,
@@ -420,7 +420,7 @@ class TaylorGreen(Application):
         # Save npz file
         fname = os.path.join(self.output_dir, 'energy_spectrum.npz')
         np.savez(
-            fname, 
+            fname,
             Ni=Ni, h=self.h0,
             t0=t0, u0=u0, v0=v0, EK_U0=EK_U0, EK_V0=EK_V0, k0=k0, Ek0=Ek0,
             tf=tf, uf=uf, vf=vf, EK_Uf=EK_Uf, EK_Vf=EK_Vf, kf=kf, Ekf=Ekf

@@ -13,12 +13,12 @@ from compyle.api import annotate, Elementwise, wrap
 from pysph.tools.interpolator import Interpolator
 from pysph.solver.utils import load
 
-#TODO: Compyle iterative functions
+# TODO: Compyle iterative functions
 
 
 def calculate_energy_spectrum(
-    u:np.ndarray, v:np.ndarray=None, w:np.ndarray=None, U0:float=1.0,
-    debug:bool=False
+    u: np.ndarray, v: np.ndarray = None, w: np.ndarray = None, U0: float = 1.0,
+    debug: bool = False
 ):
     """
     Calculate the point-wise energy spectrum of the flow E(kx, ky, kz), from
@@ -95,8 +95,8 @@ def calculate_energy_spectrum(
 
 
 def calculate_scalar_energy_spectrum(
-    EK_U:np.ndarray, EK_V:np.ndarray=None, EK_W:np.ndarray=None,
-    debug:bool=False
+    EK_U: np.ndarray, EK_V: np.ndarray = None, EK_W: np.ndarray = None,
+    debug: bool = False
 ):
     """
     Calculate 1D energy spectrum of the flow E(k), from the point-wise energy
@@ -205,9 +205,10 @@ def calculate_scalar_energy_spectrum(
     else:
         return k, Ek
 
+
 def velocity_intepolator(
-    fname:str, dim:int, kernel:object=None, Ni:int=101,
-    domain_manager:object=None, **kwargs
+    fname: str, dim: int, kernel: object = None, Ni: int = 101,
+    domain_manager: object = None, **kwargs
 ):
     """
     Interpolate the energy spectrum of the flow from the given file.
@@ -221,7 +222,8 @@ def velocity_intepolator(
     kernel : object, optional
         Kernel object. The default is WendlandQuinticC4.
     Ni : int, optional
-        Number of points to interpolate the energy spectrum (Ni**2 for 2D data, Ni**3 for 3D data). The default is 101.
+        Number of points to interpolate the energy spectrum (Ni**2 for 2D data,
+        Ni**3 for 3D data). The default is 101.
     domain_manager : object, optional
         DomainManager object. The default is None.
     **kwargs : dict, optional
@@ -253,12 +255,12 @@ def velocity_intepolator(
     elif dim == 3:
         x, y, z = np.meshgrid(_x, _x, _x)
     else:
-        raise ValueError("Dimension should be 1, 2 or 3.") 
+        raise ValueError("Dimension should be 1, 2 or 3.")
 
     # Setup default interpolator properties
     if kernel is None:
         kernel = WendlandQuinticC4(dim=dim)
-    
+
     # Interpolate velocity
     interp = Interpolator(
         list(data['arrays'].values()), x=x, y=y, z=z,
