@@ -154,3 +154,5 @@ config*.json*
 *.lot
 *.run.xml
 *.toc
+*_output/
+*outputs/
