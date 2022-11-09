@@ -8,12 +8,17 @@ References
 """
 # Library imports.
 import numpy as np
+from pysph.base.kernels import WendlandQuinticC4
 from compyle.api import annotate, Elementwise, wrap
+from pysph.tools.interpolator import Interpolator
+from pysph.solver.utils import load
 
 #TODO: Compyle iterative functions
 
+
 def calculate_energy_spectrum(
-    u, v=None, w=None, U0=1., debug=False
+    u:np.ndarray, v:np.ndarray=None, w:np.ndarray=None, U0:float=1.0,
+    debug:bool=False
 ):
     """
     Calculate the point-wise energy spectrum of the flow E(kx, ky, kz), from
@@ -24,11 +29,11 @@ def calculate_energy_spectrum(
 
     Parameters
     ----------
-    u : array_like
+    u : np.ndarray
         Velocity field in x-direction.
-    v : array_like, optional
+    v : np.ndarray, optional
         Velocity field in y-direction.
-    w : array_like, optional
+    w : np.ndarray, optional
         Velocity field in z-direction.
     U0 : float, optional
         Reference velocity. The default is 1.
@@ -37,11 +42,11 @@ def calculate_energy_spectrum(
 
     Returns
     -------
-    EK_U : array_like
+    EK_U : np.ndarray
         Point-wise energy spectrum of the flow in x-direction.
-    EK_V : array_like
+    EK_V : np.ndarray
         Point-wise energy spectrum of the flow in y-direction.
-    EK_W : array_like
+    EK_W : np.ndarray
         Point-wise energy spectrum of the flow in z-direction.
     """
     # Import FFT-functions
@@ -90,7 +95,8 @@ def calculate_energy_spectrum(
 
 
 def calculate_scalar_energy_spectrum(
-    EK_U, EK_V=None, EK_W=None, debug=False
+    EK_U:np.ndarray, EK_V:np.ndarray=None, EK_W:np.ndarray=None,
+    debug:bool=False
 ):
     """
     Calculate 1D energy spectrum of the flow E(k), from the point-wise energy
@@ -99,20 +105,20 @@ def calculate_scalar_energy_spectrum(
 
     Parameters
     ----------
-    EK_U : array_like
+    EK_U : np.ndarray
         Point-wise energy spectrum of the flow in x-direction.
-    EK_V : array_like, optional
+    EK_V : np.ndarray, optional
         Point-wise energy spectrum of the flow in y-direction.
-    EK_W : array_like, optional
+    EK_W : np.ndarray, optional
         Point-wise energy spectrum of the flow in z-direction.
     debug : bool, optional
         Return the averaged energy spectrum as well. The default is False.
 
     Returns
     -------
-    k : array_like
+    k : np.ndarray
         1D array of wave numbers.
-    Ek : array_like
+    Ek : np.ndarray
         1D array of energy spectrum.
     """
     # Import numpy functions
@@ -198,3 +204,81 @@ def calculate_scalar_energy_spectrum(
         return k, Ek, EK_U_sphere, EK_V_sphere, EK_W_sphere
     else:
         return k, Ek
+
+def velocity_intepolator(
+    fname:str, dim:int, kernel:object=None, Ni:int=101,
+    domain_manager:object=None, **kwargs
+):
+    """
+    Interpolate the energy spectrum of the flow from the given file.
+
+    Parameters
+    ----------
+    fname : str
+        Name of the file containing the flow data.
+    dim : int
+        Dimension of the flow.
+    kernel : object, optional
+        Kernel object. The default is WendlandQuinticC4.
+    Ni : int, optional
+        Number of points to interpolate the energy spectrum (Ni**2 for 2D data, Ni**3 for 3D data). The default is 101.
+    domain_manager : object, optional
+        DomainManager object. The default is None.
+    **kwargs : dict, optional
+        Additional keyword arguments to pass to the interpolator.
+
+    Returns
+    -------
+    t : float
+        Time of the flow data.
+    ui : np.ndarray
+        Interpolated velocity in x-direction.
+    vi : np.ndarray
+        Interpolated velocity in y-direction.
+    wi : np.ndarray
+        Interpolated velocity in z-direction.
+    """
+    # Load data
+    data = load(fname)
+    t = data["solver_data"]["t"]
+
+    # Create meshgrid based on dimension
+    _x = np.linspace(0, 1, Ni)
+    if dim == 1:
+        x = _x
+        y = z = None
+    elif dim == 2:
+        x, y = np.meshgrid(_x, _x)
+        z = None
+    elif dim == 3:
+        x, y, z = np.meshgrid(_x, _x, _x)
+    else:
+        raise ValueError("Dimension should be 1, 2 or 3.") 
+
+    # Setup default interpolator properties
+    if kernel is None:
+        kernel = WendlandQuinticC4(dim=dim)
+    
+    # Interpolate velocity
+    interp = Interpolator(
+        list(data['arrays'].values()), x=x, y=y, z=z,
+        kernel=kernel, domain_manager=domain_manager, **kwargs
+    )
+    if dim == 1:
+        _u = interp.interpolate('u')
+        ui = _u
+        return t, ui
+    elif dim == 2:
+        _u = interp.interpolate('u')
+        _v = interp.interpolate('v')
+        ui = _u.reshape(Ni, Ni)
+        vi = _v.reshape(Ni, Ni)
+        return t, ui, vi
+    elif dim == 3:
+        _u = interp.interpolate('u')
+        _v = interp.interpolate('v')
+        _w = interp.interpolate('w')
+        ui = _u.reshape(Ni, Ni, Ni)
+        vi = _v.reshape(Ni, Ni, Ni)
+        wi = _w.reshape(Ni, Ni, Ni)
+        return t, ui, vi, wi
