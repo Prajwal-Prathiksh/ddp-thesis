@@ -388,8 +388,6 @@ class TaylorGreen(Application):
         plt.savefig(fig, dpi=300)
 
     def _plot_energy_spectrum(self, Ni=101):
-        from pysph.tools.interpolator import Interpolator
-        from pysph.solver.utils import load
         from energy_spectrum import (
             calculate_energy_spectrum, calculate_scalar_energy_spectrum,
             velocity_intepolator
