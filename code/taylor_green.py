@@ -1,7 +1,6 @@
 """Taylor Green vortex flow (5 minutes).
 """
 
-from calendar import c
 import os
 import numpy as np
 from numpy import pi, sin, cos, exp
@@ -89,6 +88,11 @@ class TaylorGreen(Application):
             "of dx (setting it to zero disables it, the default)."
         )
         group.add_argument(
+            "--pb-factor", action="store", type=float, dest="pb_factor",
+            default=1.0,
+            help="Use fraction of the background pressure (default: 1.0)."
+        )
+        group.add_argument(
             "--nx", action="store", type=int, dest="nx", default=50,
             help="Number of points along x direction. (default 50)"
         )
@@ -111,7 +115,7 @@ class TaylorGreen(Application):
         self.volume = dx * dx
         self.hdx = self.options.hdx
 
-        h0 = self.hdx * self.dx
+        self.h0 = h0 = self.hdx * self.dx
         if self.options.scheme.endswith('isph'):
             dt_cfl = 0.25 * h0 / U
         else:
@@ -338,10 +342,15 @@ class TaylorGreen(Application):
             np.asarray, (t, ke, ke_ex, decay, l1, linf, p_l1))
         )
         decay_ex = U * np.exp(decay_rate * t)
+
+        # Plot energy spectrum
+        Ni = int(input("Enter Ni: "))
+        k, Ek0, Ekf = self._plot_energy_spectrum(Ni)
+
         fname = os.path.join(self.output_dir, 'results.npz')
         np.savez(
             fname, t=t, ke=ke, ke_ex=ke_ex, decay=decay, linf=linf, l1=l1,
-            p_l1=p_l1, decay_ex=decay_ex
+            p_l1=p_l1, decay_ex=decay_ex, k=k, Ek0=Ek0, Ekf=Ekf
         )
 
         import matplotlib
@@ -377,6 +386,58 @@ class TaylorGreen(Application):
         plt.ylabel(r'$L_1$ error for $p$')
         fig = os.path.join(self.output_dir, "p_l1_error.png")
         plt.savefig(fig, dpi=300)
+
+    def _plot_energy_spectrum(self, Ni=101):
+        from pysph.tools.interpolator import Interpolator
+        from pysph.solver.utils import load
+        from energy_spectrum import (
+            calculate_energy_spectrum, calculate_scalar_energy_spectrum,
+            velocity_intepolator
+        )
+        from pysph.base.kernels import WendlandQuinticC4
+
+        # Interpolate initial and final states of velocity.
+        t0, u0, v0 = velocity_intepolator(
+            self.output_files[0], dim=2, Ni=Ni,
+            kernel=WendlandQuinticC4(dim=2),
+            domain_manager=self.create_domain()
+        )
+
+        tf, uf, vf = velocity_intepolator(
+            self.output_files[-1], dim=2, Ni=Ni,
+            kernel=WendlandQuinticC4(dim=2),
+            domain_manager=self.create_domain()
+        )
+
+        # Inital energy spectrum
+        EK_U0, EK_V0, _ = calculate_energy_spectrum(u0, v0, w=None, U0=1)
+        k0, Ek0 = calculate_scalar_energy_spectrum(EK_U0, EK_V0, EK_W=None)
+
+        # Final energy spectrum
+        EK_Uf, EK_Vf, _ = calculate_energy_spectrum(uf, vf, w=None, U0=1)
+        kf, Ekf = calculate_scalar_energy_spectrum(EK_Uf, EK_Vf, EK_W=None)
+
+        # Save npz file
+        fname = os.path.join(self.output_dir, 'energy_spectrum.npz')
+        np.savez(
+            fname, 
+            Ni=Ni, h=self.h0,
+            t0=t0, u0=u0, v0=v0, EK_U0=EK_U0, EK_V0=EK_V0, k0=k0, Ek0=Ek0,
+            tf=tf, uf=uf, vf=vf, EK_Uf=EK_Uf, EK_Vf=EK_Vf, kf=kf, Ekf=Ekf
+        )
+
+        # Plotting
+        import matplotlib.pyplot as plt
+        plt.clf()
+        plt.loglog(k0, Ek0, 'k--', label=f't={t0:.2f}')
+        plt.loglog(kf, Ekf, 'k-', label=f't={tf:.2f}')
+        plt.xlabel(r'$k$')
+        plt.ylabel(r'$E(k)$')
+        plt.legend(loc='lower left')
+        plt.title(f'Energy spectrum comparison (Re={self.options.re})')
+        fig = os.path.join(self.output_dir, 'energy_spectrum.png')
+        plt.savefig(fig, dpi=300)
+        return kf, Ek0, Ekf
 
     def customize_output(self):
         self._mayavi_config('''

@@ -151,14 +151,17 @@ class LidDrivenCavity(Application):
         t, ke = self._plot_ke_history()
 
         # Plot the velocity profile
-        x, ui, vi, ui_c, vi_c = self._plot_velocity()
+        tf, x, ui, vi, ui_c, vi_c = self._plot_velocity()
         
         # Plot energy spectrum
-        pass
+        k, Ek0, Ekf = self._plot_energy_spectrum()
         
         # Save data
         res = os.path.join(self.output_dir, "results.npz")
-        np.savez(res, t=t, ke=ke, x=x, u=ui, v=vi, u_c=ui_c, v_c=vi_c)
+        np.savez(
+            res, t=t, ke=ke, x=x, u=ui, v=vi, u_c=ui_c, v_c=vi_c, k=k, Ek0=Ek0,
+            Ekf=Ekf
+        )
 
     def _plot_ke_history(self):
         from pysph.tools.pprocess import get_ke_history
@@ -249,7 +252,66 @@ class LidDrivenCavity(Application):
 
         fig = os.path.join(self.output_dir, 'centerline.png')
         plt.savefig(fig, dpi=300)
-        return _x, ui, vi, ui_c, vi_c
+        return tf, _x, ui, vi, ui_c, vi_c
+
+    def _plot_energy_spectrum(self):
+        from pysph.tools.interpolator import Interpolator
+        from pysph.solver.utils import load
+        from energy_spectrum import (
+            calculate_energy_spectrum, calculate_scalar_energy_spectrum
+        )
+
+        # interpolated velocities
+        _x = np.linspace(0, 1, 101)
+        xx, yy = np.meshgrid(_x, _x)
+
+        # Take the first solution data
+        fname = self.output_files[0]
+        data = load(fname)
+        t0 = data['solver_data']['t']
+        interp = Interpolator(list(data['arrays'].values()), x=xx, y=yy)
+        # ui = np.zeros_like(xx) # vi = np.zeros_like(xx)
+        _u = interp.interpolate('u')
+        _v = interp.interpolate('v')
+        _u.shape = 101, 101
+        _v.shape = 101, 101
+        u0 = _u
+        v0 = _v
+
+        # Take the last solution data
+        fname = self.output_files[-1]
+        data = load(fname)
+        tf = data['solver_data']['t']
+        interp = Interpolator(list(data['arrays'].values()), x=xx, y=yy)
+        # ui = np.zeros_like(xx) # vi = np.zeros_like(xx)
+        _u = interp.interpolate('u')
+        _v = interp.interpolate('v')
+        _u.shape = 101, 101
+        _v.shape = 101, 101
+        uf = _u
+        vf = _v
+
+        # Inital energy spectrum
+        EK_U0, EK_V0, _ = calculate_energy_spectrum(u0, v0, w=None, U0=1)
+        k0, Ek0 = calculate_scalar_energy_spectrum(EK_U0, EK_V0, EK_W=None)
+
+        # Final energy spectrum
+        EK_Uf, EK_Vf, _ = calculate_energy_spectrum(uf, vf, w=None, U0=1)
+        kf, Ekf = calculate_scalar_energy_spectrum(EK_Uf, EK_Vf, EK_W=None)
+
+        # Plotting
+        import matplotlib.pyplot as plt
+        plt.clf()
+        plt.loglog(k0, Ek0, 'k--', label=f't={t0:.2f}')
+        plt.loglog(kf, Ekf, 'k-', label=f't={tf:.2f}')
+        plt.xlabel(r'$k$')
+        plt.ylabel(r'$E(k)$')
+        plt.legend()
+        plt.title(f'Energy spectrum comparison (Re={self.re})')
+        fig = os.path.join(self.output_dir, 'energy_spectrum.png')
+        plt.savefig(fig, dpi=300)
+        return kf, Ek0, Ekf
+
 
 
 if __name__ == '__main__':
