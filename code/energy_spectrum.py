@@ -1,6 +1,6 @@
 r"""
 Energy Spectrum of the Flow
-#####################
+############################
 References
 -----------
     .. [energyspectrum] Energy_Spectrum: Script (with Example) to Compute the
@@ -17,8 +17,7 @@ from pysph.solver.utils import load
 
 
 def calculate_energy_spectrum(
-    u: np.ndarray, v: np.ndarray = None, w: np.ndarray = None, U0: float = 1.0,
-    debug: bool = False
+    vel_list:list, U0: float = 1.0, debug: bool = False
 ):
     """
     Calculate the point-wise energy spectrum of the flow E(kx, ky, kz), from
@@ -29,12 +28,10 @@ def calculate_energy_spectrum(
 
     Parameters
     ----------
-    u : np.ndarray
-        Velocity field in x-direction.
-    v : np.ndarray, optional
-        Velocity field in y-direction.
-    w : np.ndarray, optional
-        Velocity field in z-direction.
+    vel_list : list[np.ndarray], len(3)
+        List of velocity components of the flow. If the flow is 1D, then the
+        second and third components should be None. If the flow is 2D, then
+        the third component should be None.
     U0 : float, optional
         Reference velocity. The default is 1.
     debug : bool, optional
@@ -42,17 +39,14 @@ def calculate_energy_spectrum(
 
     Returns
     -------
-    EK_U : np.ndarray
-        Point-wise energy spectrum of the flow in x-direction.
-    EK_V : np.ndarray
-        Point-wise energy spectrum of the flow in y-direction.
-    EK_W : np.ndarray
-        Point-wise energy spectrum of the flow in z-direction.
+    EK_list : list[np.ndarray], len(3)
+        List of point-wise energy spectrum components of the flow.
     """
     # Import FFT-functions
     from numpy.fft import fftn as fftn
     from numpy.fft import fftshift as fftshift
 
+    u, v, w = vel_list
     # Check shape of velocity components for given dimensions
     dim = len(u.shape)
     if dim == 1:
@@ -88,15 +82,21 @@ def calculate_energy_spectrum(
     EK_V = fftshift(v_spectrum**2)
     EK_W = fftshift(w_spectrum**2)
 
+    # Store EK_* and *_spectrum in list in the same format as vel_list
+    EK_list = [EK_U, EK_V, EK_W]
+    vel_spectrum_list = [u_spectrum, v_spectrum, w_spectrum]
+    for i in range(3):
+        if vel_list[i] is None:
+            EK_list[i], vel_spectrum_list[i] = None, None
+
     if debug:
-        return EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum
+        return EK_list, vel_spectrum_list
     else:
-        return EK_U, EK_V, EK_W
+        return EK_list
 
 
 def calculate_scalar_energy_spectrum(
-    EK_U: np.ndarray, EK_V: np.ndarray = None, EK_W: np.ndarray = None,
-    debug: bool = False
+    EK_list: list[np.ndarray], debug: bool = False
 ):
     """
     Calculate 1D energy spectrum of the flow E(k), from the point-wise energy
@@ -105,12 +105,8 @@ def calculate_scalar_energy_spectrum(
 
     Parameters
     ----------
-    EK_U : np.ndarray
-        Point-wise energy spectrum of the flow in x-direction.
-    EK_V : np.ndarray, optional
-        Point-wise energy spectrum of the flow in y-direction.
-    EK_W : np.ndarray, optional
-        Point-wise energy spectrum of the flow in z-direction.
+    EK_list : list[np.ndarray], len(3)
+        List of point-wise energy spectrum components of the flow.
     debug : bool, optional
         Return the averaged energy spectrum as well. The default is False.
 
@@ -124,6 +120,7 @@ def calculate_scalar_energy_spectrum(
     # Import numpy functions
     from numpy.linalg import norm as norm
 
+    EK_U, EK_V, EK_W = EK_list
     # Check shape of velocity components for given dimensions
     dim = len(np.shape(EK_U))
     if dim == 1:
@@ -207,7 +204,7 @@ def calculate_scalar_energy_spectrum(
 
 
 def velocity_intepolator(
-    fname: str, dim: int, kernel: object = None, Ni: int = 101,
+    fname: str, dim: int, kernel: object = None, nx_i: int = 101,
     domain_manager: object = None, **kwargs
 ):
     """
@@ -221,9 +218,9 @@ def velocity_intepolator(
         Dimension of the flow.
     kernel : object, optional
         Kernel object. The default is WendlandQuinticC4.
-    Ni : int, optional
-        Number of points to interpolate the energy spectrum (Ni**2 for 2D data,
-        Ni**3 for 3D data). The default is 101.
+    nx_i : int, optional
+        Number of points to interpolate the energy spectrum (nx_i**2 for 2D data,
+        nx_i**3 for 3D data). The default is 101.
     domain_manager : object, optional
         DomainManager object. The default is None.
     **kwargs : dict, optional
@@ -233,19 +230,15 @@ def velocity_intepolator(
     -------
     t : float
         Time of the flow data.
-    ui : np.ndarray
-        Interpolated velocity in x-direction.
-    vi : np.ndarray
-        Interpolated velocity in y-direction.
-    wi : np.ndarray
-        Interpolated velocity in z-direction.
+    res : list[np.ndarray]
+        List of interpolated energy spectrum of the flow for each direction.
     """
     # Load data
     data = load(fname)
     t = data["solver_data"]["t"]
 
     # Create meshgrid based on dimension
-    _x = np.linspace(0, 1, Ni)
+    _x = np.linspace(0, 1, nx_i)
     if dim == 1:
         x = _x
         y = z = None
@@ -269,18 +262,171 @@ def velocity_intepolator(
     if dim == 1:
         _u = interp.interpolate('u')
         ui = _u
-        return t, ui
+        res = [ui, None, None]
     elif dim == 2:
         _u = interp.interpolate('u')
         _v = interp.interpolate('v')
-        ui = _u.reshape(Ni, Ni)
-        vi = _v.reshape(Ni, Ni)
-        return t, ui, vi
+        ui = _u.reshape(nx_i, nx_i)
+        vi = _v.reshape(nx_i, nx_i)
+        res = [ui, vi, None]
     elif dim == 3:
         _u = interp.interpolate('u')
         _v = interp.interpolate('v')
         _w = interp.interpolate('w')
-        ui = _u.reshape(Ni, Ni, Ni)
-        vi = _v.reshape(Ni, Ni, Ni)
-        wi = _w.reshape(Ni, Ni, Ni)
-        return t, ui, vi, wi
+        ui = _u.reshape(nx_i, nx_i, nx_i)
+        vi = _v.reshape(nx_i, nx_i, nx_i)
+        wi = _w.reshape(nx_i, nx_i, nx_i)
+        res = [ui, vi, wi]
+    return t, res
+
+
+class EnergySpectrum(object):
+    """
+    Class to compute the energy spectrum of the flow.
+
+    Parameters
+    ----------
+    dim : int
+        Dimension of the flow.
+    u : np.ndarray
+        Velocity field in x-direction.
+    v : np.ndarray
+        Velocity field in y-direction. None for 1D data.
+    w : np.ndarray
+        Velocity field in z-direction. None for 1D and 2D data.
+    t : float, optional
+        Time of the flow data. Default is 0. Optional, required for plotting.
+    U0: float, optional
+        Reference velocity. Default is 1.
+    """
+    def __init__(
+        self, dim:int, u:np.ndarray, v:np.ndarray=None, w:np.ndarray=None,
+        t:float=0., U0:float=1.
+    ):
+        """
+        Initialize the class.
+        """
+        self.dim = dim
+        self.u, self.v, self.w = u, v, w
+        self.t = t
+        self.U0 = U0
+
+        if dim not in [1, 2, 3]:
+            raise ValueError("Dimension should be 1, 2 or 3.")
+
+        self._check_format_of_list_data([u,v,w])
+
+    # Class methods
+    @classmethod
+    def from_pysph_file(
+        cls, fname:str, dim:int, L:float, nx_i:int, kernel:object,
+        domain_manager:object=None, U0=1., **kwargs
+    ):
+        """
+        Create an EnergySpectrum object from a PySPH output file.
+
+        Parameters
+        ----------
+        fname : str
+            Name of the file containing the flow data.
+        dim : int
+            Dimension of the flow.
+        L : float
+            Length of the domain.
+        nx_i : int
+            Number of points to interpolate the energy spectrum (nx_i**2 for 2D
+            data, nx_i**3 for 3D data).
+        kernel : object
+            Kernel object.
+        domain_manager : object, optional
+            DomainManager object. Default is None.
+        U0 : float, optional
+            Reference velocity. Default is 1.
+        **kwargs : dict, optional
+            Additional keyword arguments to pass to the PySPH interpolator.
+
+        Returns
+        -------
+        EnergySpectrum object.
+        """
+        try:
+            from pysph.tools.geometry import load
+            from pysph.tools.interpolator import Interpolator
+            from pysph.base.kernels import WendlandQuinticC4
+        except ImportError:
+            raise ImportError(
+                "PySPH is not installed. Please install it to use this feature."
+            )
+        
+        data = load(fname)
+        t = data["solver_data"]["t"]
+        dim = data["solver_data"]["dim"]
+
+        # Create meshgrid based on dimension
+        _x = np.linspace(0, L, nx_i)
+        if dim == 1:
+            x = _x
+            y = z = None
+        elif dim == 2:
+            x, y = np.meshgrid(_x, _x)
+            z = None
+        elif dim == 3:
+            x, y, z = np.meshgrid(_x, _x, _x)
+        
+        # Setup default interpolator properties
+        if kernel is None:
+            kernel = WendlandQuinticC4(dim=dim)
+        
+        # Interpolate velocity
+        interp = Interpolator(
+            list(data['arrays'].values()), x=x, y=y, z=z,
+            kernel=kernel, domain_manager=domain_manager, **kwargs
+        )
+        if dim == 1:
+            _u = interp.interpolate('u')
+            ui = _u
+            vi = wi = None
+        elif dim == 2:
+            _u = interp.interpolate('u')
+            _v = interp.interpolate('v')
+            ui = _u.reshape(nx_i, nx_i)
+            vi = _v.reshape(nx_i, nx_i)
+            wi = None
+        elif dim == 3:
+            _u = interp.interpolate('u')
+            _v = interp.interpolate('v')
+            _w = interp.interpolate('w')
+            ui = _u.reshape(nx_i, nx_i, nx_i)
+            vi = _v.reshape(nx_i, nx_i, nx_i)
+            wi = _w.reshape(nx_i, nx_i, nx_i)
+
+        return cls(
+            dim=dim, u=ui, v=vi, w=wi, t=t, U0=U0
+        )
+
+
+
+    # Private methods
+    def _check_format_of_list_data(self, data):
+        if len(data) != 3:
+            raise ValueError("The data should be a list of 3 arrays.")
+
+        if self.dim == 1:
+            if data[1] is not None or data[2] is not None:
+                raise ValueError(
+                    "The data should be a list of 1 array for dim = 1."
+                )
+            if data[0] is None:
+                raise ValueError(f"{data[0]} is None.")
+        elif self.dim == 2:
+            if data[2] is not None:
+                raise ValueError(
+                    "The data should be a list of 2 arrays for dim = 2."
+                )
+            if data[0] is None or data[1] is None:
+                raise ValueError(f"{data[0]} or {data[1]} is None.")
+        elif self.dim == 3:
+            if data[0] is None or data[1] is None or data[2] is None:
+                raise ValueError(
+                    f"{data[0]} or {data[1]} or {data[2]} is None."
+            )
