@@ -91,7 +91,6 @@ def compute_energy_spectrum(
     else:
         return EK_U, EK_V, EK_W
 
-
 def compute_scalar_energy_spectrum(
     EK_U: np.ndarray, EK_V: np.ndarray = None, EK_W: np.ndarray = None,
     debug: bool = False
@@ -282,6 +281,22 @@ class EnergySpectrum(object):
     """
     Class to compute the energy spectrum of the flow.
 
+    Initialization
+    --------------
+    1. From velocity field
+        >>> EnergySpectrum(dim, u, v, w....)
+    2. From PySPH file (Interpolates the velocity field implicitly)
+        >>> EnergySpectrum.from_pysph_file(fname....)
+    3. From an example
+        >>> EnergySpectrum.from_example(dim....)
+
+    Public methods
+    --------------
+    1. self.compute()
+        Computes the energy spectrum of the flow.
+    2. self.plot()
+        Plots the energy spectrum of the flow.
+
     Parameters
     ----------
     dim : int
@@ -309,10 +324,14 @@ class EnergySpectrum(object):
         self.t = t
         self.U0 = U0
 
+        self.n_1d = u.shape[0]
+
         if dim not in [1, 2, 3]:
             raise ValueError("Dimension should be 1, 2 or 3.")
 
         self._check_format_of_list_data([u,v,w])
+
+        self.k, self.Ek = None, None
 
     # Class methods
     @classmethod
@@ -353,7 +372,7 @@ class EnergySpectrum(object):
             from pysph.base.kernels import WendlandQuinticC4
         except ImportError:
             raise ImportError(
-                "PySPH is not installed. Please install it to use this feature."
+                "PySPH is not installed."
             )
         
         data = load(fname)
@@ -402,8 +421,77 @@ class EnergySpectrum(object):
             dim=dim, u=ui, v=vi, w=wi, t=t, U0=U0
         )
 
+    @classmethod
+    def from_example(cls, dim:int, nx:int):
+        """
+        Create an EnergySpectrum object from an example.
+
+        Parameters
+        ----------
+        dim : int
+            Dimension of the flow.
+        nx : int
+            Number of points in each direction.
+        
+
+        Returns
+        -------
+        EnergySpectrum object.
+
+        Notes
+        -----
+        dim = 1:
+            x = arange(0, 1, 1/nx)
+            u = - cos(2πx)
+        dim = 2:
+            _x = arange(0, 1, 1/nx)
+            x, y = meshgrid(_x, _x)
+            u = + cos(2πx) * sin(2πy)
+            v = - sin(2πx) * cos(2πy)
+        dim = 3:
+            _x = arange(0, 1, 1/nx)
+            x, y, z = meshgrid(_x, _x, _x)
+            u = + sin(2πx) * cos(2πy) * cos(2πz)
+            v = - cos(2πx) * sin(2πy) * cos(2πz)
+            w = 0.0
+        """
+        if dim == 1:
+            x = np.linspace(0, 1, nx)
+            u = - np.cos(2*np.pi*x)
+            v = w = None
+        elif dim == 2:
+            _x = np.linspace(0, 1, nx)
+            x, y = np.meshgrid(_x, _x)
+            u = + np.cos(2*np.pi*x) * np.sin(2*np.pi*y)
+            v = - np.sin(2*np.pi*x) * np.cos(2*np.pi*y)
+            w = None
+        elif dim == 3:
+            _x = np.linspace(0, 1, nx)
+            x, y, z = np.meshgrid(_x, _x, _x)
+            u = + np.sin(2*np.pi*x) * np.cos(2*np.pi*y) * np.cos(2*np.pi*z)
+            v = - np.cos(2*np.pi*x) * np.sin(2*np.pi*y) * np.cos(2*np.pi*z)
+            w = np.zeros_like(u)
+        else:
+            raise ValueError("Dimension should be 1, 2 or 3.")
+        
+        return cls(
+            dim=dim, u=u, v=v, w=w, t=0.0, U0=1.0
+        )
+
+
     # Private methods
-    def _check_format_of_list_data(self, data):
+    def _check_format_of_list_data(self, data:list):
+        """
+        Check the format of the list data.
+        For 1D data, the list should be of the form [u, None, None].
+        For 2D data, the list should be of the form [u, v, None].
+        For 3D data, the list should be of the form [u, v, w].
+
+        Parameters
+        ----------
+        data : list
+            List of data to check.
+        """
         if len(data) != 3:
             raise ValueError("The data should be a list of 3 arrays.")
 
@@ -426,12 +514,128 @@ class EnergySpectrum(object):
                 raise ValueError(
                     f"{data[0]} or {data[1]} or {data[2]} is None."
             )
+    
+    def _correct_format_of_list_data(self, data:list):
+        """
+        Correct the format of the list data.
+
+        Parameters
+        ----------
+        data : list
+            List of data to correct.
+        
+        Returns
+        -------
+        Corrected list of data.
+        """
+        if self.dim == 1:
+            corrected_data = [data[0], None, None]
+        elif self.dim == 2:
+            corrected_data = [data[0], data[1], None]
+        elif self.dim == 3:
+            corrected_data = data
+        
+        self._check_format_of_list_data(corrected_data)
+        return corrected_data
 
     def _compute_energy_spectrum(self):
         """
         Compute the energy spectrum of the flow.
         """
-        vel_list = [self.u, self.v, self.w]
-        EK_list, vel_spectrum_list = compute_energy_spectrum(
-            vel_list=vel_list, U0=self.U0
+        EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum =\
+            compute_energy_spectrum(
+                u=self.u,
+                v=self.v,
+                w=self.w,
+                U0=self.U0,
+                debug=True
+            )
+
+        return EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum
+
+    def _compute_scalar_energy_spectrum(self):
+        """
+        Compute the energy spectrum of the flow.
+        """
+        k, Ek, EK_U_sphere, EK_V_sphere, EK_W_sphere =\
+            compute_scalar_energy_spectrum(
+                EK_U=self.EK_U,
+                EK_V=self.EK_V,
+                EK_W=self.EK_W,
+                debug=True
+            )
+        return k, Ek, EK_U_sphere, EK_V_sphere, EK_W_sphere
+
+    # Public methods
+    def compute(self):
+        """
+        Compute the energy spectrum of the flow.
+        """
+        # Compute energy spectrum
+        res = self._compute_energy_spectrum()
+        self.EK_U, self.EK_V, self.EK_W, self.u_spectrum, self.v_spectrum,\
+            self.w_spectrum = res
+
+        self.EK_U, self.EK_V, self.EK_W = self._correct_format_of_list_data(
+            [self.EK_U, self.EK_V, self.EK_W]
         )
+        self.u_spectrum, self.v_spectrum, self.w_spectrum =\
+            self._correct_format_of_list_data(
+                [self.u_spectrum, self.v_spectrum, self.w_spectrum]
+            )
+        
+        # Compute scalar energy spectrum
+        res = self._compute_scalar_energy_spectrum()
+        self.k, self.Ek, self.EK_U_sphere, self.EK_V_sphere, self.EK_W_sphere \
+            = res
+        self.EK_U_sphere, self.EK_V_sphere, self.EK_W_sphere =\
+            self._correct_format_of_list_data(
+                [self.EK_U_sphere, self.EK_V_sphere, self.EK_W_sphere]
+            )
+
+    def plot(
+        self, show=False, savefig=True, fname=None, dpi=300, **kwargs
+    ):
+        """
+        Plot the energy spectrum of the flow.
+
+        Parameters
+        ----------
+        show : bool, optional
+            Show the plot. Default is False.
+        savefig : bool, optional
+            Save the figure. Default is True.
+        fname : str, optional
+            Filename to save the figure. Default is "./energy_spectrum.png".
+        dpi : int, optional
+            Dots per inch. Default is 300.
+        **kwargs : dict, optional
+            Additional keyword arguments to pass to the plot
+        """
+        if self.k is None:
+            raise ValueError("The energy spectrum is not computed.")
+        
+        if fname is None:
+            fname = "./energy_spectrum.png"
+        
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError:
+            raise ImportError(
+                "Matplotlib is not installed."
+            )
+
+        n = self.n_1d
+        plt.clf()
+        plt.loglog(self.k[0:n], self.Ek[0:n], 'k')
+        plt.loglog(self.k[n:], self.Ek[n:], 'k--')
+        plt.xlabel(r'$k$')
+        plt.ylabel(r'$E(k)$')
+        plt.grid()
+        plt.tight_layout()
+        plt.title(f"Energy spectrum at t = {self.t:.2f}")
+
+        if savefig:
+            plt.savefig(fname, dpi=dpi)
+        if show:
+            plt.show()
