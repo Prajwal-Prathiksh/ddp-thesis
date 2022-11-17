@@ -16,8 +16,9 @@ from pysph.solver.utils import load
 # TODO: Compyle iterative functions
 
 
-def calculate_energy_spectrum(
-    vel_list:list, U0: float = 1.0, debug: bool = False
+def compute_energy_spectrum(
+    u: np.ndarray, v: np.ndarray = None, w: np.ndarray = None, U0: float = 1.0,
+    debug: bool = False
 ):
     """
     Calculate the point-wise energy spectrum of the flow E(kx, ky, kz), from
@@ -25,28 +26,31 @@ def calculate_energy_spectrum(
     Note: For the calculation of the velocity spectrum, the flow is assumed
     to be periodic, and the velocity field data is from an equidistant grid of
     points.
-
     Parameters
     ----------
-    vel_list : list[np.ndarray], len(3)
-        List of velocity components of the flow. If the flow is 1D, then the
-        second and third components should be None. If the flow is 2D, then
-        the third component should be None.
+    u : np.ndarray
+        Velocity field in x-direction.
+    v : np.ndarray, optional
+        Velocity field in y-direction.
+    w : np.ndarray, optional
+        Velocity field in z-direction.
     U0 : float, optional
         Reference velocity. The default is 1.
     debug : bool, optional
         Return the velocity spectrum as well. The default is False.
-
     Returns
     -------
-    EK_list : list[np.ndarray], len(3)
-        List of point-wise energy spectrum components of the flow.
+    EK_U : np.ndarray
+        Point-wise energy spectrum of the flow in x-direction.
+    EK_V : np.ndarray
+        Point-wise energy spectrum of the flow in y-direction.
+    EK_W : np.ndarray
+        Point-wise energy spectrum of the flow in z-direction.
     """
     # Import FFT-functions
     from numpy.fft import fftn as fftn
     from numpy.fft import fftshift as fftshift
 
-    u, v, w = vel_list
     # Check shape of velocity components for given dimensions
     dim = len(u.shape)
     if dim == 1:
@@ -82,34 +86,30 @@ def calculate_energy_spectrum(
     EK_V = fftshift(v_spectrum**2)
     EK_W = fftshift(w_spectrum**2)
 
-    # Store EK_* and *_spectrum in list in the same format as vel_list
-    EK_list = [EK_U, EK_V, EK_W]
-    vel_spectrum_list = [u_spectrum, v_spectrum, w_spectrum]
-    for i in range(3):
-        if vel_list[i] is None:
-            EK_list[i], vel_spectrum_list[i] = None, None
-
     if debug:
-        return EK_list, vel_spectrum_list
+        return EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum
     else:
-        return EK_list
+        return EK_U, EK_V, EK_W
 
 
-def calculate_scalar_energy_spectrum(
-    EK_list: list[np.ndarray], debug: bool = False
+def compute_scalar_energy_spectrum(
+    EK_U: np.ndarray, EK_V: np.ndarray = None, EK_W: np.ndarray = None,
+    debug: bool = False
 ):
     """
     Calculate 1D energy spectrum of the flow E(k), from the point-wise energy
     spectrum E(kx, ky, kz), by integrating it over the surface of a sphere of
     radius k = (kx**2 + ky**2 + kz**2)**0.5.
-
     Parameters
     ----------
-    EK_list : list[np.ndarray], len(3)
-        List of point-wise energy spectrum components of the flow.
+    EK_U : np.ndarray
+        Point-wise energy spectrum of the flow in x-direction.
+    EK_V : np.ndarray, optional
+        Point-wise energy spectrum of the flow in y-direction.
+    EK_W : np.ndarray, optional
+        Point-wise energy spectrum of the flow in z-direction.
     debug : bool, optional
         Return the averaged energy spectrum as well. The default is False.
-
     Returns
     -------
     k : np.ndarray
@@ -120,7 +120,6 @@ def calculate_scalar_energy_spectrum(
     # Import numpy functions
     from numpy.linalg import norm as norm
 
-    EK_U, EK_V, EK_W = EK_list
     # Check shape of velocity components for given dimensions
     dim = len(np.shape(EK_U))
     if dim == 1:
@@ -201,7 +200,6 @@ def calculate_scalar_energy_spectrum(
         return k, Ek, EK_U_sphere, EK_V_sphere, EK_W_sphere
     else:
         return k, Ek
-
 
 def velocity_intepolator(
     fname: str, dim: int, kernel: object = None, nx_i: int = 101,
@@ -404,8 +402,6 @@ class EnergySpectrum(object):
             dim=dim, u=ui, v=vi, w=wi, t=t, U0=U0
         )
 
-
-
     # Private methods
     def _check_format_of_list_data(self, data):
         if len(data) != 3:
@@ -430,3 +426,12 @@ class EnergySpectrum(object):
                 raise ValueError(
                     f"{data[0]} or {data[1]} or {data[2]} is None."
             )
+
+    def _compute_energy_spectrum(self):
+        """
+        Compute the energy spectrum of the flow.
+        """
+        vel_list = [self.u, self.v, self.w]
+        EK_list, vel_spectrum_list = compute_energy_spectrum(
+            vel_list=vel_list, U0=self.U0
+        )

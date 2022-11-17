@@ -10,7 +10,7 @@ import numpy as np
 
 # Local imports.
 from energy_spectrum import (
-    calculate_energy_spectrum, calculate_scalar_energy_spectrum
+    compute_energy_spectrum, compute_scalar_energy_spectrum
 )
 
 
@@ -37,7 +37,7 @@ def check_if_coords_are_in_indices(coords, indices):
     return True
 
 
-class TestCalculateEnergySpectrum(unittest.TestCase):
+class TestComputeEnergySpectrum(unittest.TestCase):
     """
     Test the function calculate_energy_spectrum.
     """
@@ -55,7 +55,7 @@ class TestCalculateEnergySpectrum(unittest.TestCase):
 
         # When
         EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum =\
-            calculate_energy_spectrum(
+            compute_energy_spectrum(
                 u, v=None, w=None, U0=U0, debug=True
             )
 
@@ -94,7 +94,7 @@ class TestCalculateEnergySpectrum(unittest.TestCase):
 
         # When
         EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum =\
-            calculate_energy_spectrum(
+            compute_energy_spectrum(
                 u, v=None, w=None, U0=U0, debug=True
             )
 
@@ -130,7 +130,7 @@ class TestCalculateEnergySpectrum(unittest.TestCase):
 
         # When
         EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum =\
-            calculate_energy_spectrum(
+            compute_energy_spectrum(
                 u=u, v=u, w=None, U0=U0, debug=True
             )
 
@@ -181,7 +181,7 @@ class TestCalculateEnergySpectrum(unittest.TestCase):
 
         # When
         EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum =\
-            calculate_energy_spectrum(
+            compute_energy_spectrum(
                 u=u, v=u, w=u, U0=U0, debug=True
             )
 
@@ -216,7 +216,7 @@ class TestCalculateEnergySpectrum(unittest.TestCase):
         )
 
 
-class TestCalculateScalarEnergySpectrum(unittest.TestCase):
+class TestComputeScalarEnergySpectrum(unittest.TestCase):
     """
     Test the function calculate_scalar_energy_spectrum.
     """
@@ -231,7 +231,7 @@ class TestCalculateScalarEnergySpectrum(unittest.TestCase):
         EK_U = np.array(EK_U[::-1] + [0.] + EK_U)
 
         # When
-        k, Ek = calculate_scalar_energy_spectrum(
+        k, Ek = compute_scalar_energy_spectrum(
             EK_U=EK_U, debug=False
         )
 
@@ -255,7 +255,7 @@ class TestCalculateScalarEnergySpectrum(unittest.TestCase):
         EK_U = np.array(EK_U[::-1] + [0.] + EK_U)
 
         # When
-        k, Ek = calculate_scalar_energy_spectrum(
+        k, Ek = compute_scalar_energy_spectrum(
             EK_U=EK_U, debug=False
         )
 
@@ -287,7 +287,7 @@ class TestCalculateScalarEnergySpectrum(unittest.TestCase):
         ])
 
         # When
-        k, Ek = calculate_scalar_energy_spectrum(
+        k, Ek = compute_scalar_energy_spectrum(
             EK_U=EK_U, EK_V=EK_U, debug=False
         )
 
@@ -314,7 +314,7 @@ class TestCalculateScalarEnergySpectrum(unittest.TestCase):
         ])
 
         # When
-        k, Ek = calculate_scalar_energy_spectrum(
+        k, Ek = compute_scalar_energy_spectrum(
             EK_U=EK_U, EK_V=EK_U, debug=False
         )
 
@@ -356,7 +356,7 @@ class TestCalculateScalarEnergySpectrum(unittest.TestCase):
         ])
 
         # When
-        k, Ek = calculate_scalar_energy_spectrum(
+        k, Ek = compute_scalar_energy_spectrum(
             EK_U=EK_U, EK_V=EK_U, EK_W=EK_U, debug=False
         )
 
