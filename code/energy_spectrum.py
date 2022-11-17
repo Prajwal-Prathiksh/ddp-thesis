@@ -275,8 +275,6 @@ def velocity_intepolator(
         wi = _w.reshape(nx_i, nx_i, nx_i)
         res = [ui, vi, wi]
     return t, res
-
-
 class EnergySpectrum(object):
     """
     Class to compute the energy spectrum of the flow.
@@ -492,7 +490,6 @@ class EnergySpectrum(object):
             dim=dim, u=u, v=v, w=w, t=0.0, U0=1.0
         )
 
-
     # Private methods
     def _check_format_of_list_data(self, data:list):
         """
@@ -669,7 +666,7 @@ class EnergySpectrum(object):
             Save the figure. Default is False.
         fname : str, optional
             Filename to save the figure.
-            Default is "./EK_{dim}_{component}.png".
+            Default is "./EK_spectrum.png".
         dpi : int, optional
             Dots per inch. Default is 300.
         shift_fft : bool, optional
@@ -681,9 +678,7 @@ class EnergySpectrum(object):
         
         dim = self.dim        
         if fname is None:
-            fname = f"./EK_{dim}_"
-        else:
-            fname = f"{fname}_"
+            fname = "./EK_spectrum.png"
 
         try:
             import matplotlib.pyplot as plt
@@ -704,7 +699,7 @@ class EnergySpectrum(object):
             plt.tight_layout()
             plt.title(r"$E_u(k)$ at t = {:.2f}".format(self.t))
             if savefig:
-                plt.savefig(fname + "U.png", dpi=dpi)
+                plt.savefig(fname, dpi=dpi)
             if show:
                 plt.show()
             
@@ -729,15 +724,10 @@ class EnergySpectrum(object):
             fig.colorbar(axes[0].images[0], cax=cbar_ax)
 
             if savefig:
-                plt.savefig(fname + "UV.png", dpi=dpi)
+                plt.savefig(fname, dpi=dpi)
             if show:
                 plt.show()
 
         elif dim == 3:
-            raise NotImplementedError("3D not implemented yet.")
-
-
-
-
-
-        
+            import warnings
+            warnings.warn("The feature is not implemented yet.")
