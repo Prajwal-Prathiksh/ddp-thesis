@@ -290,13 +290,6 @@ class EnergySpectrum(object):
     3. From an example
         >>> EnergySpectrum.from_example(dim....)
 
-    Public methods
-    --------------
-    1. self.compute()
-        Computes the energy spectrum of the flow.
-    2. self.plot()
-        Plots the energy spectrum of the flow.
-
     Parameters
     ----------
     dim : int
@@ -422,7 +415,9 @@ class EnergySpectrum(object):
         )
 
     @classmethod
-    def from_example(cls, dim:int, nx:int):
+    def from_example(
+        cls, dim:int, nx:int, custom_formula:list=None
+    ):
         """
         Create an EnergySpectrum object from an example.
 
@@ -432,7 +427,11 @@ class EnergySpectrum(object):
             Dimension of the flow.
         nx : int
             Number of points in each direction.
-        
+        custom_formula : list, optional
+            Custom formula to generate the velocity field for each dimension.
+            Default is None.
+            Numpy functions can be used. Spatial coordinates are x, y and z.
+            pi, twopi, cos and sin can be used as well.        
 
         Returns
         -------
@@ -455,22 +454,37 @@ class EnergySpectrum(object):
             v = - cos(2πx) * sin(2πy) * cos(2πz)
             w = 0.0
         """
+        pi = np.pi
+        twopi = 2*pi
+        cos, sin = np.cos, np.sin
+
+        _x = np.arange(0., 1., 1./nx)
         if dim == 1:
-            x = np.linspace(0, 1, nx)
-            u = - np.cos(2*np.pi*x)
+            if custom_formula is None:
+                x = _x
+                u = - cos(twopi*x)
+            else:
+                u = eval(custom_formula[0])
             v = w = None
         elif dim == 2:
-            _x = np.linspace(0, 1, nx)
             x, y = np.meshgrid(_x, _x)
-            u = + np.cos(2*np.pi*x) * np.sin(2*np.pi*y)
-            v = - np.sin(2*np.pi*x) * np.cos(2*np.pi*y)
+            if custom_formula is None:
+                u = + cos(twopi*x) * sin(twopi*y)
+                v = - sin(twopi*x) * cos(twopi*y)
+            else:
+                u = eval(custom_formula[0])
+                v = eval(custom_formula[1])
             w = None
         elif dim == 3:
-            _x = np.linspace(0, 1, nx)
             x, y, z = np.meshgrid(_x, _x, _x)
-            u = + np.sin(2*np.pi*x) * np.cos(2*np.pi*y) * np.cos(2*np.pi*z)
-            v = - np.cos(2*np.pi*x) * np.sin(2*np.pi*y) * np.cos(2*np.pi*z)
-            w = np.zeros_like(u)
+            if custom_formula is None:
+                u = + sin(twopi*x) * cos(twopi*y) * cos(twopi*z)
+                v = - cos(twopi*x) * sin(twopi*y) * cos(twopi*z)
+                w = np.zeros_like(u)
+            else:
+                u = eval(custom_formula[0])
+                v = eval(custom_formula[1])
+                w = eval(custom_formula[2])
         else:
             raise ValueError("Dimension should be 1, 2 or 3.")
         
@@ -593,27 +607,27 @@ class EnergySpectrum(object):
                 [self.EK_U_sphere, self.EK_V_sphere, self.EK_W_sphere]
             )
 
-    def plot(
-        self, show=False, savefig=True, fname=None, dpi=300, **kwargs
+    def plot_scalar_Ek(
+        self, show=False, savefig=False, fname=None, dpi=300, plot_type="log",
     ):
         """
-        Plot the energy spectrum of the flow.
+        Plot the scalar energy spectrum of the flow.
 
         Parameters
         ----------
         show : bool, optional
             Show the plot. Default is False.
         savefig : bool, optional
-            Save the figure. Default is True.
+            Save the figure. Default is False.
         fname : str, optional
             Filename to save the figure. Default is "./energy_spectrum.png".
         dpi : int, optional
             Dots per inch. Default is 300.
-        **kwargs : dict, optional
-            Additional keyword arguments to pass to the plot
+        plot_type : str, optional
+            Type of plot. Default is "log". Options: "log", "stem".
         """
         if self.k is None:
-            raise ValueError("The energy spectrum is not computed.")
+            self.compute()
         
         if fname is None:
             fname = "./energy_spectrum.png"
@@ -621,14 +635,15 @@ class EnergySpectrum(object):
         try:
             import matplotlib.pyplot as plt
         except ImportError:
-            raise ImportError(
-                "Matplotlib is not installed."
-            )
+            raise ImportError("Matplotlib is not installed.")
 
         n = self.n_1d
         plt.clf()
-        plt.loglog(self.k[0:n], self.Ek[0:n], 'k')
-        plt.loglog(self.k[n:], self.Ek[n:], 'k--')
+        if plot_type == "log":
+            plt.loglog(self.k[0:n], self.Ek[0:n], 'k')
+            plt.loglog(self.k[n:], self.Ek[n:], 'k--')
+        elif plot_type == "stem":
+            plt.stem(self.Ek)
         plt.xlabel(r'$k$')
         plt.ylabel(r'$E(k)$')
         plt.grid()
@@ -639,3 +654,90 @@ class EnergySpectrum(object):
             plt.savefig(fname, dpi=dpi)
         if show:
             plt.show()
+
+    def plot_EK(
+        self, show=False, savefig=False, fname=None, dpi=300, shift_fft=False
+    ):
+        """
+        Plot each component of the energy spectrum of the flow.
+
+        Parameters
+        ----------
+        show : bool, optional
+            Show the plot. Default is False.
+        savefig : bool, optional
+            Save the figure. Default is False.
+        fname : str, optional
+            Filename to save the figure.
+            Default is "./EK_{dim}_{component}.png".
+        dpi : int, optional
+            Dots per inch. Default is 300.
+        shift_fft : bool, optional
+            Shift the FFT. Default is False.
+        """
+
+        if self.k is None:
+            self.compute()
+        
+        dim = self.dim        
+        if fname is None:
+            fname = f"./EK_{dim}_"
+        else:
+            fname = f"{fname}_"
+
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError:
+            raise ImportError("Matplotlib is not installed.")
+
+        if shift_fft:
+            fftshift = np.fft.fftshift
+        else:
+            fftshift = lambda x: x
+
+        if dim == 1:
+            plt.clf()
+            plt.stem(fftshift(self.EK_U))
+            plt.xlabel(r'$k$')
+            plt.ylabel(r'$E_{u}(k)$')
+            plt.grid()
+            plt.tight_layout()
+            plt.title(r"$E_u(k)$ at t = {:.2f}".format(self.t))
+            if savefig:
+                plt.savefig(fname + "U.png", dpi=dpi)
+            if show:
+                plt.show()
+            
+        elif dim == 2:
+            plt.clf()
+
+            fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+            axes[0].imshow(fftshift(self.EK_U))
+            axes[0].set_title(r"$E_u(k)$ at t = {:.2f}".format(self.t))
+            axes[0].set_xlabel(r"$k_x$")
+            axes[0].set_ylabel(r"$k_y$")
+            axes[0].invert_yaxis()
+
+            axes[1].imshow(fftshift(self.EK_V))
+            axes[1].set_title(r"$E_v(k)$ at t = {:.2f}".format(self.t))
+            axes[1].set_xlabel(r"$k_x$")
+            axes[1].set_ylabel(r"$k_y$")
+            axes[1].invert_yaxis()
+
+            fig.subplots_adjust(right=0.8)
+            cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+            fig.colorbar(axes[0].images[0], cax=cbar_ax)
+
+            if savefig:
+                plt.savefig(fname + "UV.png", dpi=dpi)
+            if show:
+                plt.show()
+
+        elif dim == 3:
+            raise NotImplementedError("3D not implemented yet.")
+
+
+
+
+
+        
