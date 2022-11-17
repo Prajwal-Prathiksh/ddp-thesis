@@ -91,8 +91,8 @@ class SinVelocityProfile(Application):
             periodic_in_z=True
         )
 
-    def create_fluid(self):
-        # create the particles
+    def create_particles(self):
+        # Create the particles
         dx = self.dx
 
         _x = np.arange(dx/2, self.L, dx)
@@ -105,13 +105,13 @@ class SinVelocityProfile(Application):
         elif self.dim == 2:
             x, y = np.meshgrid(_x, _x)
             x, y = perturb_signal(self.perturb, x, y)
-            u0 = cos(twopi * x) * sin(twopi * y) * -1.
+            u0 = cos(twopi * x) * sin(twopi * y) * - 1.
             v0 = sin(twopi * x) * cos(twopi * y)
             w0 = 0.
         elif self.dim == 3:
             x, y, z = np.meshgrid(_x, _x, _x)
             x, y, z = perturb_signal(self.perturb, x, y, z)
-            u0 = cos(twopi * x) * sin(twopi * y) * sin(twopi * z) * -1.
+            u0 = cos(twopi * x) * sin(twopi * y) * sin(twopi * z) * - 1.
             v0 = sin(twopi * x) * cos(twopi * y) * sin(twopi * z)
             w0 = sin(twopi * x) * sin(twopi * y) * cos(twopi * z)
         else:
@@ -121,18 +121,13 @@ class SinVelocityProfile(Application):
         m = self.volume * self.rho0
         h = self.hdx * dx
 
-        
-        # create the arrays
-        fluid = get_particle_array(
-            name='fluid', x=x, y=y, m=m, h=h,
+        # Create the arrays
+        pa = get_particle_array(
+            name='particles', x=x, y=y, m=m, h=h,
             u=u0, v=v0, w=w0, rho=self.rho0
         )
-        return fluid
-
-    def create_particles(self):
-        fluid = self.create_fluid()
-        print("Created %d fluid particles" % fluid.get_number_of_particles())
-        return [fluid]
+        print("Created %d particles" % pa.get_number_of_particles())
+        return [pa]
 
     # The following are all related to post-processing.
     def post_process(self, info_fname):
@@ -141,72 +136,51 @@ class SinVelocityProfile(Application):
         if len(self.output_files) == 0:
             return
 
-        from energy_spectrum import (
-            calculate_energy_spectrum, calculate_scalar_energy_spectrum,
-            velocity_intepolator
+        from energy_spectrum import EnergySpectrum
+
+        espec_ob = EnergySpectrum.from_pysph_file(
+            fname=self.output_files[0],
+            dim=dim, 
+            L=self.L,
+            nx_i=self.nx_i,
+            kernel=None,
+            domain_manager=self.create_domain(),
+            U0=1.
         )
-        from pysph.base.kernels import WendlandQuinticC4
 
-        # Interpolate the velocity field.
-        t0, vel_res = velocity_intepolator(
-            self.output_files[0], dim=dim, nx_i=self.nx_i
-            kernel=WendlandQuinticC4(dim=dim),
-            domain_manager=self.create_domain()
+        fname = os.path.join(self.output_dir, 'energy_spectrum_log.png')
+        espec_ob.plot_scalar_Ek(
+            savefig=True,
+            fname=fname,
+            plot_type='log'
+        )
+        espec_ob.plot_scalar_Ek(
+            savefig=True,
+            fname=fname.replace('_log', '_stem'),
+            plot_type='stem'
+        )
+        fname = os.path.join(self.output_dir, 'EK_spectrum_shiftted.png')
+        espec_ob.plot_EK(
+            savefig=True,
+            fname=fname,
+            shift_fft=True
+        )
+        espec_ob.plot_EK(
+            savefig=True,
+            fname=fname.replace('_shiftted', ''),
+            shift_fft=False
         )
 
-        # Calculate the energy spectrum.
-        EK_U0, EK_V0, EK_W0 = calculate_energy_spectrum(vel_res, U0=1.)
-        k0, Ek0 = calculate_scalar_energy_spectrum(EK_U0, EK_V0, EK_W=EK_W0)
-
-        # Plot energy spectrum
-        k, Ek0, Ekf = self._plot_energy_spectrum(Ni)
-
+        # Sane npz file
         fname = os.path.join(self.output_dir, 'results.npz')
         np.savez(
-            fname, t=t0, k=k0, Ek0=Ek0, 
-        )
-    
-
-
-
-
-    def _plot_energy_spectrum(self, nx_i=101):
-        from energy_spectrum import (
-            calculate_energy_spectrum, calculate_scalar_energy_spectrum,
-            velocity_intepolator
-        )
-        from pysph.base.kernels import WendlandQuinticC4
-
-        # Interpolate initial and final states of velocity.
-        t0, u0, v0 = velocity_intepolator(
-            self.output_files[0], dim=2, Ni=nx_i,
-            kernel=WendlandQuinticC4(dim=2),
-            domain_manager=self.create_domain()
-        )
-
-        tf, uf, vf = velocity_intepolator(
-            self.output_files[-1], dim=2, Ni=nx_i,
-            kernel=WendlandQuinticC4(dim=2),
-            domain_manager=self.create_domain()
-        )
-
-        # Inital energy spectrum
-        EK_U0, EK_V0, _ = calculate_energy_spectrum(u0, v0, w=None, U0=1)
-        k0, Ek0 = calculate_scalar_energy_spectrum(EK_U0, EK_V0, EK_W=None)
-
-        # Final energy spectrum
-        EK_Uf, EK_Vf, _ = calculate_energy_spectrum(uf, vf, w=None, U0=1)
-        kf, Ekf = calculate_scalar_energy_spectrum(EK_Uf, EK_Vf, EK_W=None)
-
-        # Save npz file
-        fname = os.path.join(self.output_dir, 'energy_spectrum.npz')
-        np.savez(
             fname,
-            Ni=nx_i, h=self.h0,
-            t0=t0, u0=u0, v0=v0, EK_U0=EK_U0, EK_V0=EK_V0, k0=k0, Ek0=Ek0,
-            tf=tf, uf=uf, vf=vf, EK_Uf=EK_Uf, EK_Vf=EK_Vf, kf=kf, Ekf=Ekf
+            t=espec_ob.t,
+            Ek=espec_ob.Ek,
+            EK_U=espec_ob.EK_U,
+            EK_V=espec_ob.EK_V,
+            EK_W=espec_ob.EK_W,
         )
-
 
     def customize_output(self):
         self._mayavi_config('''
