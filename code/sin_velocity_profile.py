@@ -1,34 +1,30 @@
-r"""    
+r"""
 A Sinusoidal Velocity Profile
 ##############################
 """
-
-r"""
-Taylor Green vortex flow (5 minutes).
-######################################
-"""
-
+# Library imports.
 import os
 import numpy as np
-from numpy import pi, sin, cos, exp
-
 from pysph.base.nnps import DomainManager
 from pysph.base.utils import get_particle_array
-from pysph.base.kernels import QuinticSpline
 from pysph.solver.application import Application
+from pysph.sph.integrator import Integrator
+from pysph.base.kernels import CubicSpline
+from pysph.solver.solver import Solver
 
-from pysph.sph.equation import Group, Equation
 
-
-def perturb_signal(perturb_fac:float, *args:np.ndarray):
+def perturb_signal(perturb_fac: float, *args: np.ndarray):
     """
-    Perturb the given signal/s by a uniform random number between [0, 1) scaled by the given factor.
-    The random number is seeded by numpy.random.seed(1) to ensure reproducibility.
+    Perturb the given signal/s by a uniform random number between [0, 1) scaled
+    by the given factor.
+    The random number is seeded by numpy.random.seed(1) to ensure
+    reproducibility.
 
     Parameters
     ----------
     perturb_fac : float
-        Factor by which the signal is to be perturbed by a uniform random number.
+        Factor by which the signal is to be perturbed by a uniform random
+        number.
     *args : np.ndarray
         Signals to be perturbed.
 
@@ -39,11 +35,24 @@ def perturb_signal(perturb_fac:float, *args:np.ndarray):
     """
     if perturb_fac > 0.:
         np.random.seed(1)
-        return [arg + perturb_fac * np.random.random(arg.shape) for arg in args]
+        return [
+            arg +
+            perturb_fac *
+            np.random.random(
+                arg.shape) for arg in args]
     else:
         return args
 
+
+class DummyIntegrator(Integrator):
+    def one_timestep(self):
+        pass
+
+
 class SinVelocityProfile(Application):
+    """
+    Particles having a sinusoidal velocity profile.
+    """
 
     def add_user_options(self, group):
         group.add_argument(
@@ -53,7 +62,7 @@ class SinVelocityProfile(Application):
         )
         group.add_argument(
             "--nx", action="store", type=int, dest="nx", default=50,
-            help="Number of points along x direction. (default 50)"
+            help="Number of points along x direction."
         )
         group.add_argument(
             "--hdx", action="store", type=float, dest="hdx", default=1.0,
@@ -65,7 +74,7 @@ class SinVelocityProfile(Application):
         )
         group.add_argument(
             "--nx-i", action="store", type=int, dest="nx_i", default=50,
-            help="Number of interpolation points along x direction. (default 50)."
+            help="Number of interpolation points along x direction."
         )
 
     def consume_user_options(self):
@@ -74,7 +83,7 @@ class SinVelocityProfile(Application):
         self.hdx = self.options.hdx
         self.dim = self.options.dim
         self.nx_i = self.options.nx_i
-        
+
         self.dx = dx = 1. / self.nx
         self.volume = dx**self.dim
 
@@ -95,7 +104,7 @@ class SinVelocityProfile(Application):
         # Create the particles
         dx = self.dx
 
-        _x = np.arange(dx/2, self.L, dx)
+        _x = np.arange(dx / 2, self.L, dx)
         twopi = 2 * np.pi
         cos, sin = np.cos, np.sin
         if self.dim == 1:
@@ -117,6 +126,9 @@ class SinVelocityProfile(Application):
         else:
             raise ValueError("Dimension should be 1, 2 or 3.")
 
+        vmag = np.sqrt(u0**2 + v0**2 + w0**2)
+        print(vmag)
+
         # Initialize
         m = self.volume * self.rho0
         h = self.hdx * dx
@@ -124,10 +136,28 @@ class SinVelocityProfile(Application):
         # Create the arrays
         pa = get_particle_array(
             name='particles', x=x, y=y, m=m, h=h,
-            u=u0, v=v0, w=w0, rho=self.rho0
+            u=u0, v=v0, w=w0, rho=self.rho0, vmag=vmag
         )
         print("Created %d particles" % pa.get_number_of_particles())
         return [pa]
+
+    def create_solver(self):
+        dim = self.dim
+        dt = 0.1
+        tf = dt * 1.01
+
+        kernel = CubicSpline(dim=dim)
+
+        integrator = DummyIntegrator()
+
+        solver = Solver(
+            kernel=kernel, dim=dim, integrator=integrator, dt=dt, tf=tf
+        )
+        solver.set_print_freq(1)
+        return solver
+
+    def create_equations(self):
+        return []
 
     # The following are all related to post-processing.
     def post_process(self, info_fname):
@@ -135,12 +165,11 @@ class SinVelocityProfile(Application):
         dim = self.dim
         if len(self.output_files) == 0:
             return
-
         from energy_spectrum import EnergySpectrum
 
         espec_ob = EnergySpectrum.from_pysph_file(
             fname=self.output_files[0],
-            dim=dim, 
+            dim=dim,
             L=self.L,
             nx_i=self.nx_i,
             kernel=None,
@@ -184,7 +213,7 @@ class SinVelocityProfile(Application):
 
     def customize_output(self):
         self._mayavi_config('''
-        b = particle_arrays['fluid']
+        b = particle_arrays['particles']
         b.scalar = 'vmag'
         ''')
 

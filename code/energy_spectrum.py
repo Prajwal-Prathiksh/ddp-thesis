@@ -87,6 +87,7 @@ def compute_energy_spectrum(
     else:
         return EK_U, EK_V, EK_W
 
+
 def compute_scalar_energy_spectrum(
     EK_U: np.ndarray, EK_V: np.ndarray = None, EK_W: np.ndarray = None,
     debug: bool = False
@@ -196,6 +197,7 @@ def compute_scalar_energy_spectrum(
     else:
         return k, Ek
 
+
 def velocity_intepolator(
     fname: str, dim: int, kernel: object = None, nx_i: int = 101,
     domain_manager: object = None, **kwargs
@@ -212,8 +214,8 @@ def velocity_intepolator(
     kernel : object, optional
         Kernel object. The default is WendlandQuinticC4.
     nx_i : int, optional
-        Number of points to interpolate the energy spectrum (nx_i**2 for 2D data,
-        nx_i**3 for 3D data). The default is 101.
+        Number of points to interpolate the energy spectrum (nx_i**2 for
+        2D data, nx_i**3 for 3D data). The default is 101.
     domain_manager : object, optional
         DomainManager object. The default is None.
     **kwargs : dict, optional
@@ -279,6 +281,8 @@ def velocity_intepolator(
         wi = _w.reshape(nx_i, nx_i, nx_i)
         res = [ui, vi, wi]
     return t, res
+
+
 class EnergySpectrum(object):
     """
     Class to compute the energy spectrum of the flow.
@@ -307,10 +311,15 @@ class EnergySpectrum(object):
     U0: float, optional
         Reference velocity. Default is 1.
     """
+
     def __init__(
-        self, dim:int, u:np.ndarray, v:np.ndarray=None, w:np.ndarray=None,
-        t:float=0., U0:float=1.
-    ):
+        self,
+        dim: int,
+        u: np.ndarray,
+        v: np.ndarray = None,
+        w: np.ndarray = None,
+        t: float = 0.,
+            U0: float = 1.):
         """
         Initialize the class.
         """
@@ -324,15 +333,15 @@ class EnergySpectrum(object):
         if dim not in [1, 2, 3]:
             raise ValueError("Dimension should be 1, 2 or 3.")
 
-        self._check_format_of_list_data([u,v,w])
+        self._check_format_of_list_data([u, v, w])
 
         self.k, self.Ek = None, None
 
     # Class methods
     @classmethod
     def from_pysph_file(
-        cls, fname:str, dim:int, L:float, nx_i:int, kernel:object=None,
-        domain_manager:object=None, U0=1., **kwargs
+        cls, fname: str, dim: int, L: float, nx_i: int, kernel: object = None,
+        domain_manager: object = None, U0=1., **kwargs
     ):
         """
         Create an EnergySpectrum object from a PySPH output file.
@@ -360,7 +369,7 @@ class EnergySpectrum(object):
         Returns
         -------
         EnergySpectrum object.
-        """        
+        """
         # PySPH imports
         try:
             from pysph.base.kernels import WendlandQuinticC4
@@ -368,7 +377,7 @@ class EnergySpectrum(object):
             from pysph.solver.utils import load
         except ImportError:
             raise ImportError("PySPH is not installed.")
-            
+
         data = load(fname)
         t = data["solver_data"]["t"]
 
@@ -382,11 +391,11 @@ class EnergySpectrum(object):
             z = None
         elif dim == 3:
             x, y, z = np.meshgrid(_x, _x, _x)
-        
+
         # Setup default interpolator properties
         if kernel is None:
             kernel = WendlandQuinticC4(dim=dim)
-        
+
         # Interpolate velocity
         interp = Interpolator(
             list(data['arrays'].values()), x=x, y=y, z=z,
@@ -416,7 +425,7 @@ class EnergySpectrum(object):
 
     @classmethod
     def from_example(
-        cls, dim:int, nx:int, custom_formula:list=None
+        cls, dim: int, nx: int, custom_formula: list = None
     ):
         """
         Create an EnergySpectrum object from an example.
@@ -431,7 +440,7 @@ class EnergySpectrum(object):
             Custom formula to generate the velocity field for each dimension.
             Default is None.
             Numpy functions can be used. Spatial coordinates are x, y and z.
-            pi, twopi, cos and sin can be used as well.        
+            pi, twopi, cos and sin can be used as well.
 
         Returns
         -------
@@ -455,22 +464,22 @@ class EnergySpectrum(object):
             w = 0.0
         """
         pi = np.pi
-        twopi = 2*pi
+        twopi = 2 * pi
         cos, sin = np.cos, np.sin
 
-        _x = np.arange(0., 1., 1./nx)
+        _x = np.arange(0., 1., 1. / nx)
         if dim == 1:
             if custom_formula is None:
                 x = _x
-                u = - cos(twopi*x)
+                u = - cos(twopi * x)
             else:
                 u = eval(custom_formula[0])
             v = w = None
         elif dim == 2:
             x, y = np.meshgrid(_x, _x)
             if custom_formula is None:
-                u = + cos(twopi*x) * sin(twopi*y)
-                v = - sin(twopi*x) * cos(twopi*y)
+                u = + cos(twopi * x) * sin(twopi * y)
+                v = - sin(twopi * x) * cos(twopi * y)
             else:
                 u = eval(custom_formula[0])
                 v = eval(custom_formula[1])
@@ -478,8 +487,8 @@ class EnergySpectrum(object):
         elif dim == 3:
             x, y, z = np.meshgrid(_x, _x, _x)
             if custom_formula is None:
-                u = + sin(twopi*x) * cos(twopi*y) * cos(twopi*z)
-                v = - cos(twopi*x) * sin(twopi*y) * cos(twopi*z)
+                u = + sin(twopi * x) * cos(twopi * y) * cos(twopi * z)
+                v = - cos(twopi * x) * sin(twopi * y) * cos(twopi * z)
                 w = np.zeros_like(u)
             else:
                 u = eval(custom_formula[0])
@@ -487,13 +496,13 @@ class EnergySpectrum(object):
                 w = eval(custom_formula[2])
         else:
             raise ValueError("Dimension should be 1, 2 or 3.")
-        
+
         return cls(
             dim=dim, u=u, v=v, w=w, t=0.0, U0=1.0
         )
 
     # Private methods
-    def _check_format_of_list_data(self, data:list):
+    def _check_format_of_list_data(self, data: list):
         """
         Check the format of the list data.
         For 1D data, the list should be of the form [u, None, None].
@@ -526,9 +535,9 @@ class EnergySpectrum(object):
             if data[0] is None or data[1] is None or data[2] is None:
                 raise ValueError(
                     f"{data[0]} or {data[1]} or {data[2]} is None."
-            )
-    
-    def _correct_format_of_list_data(self, data:list):
+                )
+
+    def _correct_format_of_list_data(self, data: list):
         """
         Correct the format of the list data.
 
@@ -536,7 +545,7 @@ class EnergySpectrum(object):
         ----------
         data : list
             List of data to correct.
-        
+
         Returns
         -------
         Corrected list of data.
@@ -547,7 +556,7 @@ class EnergySpectrum(object):
             corrected_data = [data[0], data[1], None]
         elif self.dim == 3:
             corrected_data = data
-        
+
         self._check_format_of_list_data(corrected_data)
         return corrected_data
 
@@ -596,7 +605,7 @@ class EnergySpectrum(object):
             self._correct_format_of_list_data(
                 [self.u_spectrum, self.v_spectrum, self.w_spectrum]
             )
-        
+
         # Compute scalar energy spectrum
         res = self._compute_scalar_energy_spectrum()
         self.k, self.Ek, self.EK_U_sphere, self.EK_V_sphere, self.EK_W_sphere \
@@ -627,10 +636,10 @@ class EnergySpectrum(object):
         """
         if self.k is None:
             self.compute()
-        
+
         if fname is None:
             fname = "./energy_spectrum.png"
-        
+
         try:
             import matplotlib.pyplot as plt
         except ImportError:
@@ -677,8 +686,8 @@ class EnergySpectrum(object):
 
         if self.k is None:
             self.compute()
-        
-        dim = self.dim        
+
+        dim = self.dim
         if fname is None:
             fname = "./EK_spectrum.png"
 
@@ -690,7 +699,8 @@ class EnergySpectrum(object):
         if shift_fft:
             fftshift = np.fft.fftshift
         else:
-            fftshift = lambda x: x
+            def fftshift(x):
+                return x
 
         if dim == 1:
             plt.clf()
@@ -704,7 +714,7 @@ class EnergySpectrum(object):
                 plt.savefig(fname, dpi=dpi)
             if show:
                 plt.show()
-            
+
         elif dim == 2:
             plt.clf()
 
