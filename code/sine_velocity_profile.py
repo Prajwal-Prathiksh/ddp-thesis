@@ -92,14 +92,22 @@ class SinVelocityProfile(Application):
 
     def create_domain(self):
         print("create_domain: domain created")
-        return DomainManager(
-            xmin=0, xmax=self.L,
-            ymin=0, ymax=self.L,
-            zmin=0, zmax=self.L,
-            periodic_in_x=True,
-            periodic_in_y=True,
-            periodic_in_z=True
-        )
+        if self.dim == 1:
+            dm = DomainManager(
+                xmin=0, xmax=self.L, periodic_in_x=True
+            )
+        elif self.dim == 2:
+            dm = DomainManager(
+                xmin=0, xmax=self.L, ymin=0, ymax=self.L, periodic_in_x=True,
+                periodic_in_y=True
+            )
+        elif self.dim == 3:
+            dm = DomainManager(
+                xmin=0, xmax=self.L, ymin=0, ymax=self.L, zmin=0, zmax=self.L,
+                periodic_in_x=True, periodic_in_y=True, periodic_in_z=True
+            )
+        
+        return dm
 
     def create_particles(self):
         # Create the particles
@@ -152,8 +160,8 @@ class SinVelocityProfile(Application):
 
     def create_solver(self):
         dim = self.dim
-        dt = 0.01
-        tf = dt * 2
+        dt = 1
+        tf = dt * 1.1
 
         kernel = CubicSpline(dim=dim)
 
@@ -163,6 +171,7 @@ class SinVelocityProfile(Application):
             kernel=kernel, dim=dim, integrator=integrator, dt=dt, tf=tf
         )
         solver.set_print_freq(1)
+        solver.set_max_steps(0)
         print("create_solver: solver created")
         return solver
 
@@ -171,16 +180,7 @@ class SinVelocityProfile(Application):
         return []
 
     # The following are all related to post-processing.
-    def cleanup(self):
-        return
-        if len(self.output_files) < 2:
-            return
-        for f in self.output_files[1:]:
-            os.remove(f)
-        print("Removed %d files" % (len(self.output_files) - 1))
-
     def post_process(self):
-        return
         dim = self.dim
         if len(self.output_files) == 0:
             return
@@ -234,5 +234,3 @@ class SinVelocityProfile(Application):
 if __name__ == '__main__':
     app = SinVelocityProfile()
     app.run()
-    # app.cleanup()
-    # app.post_process()
