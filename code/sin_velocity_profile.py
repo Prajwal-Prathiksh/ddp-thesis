@@ -127,7 +127,6 @@ class SinVelocityProfile(Application):
             raise ValueError("Dimension should be 1, 2 or 3.")
 
         vmag = np.sqrt(u0**2 + v0**2 + w0**2)
-        print(vmag)
 
         # Initialize
         m = self.volume * self.rho0
@@ -138,6 +137,13 @@ class SinVelocityProfile(Application):
             name='particles', x=x, y=y, m=m, h=h,
             u=u0, v=v0, w=w0, rho=self.rho0, vmag=vmag
         )
+        pa.set_output_arrays(
+            [
+                'x', 'y', 'z', 'u', 'v', 'w', 'vmag',
+                'rho', 'm', 'h', 'pid', 'gid', 'tag'
+            ]
+        )
+
         print("Created %d particles" % pa.get_number_of_particles())
         return [pa]
 
@@ -153,15 +159,21 @@ class SinVelocityProfile(Application):
         solver = Solver(
             kernel=kernel, dim=dim, integrator=integrator, dt=dt, tf=tf
         )
-        solver.set_print_freq(1)
+        # solver.set_print_freq(2)
         return solver
 
     def create_equations(self):
         return []
 
     # The following are all related to post-processing.
-    def post_process(self, info_fname):
-        info = self.read_info(info_fname)
+    def cleanup(self):
+        if len(self.output_files) < 2:
+            return
+        for f in self.output_files[1:]:
+            os.remove(f)
+        
+
+    def post_process(self):
         dim = self.dim
         if len(self.output_files) == 0:
             return
@@ -210,6 +222,7 @@ class SinVelocityProfile(Application):
             EK_V=espec_ob.EK_V,
             EK_W=espec_ob.EK_W,
         )
+        print("Saved results to %s" % fname)
 
     def customize_output(self):
         self._mayavi_config('''
@@ -221,4 +234,5 @@ class SinVelocityProfile(Application):
 if __name__ == '__main__':
     app = SinVelocityProfile()
     app.run()
-    app.post_process(app.info_filename)
+    app.cleanup()
+    # app.post_process()
