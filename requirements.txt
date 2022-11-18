@@ -1,0 +1,12 @@
+-e git+https://github.com/pypr/automan@4f957ab132b1f60ecee7829783bd56836296fa63#egg=automan
+-e git+https://github.com/pypr/compyle.git@1eff04e1aaf69df17b022fd7d1365b43c4c4fbdf#egg=compyle
+h5py==3.7.0
+jupyterlab==3.5.0
+matplotlib==3.6.2
+matplotlib-inline==0.1.6
+-e git+https://github.com/enthought/mayavi.git@05b02f41b141a6bd916faaed23cf82381a4b362e#egg=mayavi
+numpy==1.23.4
+PyQt5==5.15.7
+-e git+https://github.com/pypr/pysph.git@d98cf21b77e617a72088d04fbd6505e272356c3c#egg=PySPH
+pytest==7.2.0
+vtk==9.2.2
