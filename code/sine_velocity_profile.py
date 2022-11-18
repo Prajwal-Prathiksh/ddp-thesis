@@ -171,7 +171,6 @@ class SinVelocityProfile(Application):
             return
         for f in self.output_files[1:]:
             os.remove(f)
-        
 
     def post_process(self):
         dim = self.dim
