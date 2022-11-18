@@ -91,6 +91,7 @@ class SinVelocityProfile(Application):
         self.rho0 = 1.
 
     def create_domain(self):
+        print("create_domain: domain created")
         return DomainManager(
             xmin=0, xmax=self.L,
             ymin=0, ymax=self.L,
@@ -109,11 +110,13 @@ class SinVelocityProfile(Application):
         cos, sin = np.cos, np.sin
         if self.dim == 1:
             x = perturb_signal(self.perturb, _x)[0]
+            y = z = 0.
             u0 = -cos(twopi * x)
             v0 = w0 = 0.
         elif self.dim == 2:
             x, y = np.meshgrid(_x, _x)
             x, y = perturb_signal(self.perturb, x, y)
+            z = 0.
             u0 = cos(twopi * x) * sin(twopi * y) * - 1.
             v0 = sin(twopi * x) * cos(twopi * y)
             w0 = 0.
@@ -134,7 +137,7 @@ class SinVelocityProfile(Application):
 
         # Create the arrays
         pa = get_particle_array(
-            name='particles', x=x, y=y, m=m, h=h,
+            name='particles', x=x, y=y, z=z, m=m, h=h,
             u=u0, v=v0, w=w0, rho=self.rho0, vmag=vmag
         )
         pa.set_output_arrays(
@@ -149,8 +152,8 @@ class SinVelocityProfile(Application):
 
     def create_solver(self):
         dim = self.dim
-        dt = 0.1
-        tf = dt * 1.01
+        dt = 0.01
+        tf = dt * 2
 
         kernel = CubicSpline(dim=dim)
 
@@ -159,10 +162,12 @@ class SinVelocityProfile(Application):
         solver = Solver(
             kernel=kernel, dim=dim, integrator=integrator, dt=dt, tf=tf
         )
-        # solver.set_print_freq(2)
+        solver.set_print_freq(1)
+        print("create_solver: solver created")
         return solver
 
     def create_equations(self):
+        print("create_equations: equations created")
         return []
 
     # The following are all related to post-processing.
@@ -171,6 +176,7 @@ class SinVelocityProfile(Application):
             return
         for f in self.output_files[1:]:
             os.remove(f)
+        print("Removed %d files" % (len(self.output_files) - 1))
 
     def post_process(self):
         dim = self.dim
