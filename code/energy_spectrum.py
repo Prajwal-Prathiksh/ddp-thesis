@@ -8,10 +8,6 @@ References
 """
 # Library imports.
 import numpy as np
-from pysph.base.kernels import WendlandQuinticC4
-from compyle.api import annotate, Elementwise, wrap
-from pysph.tools.interpolator import Interpolator
-from pysph.solver.utils import load
 
 # TODO: Compyle iterative functions
 
@@ -230,6 +226,14 @@ def velocity_intepolator(
     res : list[np.ndarray]
         List of interpolated energy spectrum of the flow for each direction.
     """
+    # PySPH imports
+    try:
+        from pysph.base.kernels import WendlandQuinticC4
+        from pysph.tools.interpolator import Interpolator
+        from pysph.solver.utils import load
+    except ImportError:
+        raise ImportError("PySPH is not installed.")
+
     # Load data
     data = load(fname)
     t = data["solver_data"]["t"]
@@ -327,7 +331,7 @@ class EnergySpectrum(object):
     # Class methods
     @classmethod
     def from_pysph_file(
-        cls, fname:str, dim:int, L:float, nx_i:int, kernel:object,
+        cls, fname:str, dim:int, L:float, nx_i:int, kernel:object=None,
         domain_manager:object=None, U0=1., **kwargs
     ):
         """
@@ -344,8 +348,8 @@ class EnergySpectrum(object):
         nx_i : int
             Number of points to interpolate the energy spectrum (nx_i**2 for 2D
             data, nx_i**3 for 3D data).
-        kernel : object
-            Kernel object.
+        kernel : object, optional
+            Kernel object. Default is WendlandQuinticC4.
         domain_manager : object, optional
             DomainManager object. Default is None.
         U0 : float, optional
@@ -356,19 +360,17 @@ class EnergySpectrum(object):
         Returns
         -------
         EnergySpectrum object.
-        """
+        """        
+        # PySPH imports
         try:
-            from pysph.tools.geometry import load
-            from pysph.tools.interpolator import Interpolator
             from pysph.base.kernels import WendlandQuinticC4
+            from pysph.tools.interpolator import Interpolator
+            from pysph.solver.utils import load
         except ImportError:
-            raise ImportError(
-                "PySPH is not installed."
-            )
-        
+            raise ImportError("PySPH is not installed.")
+            
         data = load(fname)
         t = data["solver_data"]["t"]
-        dim = data["solver_data"]["dim"]
 
         # Create meshgrid based on dimension
         _x = np.linspace(0, L, nx_i)
