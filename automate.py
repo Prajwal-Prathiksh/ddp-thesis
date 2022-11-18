@@ -22,16 +22,17 @@ class GenerateSineVelData(Problem):
         """
             Setup the problem.
         """
-        base_cmd = "python code/sine_velocity_profile.py " + BACKEND + " "
+        base_cmd = "python code/sine_velocity_profile.py " + BACKEND
+        base_cmd += " --max-steps 0"
         
         # Create parameteric cases
         perturb_opts = mdict(perturb=[1])
-        dim_nx_opts = mdict(dim=[1], nx=[51])
-        dim_nx_opts += mdict(dim=[2], nx=[51])
+        dim_nx_opts = mdict(dim=[1], nx=[31, 51, 101, 201, 401, 801, 1601])
+        dim_nx_opts += mdict(dim=[2], nx=[31, 51, 101])
+        dim_nx_opts += mdict(dim=[3], nx=[31, 51])
 
         # Add dim_nx_opts to dprod to account for the zero perturbation cases
-        all_options = dprod(perturb_opts, dim_nx_opts) #+ dim_nx_opts
-        print(all_options)
+        all_options = dprod(perturb_opts, dim_nx_opts) + dim_nx_opts
 
         # Setup cases
         self.cases = [
