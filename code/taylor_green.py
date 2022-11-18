@@ -391,7 +391,7 @@ class TaylorGreen(Application):
 
     def _plot_energy_spectrum(self, Ni=101):
         from energy_spectrum import (
-            calculate_energy_spectrum, calculate_scalar_energy_spectrum,
+            compute_energy_spectrum, compute_scalar_energy_spectrum,
             velocity_intepolator
         )
         from pysph.base.kernels import WendlandQuinticC4
@@ -410,12 +410,12 @@ class TaylorGreen(Application):
         )
 
         # Inital energy spectrum
-        EK_U0, EK_V0, _ = calculate_energy_spectrum(u0, v0, w=None, U0=1)
-        k0, Ek0 = calculate_scalar_energy_spectrum(EK_U0, EK_V0, EK_W=None)
+        EK_U0, EK_V0, _ = compute_energy_spectrum(u0, v0, w=None, U0=1)
+        k0, Ek0 = compute_scalar_energy_spectrum(EK_U0, EK_V0, EK_W=None)
 
         # Final energy spectrum
-        EK_Uf, EK_Vf, _ = calculate_energy_spectrum(uf, vf, w=None, U0=1)
-        kf, Ekf = calculate_scalar_energy_spectrum(EK_Uf, EK_Vf, EK_W=None)
+        EK_Uf, EK_Vf, _ = compute_energy_spectrum(uf, vf, w=None, U0=1)
+        kf, Ekf = compute_scalar_energy_spectrum(EK_Uf, EK_Vf, EK_W=None)
 
         # Save npz file
         fname = os.path.join(self.output_dir, 'energy_spectrum.npz')
