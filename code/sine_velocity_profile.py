@@ -171,63 +171,65 @@ class SinVelocityProfile(Application):
         return []
 
     # The following are all related to post-processing.
-    # def cleanup(self):
-    #     if len(self.output_files) < 2:
-    #         return
-    #     for f in self.output_files[1:]:
-    #         os.remove(f)
-    #     print("Removed %d files" % (len(self.output_files) - 1))
+    def cleanup(self):
+        return
+        if len(self.output_files) < 2:
+            return
+        for f in self.output_files[1:]:
+            os.remove(f)
+        print("Removed %d files" % (len(self.output_files) - 1))
 
-    # def post_process(self):
-    #     dim = self.dim
-    #     if len(self.output_files) == 0:
-    #         return
-    #     from energy_spectrum import EnergySpectrum
+    def post_process(self):
+        return
+        dim = self.dim
+        if len(self.output_files) == 0:
+            return
+        from energy_spectrum import EnergySpectrum
 
-    #     espec_ob = EnergySpectrum.from_pysph_file(
-    #         fname=self.output_files[0],
-    #         dim=dim,
-    #         L=self.L,
-    #         nx_i=self.nx_i,
-    #         kernel=None,
-    #         domain_manager=self.create_domain(),
-    #         U0=1.
-    #     )
+        espec_ob = EnergySpectrum.from_pysph_file(
+            fname=self.output_files[0],
+            dim=dim,
+            L=self.L,
+            nx_i=self.nx_i,
+            kernel=None,
+            domain_manager=self.create_domain(),
+            U0=1.
+        )
 
-    #     fname = os.path.join(self.output_dir, 'energy_spectrum_log.png')
-    #     espec_ob.plot_scalar_Ek(
-    #         savefig=True,
-    #         fname=fname,
-    #         plot_type='log'
-    #     )
-    #     espec_ob.plot_scalar_Ek(
-    #         savefig=True,
-    #         fname=fname.replace('_log', '_stem'),
-    #         plot_type='stem'
-    #     )
-    #     fname = os.path.join(self.output_dir, 'EK_spectrum_shiftted.png')
-    #     espec_ob.plot_EK(
-    #         savefig=True,
-    #         fname=fname,
-    #         shift_fft=True
-    #     )
-    #     espec_ob.plot_EK(
-    #         savefig=True,
-    #         fname=fname.replace('_shiftted', ''),
-    #         shift_fft=False
-    #     )
+        fname = os.path.join(self.output_dir, 'energy_spectrum_log.png')
+        espec_ob.plot_scalar_Ek(
+            savefig=True,
+            fname=fname,
+            plot_type='log'
+        )
+        espec_ob.plot_scalar_Ek(
+            savefig=True,
+            fname=fname.replace('_log', '_stem'),
+            plot_type='stem'
+        )
+        fname = os.path.join(self.output_dir, 'EK_spectrum_shiftted.png')
+        espec_ob.plot_EK(
+            savefig=True,
+            fname=fname,
+            shift_fft=True
+        )
+        espec_ob.plot_EK(
+            savefig=True,
+            fname=fname.replace('_shiftted', ''),
+            shift_fft=False
+        )
 
-    #     # Sane npz file
-    #     fname = os.path.join(self.output_dir, 'results.npz')
-    #     np.savez(
-    #         fname,
-    #         t=espec_ob.t,
-    #         Ek=espec_ob.Ek,
-    #         EK_U=espec_ob.EK_U,
-    #         EK_V=espec_ob.EK_V,
-    #         EK_W=espec_ob.EK_W,
-    #     )
-    #     print("Saved results to %s" % fname)
+        # Sane npz file
+        fname = os.path.join(self.output_dir, 'results.npz')
+        np.savez(
+            fname,
+            t=espec_ob.t,
+            Ek=espec_ob.Ek,
+            EK_U=espec_ob.EK_U,
+            EK_V=espec_ob.EK_V,
+            EK_W=espec_ob.EK_W,
+        )
+        print("Saved results to %s" % fname)
 
 if __name__ == '__main__':
     app = SinVelocityProfile()
