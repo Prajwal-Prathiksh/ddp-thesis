@@ -78,9 +78,9 @@ def compute_energy_spectrum(
     v_spectrum = np.abs(fftn(v / U0) / v.size)
     w_spectrum = np.abs(fftn(w / U0) / w.size)
 
-    EK_U = fftshift(0.5*u_spectrum**2)
-    EK_V = fftshift(0.5*v_spectrum**2)
-    EK_W = fftshift(0.5*w_spectrum**2)
+    EK_U = fftshift(0.5 * u_spectrum**2)
+    EK_V = fftshift(0.5 * v_spectrum**2)
+    EK_W = fftshift(0.5 * w_spectrum**2)
 
     if debug:
         return EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum
@@ -89,7 +89,7 @@ def compute_energy_spectrum(
 
 
 def compute_scalar_energy_spectrum(
-    EK_U: np.ndarray, EK_V: np.ndarray = None, EK_W: np.ndarray = None, 
+    EK_U: np.ndarray, EK_V: np.ndarray = None, EK_W: np.ndarray = None,
     ord: int = 2, debug: bool = False
 ):
     """
@@ -315,14 +315,14 @@ class EnergySpectrum(object):
         Time of the flow data. Default is 0. Optional, required for plotting.
     U0: float, optional
         Reference velocity. Default is 1.
-    
+
     Class Methods
     -------------
     1. Initialize from PySPH file
         >>> EnergySpectrum.from_pysph_file(fname....)
     2. Initialize from an example
         >>> EnergySpectrum.from_example(dim....)
-    
+
     Instance Methods
     ----------------
     1. Compute energy spectrum

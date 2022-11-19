@@ -25,9 +25,11 @@ KERNEL_CHOICES = [
 # Interpolating method choices
 INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1']
 
-def get_kernel_cls(name:str, dim:int):
+
+def get_kernel_cls(name: str, dim: int):
     """
-        Return the kernel class corresponding to the name initialized with the dimension.
+        Return the kernel class corresponding to the name initialized with the
+        dimension.
 
         Parameters
         ----------
@@ -45,12 +47,12 @@ def get_kernel_cls(name:str, dim:int):
         raise ValueError("Dimension must be 1, 2 or 3.")
     mapper = {
         'CubicSpline': CubicSpline,
-        'WendlandQuinticC2': WendlandQuinticC2_1D if dim == 1 \
-            else WendlandQuintic,
-        'WendlandQuinticC4': WendlandQuinticC4_1D if dim == 1 \
-            else WendlandQuinticC4,
-        'WendlandQuinticC6': WendlandQuinticC6_1D if dim == 1 \
-            else WendlandQuinticC6,
+        'WendlandQuinticC2': WendlandQuinticC2_1D if dim == 1
+        else WendlandQuintic,
+        'WendlandQuinticC4': WendlandQuinticC4_1D if dim == 1
+        else WendlandQuinticC4,
+        'WendlandQuinticC6': WendlandQuinticC6_1D if dim == 1
+        else WendlandQuinticC6,
         'Gaussian': Gaussian,
         'SuperGaussian': SuperGaussian,
         'QuinticSpline': QuinticSpline
@@ -58,6 +60,7 @@ def get_kernel_cls(name:str, dim:int):
     if name not in mapper:
         raise ValueError("Kernel name not recognized")
     return mapper[name](dim=dim)
+
 
 def perturb_signal(perturb_fac: float, *args: np.ndarray):
     """
@@ -82,12 +85,11 @@ def perturb_signal(perturb_fac: float, *args: np.ndarray):
     if perturb_fac > 0.:
         np.random.seed(1)
         return [
-            arg +
-            perturb_fac *
-            np.random.random(
-                arg.shape) for arg in args]
+            arg + perturb_fac * np.random.random(arg.shape) for arg in args
+        ]
     else:
         return args
+
 
 class DummyIntegrator(Integrator):
     def one_timestep(self):
@@ -123,7 +125,7 @@ class SinVelocityProfile(Application):
             "specified, it is set to nx."
         )
         group.add_argument(
-            "--i-kernel", action="store", type=str, dest="i_kernel", 
+            "--i-kernel", action="store", type=str, dest="i_kernel",
             default='WendlandQuinticC2', choices=KERNEL_CHOICES,
             help="Interpolation kernel."
         )
@@ -167,7 +169,7 @@ class SinVelocityProfile(Application):
                 xmin=0, xmax=self.L, ymin=0, ymax=self.L, zmin=0, zmax=self.L,
                 periodic_in_x=True, periodic_in_y=True, periodic_in_z=True
             )
-        
+
         return dm
 
     def create_particles(self):
@@ -180,21 +182,21 @@ class SinVelocityProfile(Application):
         if self.dim == 1:
             x = perturb_signal(self.perturb, _x)[0]
             y = z = 0.
-            u0 = -cos(twopi * x)
+            u0 = - cos(twopi * x)
             v0 = w0 = 0.
         elif self.dim == 2:
             x, y = np.meshgrid(_x, _x)
             x, y = perturb_signal(self.perturb, x, y)
             z = 0.
-            u0 = cos(twopi * x) * sin(twopi * y) * - 1.
+            u0 = - cos(twopi * x) * sin(twopi * y)
             v0 = sin(twopi * x) * cos(twopi * y)
             w0 = 0.
         elif self.dim == 3:
             x, y, z = np.meshgrid(_x, _x, _x)
             x, y, z = perturb_signal(self.perturb, x, y, z)
-            u0 = cos(twopi * x) * sin(twopi * y) * sin(twopi * z) * - 1.
+            u0 = - cos(twopi * x) * sin(twopi * y) * sin(twopi * z)
             v0 = sin(twopi * x) * cos(twopi * y) * sin(twopi * z)
-            w0 = sin(twopi * x) * sin(twopi * y) * cos(twopi * z)
+            w0 = - sin(twopi * x) * sin(twopi * y) * cos(twopi * z)
         else:
             raise ValueError("Dimension should be 1, 2 or 3.")
 
@@ -273,14 +275,20 @@ class SinVelocityProfile(Application):
         )
         print("Saved results to %s" % fname)
 
-        # Save PySPH file   
+        # Save PySPH file
         from pysph.solver.utils import dump, load
         data = load(self.output_files[iter_idx])
 
         pa = data['arrays']['fluid']
         pa.add_property('EK_U', 'double', data=espec_ob.EK_U.flatten())
-        pa.add_property('EK_V', 'double', data=espec_ob.EK_V.flatten() if dim > 1 else 0.)
-        pa.add_property('EK_W', 'double', data=espec_ob.EK_W.flatten() if dim > 2 else 0.)
+        pa.add_property(
+            'EK_V',
+            'double',
+            data=espec_ob.EK_V.flatten() if dim > 1 else 0.)
+        pa.add_property(
+            'EK_W',
+            'double',
+            data=espec_ob.EK_W.flatten() if dim > 2 else 0.)
 
         pa.add_output_arrays(['EK_U', 'EK_V', 'EK_W'])
 
@@ -300,7 +308,6 @@ class SinVelocityProfile(Application):
             compress=self.solver.compress_output
         )
         print("Saved %s" % fname)
-
 
     def post_process(self, info_fname):
         info = self.read_info(info_fname)
@@ -344,6 +351,7 @@ class SinVelocityProfile(Application):
             fname=fname.replace('_shiftted', ''),
             shift_fft=False
         )
+
 
 if __name__ == '__main__':
     app = SinVelocityProfile()
