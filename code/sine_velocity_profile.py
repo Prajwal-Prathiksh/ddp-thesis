@@ -101,10 +101,6 @@ class SinVelocityProfile(Application):
 
     def add_user_options(self, group):
         group.add_argument(
-            "--no-plots", action="store_true", dest="no_plots",
-            default=False, help="Plots are not generated. Data will still be saved."
-        )
-        group.add_argument(
             "--perturb", action="store", type=float, dest="perturb", default=0,
             help="Random perturbation of initial particles as a fraction "
             "of dx (setting it to zero disables it, the default)."
@@ -138,8 +134,6 @@ class SinVelocityProfile(Application):
         )
 
     def consume_user_options(self):
-        self.no_plots = self.options.no_plots
-
         self.perturb = self.options.perturb
         self.nx = self.options.nx
         self.hdx = self.options.hdx
@@ -247,10 +241,11 @@ class SinVelocityProfile(Application):
         return []
 
     # The following are all related to post-processing.
-    def post_process(self):
+    def dump_enery_spectrum(self):
         dim = self.dim
         if len(self.output_files) == 0:
             return
+
         from energy_spectrum import EnergySpectrum
 
         espec_ob = EnergySpectrum.from_pysph_file(
@@ -265,34 +260,11 @@ class SinVelocityProfile(Application):
         )
         espec_ob.compute()
 
-        if not self.no_plots:
-            fname = os.path.join(self.output_dir, 'energy_spectrum_log.png')
-            espec_ob.plot_scalar_Ek(
-                savefig=True,
-                fname=fname,
-                plot_type='log'
-            )
-            espec_ob.plot_scalar_Ek(
-                savefig=True,
-                fname=fname.replace('_log', '_stem'),
-                plot_type='stem'
-            )
-            fname = os.path.join(self.output_dir, 'EK_spectrum_shiftted.png')
-            espec_ob.plot_vector_Ek(
-                savefig=True,
-                fname=fname,
-                shift_fft=True
-            )
-            espec_ob.plot_vector_Ek(
-                savefig=True,
-                fname=fname.replace('_shiftted', ''),
-                shift_fft=False
-            )
-
-        # Sane npz file
+        # Save npz file
         fname = os.path.join(self.output_dir, 'results.npz')
         np.savez(
             fname,
+            k=espec_ob.k,
             t=espec_ob.t,
             Ek=espec_ob.Ek,
             EK_U=espec_ob.EK_U,
@@ -301,7 +273,50 @@ class SinVelocityProfile(Application):
         )
         print("Saved results to %s" % fname)
 
+    def post_process(self, info_fname):
+        info = self.read_info(info_fname)
+
+        dim = self.dim
+        if len(self.output_files) == 0:
+            return
+
+        from energy_spectrum import EnergySpectrum
+
+        espec_ob = EnergySpectrum.from_pysph_file(
+            fname=self.output_files[0],
+            dim=dim,
+            L=self.L,
+            i_nx=self.i_nx,
+            kernel=self.i_kernel_cls,
+            domain_manager=self.create_domain(),
+            method=self.i_method,
+            U0=1.
+        )
+        espec_ob.compute()
+        fname = os.path.join(self.output_dir, 'energy_spectrum_log.png')
+        espec_ob.plot_scalar_Ek(
+            savefig=True,
+            fname=fname,
+            plot_type='log'
+        )
+        espec_ob.plot_scalar_Ek(
+            savefig=True,
+            fname=fname.replace('_log', '_stem'),
+            plot_type='stem'
+        )
+        fname = os.path.join(self.output_dir, 'EK_spectrum_shiftted.png')
+        espec_ob.plot_vector_Ek(
+            savefig=True,
+            fname=fname,
+            shift_fft=True
+        )
+        espec_ob.plot_vector_Ek(
+            savefig=True,
+            fname=fname.replace('_shiftted', ''),
+            shift_fft=False
+        )
+
 if __name__ == '__main__':
     app = SinVelocityProfile()
     app.run()
-    app.post_process()
+    app.dump_enery_spectrum()
