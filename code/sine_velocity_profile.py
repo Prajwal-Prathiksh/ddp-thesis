@@ -110,7 +110,7 @@ class SinVelocityProfile(Application):
             "of dx (setting it to zero disables it, the default)."
         )
         group.add_argument(
-            "--nx", action="store", type=int, dest="nx", default=50,
+            "--nx", action="store", type=int, dest="nx", default=51,
             help="Number of points along x direction."
         )
         group.add_argument(
@@ -122,8 +122,9 @@ class SinVelocityProfile(Application):
             help="Dimension of the problem."
         )
         group.add_argument(
-            "--nx-i", action="store", type=int, dest="nx_i", default=50,
-            help="Number of interpolation points along x direction."
+            "--i-nx", action="store", type=int, dest="i_nx", default=None,
+            help="Number of interpolation points along x direction. If not "
+            "specified, it is set to nx."
         )
         group.add_argument(
             "--i-kernel", action="store", type=str, dest="i_kernel", 
@@ -144,7 +145,8 @@ class SinVelocityProfile(Application):
         self.hdx = self.options.hdx
         self.dim = self.options.dim
 
-        self.nx_i = self.options.nx_i
+        i_nx = self.options.i_nx
+        self.i_nx = self.nx if i_nx is None else i_nx
         self.i_kernel = self.options.i_kernel
         self.i_kernel_cls = get_kernel_cls(self.i_kernel, self.dim)
         self.i_method = self.options.i_method
@@ -255,7 +257,7 @@ class SinVelocityProfile(Application):
             fname=self.output_files[0],
             dim=dim,
             L=self.L,
-            nx_i=self.nx_i,
+            i_nx=self.i_nx,
             kernel=self.i_kernel_cls,
             domain_manager=self.create_domain(),
             method=self.i_method,

@@ -199,7 +199,7 @@ def compute_scalar_energy_spectrum(
 
 
 def velocity_intepolator(
-    fname: str, dim: int, kernel: object = None, nx_i: int = 101,
+    fname: str, dim: int, kernel: object = None, i_nx: int = 101,
     domain_manager: object = None, **kwargs
 ):
     """
@@ -213,9 +213,9 @@ def velocity_intepolator(
         Dimension of the flow.
     kernel : object, optional
         Kernel object. The default is WendlandQuinticC4.
-    nx_i : int, optional
-        Number of points to interpolate the energy spectrum (nx_i**2 for
-        2D data, nx_i**3 for 3D data). The default is 101.
+    i_nx : int, optional
+        Number of points to interpolate the energy spectrum (i_nx**2 for
+        2D data, i_nx**3 for 3D data). The default is 101.
     domain_manager : object, optional
         DomainManager object. The default is None.
     **kwargs : dict, optional
@@ -241,7 +241,7 @@ def velocity_intepolator(
     t = data["solver_data"]["t"]
 
     # Create meshgrid based on dimension
-    _x = np.linspace(0, 1, nx_i)
+    _x = np.linspace(0, 1, i_nx)
     if dim == 1:
         x = _x
         y = z = None
@@ -269,16 +269,16 @@ def velocity_intepolator(
     elif dim == 2:
         _u = interp.interpolate('u')
         _v = interp.interpolate('v')
-        ui = _u.reshape(nx_i, nx_i)
-        vi = _v.reshape(nx_i, nx_i)
+        ui = _u.reshape(i_nx, i_nx)
+        vi = _v.reshape(i_nx, i_nx)
         res = [ui, vi, None]
     elif dim == 3:
         _u = interp.interpolate('u')
         _v = interp.interpolate('v')
         _w = interp.interpolate('w')
-        ui = _u.reshape(nx_i, nx_i, nx_i)
-        vi = _v.reshape(nx_i, nx_i, nx_i)
-        wi = _w.reshape(nx_i, nx_i, nx_i)
+        ui = _u.reshape(i_nx, i_nx, i_nx)
+        vi = _v.reshape(i_nx, i_nx, i_nx)
+        wi = _w.reshape(i_nx, i_nx, i_nx)
         res = [ui, vi, wi]
     return t, res
 
@@ -352,7 +352,7 @@ class EnergySpectrum(object):
     # Class methods
     @classmethod
     def from_pysph_file(
-        cls, fname: str, dim: int, L: float, nx_i: int, kernel: object = None,
+        cls, fname: str, dim: int, L: float, i_nx: int, kernel: object = None,
         domain_manager: object = None, U0=1., **kwargs
     ):
         """
@@ -366,9 +366,9 @@ class EnergySpectrum(object):
             Dimension of the flow.
         L : float
             Length of the domain.
-        nx_i : int
-            Number of points to interpolate the energy spectrum (nx_i**2 for 2D
-            data, nx_i**3 for 3D data).
+        i_nx : int
+            Number of points to interpolate the energy spectrum (i_nx**2 for 2D
+            data, i_nx**3 for 3D data).
         kernel : object, optional
             Kernel object. Default is WendlandQuinticC4.
         domain_manager : object, optional
@@ -394,7 +394,7 @@ class EnergySpectrum(object):
         t = data["solver_data"]["t"]
 
         # Create meshgrid based on dimension
-        _x = np.linspace(0, L, nx_i)
+        _x = np.linspace(0, L, i_nx)
         if dim == 1:
             x = _x
             y = z = None
@@ -420,16 +420,16 @@ class EnergySpectrum(object):
         elif dim == 2:
             _u = interp.interpolate('u')
             _v = interp.interpolate('v')
-            ui = _u.reshape(nx_i, nx_i)
-            vi = _v.reshape(nx_i, nx_i)
+            ui = _u.reshape(i_nx, i_nx)
+            vi = _v.reshape(i_nx, i_nx)
             wi = None
         elif dim == 3:
             _u = interp.interpolate('u')
             _v = interp.interpolate('v')
             _w = interp.interpolate('w')
-            ui = _u.reshape(nx_i, nx_i, nx_i)
-            vi = _v.reshape(nx_i, nx_i, nx_i)
-            wi = _w.reshape(nx_i, nx_i, nx_i)
+            ui = _u.reshape(i_nx, i_nx, i_nx)
+            vi = _v.reshape(i_nx, i_nx, i_nx)
+            wi = _w.reshape(i_nx, i_nx, i_nx)
 
         return cls(
             dim=dim, u=ui, v=vi, w=wi, t=t, U0=U0
