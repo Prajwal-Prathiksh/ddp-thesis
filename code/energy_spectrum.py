@@ -310,16 +310,28 @@ class EnergySpectrum(object):
         Time of the flow data. Default is 0. Optional, required for plotting.
     U0: float, optional
         Reference velocity. Default is 1.
+    
+    Class Methods
+    -------------
+    1. Initialize from PySPH file
+        >>> EnergySpectrum.from_pysph_file(fname....)
+    2. Initialize from an example
+        >>> EnergySpectrum.from_example(dim....)
+    
+    Instance Methods
+    ----------------
+    1. Compute energy spectrum
+        >>> EnergySpectrum.compute()
+    2. Plot scalar energy spectrum
+        >>> EnergySpectrum.plot_scalar_Ek()
+    3. Plot vector energy spectrum
+        >>> EnergySpectrum.plot_vector_Ek()
     """
 
     def __init__(
-        self,
-        dim: int,
-        u: np.ndarray,
-        v: np.ndarray = None,
-        w: np.ndarray = None,
-        t: float = 0.,
-            U0: float = 1.):
+        self, dim: int, u: np.ndarray, v: np.ndarray = None,
+        w: np.ndarray = None, t: float = 0., U0: float = 1.
+    ):
         """
         Initialize the class.
         """
@@ -663,7 +675,7 @@ class EnergySpectrum(object):
         if show:
             plt.show()
 
-    def plot_EK(
+    def plot_vector_Ek(
         self, show=False, savefig=False, fname=None, dpi=300, shift_fft=False
     ):
         """
