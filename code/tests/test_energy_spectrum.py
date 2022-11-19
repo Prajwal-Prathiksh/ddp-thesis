@@ -80,9 +80,9 @@ class TestComputeEnergySpectrum(unittest.TestCase):
         # Energy spectrum check
         EK_U_shifted = np.fft.fftshift(EK_U)
         self.assertTrue(np.allclose(EK_U_shifted[0], 0., atol=tol))
-        self.assertTrue(np.allclose(EK_U_shifted[1], 0.25, atol=tol))
+        self.assertTrue(np.allclose(EK_U_shifted[1], 0.125, atol=tol))
         self.assertTrue(np.allclose(EK_U_shifted[2:-1], 0., atol=tol))
-        self.assertTrue(np.allclose(EK_U_shifted[-1], 0.25, atol=tol))
+        self.assertTrue(np.allclose(EK_U_shifted[-1], 0.125, atol=tol))
         self.assertTrue(np.allclose(EK_V, 0., atol=tol))
         self.assertTrue(np.allclose(EK_W, 0., atol=tol))
 
@@ -112,9 +112,9 @@ class TestComputeEnergySpectrum(unittest.TestCase):
         # Energy spectrum check
         EK_U_shifted = np.fft.fftshift(EK_U)
         self.assertTrue(np.allclose(EK_U_shifted[0], 0., atol=tol))
-        self.assertTrue(np.allclose(EK_U_shifted[1:2], 1., atol=tol))
+        self.assertTrue(np.allclose(EK_U_shifted[1:2], 0.5, atol=tol))
         self.assertTrue(np.allclose(EK_U_shifted[3:-2], 0., atol=tol))
-        self.assertTrue(np.allclose(EK_U_shifted[-2:], 1., atol=tol))
+        self.assertTrue(np.allclose(EK_U_shifted[-2:], 0.5, atol=tol))
 
     def test_should_work_for_2d_data(self):
         """
@@ -126,7 +126,7 @@ class TestComputeEnergySpectrum(unittest.TestCase):
         x = y = np.arange(0, 1., 1. / sr)
         X, Y = np.meshgrid(x, y)
         u = np.sin(2 * np.pi * X) + np.sin(2 * np.pi * 2 * Y)
-        U0 = 0.5
+        U0 = 1.
 
         # When
         EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum =\
@@ -145,7 +145,7 @@ class TestComputeEnergySpectrum(unittest.TestCase):
 
         # Velocity spectrum check
         tol = 1e-10
-        ind = np.where(np.abs(u_spectrum - 1.) < tol)
+        ind = np.where(np.abs(u_spectrum - 0.5) < tol)
         self.assertEqual(np.shape(ind), (2, 4))
         coords = [
             [0, 1], [0, sr - 1],  # Coefficients for x-axis
@@ -157,7 +157,7 @@ class TestComputeEnergySpectrum(unittest.TestCase):
 
         # Energy spectrum check
         EK_U_shifted = np.fft.fftshift(EK_U)
-        ind = np.where(np.abs(EK_U_shifted - 1.) < tol)
+        ind = np.where(np.abs(EK_U_shifted - 0.125) < tol)
         self.assertEqual(np.shape(ind), (2, 4))
         self.assertTrue(
             check_if_coords_are_in_indices(coords=coords, indices=ind), True
@@ -209,7 +209,7 @@ class TestComputeEnergySpectrum(unittest.TestCase):
 
         # Energy spectrum check
         EK_U_shifted = np.fft.fftshift(EK_U)
-        ind = np.where(np.abs(EK_U_shifted - 1.) < tol)
+        ind = np.where(np.abs(EK_U_shifted - 0.5) < tol)
         self.assertEqual(np.shape(ind), (3, 6))
         self.assertTrue(
             check_if_coords_are_in_indices(coords=coords, indices=ind), True
