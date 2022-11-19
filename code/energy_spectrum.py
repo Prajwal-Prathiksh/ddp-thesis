@@ -31,9 +31,9 @@ def compute_energy_spectrum(
     w : np.ndarray, optional
         Velocity field in z-direction.
     U0 : float, optional
-        Reference velocity. The default is 1.
+        Reference velocity. Default is 1.
     debug : bool, optional
-        Return the velocity spectrum as well. The default is False.
+        Return the velocity spectrum as well. Default is False.
     Returns
     -------
     EK_U : np.ndarray
@@ -89,8 +89,8 @@ def compute_energy_spectrum(
 
 
 def compute_scalar_energy_spectrum(
-    EK_U: np.ndarray, EK_V: np.ndarray = None, EK_W: np.ndarray = None,
-    debug: bool = False
+    EK_U: np.ndarray, EK_V: np.ndarray = None, EK_W: np.ndarray = None, 
+    ord: int = 2, debug: bool = False
 ):
     """
     Calculate 1D energy spectrum of the flow E(k), from the point-wise energy
@@ -104,8 +104,10 @@ def compute_scalar_energy_spectrum(
         Point-wise energy spectrum of the flow in y-direction.
     EK_W : np.ndarray, optional
         Point-wise energy spectrum of the flow in z-direction.
+    ord : int, optional
+        Order of the norm. Default is 2.
     debug : bool, optional
-        Return the averaged energy spectrum as well. The default is False.
+        Return the averaged energy spectrum as well. Default is False.
     Returns
     -------
     k : np.ndarray
@@ -163,7 +165,7 @@ def compute_scalar_energy_spectrum(
 
     if dim == 1:
         for i in range(box_side_x):
-            wn = np.round(norm(i - center_x))
+            wn = np.round(norm([i - center_x], ord=ord))
             wn = int(wn)
 
             EK_U_sphere[wn] += EK_U[i]
@@ -171,7 +173,7 @@ def compute_scalar_energy_spectrum(
     elif dim == 2:
         for i in range(box_side_x):
             for j in range(box_side_y):
-                wn = np.round(norm([i - center_x, j - center_y]))
+                wn = np.round(norm([i - center_x, j - center_y], ord=ord))
                 wn = int(wn)
 
                 EK_U_sphere[wn] += EK_U[i, j]
@@ -182,7 +184,10 @@ def compute_scalar_energy_spectrum(
             for j in range(box_side_y):
                 for k in range(box_side_z):
                     wn = np.round(
-                        norm([i - center_x, j - center_y, k - center_z]))
+                        norm(
+                            [i - center_x, j - center_y, k - center_z], ord=ord
+                        )
+                    )
                     wn = int(wn)
 
                     EK_U_sphere[wn] += EK_U[i, j, k]
@@ -212,12 +217,12 @@ def velocity_intepolator(
     dim : int
         Dimension of the flow.
     kernel : object, optional
-        Kernel object. The default is WendlandQuinticC4.
+        Kernel object. Default is WendlandQuinticC4.
     i_nx : int, optional
         Number of points to interpolate the energy spectrum (i_nx**2 for
-        2D data, i_nx**3 for 3D data). The default is 101.
+        2D data, i_nx**3 for 3D data). Default is 101.
     domain_manager : object, optional
-        DomainManager object. The default is None.
+        DomainManager object. Default is None.
     **kwargs : dict, optional
         Additional keyword arguments to pass to the interpolator.
 
