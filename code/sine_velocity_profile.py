@@ -9,9 +9,55 @@ from pysph.base.nnps import DomainManager
 from pysph.base.utils import get_particle_array
 from pysph.solver.application import Application
 from pysph.sph.integrator import Integrator
-from pysph.base.kernels import CubicSpline
+from pysph.base.kernels import (
+    CubicSpline, WendlandQuinticC2_1D, WendlandQuintic, WendlandQuinticC4_1D,
+    WendlandQuinticC4, WendlandQuinticC6_1D, WendlandQuinticC6,
+    Gaussian, SuperGaussian, QuinticSpline
+)
 from pysph.solver.solver import Solver
 
+# Kernel choices
+KERNEL_CHOICES = [
+    'CubicSpline', 'WendlandQuinticC2', 'WendlandQuinticC4',
+    'WendlandQuinticC6', 'Gaussian', 'SuperGaussian', 'QuinticSpline'
+]
+
+# Interpolating method choices
+INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1']
+
+def get_kernel_cls(name:str, dim:int):
+    """
+        Return the kernel class corresponding to the name initialized with the dimension.
+
+        Parameters
+        ----------
+        name : str
+            Name of the kernel class.
+        dim : int
+            Dimension of the kernel.
+
+        Returns
+        -------
+        kernel_cls : class
+            Kernel class (dim).
+    """
+    if dim not in [1, 2, 3]:
+        raise ValueError("Dimension must be 1, 2 or 3.")
+    mapper = {
+        'CubicSpline': CubicSpline,
+        'WendlandQuinticC2': WendlandQuinticC2_1D if dim == 1 \
+            else WendlandQuintic,
+        'WendlandQuinticC4': WendlandQuinticC4_1D if dim == 1 \
+            else WendlandQuinticC4,
+        'WendlandQuinticC6': WendlandQuinticC6_1D if dim == 1 \
+            else WendlandQuinticC6,
+        'Gaussian': Gaussian,
+        'SuperGaussian': SuperGaussian,
+        'QuinticSpline': QuinticSpline
+    }
+    if name not in mapper:
+        raise ValueError("Kernel name not recognized")
+    return mapper[name](dim=dim)
 
 def perturb_signal(perturb_fac: float, *args: np.ndarray):
     """
@@ -43,7 +89,6 @@ def perturb_signal(perturb_fac: float, *args: np.ndarray):
     else:
         return args
 
-
 class DummyIntegrator(Integrator):
     def one_timestep(self):
         pass
@@ -55,6 +100,10 @@ class SinVelocityProfile(Application):
     """
 
     def add_user_options(self, group):
+        group.add_argument(
+            "--no-plots", action="store_true", dest="no_plots",
+            default=False, help="Plots are not generated. Data will still be saved."
+        )
         group.add_argument(
             "--perturb", action="store", type=float, dest="perturb", default=0,
             help="Random perturbation of initial particles as a fraction "
@@ -76,13 +125,29 @@ class SinVelocityProfile(Application):
             "--nx-i", action="store", type=int, dest="nx_i", default=50,
             help="Number of interpolation points along x direction."
         )
+        group.add_argument(
+            "--i-kernel", action="store", type=str, dest="i_kernel", 
+            default='WendlandQuinticC2', choices=KERNEL_CHOICES,
+            help="Interpolation kernel."
+        )
+        group.add_argument(
+            "--i-method", action="store", type=str, dest="i_method",
+            default='sph', choices=INTERPOLATING_METHOD_CHOICES,
+            help="Interpolating method."
+        )
 
     def consume_user_options(self):
+        self.no_plots = self.options.no_plots
+
         self.perturb = self.options.perturb
         self.nx = self.options.nx
         self.hdx = self.options.hdx
         self.dim = self.options.dim
+
         self.nx_i = self.options.nx_i
+        self.i_kernel = self.options.i_kernel
+        self.i_kernel_cls = get_kernel_cls(self.i_kernel, self.dim)
+        self.i_method = self.options.i_method
 
         self.dx = dx = 1. / self.nx
         self.volume = dx**self.dim
@@ -191,33 +256,36 @@ class SinVelocityProfile(Application):
             dim=dim,
             L=self.L,
             nx_i=self.nx_i,
-            kernel=None,
+            kernel=self.i_kernel_cls,
             domain_manager=self.create_domain(),
+            method=self.i_method,
             U0=1.
         )
+        espec_ob.compute()
 
-        fname = os.path.join(self.output_dir, 'energy_spectrum_log.png')
-        espec_ob.plot_scalar_Ek(
-            savefig=True,
-            fname=fname,
-            plot_type='log'
-        )
-        espec_ob.plot_scalar_Ek(
-            savefig=True,
-            fname=fname.replace('_log', '_stem'),
-            plot_type='stem'
-        )
-        fname = os.path.join(self.output_dir, 'EK_spectrum_shiftted.png')
-        espec_ob.plot_EK(
-            savefig=True,
-            fname=fname,
-            shift_fft=True
-        )
-        espec_ob.plot_EK(
-            savefig=True,
-            fname=fname.replace('_shiftted', ''),
-            shift_fft=False
-        )
+        if not self.no_plots:
+            fname = os.path.join(self.output_dir, 'energy_spectrum_log.png')
+            espec_ob.plot_scalar_Ek(
+                savefig=True,
+                fname=fname,
+                plot_type='log'
+            )
+            espec_ob.plot_scalar_Ek(
+                savefig=True,
+                fname=fname.replace('_log', '_stem'),
+                plot_type='stem'
+            )
+            fname = os.path.join(self.output_dir, 'EK_spectrum_shiftted.png')
+            espec_ob.plot_vector_Ek(
+                savefig=True,
+                fname=fname,
+                shift_fft=True
+            )
+            espec_ob.plot_vector_Ek(
+                savefig=True,
+                fname=fname.replace('_shiftted', ''),
+                shift_fft=False
+            )
 
         # Sane npz file
         fname = os.path.join(self.output_dir, 'results.npz')
@@ -234,3 +302,4 @@ class SinVelocityProfile(Application):
 if __name__ == '__main__':
     app = SinVelocityProfile()
     app.run()
+    app.post_process()
