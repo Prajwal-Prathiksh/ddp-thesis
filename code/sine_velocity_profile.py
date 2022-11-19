@@ -243,6 +243,21 @@ class SinVelocityProfile(Application):
         return []
 
     # The following are all related to post-processing.
+    def get_exact_energy_spectrum(self):
+        dim = self.dim
+
+        N = int(1 + np.ceil(np.sqrt(dim*self.i_nx**2)/2))
+        Ek_exact = np.zeros(N, dtype=np.float64)
+
+        if dim == 1:
+            Ek_exact[1] = 0.125
+        elif dim == 2:
+            Ek_exact[1] = 0.125
+        elif dim == 3:
+            Ek_exact[2] = 0.09375
+
+        return Ek_exact            
+
     def dump_enery_spectrum(self, iter_idx=0):
         dim = self.dim
         if len(self.output_files) == 0:
@@ -264,6 +279,13 @@ class SinVelocityProfile(Application):
 
         # Save npz file
         fname = os.path.join(self.output_dir, f"espec_result_{iter_idx}.npz")
+
+        Ek_exact = self.get_exact_energy_spectrum()
+        if Ek_exact is not None:
+            l2_error = np.sqrt((espec_ob.Ek - Ek_exact)**2)
+        else:
+            l2_error = None
+
         np.savez(
             fname,
             k=espec_ob.k,
@@ -272,6 +294,8 @@ class SinVelocityProfile(Application):
             EK_U=espec_ob.EK_U,
             EK_V=espec_ob.EK_V,
             EK_W=espec_ob.EK_W,
+            Ek_exact=Ek_exact,
+            l2_error=l2_error
         )
         print("Saved results to %s" % fname)
 
