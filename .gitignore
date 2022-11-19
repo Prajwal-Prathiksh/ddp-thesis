@@ -156,3 +156,4 @@ config*.json*
 *.toc
 *_output/
 *outputs/
+manuscript/code_figures/*
