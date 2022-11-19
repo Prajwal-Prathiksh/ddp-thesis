@@ -11,13 +11,15 @@ from automan.api import PySPHProblem
 from automan.api import mdict, dprod, opts2path
 from automan.utils import filter_cases, compare_runs
 
-BACKEND = " --openmp"
-
 #TODO: Add error checking for SimPlotter
 #TODO: Add uniform_naming for Simplotter methods
 #TODO: Run for multiple nx, perturb, i_nx
+#TODO: Add a method to dump cases generated in a json? and keep appending it when new cases are generated
 #TODO: Add a GUI for filtering and plotting comparisons plots
 #TODO: Refacto code to make the above possible
+
+BACKEND = " --openmp"
+
 
 def styles(sims):
     ls = [dict(linestyle=x[0], color=x[1]) for x in

@@ -16,6 +16,8 @@ from pysph.base.kernels import (
 )
 from pysph.solver.solver import Solver
 
+#TODO: Create a new class with energy spectrum methods add it to a new file
+
 # Kernel choices
 KERNEL_CHOICES = [
     'CubicSpline', 'WendlandQuinticC2', 'WendlandQuinticC4',
