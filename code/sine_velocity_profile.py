@@ -206,7 +206,7 @@ class SinVelocityProfile(Application):
 
         # Create the arrays
         pa = get_particle_array(
-            name='particles', x=x, y=y, z=z, m=m, h=h,
+            name='fluid', x=x, y=y, z=z, m=m, h=h,
             u=u0, v=v0, w=w0, rho=self.rho0, vmag=vmag
         )
         pa.set_output_arrays(
@@ -241,7 +241,7 @@ class SinVelocityProfile(Application):
         return []
 
     # The following are all related to post-processing.
-    def dump_enery_spectrum(self):
+    def dump_enery_spectrum(self, iter_idx=0):
         dim = self.dim
         if len(self.output_files) == 0:
             return
@@ -249,7 +249,7 @@ class SinVelocityProfile(Application):
         from energy_spectrum import EnergySpectrum
 
         espec_ob = EnergySpectrum.from_pysph_file(
-            fname=self.output_files[0],
+            fname=self.output_files[iter_idx],
             dim=dim,
             L=self.L,
             i_nx=self.i_nx,
@@ -261,7 +261,7 @@ class SinVelocityProfile(Application):
         espec_ob.compute()
 
         # Save npz file
-        fname = os.path.join(self.output_dir, 'results.npz')
+        fname = os.path.join(self.output_dir, f"espec_result_{iter_idx}.npz")
         np.savez(
             fname,
             k=espec_ob.k,
@@ -272,6 +272,35 @@ class SinVelocityProfile(Application):
             EK_W=espec_ob.EK_W,
         )
         print("Saved results to %s" % fname)
+
+        # Save PySPH file   
+        from pysph.solver.utils import dump, load
+        data = load(self.output_files[iter_idx])
+
+        pa = data['arrays']['fluid']
+        pa.add_property('EK_U', 'double', data=espec_ob.EK_U.flatten())
+        pa.add_property('EK_V', 'double', data=espec_ob.EK_V.flatten() if dim > 1 else 0.)
+        pa.add_property('EK_W', 'double', data=espec_ob.EK_W.flatten() if dim > 2 else 0.)
+
+        pa.add_output_arrays(['EK_U', 'EK_V', 'EK_W'])
+
+        counter = self.output_files[iter_idx].split("_")[-1].split('.')[0]
+        fname = os.path.join(self.output_dir, f"espec_{counter}")
+        if self.output_files[iter_idx].endswith(".npz"):
+            fname += ".npz"
+        else:
+            fname += ".hdf5"
+        dump(
+            filename=fname,
+            particles=[pa],
+            solver_data=data['solver_data'],
+            detailed_output=self.solver.detailed_output,
+            only_real=self.solver.output_only_real,
+            mpi_comm=None,
+            compress=self.solver.compress_output
+        )
+        print("Saved %s" % fname)
+
 
     def post_process(self, info_fname):
         info = self.read_info(info_fname)
@@ -319,4 +348,4 @@ class SinVelocityProfile(Application):
 if __name__ == '__main__':
     app = SinVelocityProfile()
     app.run()
-    app.dump_enery_spectrum()
+    app.dump_enery_spectrum(iter_idx=0)
