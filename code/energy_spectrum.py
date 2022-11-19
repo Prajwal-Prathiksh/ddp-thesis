@@ -78,9 +78,9 @@ def compute_energy_spectrum(
     v_spectrum = np.abs(fftn(v / U0) / v.size)
     w_spectrum = np.abs(fftn(w / U0) / w.size)
 
-    EK_U = fftshift(u_spectrum**2)
-    EK_V = fftshift(v_spectrum**2)
-    EK_W = fftshift(w_spectrum**2)
+    EK_U = fftshift(0.5*u_spectrum**2)
+    EK_V = fftshift(0.5*v_spectrum**2)
+    EK_W = fftshift(0.5*w_spectrum**2)
 
     if debug:
         return EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum
