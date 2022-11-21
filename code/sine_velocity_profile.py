@@ -203,6 +203,9 @@ class SinVelocityProfile(TurbulentFlowApp):
         if len(self.output_files) == 0:
             return
 
+        method = self.options.i_method
+        if method not in ['sph', 'shepard', 'order1']:
+            method = 'order1'
         espec_ob = EnergySpectrum.from_pysph_file(
             fname=self.output_files[0],
             dim=dim,
@@ -210,7 +213,7 @@ class SinVelocityProfile(TurbulentFlowApp):
             i_nx=self.i_nx,
             kernel=self.i_kernel_cls,
             domain_manager=self.create_domain(),
-            method=self.i_method,
+            method=method,
             U0=1.
         )
         espec_ob.compute()
