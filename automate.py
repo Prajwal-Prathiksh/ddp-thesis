@@ -1,3 +1,7 @@
+r"""
+An automator script to reproduce the results of the thesis
+###
+"""
 # Library imports.
 import os
 import itertools as IT
@@ -11,6 +15,9 @@ from automan.api import PySPHProblem
 from automan.api import mdict, dprod, opts2path
 from automan.utils import filter_cases, compare_runs
 
+# Local imports.
+from code.automate_utils import styles
+
 #TODO: Add error checking for SimPlotter
 #TODO: Add uniform_naming for Simplotter methods
 #TODO: Run for multiple nx, perturb, i_nx
@@ -20,44 +27,115 @@ from automan.utils import filter_cases, compare_runs
 
 BACKEND = " --openmp"
 
-
-def styles(sims):
-    ls = [dict(linestyle=x[0], color=x[1]) for x in
-          IT.product(["-", "--", "-.", ":"], 'kbgrycm')]
-    return IT.cycle(ls)
-
-class SimPlotter(Simulation):
-    def scalar_Ek_loglog(self, **kw):
-        # Load npz file.
-        data = np.load(self.input_path('espec_result_0.npz'))
+class SineVelProfilePlotters(Simulation):
+    """
+    Helper methods for making comparisons plots for the sinusoidal velocity
+    profile problem.
+    """
+    def Ek_loglog(self, **kw):
+        data = np.load(self.input_path('espec_result.npz'))
         plt.loglog(data['k'], data['Ek'], **kw)
     
-    def scalar_Ek_loglog_exact(self, **kw):
-        # Load npz file.
-        data = np.load(self.input_path('espec_result_0.npz'))
+    def Ek_loglog_exact(self, **kw):
+        data = np.load(self.input_path('espec_result.npz'))
         plt.loglog(data['k'], data['Ek_exact'], **kw)
     
-    def scalar_Ek_plot(self, **kw):
-        # Load npz file.
-        data = np.load(self.input_path('espec_result_0.npz'))
-        # Get label from **kw.
+    def Ek_plot(self, **kw):
+        data = np.load(self.input_path('espec_result.npz'))
         plt.plot(data['k'], data['Ek'], **kw)
     
     def l2_error(self, **kw):
-        # Load npz file.
-        data = np.load(self.input_path('espec_result_0.npz'))
+        data = np.load(self.input_path('espec_result.npz'))
         plt.loglog(data['k'], data['l2_error'], **kw)
-
 class SineVelProfile(PySPHProblem):
+    """
+    Automator to run the sinusoidal velocity profile problem.
+    """
     def get_name(self):
         """
-            Problem name.
+        Problem name.
         """
         return 'sine_vel_profiles'
 
+    def plot_energy_spectrum(
+        self, cases, labels, plt_type="loglog", styles=styles,
+        title_suffix=""
+    ):
+        """
+        Plot the energy spectrum.
+
+        Parameters
+        ----------
+        cases : sequence
+            Sequence of 'Simulation' objects.
+        labels : sequence
+            Sequence of labels for the cases.
+        plt_type : str
+            Type of plot. Can be: 'loglog', 'plot', 'l2_error'
+        styles: callable: returns an iterator/iterable of style keyword arguments.
+            Defaults to the ``styles`` function defined in this module.
+        title_suffix : str
+            Suffix to be added to the title.
+        """
+        plt.figure()
+        if plt_type == "loglog":
+            compare_runs(
+                sims=cases,
+                method=SineVelProfilePlotters.Ek_loglog,
+                exact=None,
+                labels=labels,
+                styles=styles,
+            )
+        elif plt_type == "plot":
+            compare_runs(
+                sims=cases,
+                method=SineVelProfilePlotters.Ek_plot,
+                exact=None,
+                labels=labels,
+                styles=styles,
+            )
+        elif plt_type == "l2_error":
+            compare_runs(
+                sims=cases,
+                method=SineVelProfilePlotters.l2_error,
+                exact=None,
+                labels=labels,
+                styles=styles,
+            )
+        else:
+            raise ValueError("Invalid plt_type: {}".format(plt_type))
+
+        title = "Energy spectrum"
+        if plt_type == "loglog":
+            xlabel = r"$log(k)$"
+            ylabel = r"$log(E_k)$"
+            title += " (loglog)"
+        elif plt_type == "plot":
+            xlabel = r"$k$"
+            ylabel = r"$E_k$"
+            title += " (loglog)"
+        elif plt_type == "l2_error":
+            xlabel = r"$log(k)$"
+            ylabel = r"$log(L_2 error)$"
+            title += r" ($L_2$ error)"
+        
+        title += " ({})".format(", ".join(labels)) + title_suffix
+        plt.title(title)
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.legend()
+
+        title = title.replace("$", "")
+        plt.savefig(
+            self.output_path(title + ".png"),
+            dpi=350,
+            bbox_inches="tight",
+        )
+        plt.close()     
+        
     def setup(self):
         """
-            Setup the problem.
+        Setup the problem.
         """
         base_cmd = "python code/sine_velocity_profile.py " + BACKEND
         base_cmd += " --max-steps 0"
@@ -84,19 +162,18 @@ class SineVelProfile(PySPHProblem):
             return all_options
 
         def get_example_opts():
-            perturb_opts = mdict(perturb=[0])
-            dim_nx_opts = mdict(dim=[1], nx=[31, 1601])
-            dim_nx_opts += mdict(dim=[2], nx=[21, 101, 201])
-            dim_nx_opts += mdict(dim=[3], nx=[21, 51])
+            perturb_opts = mdict(perturb=[0, 0.1])
+            dim_nx_opts = mdict(dim=[1], nx=[5001, 10001, 20001])
+            dim_nx_opts += mdict(dim=[2], nx=[251, 501])
+            dim_nx_opts += mdict(dim=[3], nx=[101])
 
             all_options = dprod(perturb_opts, dim_nx_opts)
 
-            # KERNEL_CHOICES = [
-            #     'WendlandQuinticC4'
-            # ]
-            from code.sine_velocity_profile import KERNEL_CHOICES
-
-            INTERPOLATING_METHOD_CHOICES = ['shepard']
+            # from code.sine_velocity_profile import KERNEL_CHOICES, INTERPOLATING_METHOD_CHOICES
+            KERNEL_CHOICES = [
+                'WendlandQuinticC4'
+            ]
+            INTERPOLATING_METHOD_CHOICES = ['order1', 'order1BL']
             
             i_kernel_opts = mdict(i_kernel=KERNEL_CHOICES)
             i_method_opts = mdict(i_method=INTERPOLATING_METHOD_CHOICES)
@@ -120,110 +197,29 @@ class SineVelProfile(PySPHProblem):
     
     def run(self):
         """
-            Run the problem.
+        Run the problem.
         """
         self.make_output_dir()
-
-        def temp_plot(dim, nx, labels, plot_type, title):
-            plt.figure()
-            filtered_cases = filter_cases(
-                self.cases, dim=dim, nx=nx, perturb=0,
+        tmp = dict(
+            dim=[1,2,3],
+            nx=[20001, 501, 101]
+        )
+        for dim, nx in zip(tmp['dim'], tmp['nx']):
+            fcases = filter_cases(self.cases, dim=dim, nx=nx)
+            title_suffix = " (dim={}, nx={})".format(dim, nx)
+            labels = ['i_method', 'perturb']
+            self.plot_energy_spectrum(
+                fcases, labels, plt_type="l2_error", title_suffix=title_suffix
             )
-            if plot_type == 'loglog':
-                compare_runs(
-                    sims=filtered_cases, method=SimPlotter.scalar_Ek_loglog,
-                    exact=SimPlotter.scalar_Ek_loglog_exact, labels=labels, styles=styles
-                )
-            elif plot_type == 'plot':
-                compare_runs(
-                    sims=filtered_cases, method=SimPlotter.scalar_Ek_plot,
-                    exact=None, labels=labels, styles=styles
-                )
-            elif plot_type == 'l2_error':
-                compare_runs(
-                    sims=filtered_cases, method=SimPlotter.l2_error,
-                    exact=None, labels=labels, styles=styles
-                )
-            plt.title(title)
-            plt.xlabel('k')
-            plt.ylabel('E(k)')
-            plt.legend()
-            plt.savefig(self.output_path(title + '.png'))
-            plt.close()
-        
-        temp_plot(
-            dim=1, nx=1601,
-            labels=['i_kernel'],
-            plot_type='l2_error',
-            title='1D_i_kernel_l2_error'
-        )
-        temp_plot(
-            dim=2, nx=201,
-            labels=['i_kernel'],
-            plot_type='l2_error',
-            title='2D_i_kernel_l2_error'
-        )
-        temp_plot(
-            dim=3, nx=51,
-            labels=['i_kernel'],
-            plot_type='l2_error',
-            title='3D_i_kernel_l2_error'
-        )
 
-        temp_plot(
-            dim=1, nx=1601,
-            labels=['i_method'],
-            plot_type='loglog',
-            title='1D_i_method_loglog'
-        )
-        temp_plot(
-            dim=1, nx=1601,
-            labels=['i_method'],
-            plot_type='l2_error',
-            title='1D_i_method_l2_error'
-        )
-        temp_plot(
-            dim=1, nx=31,
-            labels=['i_method'],
-            plot_type='plot',
-            title='1D_i_method_plot'
-        )
-        temp_plot(
-            dim=2, nx=101,
-            labels=['i_method'],
-            plot_type='loglog',
-            title='2D_i_method_loglog'
-        )
-        temp_plot(
-            dim=2, nx=101,
-            labels=['i_method'],
-            plot_type='l2_error',
-            title='2D_i_method_l2_error'
-        )
-        temp_plot(
-            dim=2, nx=21,
-            labels=['i_method'],
-            plot_type='plot',
-            title='2D_i_method_plot'
-        )
-        temp_plot(
-            dim=3, nx=51,
-            labels=['i_method'],
-            plot_type='loglog',
-            title='3D_i_method_loglog'
-        )
-        temp_plot(
-            dim=3, nx=51,
-            labels=['i_method'],
-            plot_type='l2_error',
-            title='3D_i_method_l2_error'
-        )
-        temp_plot(
-            dim=3, nx=21,
-            labels=['i_method'],
-            plot_type='plot',
-            title='3D_i_method_plot'
-        )
+
+        for dim in tmp['dim']:
+            fcases = filter_cases(self.cases, dim=dim, perturb=0)
+            title_suffix = " (dim={})".format(dim)
+            labels = ['i_method', 'nx']
+            self.plot_energy_spectrum(
+                fcases, labels, plt_type="l2_error", title_suffix=title_suffix
+            )
 
 
 
