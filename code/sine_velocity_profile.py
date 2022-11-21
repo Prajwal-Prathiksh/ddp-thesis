@@ -2,7 +2,7 @@ r"""
 A Sinusoidal Velocity Profile
 ##############################
 """
-# Library imports.
+# Library imports
 import os
 import numpy as np
 from pysph.base.nnps import DomainManager
@@ -15,8 +15,18 @@ from pysph.base.kernels import (
     Gaussian, SuperGaussian, QuinticSpline
 )
 from pysph.solver.solver import Solver
+from pysph.sph.equation import Equation, Group
+from pysph.sph.basic_equations import SummationDensity
+from pysph.tools.interpolator import (
+    SPHFirstOrderApproximationPreStep, SPHFirstOrderApproximation
+)
+from pysph.sph.wc.kernel_correction import (
+    GradientCorrectionPreStep, GradientCorrection
+)
 
-#TODO: Create a new class with energy spectrum methods add it to a new file
+# Local imports
+from turbulence_tools import TurbulentFlowApp
+
 #TODOL Add a more robust/realistic test case?
 
 # Kernel choices
@@ -26,8 +36,7 @@ KERNEL_CHOICES = [
 ]
 
 # Interpolating method choices
-INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1']
-
+INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1', 'order1BL']
 
 def get_kernel_cls(name: str, dim: int):
     """
@@ -99,7 +108,7 @@ class DummyIntegrator(Integrator):
         pass
 
 
-class SinVelocityProfile(Application):
+class SinVelocityProfile(TurbulentFlowApp):
     """
     Particles having a sinusoidal velocity profile.
     """
@@ -111,7 +120,7 @@ class SinVelocityProfile(Application):
             "of dx (setting it to zero disables it, the default)."
         )
         group.add_argument(
-            "--nx", action="store", type=int, dest="nx", default=51,
+            "--nx", action="store", type=int, dest="nx", default=101,
             help="Number of points along x direction."
         )
         group.add_argument(
@@ -261,81 +270,6 @@ class SinVelocityProfile(Application):
 
         return Ek_exact            
 
-    def dump_enery_spectrum(self, iter_idx=0):
-        dim = self.dim
-        if len(self.output_files) == 0:
-            return
-
-        from energy_spectrum import EnergySpectrum
-
-        espec_ob = EnergySpectrum.from_pysph_file(
-            fname=self.output_files[iter_idx],
-            dim=dim,
-            L=self.L,
-            i_nx=self.i_nx,
-            kernel=self.i_kernel_cls,
-            domain_manager=self.create_domain(),
-            method=self.i_method,
-            U0=1.
-        )
-        espec_ob.compute()
-
-        # Save npz file
-        fname = os.path.join(self.output_dir, f"espec_result.npz")
-
-        Ek_exact = self.get_exact_energy_spectrum()
-        if Ek_exact is not None:
-            l2_error = np.sqrt((espec_ob.Ek - Ek_exact)**2)
-        else:
-            l2_error = None
-
-        np.savez(
-            fname,
-            k=espec_ob.k,
-            t=espec_ob.t,
-            Ek=espec_ob.Ek,
-            EK_U=espec_ob.EK_U,
-            EK_V=espec_ob.EK_V,
-            EK_W=espec_ob.EK_W,
-            Ek_exact=Ek_exact,
-            l2_error=l2_error
-        )
-        print("Saved results to %s" % fname)
-
-        # Save PySPH file
-        from pysph.solver.utils import dump, load
-        data = load(self.output_files[iter_idx])
-
-        pa = data['arrays']['fluid']
-        pa.add_property('EK_U', 'double', data=espec_ob.EK_U.flatten())
-        pa.add_property(
-            'EK_V',
-            'double',
-            data=espec_ob.EK_V.flatten() if dim > 1 else 0.)
-        pa.add_property(
-            'EK_W',
-            'double',
-            data=espec_ob.EK_W.flatten() if dim > 2 else 0.)
-
-        pa.add_output_arrays(['EK_U', 'EK_V', 'EK_W'])
-
-        counter = self.output_files[iter_idx].split("_")[-1].split('.')[0]
-        fname = os.path.join(self.output_dir, f"espec_{counter}")
-        if self.output_files[iter_idx].endswith(".npz"):
-            fname += ".npz"
-        else:
-            fname += ".hdf5"
-        dump(
-            filename=fname,
-            particles=[pa],
-            solver_data=data['solver_data'],
-            detailed_output=self.solver.detailed_output,
-            only_real=self.solver.output_only_real,
-            mpi_comm=None,
-            compress=self.solver.compress_output
-        )
-        print("Saved %s" % fname)
-
     def post_process(self, info_fname):
         info = self.read_info(info_fname)
 
@@ -381,6 +315,6 @@ class SinVelocityProfile(Application):
 
 
 if __name__ == '__main__':
-    app = SinVelocityProfile()
-    app.run()
-    app.dump_enery_spectrum(iter_idx=0)
+    turb_app = SinVelocityProfile()
+    turb_app.run()
+    turb_app.dump_enery_spectrum(iter_idx=0)
