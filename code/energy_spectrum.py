@@ -737,6 +737,9 @@ class EnergySpectrum(object):
             fftshift = np.fft.fftshift
         else:
             def fftshift(x):
+                """
+                Do nothing.
+                """
                 return x
 
         if dim == 1:

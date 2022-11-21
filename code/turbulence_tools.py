@@ -83,23 +83,10 @@ class TurbulentFlowApp(Application):
         self._add_turbulence_options()
 
     # Private methods
-    def _log_energy_spectrum(self, fname, dim, interp):
-        msg = "Using interpolator:\n"
-        msg += "-" * 70 + "\n"
-        msg += "Reading data from: %s" % fname + "\n"
-        msg += f"Kernel: {interp.kernel.__class__.__name__}(dim={dim})" + "\n"
-        msg += f"Method: {interp.method}" + "\n"
-        msg += f"Equations: \n{interp.func_eval.equation_groups}" + "\n"
-        msg += "-" * 70
-        logger.info(msg)
-
-    def _parse_command_line(self, *args, **kw):
-        super(TurbulentFlowApp, self)._parse_command_line(*args, **kw)
-        nx = self.options.nx
-        i_nx = self.options.i_nx
-        self.options.i_nx = i_nx if i_nx is not None else nx
-
     def _add_turbulence_options(self):
+        """
+        Add options required for turbulent flow simulations.
+        """
         parser = self.arg_parse
         turb_options = parser.add_argument_group(
             "Turbulence Options",
@@ -135,9 +122,44 @@ class TurbulentFlowApp(Application):
         parser._action_groups[turb_idx], parser._action_groups[user_idx] = \
             parser._action_groups[user_idx], parser._action_groups[turb_idx]
 
+    def _parse_command_line(self, *args, **kw):
+        """
+        Parse command line arguments specific to turbulent flow simulations.
+        """
+        super(TurbulentFlowApp, self)._parse_command_line(*args, **kw)
+        nx = self.options.nx
+        i_nx = self.options.i_nx
+        self.options.i_nx = i_nx if i_nx is not None else nx
+
+    def _log_energy_spectrum(self, fname, dim, interp):
+        msg = "Using interpolator:\n"
+        msg += "-" * 70 + "\n"
+        msg += "Reading data from: %s" % fname + "\n"
+        msg += f"Kernel: {interp.kernel.__class__.__name__}(dim={dim})" + "\n"
+        msg += f"Method: {interp.method}" + "\n"
+        msg += f"Equations: \n{interp.func_eval.equation_groups}" + "\n"
+        msg += "-" * 70
+        logger.info(msg)
+
     # Public methods
     # Post-processing methods
-    def get_interpolation_equations(self, method, dim):
+    def get_interpolation_equations(self, method: str, dim: int):
+        """
+        Return the equations for interpolating the velocity field.
+
+        Parameters
+        ----------
+        method : str
+            Interpolating method.
+            Can be: 'sph', 'shepard', 'order1', 'order1BL'
+        dim : int
+            Dimension of the problem.
+
+        Returns
+        -------
+        equations : sequence
+            Equations for interpolating the velocity field.
+        """
         if method in ['sph', 'shepard', 'order1']:
             equations = None
         elif method == 'order1BL':
@@ -171,10 +193,28 @@ class TurbulentFlowApp(Application):
         return equations
 
     def get_exact_energy_spectrum(self):
+        """
+        Get the exact energy spectrum of the flow.
+        If not implemented, return None, and warns the user.
+        """
         logger.warn("get_exact_energy_spectrum() is not implemented.")
         return None
 
     def dump_enery_spectrum(self, dim: int, L: float, iter_idx: int = 0):
+        """
+        Dump the energy spectrum to a *.npz file.
+
+        Parameters
+        ----------
+        dim : int
+            Dimension of the problem.
+
+        L : float
+            Length of the domain.
+
+        iter_idx : int
+            Iteration index.
+        """
         if len(self.output_files) == 0:
             return
 

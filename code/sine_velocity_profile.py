@@ -48,7 +48,14 @@ def perturb_signal(perturb_fac: float, *args: np.ndarray):
 
 
 class DummyIntegrator(Integrator):
+    """
+    A sinusoidal velocity profile problem.
+    """
+
     def one_timestep(self):
+        """
+        Do nothing.
+        """
         pass
 
 
@@ -58,6 +65,9 @@ class SinVelocityProfile(TurbulentFlowApp):
     """
 
     def add_user_options(self, group):
+        """
+        Add user options to the given group.
+        """
         group.add_argument(
             "--perturb", action="store", type=float, dest="perturb", default=0,
             help="Random perturbation of initial particles as a fraction "
@@ -77,6 +87,9 @@ class SinVelocityProfile(TurbulentFlowApp):
         )
 
     def consume_user_options(self):
+        """
+        Store user options as variables.
+        """
         self.perturb = self.options.perturb
         self.nx = self.options.nx
         self.hdx = self.options.hdx
@@ -95,6 +108,9 @@ class SinVelocityProfile(TurbulentFlowApp):
         self.rho0 = 1.
 
     def create_domain(self):
+        """
+        Create the domain.
+        """
         if self.dim == 1:
             dm = DomainManager(
                 xmin=0, xmax=self.L, periodic_in_x=True
@@ -113,7 +129,9 @@ class SinVelocityProfile(TurbulentFlowApp):
         return dm
 
     def create_particles(self):
-        # Create the particles
+        """
+        Create the particles.
+        """
         dx = self.dx
 
         _x = np.arange(dx / 2, self.L, dx)
@@ -163,6 +181,9 @@ class SinVelocityProfile(TurbulentFlowApp):
         return [pa]
 
     def create_solver(self):
+        """
+        Create the solver.
+        """
         dim = self.dim
         dt = 1
         tf = dt * 1.1
@@ -179,10 +200,16 @@ class SinVelocityProfile(TurbulentFlowApp):
         return solver
 
     def create_equations(self):
+        """
+        Do nothing.
+        """
         return []
 
     # The following are all related to post-processing.
     def get_exact_energy_spectrum(self):
+        """
+        Get the exact energy spectrum.
+        """
         dim = self.dim
 
         N = int(1 + np.ceil(np.sqrt(dim * self.i_nx**2) / 2))
@@ -197,7 +224,16 @@ class SinVelocityProfile(TurbulentFlowApp):
 
         return Ek_exact
 
-    def post_process(self, info_fname):
+    def post_process(self, info_fname: str):
+        """
+        Post-process the data.
+        This method is called after the simulation is complete.
+
+        Parameters:
+        -----------
+        info_fname : str
+            The name of the info file.
+        """
         info = self.read_info(info_fname)
 
         dim = self.dim
