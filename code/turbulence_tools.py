@@ -21,6 +21,7 @@ from pysph.sph.wc.kernel_correction import (
     GradientCorrectionPreStep, GradientCorrection
 )
 
+#TODO: Add support for openmp in interpolator
 
 # Local imports
 from energy_spectrum import EnergySpectrum
@@ -131,13 +132,15 @@ class TurbulentFlowApp(Application):
         i_nx = self.options.i_nx
         self.options.i_nx = i_nx if i_nx is not None else nx
 
-    def _log_energy_spectrum(self, fname, dim, interp):
+    def _log_interpolator_details(self, fname, dim, interp):
         msg = "Using interpolator:\n"
         msg += "-" * 70 + "\n"
         msg += "Reading data from: %s" % fname + "\n"
         msg += f"Kernel: {interp.kernel.__class__.__name__}(dim={dim})" + "\n"
         msg += f"Method: {interp.method}" + "\n"
-        msg += f"Equations: \n{interp.func_eval.equation_groups}" + "\n"
+        msg += f"Equations: \n"
+        for eqn in interp.func_eval.equation_groups:
+            msg += f"\t{eqn}" + "\n" 
         msg += "-" * 70
         logger.info(msg)
 
@@ -173,11 +176,16 @@ class TurbulentFlowApp(Application):
                 Group(
                     equations=[
                         GradientCorrectionPreStep(
-                            dest='fluid', sources=['fluid'], dim=dim
+                            dest='interpolate', sources=['fluid'],
+                            dim=dim
                         ),
+
+                    ], real=False
+                ),
+                Group(
+                    equations=[
                         GradientCorrection(
-                            dest='fluid', sources=['fluid'], dim=dim,
-                            tol=0.05
+                            dest='interpolate', sources=['fluid'], dim=dim, tol=0.1
                         ),
                         SPHFirstOrderApproximationPreStep(
                             dest='interpolate', sources=['fluid'], dim=dim
@@ -240,7 +248,7 @@ class TurbulentFlowApp(Application):
             debug=True
         )
         self.espec_ob.compute()
-        self._log_energy_spectrum(self.output_files[iter_idx], dim, interp)
+        self._log_interpolator_details(self.output_files[iter_idx], dim, interp)
 
         # Save npz file
         fname = os.path.join(self.output_dir, f"espec_result_{iter_idx}.npz")
