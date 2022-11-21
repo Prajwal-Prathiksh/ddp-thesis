@@ -202,7 +202,7 @@ class TurbulentFlowApp(Application):
         self._log_energy_spectrum(self.output_files[iter_idx], dim, interp)
 
         # Save npz file
-        fname = os.path.join(self.output_dir, f"espec_result.npz")
+        fname = os.path.join(self.output_dir, f"espec_result_{iter_idx}.npz")
 
         Ek_exact = self.get_exact_energy_spectrum()
         if Ek_exact is not None:
@@ -256,3 +256,23 @@ class TurbulentFlowApp(Application):
             compress=self.solver.compress_output
         )
         logger.info("Energy spectrum PySPH-viz file saved to: %s" % fname)
+
+    def plot_energy_spectrum_evolution(self, f_idx:list=[0,-1]):
+        """
+        Plot the evolution of energy spectrum for the given files indices.
+
+        Parameters
+        ----------
+        f_idx : list
+            List of file indices to plot. Default is [0, -1] which plots the
+            first and last files.
+        """
+        from energy_spectrum import EnergySpectrum
+        fnames = [
+            os.path.join(self.output_dir, f'espec_result_{i}.npz')
+            for i in f_idx
+        ]
+        EnergySpectrum.plot_from_npz_file(
+            fnames=fnames,
+            figname=os.path.join(self.output_dir, 'energy_spectrum_history.png'),
+        )
