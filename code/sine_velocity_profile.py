@@ -17,6 +17,7 @@ from pysph.base.kernels import (
 from pysph.solver.solver import Solver
 
 #TODO: Create a new class with energy spectrum methods add it to a new file
+#TODOL Add a more robust/realistic test case?
 
 # Kernel choices
 KERNEL_CHOICES = [
@@ -280,7 +281,7 @@ class SinVelocityProfile(Application):
         espec_ob.compute()
 
         # Save npz file
-        fname = os.path.join(self.output_dir, f"espec_result_{iter_idx}.npz")
+        fname = os.path.join(self.output_dir, f"espec_result.npz")
 
         Ek_exact = self.get_exact_energy_spectrum()
         if Ek_exact is not None:

@@ -1,6 +1,6 @@
 r"""
 Energy Spectrum of the Flow
-############################
+###
 References
 -----------
     .. [energyspectrum] Energy_Spectrum: Script (with Example) to Compute the

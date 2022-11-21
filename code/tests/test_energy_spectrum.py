@@ -1,3 +1,7 @@
+r"""
+Test-cases for energy_spectrum.py
+###
+"""
 # Standard library imports
 try:
     # This is for Python-2.6.x
