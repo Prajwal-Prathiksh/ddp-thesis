@@ -9,6 +9,11 @@ from pysph.base.utils import get_particle_array
 from pysph.solver.application import Application
 from pysph.sph.equation import Group
 from pysph.sph.basic_equations import SummationDensity
+from pysph.base.kernels import (
+    CubicSpline, WendlandQuinticC2_1D, WendlandQuintic, WendlandQuinticC4_1D,
+    WendlandQuinticC4, WendlandQuinticC6_1D, WendlandQuinticC6,
+    Gaussian, SuperGaussian, QuinticSpline
+)
 from pysph.tools.interpolator import (
     SPHFirstOrderApproximationPreStep, SPHFirstOrderApproximation
 )
@@ -31,6 +36,41 @@ KERNEL_CHOICES = [
 # Interpolating method choices
 INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1', 'order1BL']
 
+def get_kernel_cls(name: str, dim: int):
+    """
+        Return the kernel class corresponding to the name initialized with the
+        dimension.
+
+        Parameters
+        ----------
+        name : str
+            Name of the kernel class.
+        dim : int
+            Dimension of the kernel.
+
+        Returns
+        -------
+        kernel_cls : class
+            Kernel class (dim).
+    """
+    if dim not in [1, 2, 3]:
+        raise ValueError("Dimension must be 1, 2 or 3.")
+    mapper = {
+        'CubicSpline': CubicSpline,
+        'WendlandQuinticC2': WendlandQuinticC2_1D if dim == 1
+        else WendlandQuintic,
+        'WendlandQuinticC4': WendlandQuinticC4_1D if dim == 1
+        else WendlandQuinticC4,
+        'WendlandQuinticC6': WendlandQuinticC6_1D if dim == 1
+        else WendlandQuinticC6,
+        'Gaussian': Gaussian,
+        'SuperGaussian': SuperGaussian,
+        'QuinticSpline': QuinticSpline
+    }
+    if name not in mapper:
+        raise ValueError("Kernel name not recognized")
+    return mapper[name](dim=dim)
+
 
 class TurbulentFlowApp(Application):
     """
@@ -51,6 +91,12 @@ class TurbulentFlowApp(Application):
         msg += f"Equations: \n{interp.func_eval.equation_groups}" + "\n"
         msg += "-" * 70
         logger.info(msg)
+    
+    def _parse_command_line(self, *args, **kw):
+        super(TurbulentFlowApp, self)._parse_command_line(*args, **kw)
+        nx = self.options.nx
+        i_nx = self.options.i_nx
+        self.options.i_nx = i_nx if i_nx is not None else nx
 
     def _add_turbulence_options(self):
         parser = self.arg_parse
@@ -90,7 +136,7 @@ class TurbulentFlowApp(Application):
 
     # Public methods
     # Post-processing methods
-    def get_interpolation_equations(self, method):
+    def get_interpolation_equations(self, method, dim):
         if method in ['sph', 'shepard', 'order1']:
             equations = None
         elif method == 'order1BL':
@@ -104,17 +150,17 @@ class TurbulentFlowApp(Application):
                 Group(
                     equations=[
                         GradientCorrectionPreStep(
-                            dest='fluid', sources=['fluid'], dim=self.dim
+                            dest='fluid', sources=['fluid'], dim=dim
                         ),
                         GradientCorrection(
-                            dest='fluid', sources=['fluid'], dim=self.dim,
+                            dest='fluid', sources=['fluid'], dim=dim,
                             tol=0.05
                         ),
                         SPHFirstOrderApproximationPreStep(
-                            dest='interpolate', sources=['fluid'], dim=self.dim
+                            dest='interpolate', sources=['fluid'], dim=dim
                         ),
                         SPHFirstOrderApproximation(
-                            dest='interpolate', sources=['fluid'], dim=self.dim
+                            dest='interpolate', sources=['fluid'], dim=dim
                         )
                     ], real=True
                 )
@@ -127,24 +173,28 @@ class TurbulentFlowApp(Application):
         logger.warn("get_exact_energy_spectrum() is not implemented.")
         return None
 
-    def dump_enery_spectrum(self, iter_idx=0):
-        dim = self.dim
+    def dump_enery_spectrum(self, dim:int, L:float, iter_idx:int=0):
         if len(self.output_files) == 0:
             return
 
-        method = self.i_method
+        method = self.options.i_method
         if method not in ['sph', 'shepard', 'order1']:
             method = 'order1'
 
+        i_kernel_cls = get_kernel_cls(self.options.i_kernel, dim)
+
+        eqs = self.get_interpolation_equations(
+            method=self.options.i_method, dim=dim
+        )
         self.espec_ob, interp = EnergySpectrum.from_pysph_file(
             fname=self.output_files[iter_idx],
             dim=dim,
-            L=self.L,
-            i_nx=self.i_nx,
-            kernel=self.i_kernel_cls,
+            L=L,
+            i_nx=self.options.i_nx,
+            kernel=i_kernel_cls,
             domain_manager=self.create_domain(),
             method=method,
-            equations=self.get_interpolation_equations(method=self.i_method),
+            equations=eqs,
             U0=1.,
             debug=True
         )
