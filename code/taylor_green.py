@@ -2,7 +2,7 @@ r"""
 Taylor Green vortex flow (5 minutes).
 ######################################
 """
-
+# Library imports
 import os
 import numpy as np
 from numpy import pi, sin, cos, exp
@@ -29,8 +29,11 @@ from pysph.sph.isph.sisph import SISPHScheme
 from pysph.sph.isph.isph import ISPHScheme
 
 from tsph_with_pst_scheme import TSPHScheme
-#
-# domain and constants
+
+# Local imports
+from turbulence_tools import TurbulentFlowApp
+
+# Domain and constants
 L = 1.0
 U = 1.0
 rho0 = 1.0
@@ -77,7 +80,7 @@ def exact_solution(U, b, t, x, y):
     return factor * u, factor * v, factor * factor * p
 
 
-class TaylorGreen(Application):
+class TaylorGreen(TurbulentFlowApp):
 
     def add_user_options(self, group):
         group.add_argument(
@@ -345,15 +348,8 @@ class TaylorGreen(Application):
         )
         decay_ex = U * np.exp(decay_rate * t)
 
-        # Plot energy spectrum
-        Ni = int(input("Enter Ni: "))
-        k, Ek0, Ekf = self._plot_energy_spectrum(Ni)
-
-        fname = os.path.join(self.output_dir, 'results.npz')
-        np.savez(
-            fname, t=t, ke=ke, ke_ex=ke_ex, decay=decay, linf=linf, l1=l1,
-            p_l1=p_l1, decay_ex=decay_ex, k=k, Ek0=Ek0, Ekf=Ekf
-        )
+        # Plots
+        self.plot_energy_spectrum_evolution()
 
         import matplotlib
         matplotlib.use('Agg')
@@ -389,56 +385,6 @@ class TaylorGreen(Application):
         fig = os.path.join(self.output_dir, "p_l1_error.png")
         plt.savefig(fig, dpi=300)
 
-    def _plot_energy_spectrum(self, Ni=101):
-        from energy_spectrum import (
-            compute_energy_spectrum, compute_scalar_energy_spectrum,
-            velocity_intepolator
-        )
-        from pysph.base.kernels import WendlandQuinticC4
-
-        # Interpolate initial and final states of velocity.
-        t0, u0, v0 = velocity_intepolator(
-            self.output_files[0], dim=2, Ni=Ni,
-            kernel=WendlandQuinticC4(dim=2),
-            domain_manager=self.create_domain()
-        )
-
-        tf, uf, vf = velocity_intepolator(
-            self.output_files[-1], dim=2, Ni=Ni,
-            kernel=WendlandQuinticC4(dim=2),
-            domain_manager=self.create_domain()
-        )
-
-        # Inital energy spectrum
-        EK_U0, EK_V0, _ = compute_energy_spectrum(u0, v0, w=None, U0=1)
-        k0, Ek0 = compute_scalar_energy_spectrum(EK_U0, EK_V0, EK_W=None)
-
-        # Final energy spectrum
-        EK_Uf, EK_Vf, _ = compute_energy_spectrum(uf, vf, w=None, U0=1)
-        kf, Ekf = compute_scalar_energy_spectrum(EK_Uf, EK_Vf, EK_W=None)
-
-        # Save npz file
-        fname = os.path.join(self.output_dir, 'energy_spectrum.npz')
-        np.savez(
-            fname,
-            Ni=Ni, h=self.h0,
-            t0=t0, u0=u0, v0=v0, EK_U0=EK_U0, EK_V0=EK_V0, k0=k0, Ek0=Ek0,
-            tf=tf, uf=uf, vf=vf, EK_Uf=EK_Uf, EK_Vf=EK_Vf, kf=kf, Ekf=Ekf
-        )
-
-        # Plotting
-        import matplotlib.pyplot as plt
-        plt.clf()
-        plt.loglog(k0, Ek0, 'k--', label=f't={t0:.2f}')
-        plt.loglog(kf, Ekf, 'k-', label=f't={tf:.2f}')
-        plt.xlabel(r'$k$')
-        plt.ylabel(r'$E(k)$')
-        plt.legend(loc='lower left')
-        plt.title(f'Energy spectrum comparison (Re={self.options.re})')
-        fig = os.path.join(self.output_dir, 'energy_spectrum.png')
-        plt.savefig(fig, dpi=300)
-        return kf, Ek0, Ekf
-
     def customize_output(self):
         self._mayavi_config('''
         b = particle_arrays['fluid']
@@ -447,6 +393,8 @@ class TaylorGreen(Application):
 
 
 if __name__ == '__main__':
-    app = TaylorGreen()
-    app.run()
-    app.post_process(app.info_filename)
+    turb_app = TaylorGreen()
+    turb_app.run()
+    turb_app.dump_enery_spectrum(dim=2, L=L, iter_idx=0)
+    turb_app.dump_enery_spectrum(dim=2, L=L, iter_idx=-1)
+    turb_app.post_process(turb_app.info_filename)
