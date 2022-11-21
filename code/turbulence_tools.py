@@ -16,12 +16,22 @@ from pysph.sph.wc.kernel_correction import (
 )
 import warnings
 
+import logging
+logger = logging.getLogger(__name__)
+
+# Local imports
+from energy_spectrum import EnergySpectrum
+
 class TurbulentFlowApp(Application):
     """
     Base class for all turbulent flow applications.
     """
     def __init__(self, *args, **kw):
         super(TurbulentFlowApp, self).__init__(*args, **kw)
+
+    # Private methods
+    def _log_energy_spectrum(self, interp):
+        pass
 
     # Post-processing tools
     def get_interpolation_equations(self, method):
@@ -55,7 +65,7 @@ class TurbulentFlowApp(Application):
         return equations
     
     def get_exact_energy_spectrum(self):
-        warnings.warn("get_exact_energy_spectrum() is not implemented.")
+        logger.warn("get_exact_energy_spectrum() is not implemented.")
         return None
 
     def dump_enery_spectrum(self, iter_idx=0):
@@ -63,13 +73,12 @@ class TurbulentFlowApp(Application):
         if len(self.output_files) == 0:
             return
 
-        from energy_spectrum import EnergySpectrum
-
         method = self.i_method
         if method not in ['sph', 'shepard', 'order1']:
             method = 'order1'
+            
 
-        self.espec_ob = EnergySpectrum.from_pysph_file(
+        self.espec_ob, interp = EnergySpectrum.from_pysph_file(
             fname=self.output_files[iter_idx],
             dim=dim,
             L=self.L,
@@ -78,9 +87,20 @@ class TurbulentFlowApp(Application):
             domain_manager=self.create_domain(),
             method=method,
             equations=self.get_interpolation_equations(method=self.i_method),
-            U0=1.
+            U0=1.,
+            debug=True
         )
         self.espec_ob.compute()
+
+        # Log Interpolator details
+        msg = "Using interpolator:\n"
+        msg += "-"*70 + "\n"
+        msg += "Reading data from: %s" % self.output_files[iter_idx] + "\n"
+        msg += f"Kernel: {interp.kernel.__class__.__name__}(dim={dim})" + "\n"
+        msg += f"Method: {interp.method}" + "\n"
+        msg += f"Equations: \n{interp.func_eval.equation_groups}" + "\n"
+        msg += "-"*70
+        logger.info(msg)
 
         # Save npz file
         fname = os.path.join(self.output_dir, f"espec_result.npz")
@@ -102,7 +122,7 @@ class TurbulentFlowApp(Application):
             Ek_exact=Ek_exact,
             l2_error=l2_error
         )
-        print("Saved results to %s" % fname)
+        logger.info("Energy spectrum results saved to: %s" % fname)
 
         # Save PySPH file
         from pysph.solver.utils import dump, load
@@ -136,4 +156,4 @@ class TurbulentFlowApp(Application):
             mpi_comm=None,
             compress=self.solver.compress_output
         )
-        print("Saved %s" % fname)
+        logger.info("Energy spectrum PySPH-viz file saved to: %s" % fname)
