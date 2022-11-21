@@ -8,64 +8,14 @@ import numpy as np
 from pysph.base.nnps import DomainManager
 from pysph.base.utils import get_particle_array
 from pysph.sph.integrator import Integrator
-from pysph.base.kernels import (
-    CubicSpline, WendlandQuinticC2_1D, WendlandQuintic, WendlandQuinticC4_1D,
-    WendlandQuinticC4, WendlandQuinticC6_1D, WendlandQuinticC6,
-    Gaussian, SuperGaussian, QuinticSpline
-)
+from pysph.base.kernels import CubicSpline
 from pysph.solver.solver import Solver
 
 # Local imports
 from energy_spectrum import EnergySpectrum
-from turbulence_tools import TurbulentFlowApp
+from turbulence_tools import TurbulentFlowApp, get_kernel_cls
 
 # TODO: Add a more robust/realistic test case?
-
-# Kernel choices
-KERNEL_CHOICES = [
-    'CubicSpline', 'WendlandQuinticC2', 'WendlandQuinticC4',
-    'WendlandQuinticC6', 'Gaussian', 'SuperGaussian', 'QuinticSpline'
-]
-
-# Interpolating method choices
-INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1', 'order1BL']
-
-
-def get_kernel_cls(name: str, dim: int):
-    """
-        Return the kernel class corresponding to the name initialized with the
-        dimension.
-
-        Parameters
-        ----------
-        name : str
-            Name of the kernel class.
-        dim : int
-            Dimension of the kernel.
-
-        Returns
-        -------
-        kernel_cls : class
-            Kernel class (dim).
-    """
-    if dim not in [1, 2, 3]:
-        raise ValueError("Dimension must be 1, 2 or 3.")
-    mapper = {
-        'CubicSpline': CubicSpline,
-        'WendlandQuinticC2': WendlandQuinticC2_1D if dim == 1
-        else WendlandQuintic,
-        'WendlandQuinticC4': WendlandQuinticC4_1D if dim == 1
-        else WendlandQuinticC4,
-        'WendlandQuinticC6': WendlandQuinticC6_1D if dim == 1
-        else WendlandQuinticC6,
-        'Gaussian': Gaussian,
-        'SuperGaussian': SuperGaussian,
-        'QuinticSpline': QuinticSpline
-    }
-    if name not in mapper:
-        raise ValueError("Kernel name not recognized")
-    return mapper[name](dim=dim)
-
 
 def perturb_signal(perturb_fac: float, *args: np.ndarray):
     """
@@ -124,21 +74,6 @@ class SinVelocityProfile(TurbulentFlowApp):
             "--dim", action="store", type=int, dest="dim", default=2,
             help="Dimension of the problem."
         )
-        group.add_argument(
-            "--i-nx", action="store", type=int, dest="i_nx", default=None,
-            help="Number of interpolation points along x direction. If not "
-            "specified, it is set to nx."
-        )
-        group.add_argument(
-            "--i-kernel", action="store", type=str, dest="i_kernel",
-            default='WendlandQuinticC2', choices=KERNEL_CHOICES,
-            help="Interpolation kernel."
-        )
-        group.add_argument(
-            "--i-method", action="store", type=str, dest="i_method",
-            default='sph', choices=INTERPOLATING_METHOD_CHOICES,
-            help="Interpolating method."
-        )
 
     def consume_user_options(self):
         self.perturb = self.options.perturb
@@ -147,7 +82,7 @@ class SinVelocityProfile(TurbulentFlowApp):
         self.dim = self.options.dim
 
         i_nx = self.options.i_nx
-        self.i_nx = self.nx if i_nx is None else i_nx
+        self.i_nx = self.options.i_nx
         self.i_kernel = self.options.i_kernel
         self.i_kernel_cls = get_kernel_cls(self.i_kernel, self.dim)
         self.i_method = self.options.i_method
@@ -306,4 +241,4 @@ class SinVelocityProfile(TurbulentFlowApp):
 if __name__ == '__main__':
     turb_app = SinVelocityProfile()
     turb_app.run()
-    turb_app.dump_enery_spectrum(iter_idx=0)
+    turb_app.dump_enery_spectrum(dim=turb_app.dim, L=turb_app.L, iter_idx=0)
