@@ -85,7 +85,7 @@ def find_todos(cwd, fpath):
     return found_todos
 
 
-def run_autopep8(fpath):
+def run_autopep8(fpath, in_place=True):
     """
     Runs autopep8 on the file at fpath.
 
@@ -93,11 +93,18 @@ def run_autopep8(fpath):
     ----------
     fpath : str
         The path to the file to run autopep8 on.
+    in_place : bool
+        Whether to run autopep8 in place or not.
     """
     # If only base name is provided, get the full path.
     if os.path.basename(fpath) == fpath:
         fpath = os.path.join(os.getcwd(), fpath)
-    cmd = f"autopep8 {fpath} --in-place --aggressive --aggressive --verbose"
+
+    cmd = f"autopep8 {fpath} --aggressive --aggressive --verbose"
+    if in_place:
+        cmd += " --in-place"
+    else:
+        cmd += " --diff"
     os.system(cmd)
 
 
@@ -106,7 +113,8 @@ def cli_args():
     Returns the command line arguments.
     """
     parser = argparse.ArgumentParser(
-        description='An assistant to help with code quality, & other things.',
+        description='An assistant to help with code quality, & other things.'
+        '\nNote: To ignore a file, add "#NOQA" to the first line of the file.',
         epilog='Example: python assistant.py -d -t'
     )
 
@@ -155,26 +163,53 @@ def main():
     check_todos = args.todos or args.all
     run_pep8 = args.pep8 or args.all
 
+    # If no checks are specified, run all checks.
+    if not (check_docstrings or check_todos or run_pep8):
+        check_docstrings = True
+        check_todos = True
+        run_pep8 = True
+
+    # Take user input to run autopep8 as diff
+    if run_pep8:
+        in_place = input(
+            "Run autopep8 as diff instead of in place? (Y/n): "
+        ).lower() == "n"
+    else:
+        in_place = False
+
+    n_border = 70
+    start_border = "<" * (n_border // 4) + "-" * (n_border // 4) * 3
+    end_border = "-" * (n_border // 4) * 3 + ">" * (n_border // 4)
+
     found_missing_docstrings = False
     found_todos = False
     for fpath in py_files:
+        print("\n")
         with open(fpath, "r", encoding="utf-8") as f:
             first_line = f.readline()
             if "#NOQA" in first_line:
+                print(f"Skipping [file: .\\{os.path.basename(fpath)}]")
                 continue
         if check_docstrings:
+            print(start_border)
+            print(f"[file: .\\{os.path.basename(fpath)}]")
             found_missing_docstrings = (
                 find_missing_doctrings(cwd, fpath) or found_missing_docstrings
             )
+            if not found_missing_docstrings:
+                print("\nNo missing docstrings found!")
+            print(end_border)
         if check_todos:
+            print(start_border)
+            print(f"[file: .\\{os.path.basename(fpath)}]")
             found_todos = find_todos(cwd, fpath) or found_todos
+            if not found_todos:
+                print("\nNo TODOs found!")
+            print(end_border)
         if run_pep8:
-            run_autopep8(fpath)
-
-    if check_docstrings and not found_missing_docstrings:
-        print("\nNo missing docstrings found!")
-    if check_todos and not found_todos:
-        print("\nNo TODOs found!")
+            print(start_border)
+            run_autopep8(fpath, in_place)
+            print(end_border)
 
 
 if __name__ == "__main__":
