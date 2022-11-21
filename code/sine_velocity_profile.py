@@ -17,6 +17,7 @@ from turbulence_tools import TurbulentFlowApp, get_kernel_cls
 
 # TODO: Add a more robust/realistic test case?
 
+
 def perturb_signal(perturb_fac: float, *args: np.ndarray):
     """
     Perturb the given signal/s by a uniform random number between [0, 1) scaled

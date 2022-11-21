@@ -10,11 +10,12 @@ import matplotlib.pyplot as plt
 from functools import wraps
 
 # Automan imports
-from automan.api import Automator, Simulation 
+from automan.api import Automator, Simulation
 from automan.api import CondaClusterManager
 from automan.api import PySPHProblem
 from automan.api import mdict, dprod, opts2path
 from automan.utils import filter_cases, compare_runs
+
 
 def styles(sims):
     """
@@ -24,7 +25,7 @@ def styles(sims):
     ----------
     sims : list of Simulation
         The simulations for which the styles are to be returned.
-    
+
     Returns
     -------
     styles : iterable

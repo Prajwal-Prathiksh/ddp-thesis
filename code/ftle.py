@@ -17,7 +17,8 @@ from pysph.base.utils import get_particle_array
 # Method 1 (Postprocessing-based)
 # Forward-in-time FTLE and Backward-in-time FTLE
 
-def rename_fnames_according_to_time(data1:dict, data2:dict):
+
+def rename_fnames_according_to_time(data1: dict, data2: dict):
     """
     Rename the filenames of the two time instances of a flow field according
     to the time of the flow field.
@@ -40,9 +41,11 @@ def rename_fnames_according_to_time(data1:dict, data2:dict):
         return data1, data2
     else:
         return data2, data1
-    
+
+
 def calculate_ftle_backward(
-    fname1:str, fname2:str, dim:int, h:float, particle_name:str = 'fluid', kernel:object=None, domain_manager:object=None, **kwargs
+    fname1: str, fname2: str, dim: int, h: float, particle_name: str = 'fluid',
+    kernel: object = None, domain_manager: object = None, **kwargs
 ):
     """
     Calculate the backward-in-time finite-time Lyapunov exponent (FTLE) from
@@ -66,7 +69,7 @@ def calculate_ftle_backward(
         Domain manager object. The default is None.
     **kwargs : dict
         Keyword arguments for the SPHEvaluator.
-    
+
     Returns
     -------
     ftle : np.ndarray
@@ -74,15 +77,15 @@ def calculate_ftle_backward(
     """
     if kernel is None:
         kernel = WendlandQuinticC4(dim=dim)
-    
+
     # Load data
     data1 = load(fname1)
     data2 = load(fname2)
     data1, data2 = rename_fnames_according_to_time(data1, data2)
 
     # Time instances
-    t0 = data1['solver_data']['t'] # Initial time
-    t = data2['solver_data']['t'] # Final time
+    t0 = data1['solver_data']['t']  # Initial time
+    t = data2['solver_data']['t']  # Final time
 
     # Get positions and volumes
     # Initial states
@@ -110,45 +113,30 @@ def calculate_ftle_backward(
     # Equation to solve
     equations = [
         # Group1: GradientCorrectionPreStep
-        # Group2: 
+        # Group2:
         #   GradientCorrection
         #   DeformationGradientEquation --> f(xprime_ij, DWIJ, mj, rhoj)
     ]
 
     # Create SPH evaluator
     bit_ftle_eval = SPHEvaluator(
-        arrays=[bit_pa], equations=equations, dim=dim, kernel=kernel, domain_manager=domain_manager, **kwargs
+        arrays=[bit_pa], equations=equations, dim=dim, kernel=kernel,
+        domain_manager=domain_manager, **kwargs
     )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def calculate_ftle_forward():
     pass
 
+
 def calculate_ftle(
-    fname1:str, fname2:str, dim:int = 2, particle_name:str = 'fluid',
-    method:str='backward',
-    kernel:object=None
+    fname1: str, fname2: str, dim: int = 2, particle_name: str = 'fluid',
+    method: str = 'backward', kernel: object = None
 ):
     """
     Calculate the finite-time Lyapunov exponent (FTLE) from two time instances
     of a flow field.
-    
+
     Parameters
     ----------
     fname1 : str
@@ -171,9 +159,13 @@ def calculate_ftle(
         kernel = WendlandQuinticC4(dim=dim)
 
     if method == 'backward':
-        return calculate_ftle_backward(fname1, fname2, dim, particle_name, kernel)
+        return calculate_ftle_backward(
+            fname1, fname2, dim, particle_name, kernel
+        )
     elif method == 'forward':
-        return calculate_ftle_forward(fname1, fname2, dim, particle_name, kernel)
+        return calculate_ftle_forward(
+            fname1, fname2, dim, particle_name, kernel
+        )
     else:
         raise ValueError(
             "Invalid method. Choose from 'backward' or 'forward'."

@@ -429,7 +429,7 @@ class EnergySpectrum(object):
             ui = _u.reshape(i_nx, i_nx, i_nx)
             vi = _v.reshape(i_nx, i_nx, i_nx)
             wi = _w.reshape(i_nx, i_nx, i_nx)
-        
+
         if debug:
             return cls(dim, ui, vi, wi, t, U0), interp
         else:
@@ -512,10 +512,12 @@ class EnergySpectrum(object):
         return cls(
             dim=dim, u=u, v=v, w=w, t=0.0, U0=1.0
         )
-    
+
     # Static methods
     @staticmethod
-    def plot_from_npz_file(fnames: list, figname:str=None, styles:IT.cycle=styles):
+    def plot_from_npz_file(
+        fnames: list, figname: str = None, styles: IT.cycle = styles
+    ):
         """
         Plot energy spectrum from npz files.
 
@@ -536,7 +538,7 @@ class EnergySpectrum(object):
             Ek = data["Ek"]
             t = data["t"]
             plt.loglog(k, Ek, label=f"t = {t:.2f}", **next(ls))
-        
+
         plt.xlabel(r"$k$")
         plt.ylabel(r"$E(k)$")
         plt.legend()
@@ -545,8 +547,8 @@ class EnergySpectrum(object):
             figname = "./energy_spectrum.png"
         plt.savefig(figname, dpi=300, bbox_inches="tight")
 
-
     # Private methods
+
     def _check_format_of_list_data(self, data: list):
         """
         Check the format of the list data.

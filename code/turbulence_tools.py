@@ -36,6 +36,7 @@ KERNEL_CHOICES = [
 # Interpolating method choices
 INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1', 'order1BL']
 
+
 def get_kernel_cls(name: str, dim: int):
     """
         Return the kernel class corresponding to the name initialized with the
@@ -91,7 +92,7 @@ class TurbulentFlowApp(Application):
         msg += f"Equations: \n{interp.func_eval.equation_groups}" + "\n"
         msg += "-" * 70
         logger.info(msg)
-    
+
     def _parse_command_line(self, *args, **kw):
         super(TurbulentFlowApp, self)._parse_command_line(*args, **kw)
         nx = self.options.nx
@@ -173,7 +174,7 @@ class TurbulentFlowApp(Application):
         logger.warn("get_exact_energy_spectrum() is not implemented.")
         return None
 
-    def dump_enery_spectrum(self, dim:int, L:float, iter_idx:int=0):
+    def dump_enery_spectrum(self, dim: int, L: float, iter_idx: int = 0):
         if len(self.output_files) == 0:
             return
 
@@ -257,7 +258,7 @@ class TurbulentFlowApp(Application):
         )
         logger.info("Energy spectrum PySPH-viz file saved to: %s" % fname)
 
-    def plot_energy_spectrum_evolution(self, f_idx:list=[0,-1]):
+    def plot_energy_spectrum_evolution(self, f_idx: list = [0, -1]):
         """
         Plot the evolution of energy spectrum for the given files indices.
 
@@ -273,6 +274,5 @@ class TurbulentFlowApp(Application):
             for i in f_idx
         ]
         EnergySpectrum.plot_from_npz_file(
-            fnames=fnames,
-            figname=os.path.join(self.output_dir, 'energy_spectrum_evolution.png')
-        )
+            fnames=fnames, figname=os.path.join(
+                self.output_dir, 'energy_spectrum_evolution.png'))

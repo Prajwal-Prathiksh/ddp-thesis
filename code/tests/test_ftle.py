@@ -13,6 +13,7 @@ from ftle import (
     rename_fnames_according_to_time
 )
 
+
 class TestRenameFnamesAccordingToTime(unittest.TestCase):
     def test_rename_fnames_according_to_time(self):
         """
