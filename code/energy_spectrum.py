@@ -7,7 +7,15 @@ References
     Kinetic Energy Spectrum of Periodic Turbulent Flows. Accessed 7 Nov. 2022.
 """
 # Library imports
+import itertools as IT
 import numpy as np
+import matplotlib.pyplot as plt
+from pysph.base.kernels import WendlandQuinticC4
+from pysph.tools.interpolator import Interpolator
+from pysph.solver.utils import load
+
+# Local imports
+from automate_utils import styles
 
 # TODO: Compyle iterative functions
 
@@ -233,14 +241,6 @@ def velocity_intepolator(
     res : list[np.ndarray]
         List of interpolated energy spectrum of the flow for each direction.
     """
-    # PySPH imports
-    try:
-        from pysph.base.kernels import WendlandQuinticC4
-        from pysph.tools.interpolator import Interpolator
-        from pysph.solver.utils import load
-    except ImportError:
-        raise ImportError("PySPH is not installed.")
-
     # Load data
     data = load(fname)
     t = data["solver_data"]["t"]
@@ -389,14 +389,6 @@ class EnergySpectrum(object):
         -------
         EnergySpectrum object.
         """
-        # PySPH imports
-        try:
-            from pysph.base.kernels import WendlandQuinticC4
-            from pysph.tools.interpolator import Interpolator
-            from pysph.solver.utils import load
-        except ImportError:
-            raise ImportError("PySPH is not installed.")
-
         data = load(fname)
         t = data["solver_data"]["t"]
 
@@ -520,6 +512,39 @@ class EnergySpectrum(object):
         return cls(
             dim=dim, u=u, v=v, w=w, t=0.0, U0=1.0
         )
+    
+    # Static methods
+    @staticmethod
+    def plot_from_npz_file(fnames: list, figname:str=None, styles:IT.cycle=styles):
+        """
+        Plot energy spectrum from npz files.
+
+        Parameters
+        ----------
+        fnames : list
+            List of npz files.
+        figname : str, optional
+            Name of the figure file. Default is "./energy_spectrum.png".
+        styles : itertools.cycle, optional
+            Styles to use for plotting. Default is styles.
+        """
+        plt.figure()
+        ls = styles(None)
+        for fname in fnames:
+            data = np.load(fname)
+            k = data["k"]
+            Ek = data["Ek"]
+            t = data["t"]
+            plt.loglog(k, Ek, label=f"t = {t:.2f}", **next(ls))
+        
+        plt.xlabel(r"$k$")
+        plt.ylabel(r"$E(k)$")
+        plt.legend()
+        plt.title("Energy spectrum evolution")
+        if figname is None:
+            figname = "./energy_spectrum.png"
+        plt.savefig(figname, dpi=300, bbox_inches="tight")
+
 
     # Private methods
     def _check_format_of_list_data(self, data: list):
@@ -660,11 +685,6 @@ class EnergySpectrum(object):
         if fname is None:
             fname = "./energy_spectrum.png"
 
-        try:
-            import matplotlib.pyplot as plt
-        except ImportError:
-            raise ImportError("Matplotlib is not installed.")
-
         n = self.n_1d
         plt.clf()
         if plot_type == "log":
@@ -710,11 +730,6 @@ class EnergySpectrum(object):
         dim = self.dim
         if fname is None:
             fname = "./EK_spectrum.png"
-
-        try:
-            import matplotlib.pyplot as plt
-        except ImportError:
-            raise ImportError("Matplotlib is not installed.")
 
         if shift_fft:
             fftshift = np.fft.fftshift
