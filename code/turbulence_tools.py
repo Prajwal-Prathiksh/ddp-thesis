@@ -3,6 +3,7 @@ Tools required for turbulent flow simulations and analysis.
 """
 # Library imports
 import os
+import logging
 import numpy as np
 from pysph.base.utils import get_particle_array
 from pysph.solver.application import Application
@@ -14,12 +15,21 @@ from pysph.tools.interpolator import (
 from pysph.sph.wc.kernel_correction import (
     GradientCorrectionPreStep, GradientCorrection
 )
-import logging
+
 
 # Local imports
 from energy_spectrum import EnergySpectrum
 
 logger = logging.getLogger(__name__)
+
+# Kernel choices
+KERNEL_CHOICES = [
+    'CubicSpline', 'WendlandQuinticC2', 'WendlandQuinticC4',
+    'WendlandQuinticC6', 'Gaussian', 'SuperGaussian', 'QuinticSpline'
+]
+
+# Interpolating method choices
+INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1', 'order1BL']
 
 
 class TurbulentFlowApp(Application):
@@ -29,6 +39,7 @@ class TurbulentFlowApp(Application):
 
     def __init__(self, *args, **kw):
         super(TurbulentFlowApp, self).__init__(*args, **kw)
+        self._add_turbulence_options()
 
     # Private methods
     def _log_energy_spectrum(self, fname, dim, interp):
@@ -41,7 +52,44 @@ class TurbulentFlowApp(Application):
         msg += "-" * 70
         logger.info(msg)
 
-    # Post-processing tools
+    def _add_turbulence_options(self):
+        parser = self.arg_parse
+        turb_options = parser.add_argument_group(
+            "Turbulence Options",
+            "Command line arguments for simulating turbulent flow and its "
+            "postprocessing"
+        )
+        turb_options.add_argument(
+            "--i-nx", action="store", type=int, dest="i_nx", default=None,
+            help="Number of interpolation points along x direction. If not "
+            "specified, it is set to nx."
+        )
+        turb_options.add_argument(
+            "--i-kernel", action="store", type=str, dest="i_kernel",
+            default='WendlandQuinticC2', choices=KERNEL_CHOICES,
+            help="Interpolation kernel."
+        )
+        turb_options.add_argument(
+            "--i-method", action="store", type=str, dest="i_method",
+            default='sph', choices=INTERPOLATING_METHOD_CHOICES,
+            help="Interpolating method."
+        )
+
+        # Change order of groups so that user options are printed at the end
+        turb_idx, user_idx = 0, 0
+        for i, group in enumerate(parser._action_groups):
+            if group.title == "Turbulence Options":
+                turb_idx = i
+            elif group.title == "User":
+                user_idx = i
+        if turb_idx < user_idx:
+            return
+
+        parser._action_groups[turb_idx], parser._action_groups[user_idx] = \
+            parser._action_groups[user_idx], parser._action_groups[turb_idx]
+
+    # Public methods
+    # Post-processing methods
     def get_interpolation_equations(self, method):
         if method in ['sph', 'shepard', 'order1']:
             equations = None
