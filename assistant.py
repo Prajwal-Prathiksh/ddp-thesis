@@ -99,12 +99,13 @@ def run_autopep8(fpath, in_place=True):
     # If only base name is provided, get the full path.
     if os.path.basename(fpath) == fpath:
         fpath = os.path.join(os.getcwd(), fpath)
-
-    cmd = f"autopep8 {fpath} --aggressive --aggressive --verbose"
+    print(fpath)
+    cmd = f'autopep8 "{fpath}" --aggressive --aggressive --verbose'
     if in_place:
         cmd += " --in-place"
     else:
         cmd += " --diff"
+    print(cmd)
     os.system(cmd)
 
 
@@ -188,10 +189,10 @@ def main():
         with open(fpath, "r", encoding="utf-8") as f:
             first_line = f.readline()
             if "#NOQA" in first_line:
-                print(f"Skipping [file: .\\{os.path.basename(fpath)}]")
                 continue
         if check_docstrings:
             print(start_border)
+            print("Docstrings:")
             print(f"[file: .\\{os.path.basename(fpath)}]")
             found_missing_docstrings = (
                 find_missing_doctrings(cwd, fpath) or found_missing_docstrings
@@ -201,6 +202,7 @@ def main():
             print(end_border)
         if check_todos:
             print(start_border)
+            print("TODOs:")
             print(f"[file: .\\{os.path.basename(fpath)}]")
             found_todos = find_todos(cwd, fpath) or found_todos
             if not found_todos:
@@ -208,6 +210,7 @@ def main():
             print(end_border)
         if run_pep8:
             print(start_border)
+            print("PEP8:")
             run_autopep8(fpath, in_place)
             print(end_border)
 
