@@ -49,8 +49,13 @@ def find_missing_doctrings(cwd, fpath):
     with open(fpath, "r", encoding="utf-8") as f:
         lines = f.readlines()
         for i, line in enumerate(lines):
-            if line.startswith("def ") or line.startswith("class "):
-                next_line = lines[i + 1].strip()
+            ln = line.strip()
+            if ln.startswith("def ") or ln.startswith("class "):
+                # Find the next line which ends with a colon.
+                j = i
+                while not lines[j].endswith(":\n"):
+                    j += 1
+                next_line = lines[j + 1].strip()
                 if not next_line.startswith('"""'):
                     print(f"{fpath[len(cwd) + 1:]}: {i + 1}: {line.strip()}")
                     found_missing_docstrings = True
@@ -185,7 +190,6 @@ def main():
     found_missing_docstrings = False
     found_todos = False
     for fpath in py_files:
-        print("\n")
         with open(fpath, "r", encoding="utf-8") as f:
             first_line = f.readline()
             if "#NOQA" in first_line:
@@ -213,6 +217,7 @@ def main():
             print("PEP8:")
             run_autopep8(fpath, in_place)
             print(end_border)
+        print("\n")
 
 
 if __name__ == "__main__":
