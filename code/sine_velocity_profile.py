@@ -7,7 +7,6 @@ import os
 import numpy as np
 from pysph.base.nnps import DomainManager
 from pysph.base.utils import get_particle_array
-from pysph.solver.application import Application
 from pysph.sph.integrator import Integrator
 from pysph.base.kernels import (
     CubicSpline, WendlandQuinticC2_1D, WendlandQuintic, WendlandQuinticC4_1D,
@@ -15,19 +14,12 @@ from pysph.base.kernels import (
     Gaussian, SuperGaussian, QuinticSpline
 )
 from pysph.solver.solver import Solver
-from pysph.sph.equation import Equation, Group
-from pysph.sph.basic_equations import SummationDensity
-from pysph.tools.interpolator import (
-    SPHFirstOrderApproximationPreStep, SPHFirstOrderApproximation
-)
-from pysph.sph.wc.kernel_correction import (
-    GradientCorrectionPreStep, GradientCorrection
-)
 
 # Local imports
+from energy_spectrum import EnergySpectrum
 from turbulence_tools import TurbulentFlowApp
 
-#TODOL Add a more robust/realistic test case?
+# TODO: Add a more robust/realistic test case?
 
 # Kernel choices
 KERNEL_CHOICES = [
@@ -37,6 +29,7 @@ KERNEL_CHOICES = [
 
 # Interpolating method choices
 INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1', 'order1BL']
+
 
 def get_kernel_cls(name: str, dim: int):
     """
@@ -166,7 +159,6 @@ class SinVelocityProfile(TurbulentFlowApp):
         self.rho0 = 1.
 
     def create_domain(self):
-        print("create_domain: domain created")
         if self.dim == 1:
             dm = DomainManager(
                 xmin=0, xmax=self.L, periodic_in_x=True
@@ -223,6 +215,7 @@ class SinVelocityProfile(TurbulentFlowApp):
             name='fluid', x=x, y=y, z=z, m=m, h=h,
             u=u0, v=v0, w=w0, rho=self.rho0, vmag=vmag
         )
+        pa.add_property('m_mat', stride=9)
         pa.set_output_arrays(
             [
                 'x', 'y', 'z', 'u', 'v', 'w', 'vmag',
@@ -247,18 +240,16 @@ class SinVelocityProfile(TurbulentFlowApp):
         )
         solver.set_print_freq(1)
         solver.set_max_steps(0)
-        print("create_solver: solver created")
         return solver
 
     def create_equations(self):
-        print("create_equations: equations created")
         return []
 
     # The following are all related to post-processing.
     def get_exact_energy_spectrum(self):
         dim = self.dim
 
-        N = int(1 + np.ceil(np.sqrt(dim*self.i_nx**2)/2))
+        N = int(1 + np.ceil(np.sqrt(dim * self.i_nx**2) / 2))
         Ek_exact = np.zeros(N, dtype=np.float64)
 
         if dim == 1:
@@ -268,7 +259,7 @@ class SinVelocityProfile(TurbulentFlowApp):
         elif dim == 3:
             Ek_exact[2] = 0.09375
 
-        return Ek_exact            
+        return Ek_exact
 
     def post_process(self, info_fname):
         info = self.read_info(info_fname)
@@ -276,8 +267,6 @@ class SinVelocityProfile(TurbulentFlowApp):
         dim = self.dim
         if len(self.output_files) == 0:
             return
-
-        from energy_spectrum import EnergySpectrum
 
         espec_ob = EnergySpectrum.from_pysph_file(
             fname=self.output_files[0],
