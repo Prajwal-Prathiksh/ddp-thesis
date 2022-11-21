@@ -6,7 +6,7 @@ References
     .. [energyspectrum] Energy_Spectrum: Script (with Example) to Compute the
     Kinetic Energy Spectrum of Periodic Turbulent Flows. Accessed 7 Nov. 2022.
 """
-# Library imports.
+# Library imports
 import numpy as np
 
 # TODO: Compyle iterative functions
@@ -358,7 +358,7 @@ class EnergySpectrum(object):
     @classmethod
     def from_pysph_file(
         cls, fname: str, dim: int, L: float, i_nx: int, kernel: object = None,
-        domain_manager: object = None, U0=1., **kwargs
+        domain_manager: object = None, U0=1., debug=False, **kwargs
     ):
         """
         Create an EnergySpectrum object from a PySPH output file.
@@ -380,6 +380,8 @@ class EnergySpectrum(object):
             DomainManager object. Default is None.
         U0 : float, optional
             Reference velocity. Default is 1.
+        debug : bool, optional
+            If True, returns the Interpolator object. Default is False.
         **kwargs : dict, optional
             Additional keyword arguments to pass to the PySPH interpolator.
 
@@ -435,10 +437,11 @@ class EnergySpectrum(object):
             ui = _u.reshape(i_nx, i_nx, i_nx)
             vi = _v.reshape(i_nx, i_nx, i_nx)
             wi = _w.reshape(i_nx, i_nx, i_nx)
-
-        return cls(
-            dim=dim, u=ui, v=vi, w=wi, t=t, U0=U0
-        )
+        
+        if debug:
+            return cls(dim, ui, vi, wi, t, U0), interp
+        else:
+            return cls(dim, ui, vi, wi, t, U0)
 
     @classmethod
     def from_example(
