@@ -6,7 +6,7 @@ import os
 import numpy as np
 from pysph.base.utils import get_particle_array
 from pysph.solver.application import Application
-from pysph.sph.equation import  Group
+from pysph.sph.equation import Group
 from pysph.sph.basic_equations import SummationDensity
 from pysph.tools.interpolator import (
     SPHFirstOrderApproximationPreStep, SPHFirstOrderApproximation
@@ -14,24 +14,32 @@ from pysph.tools.interpolator import (
 from pysph.sph.wc.kernel_correction import (
     GradientCorrectionPreStep, GradientCorrection
 )
-import warnings
-
 import logging
-logger = logging.getLogger(__name__)
 
 # Local imports
 from energy_spectrum import EnergySpectrum
+
+logger = logging.getLogger(__name__)
+
 
 class TurbulentFlowApp(Application):
     """
     Base class for all turbulent flow applications.
     """
+
     def __init__(self, *args, **kw):
         super(TurbulentFlowApp, self).__init__(*args, **kw)
 
     # Private methods
-    def _log_energy_spectrum(self, interp):
-        pass
+    def _log_energy_spectrum(self, fname, dim, interp):
+        msg = "Using interpolator:\n"
+        msg += "-" * 70 + "\n"
+        msg += "Reading data from: %s" % fname + "\n"
+        msg += f"Kernel: {interp.kernel.__class__.__name__}(dim={dim})" + "\n"
+        msg += f"Method: {interp.method}" + "\n"
+        msg += f"Equations: \n{interp.func_eval.equation_groups}" + "\n"
+        msg += "-" * 70
+        logger.info(msg)
 
     # Post-processing tools
     def get_interpolation_equations(self, method):
@@ -40,7 +48,9 @@ class TurbulentFlowApp(Application):
         elif method == 'order1BL':
             equations = [
                 Group(
-                    equations=[SummationDensity(dest='fluid', sources=['fluid'])],
+                    equations=[
+                        SummationDensity(dest='fluid', sources=['fluid'])
+                    ],
                     real=False
                 ),
                 Group(
@@ -56,14 +66,15 @@ class TurbulentFlowApp(Application):
                             dest='interpolate', sources=['fluid'], dim=self.dim
                         ),
                         SPHFirstOrderApproximation(
-                            dest='interpolate', sources=['fluid'], dim=self.dim)
+                            dest='interpolate', sources=['fluid'], dim=self.dim
+                        )
                     ], real=True
                 )
             ]
         else:
             raise ValueError("Unknown method: %s" % method)
         return equations
-    
+
     def get_exact_energy_spectrum(self):
         logger.warn("get_exact_energy_spectrum() is not implemented.")
         return None
@@ -76,7 +87,6 @@ class TurbulentFlowApp(Application):
         method = self.i_method
         if method not in ['sph', 'shepard', 'order1']:
             method = 'order1'
-            
 
         self.espec_ob, interp = EnergySpectrum.from_pysph_file(
             fname=self.output_files[iter_idx],
@@ -91,16 +101,7 @@ class TurbulentFlowApp(Application):
             debug=True
         )
         self.espec_ob.compute()
-
-        # Log Interpolator details
-        msg = "Using interpolator:\n"
-        msg += "-"*70 + "\n"
-        msg += "Reading data from: %s" % self.output_files[iter_idx] + "\n"
-        msg += f"Kernel: {interp.kernel.__class__.__name__}(dim={dim})" + "\n"
-        msg += f"Method: {interp.method}" + "\n"
-        msg += f"Equations: \n{interp.func_eval.equation_groups}" + "\n"
-        msg += "-"*70
-        logger.info(msg)
+        self._log_energy_spectrum(self.output_files[iter_idx], dim, interp)
 
         # Save npz file
         fname = os.path.join(self.output_dir, f"espec_result.npz")
