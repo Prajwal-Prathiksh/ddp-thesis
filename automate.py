@@ -1,3 +1,4 @@
+#NOQA
 r"""
 An automator script to reproduce the results of the thesis
 ###
@@ -26,6 +27,7 @@ from code.automate_utils import styles
 #TODO: Refacto code to make the above possible
 
 BACKEND = " --openmp"
+N_CORES, N_THREADS = 1, 1
 
 class SineVelProfilePlotters(Simulation):
     """
@@ -33,19 +35,19 @@ class SineVelProfilePlotters(Simulation):
     profile problem.
     """
     def Ek_loglog(self, **kw):
-        data = np.load(self.input_path('espec_result.npz'))
+        data = np.load(self.input_path('espec_result_0.npz'))
         plt.loglog(data['k'], data['Ek'], **kw)
     
     def Ek_loglog_exact(self, **kw):
-        data = np.load(self.input_path('espec_result.npz'))
+        data = np.load(self.input_path('espec_result_0.npz'))
         plt.loglog(data['k'], data['Ek_exact'], **kw)
     
     def Ek_plot(self, **kw):
-        data = np.load(self.input_path('espec_result.npz'))
+        data = np.load(self.input_path('espec_result_0.npz'))
         plt.plot(data['k'], data['Ek'], **kw)
     
     def l2_error(self, **kw):
-        data = np.load(self.input_path('espec_result.npz'))
+        data = np.load(self.input_path('espec_result_0.npz'))
         plt.loglog(data['k'], data['l2_error'], **kw)
 class SineVelProfile(PySPHProblem):
     """
@@ -189,7 +191,7 @@ class SineVelProfile(PySPHProblem):
             Simulation(
                 root=self.input_path(opts2path(kw)),
                 base_command=base_cmd,
-                job_info=dict(n_core=1, n_thread=1),
+                job_info=dict(n_core=N_CORES, n_thread=N_THREADS),
                 **kw
             )
             for kw in all_options
