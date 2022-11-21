@@ -21,7 +21,9 @@ from pysph.sph.wc.kernel_correction import (
     GradientCorrectionPreStep, GradientCorrection
 )
 
-#TODO: Add support for openmp in interpolator
+#TODO: Add support for openmp in interpolator and m_mat in interpolator cls
+#TODO: Add more kernel corrections
+#TODO Add second order interpolator?
 
 # Local imports
 from energy_spectrum import EnergySpectrum

@@ -129,7 +129,7 @@ class TaylorGreen(TurbulentFlowApp):
         dt_force = 0.25 * 1.0
 
         self.dt = min(dt_cfl, dt_viscous, dt_force)
-        self.tf = 0.01
+        self.tf = 1
 
     def configure_scheme(self):
         scheme = self.scheme
