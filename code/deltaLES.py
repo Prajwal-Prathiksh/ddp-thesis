@@ -1,3 +1,4 @@
+#NOQA
 r"""
 :math:`\delta` LES-SPH
 #####################

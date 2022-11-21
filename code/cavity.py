@@ -1,3 +1,4 @@
+#NOQA
 """Lid driven cavity using the Transport Velocity formulation. (10 minutes)
 """
 

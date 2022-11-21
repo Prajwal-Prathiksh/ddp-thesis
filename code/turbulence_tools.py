@@ -274,5 +274,5 @@ class TurbulentFlowApp(Application):
         ]
         EnergySpectrum.plot_from_npz_file(
             fnames=fnames,
-            figname=os.path.join(self.output_dir, 'energy_spectrum_history.png'),
+            figname=os.path.join(self.output_dir, 'energy_spectrum_evolution.png')
         )

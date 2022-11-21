@@ -1,3 +1,4 @@
+#NOQA
 from pysph.sph.equation import Equation, Group
 from math import exp, pi, sin, cos
 import numpy as np

@@ -1,3 +1,4 @@
+#NOQA
 import imp
 from pysph.sph.scheme import Scheme
 from pysph.sph.equation import Equation

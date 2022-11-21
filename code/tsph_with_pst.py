@@ -1,3 +1,4 @@
+#NOQA
 from pysph.sph.scheme import Scheme
 from pysph.sph.equation import Equation
 from pysph.sph.integrator import Integrator, IntegratorStep

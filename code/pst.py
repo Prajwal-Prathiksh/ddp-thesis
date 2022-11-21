@@ -1,3 +1,4 @@
+#NOQA
 from math import sqrt
 from compyle.api import declare
 from pysph.sph.equation import Equation
