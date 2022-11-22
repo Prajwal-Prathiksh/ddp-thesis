@@ -43,17 +43,17 @@ def perturb_signal(perturb_fac: float, *args: np.ndarray):
         return [
             arg + perturb_fac * np.random.random(arg.shape) for arg in args
         ]
-    else:
-        return args
+    return args
 
-def get_flow_field(dim:int, dx:float, L:float, perturb_fac:float=0):
+
+def get_flow_field(dim: int, dx: float, L: float, perturb_fac: float = 0):
     r"""
     Get the flow field for the given domain parameters.
 
     1D:
     .. math::
         u(x) = - \cos(2 \pi x)
-    
+
     2D:
     .. math::
         u(x, y) = - \cos(2 \pi x) \sin(2 \pi y)
@@ -83,7 +83,7 @@ def get_flow_field(dim:int, dx:float, L:float, perturb_fac:float=0):
 
     Returns
     -------
-    (x, y, z, u, v, w) : tuple(np.ndarray)    
+    (x, y, z, u, v, w) : tuple(np.ndarray)
     """
     _x = np.arange(dx / 2, L, dx)
     twopi = 2 * np.pi
@@ -110,22 +110,43 @@ def get_flow_field(dim:int, dx:float, L:float, perturb_fac:float=0):
         raise ValueError("Dimension should be 1, 2 or 3.")
     return x, y, z, u0, v0, w0
 
+
 class DummyIntegrator(Integrator):
     """
     A sinusoidal velocity profile problem.
     """
 
-    def one_timestep(self):
+    def one_timestep(self, t, dt):
         """
         Do nothing.
         """
-        pass
+        return None
 
 
 class SinVelocityProfile(TurbulentFlowApp):
     """
     Particles having a sinusoidal velocity profile.
     """
+
+    def __init__(self, *args, **kw):
+        """
+        Initialize the problem.
+        """
+        super().__init__(*args, **kw)
+        self.perturb = None
+        self.nx = None
+        self.hdx = None
+        self.dim = None
+
+        self.i_nx = None
+        self.i_kernel = None
+        self.i_kernel_cls = None
+        self.i_method = None
+
+        self.dx = None
+        self.volume = None
+        self.L = None
+        self.rho0 = None
 
     def add_user_options(self, group):
         """
@@ -158,7 +179,6 @@ class SinVelocityProfile(TurbulentFlowApp):
         self.hdx = self.options.hdx
         self.dim = self.options.dim
 
-        i_nx = self.options.i_nx
         self.i_nx = self.options.i_nx
         self.i_kernel = self.options.i_kernel
         self.i_kernel_cls = get_kernel_cls(self.i_kernel, self.dim)
@@ -218,7 +238,7 @@ class SinVelocityProfile(TurbulentFlowApp):
             ]
         )
 
-        print("Created %d particles" % pa.get_number_of_particles())
+        print(f"Created {pa.get_number_of_particles()} particles.")
 
         # Save un-perturbed velocity field for comparison
         x, y, z, u0, v0, w0 = get_flow_field(
@@ -284,7 +304,7 @@ class SinVelocityProfile(TurbulentFlowApp):
         info_fname : str
             The name of the info file.
         """
-        info = self.read_info(info_fname)
+        _ = self.read_info(info_fname)
 
         dim = self.dim
         if len(self.output_files) == 0:
@@ -331,7 +351,7 @@ class SinVelocityProfile(TurbulentFlowApp):
 if __name__ == '__main__':
     turb_app = SinVelocityProfile()
     turb_app.run()
-    turb_app.dump_enery_spectrum(
-        dim=turb_app.dim, L=turb_app.L, iter_idx=0,
+    turb_app.energy_spectrum_post_processing(
+        dim=turb_app.dim, L=turb_app.L, U0=1., f_idx=0,
         compute_without_interp=True
     )
