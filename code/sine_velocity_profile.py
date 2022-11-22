@@ -281,4 +281,7 @@ class SinVelocityProfile(TurbulentFlowApp):
 if __name__ == '__main__':
     turb_app = SinVelocityProfile()
     turb_app.run()
-    turb_app.dump_enery_spectrum(dim=turb_app.dim, L=turb_app.L, iter_idx=0)
+    turb_app.dump_enery_spectrum(
+        dim=turb_app.dim, L=turb_app.L, iter_idx=0,
+        compute_without_interp=True
+    )
