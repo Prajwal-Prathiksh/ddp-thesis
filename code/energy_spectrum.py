@@ -291,6 +291,7 @@ def velocity_intepolator(
 class EnergySpectrum(object):
     """
     Class to compute the energy spectrum of the flow.
+    Note: len(shape(u)) == dim
 
     Initialization
     --------------
@@ -306,7 +307,7 @@ class EnergySpectrum(object):
     dim : int
         Dimension of the flow.
     u : np.ndarray
-        Velocity field in x-direction.
+        Velocity field in x-direction. 
     v : np.ndarray
         Velocity field in y-direction. None for 1D data.
     w : np.ndarray
@@ -357,8 +358,9 @@ class EnergySpectrum(object):
     # Class methods
     @classmethod
     def from_pysph_file(
-        cls, fname: str, dim: int, L: float, i_nx: int, kernel: object = None,
-        domain_manager: object = None, U0=1., debug=False, **kwargs
+        cls, fname: str, dim: int, L: float, interpolate: bool = True,
+        i_nx: int=None, kernel: object = None, domain_manager: object = None,
+        U0=1., debug=False, **kwargs
     ):
         """
         Create an EnergySpectrum object from a PySPH output file.
@@ -371,9 +373,11 @@ class EnergySpectrum(object):
             Dimension of the flow.
         L : float
             Length of the domain.
-        i_nx : int
+        interpolate : bool, optional
+            Whether to interpolate the velocity field or not. Default is True.
+        i_nx : int, optional
             Number of points to interpolate the energy spectrum (i_nx**2 for 2D
-            data, i_nx**3 for 3D data).
+            data, i_nx**3 for 3D data). Default is pow(len(u), 1/dim).
         kernel : object, optional
             Kernel object. Default is WendlandQuinticC4.
         domain_manager : object, optional
@@ -391,49 +395,74 @@ class EnergySpectrum(object):
         """
         data = load(fname)
         t = data["solver_data"]["t"]
+        u = data["arrays"]["fluid"].get("u")
 
-        # Create meshgrid based on dimension
-        _x = np.linspace(0, L, i_nx)
-        if dim == 1:
-            x = _x
-            y = z = None
-        elif dim == 2:
-            x, y = np.meshgrid(_x, _x)
-            z = None
-        elif dim == 3:
-            x, y, z = np.meshgrid(_x, _x, _x)
+        if i_nx is None:
+            i_nx = int(np.power(len(u), 1/dim))
 
-        # Setup default interpolator properties
-        if kernel is None:
-            kernel = WendlandQuinticC4(dim=dim)
+        interp_ob = None
+        if interpolate:
+            #TODO: Seperate into sep function
+            # Create meshgrid based on dimension
+            _x = np.linspace(0, L, i_nx)
+            if dim == 1:
+                x = _x
+                y = z = None
+            elif dim == 2:
+                x, y = np.meshgrid(_x, _x)
+                z = None
+            elif dim == 3:
+                x, y, z = np.meshgrid(_x, _x, _x)
 
-        # Interpolate velocity
-        interp = Interpolator(
-            list(data['arrays'].values()), x=x, y=y, z=z,
-            kernel=kernel, domain_manager=domain_manager, **kwargs
-        )
-        if dim == 1:
-            _u = interp.interpolate('u')
-            ui = _u
-            vi = wi = None
-        elif dim == 2:
-            _u = interp.interpolate('u')
-            _v = interp.interpolate('v')
-            ui = _u.reshape(i_nx, i_nx)
-            vi = _v.reshape(i_nx, i_nx)
-            wi = None
-        elif dim == 3:
-            _u = interp.interpolate('u')
-            _v = interp.interpolate('v')
-            _w = interp.interpolate('w')
-            ui = _u.reshape(i_nx, i_nx, i_nx)
-            vi = _v.reshape(i_nx, i_nx, i_nx)
-            wi = _w.reshape(i_nx, i_nx, i_nx)
+            # Setup default interpolator properties
+            if kernel is None:
+                kernel = WendlandQuinticC4(dim=dim)
 
+            # Interpolate velocity
+            interp_ob = Interpolator(
+                list(data['arrays'].values()), x=x, y=y, z=z,
+                kernel=kernel, domain_manager=domain_manager, **kwargs
+            )
+            if dim == 1:
+                _u = interp_ob.interpolate('u')
+                ui = _u
+                vi = wi = None
+            elif dim == 2:
+                _u = interp_ob.interpolate('u')
+                _v = interp_ob.interpolate('v')
+                ui = _u.reshape(i_nx, i_nx)
+                vi = _v.reshape(i_nx, i_nx)
+                wi = None
+            elif dim == 3:
+                _u = interp_ob.interpolate('u')
+                _v = interp_ob.interpolate('v')
+                _w = interp_ob.interpolate('w')
+                ui = _u.reshape(i_nx, i_nx, i_nx)
+                vi = _v.reshape(i_nx, i_nx, i_nx)
+                wi = _w.reshape(i_nx, i_nx, i_nx)
+            
+        else:
+            i_nx = int(np.power(len(u), 1/dim))
+            if dim == 1:
+                ui = u
+                vi = wi = None
+            elif dim == 2:
+                vi = data["arrays"]["fluid"].get("v")
+                wi = None
+                ui = u.reshape(i_nx, i_nx)
+                vi = vi.reshape(i_nx, i_nx)
+            elif dim == 3:
+                vi = data["arrays"]["fluid"].get("v")
+                wi = data["arrays"]["fluid"].get("w")
+                ui = u.reshape(i_nx, i_nx, i_nx)
+                vi = vi.reshape(i_nx, i_nx, i_nx)
+                wi = wi.reshape(i_nx, i_nx, i_nx)
+        
         if debug:
-            return cls(dim, ui, vi, wi, t, U0), interp
+            return cls(dim, ui, vi, wi, t, U0), interp_ob
         else:
             return cls(dim, ui, vi, wi, t, U0)
+
 
     @classmethod
     def from_example(
