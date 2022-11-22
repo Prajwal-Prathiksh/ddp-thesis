@@ -46,6 +46,69 @@ def perturb_signal(perturb_fac: float, *args: np.ndarray):
     else:
         return args
 
+def get_flow_field(dim:int, dx:float, L:float, perturb_fac:float=0):
+    r"""
+    Get the flow field for the given domain parameters.
+
+    1D:
+    .. math::
+        u(x) = - \cos(2 \pi x)
+    
+    2D:
+    .. math::
+        u(x, y) = - \cos(2 \pi x) \sin(2 \pi y)
+        v(x, y) = \sin(2 \pi x) \cos(2 \pi y)
+
+    3D:
+    .. math::
+        u(x, y, z) = - \cos(2 \pi x) \sin(2 \pi y) \sin(2 \pi z)
+        v(x, y, z) = \sin(2 \pi x) \cos(2 \pi y) \sin(2 \pi z)
+        w(x, y, z) = - \sin(2 \pi x) \sin(2 \pi y) \cos(2 \pi z)
+
+    where,
+    .. math::
+        x, y, z \in \range{dx/2, L, dx}
+
+    Parameters
+    ----------
+    dim : int
+        Dimension of the flow field.
+    dx : float
+        Grid spacing.
+    L : float
+        Domain length.
+    perturb_fac : float, optional
+        Factor by which the signal is to be perturbed by a uniform random
+        number. The default is 0.
+
+    Returns
+    -------
+    (x, y, z, u, v, w) : tuple(np.ndarray)    
+    """
+    _x = np.arange(dx / 2, L, dx)
+    twopi = 2 * np.pi
+    cos, sin = np.cos, np.sin
+    if dim == 1:
+        x = perturb_signal(perturb_fac, _x)[0]
+        y = z = 0.
+        u0 = - cos(twopi * x)
+        v0 = w0 = 0.
+    elif dim == 2:
+        x, y = np.meshgrid(_x, _x)
+        x, y = perturb_signal(perturb_fac, x, y)
+        z = 0.
+        u0 = - cos(twopi * x) * sin(twopi * y)
+        v0 = sin(twopi * x) * cos(twopi * y)
+        w0 = 0.
+    elif dim == 3:
+        x, y, z = np.meshgrid(_x, _x, _x)
+        x, y, z = perturb_signal(perturb_fac, x, y, z)
+        u0 = - cos(twopi * x) * sin(twopi * y) * sin(twopi * z)
+        v0 = sin(twopi * x) * cos(twopi * y) * sin(twopi * z)
+        w0 = - sin(twopi * x) * sin(twopi * y) * cos(twopi * z)
+    else:
+        raise ValueError("Dimension should be 1, 2 or 3.")
+    return x, y, z, u0, v0, w0
 
 class DummyIntegrator(Integrator):
     """
@@ -133,31 +196,9 @@ class SinVelocityProfile(TurbulentFlowApp):
         Create the particles.
         """
         dx = self.dx
-
-        _x = np.arange(dx / 2, self.L, dx)
-        twopi = 2 * np.pi
-        cos, sin = np.cos, np.sin
-        if self.dim == 1:
-            x = perturb_signal(self.perturb, _x)[0]
-            y = z = 0.
-            u0 = - cos(twopi * x)
-            v0 = w0 = 0.
-        elif self.dim == 2:
-            x, y = np.meshgrid(_x, _x)
-            x, y = perturb_signal(self.perturb, x, y)
-            z = 0.
-            u0 = - cos(twopi * x) * sin(twopi * y)
-            v0 = sin(twopi * x) * cos(twopi * y)
-            w0 = 0.
-        elif self.dim == 3:
-            x, y, z = np.meshgrid(_x, _x, _x)
-            x, y, z = perturb_signal(self.perturb, x, y, z)
-            u0 = - cos(twopi * x) * sin(twopi * y) * sin(twopi * z)
-            v0 = sin(twopi * x) * cos(twopi * y) * sin(twopi * z)
-            w0 = - sin(twopi * x) * sin(twopi * y) * cos(twopi * z)
-        else:
-            raise ValueError("Dimension should be 1, 2 or 3.")
-
+        x, y, z, u0, v0, w0 = get_flow_field(
+            dim=self.dim, dx=dx, L=self.L, perturb_fac=self.perturb
+        )
         vmag = np.sqrt(u0**2 + v0**2 + w0**2)
 
         # Initialize
@@ -179,6 +220,10 @@ class SinVelocityProfile(TurbulentFlowApp):
 
         print("Created %d particles" % pa.get_number_of_particles())
 
+        # Save un-perturbed velocity field for comparison
+        x, y, z, u0, v0, w0 = get_flow_field(
+            dim=self.dim, dx=dx, L=self.L, perturb_fac=0
+        )
         self.save_initial_vel_field(
             dim=self.dim, x=x, y=y, z=z, m=m, h=h, u=u0, v=v0, w=w0
         )
