@@ -14,10 +14,10 @@ from automan.api import Automator, Simulation
 from automan.api import CondaClusterManager
 from automan.api import PySPHProblem
 from automan.api import mdict, dprod, opts2path
-from automan.utils import filter_cases, compare_runs
+from automan.utils import filter_cases
 
 # Local imports.
-from code.automate_utils import styles
+from code.automate_utils import styles, custom_compare_runs
 
 #TODO: Add error checking for SimPlotter
 #TODO: Add uniform_naming for Simplotter methods
@@ -48,6 +48,17 @@ class SineVelProfilePlotters(Simulation):
         data = np.load(self.input_path('espec_result_0.npz'))
         plt.plot(data['k'], data['Ek'], **kw)
     
+    def Ek_loglog_no_interp(self, **kw):
+        """
+        Plot the energy spectrum calculated without interpolation in loglog scale.
+        """
+        data = np.load(self.input_path('espec_result_0.npz'))
+        kw.pop('label', None)
+        plt.loglog(
+            data['k'], data['Ek_no_interp'],
+            label=r'$E_k$ (no interpolation)', **kw
+        )
+    
     def Ek_loglog_exact(self, **kw):
         """
         Plot the exact energy spectrum in loglog scale.
@@ -57,24 +68,25 @@ class SineVelProfilePlotters(Simulation):
     
     def l2_error(self, **kw):
         """
-        Plot the l2 error (wrt exact solution) in loglog scale.
+        Plot the L_2 error (wrt exact solution) in loglog scale.
         """
         data = np.load(self.input_path('espec_result_0.npz'))
         plt.loglog(data['k'], data['l2_error'], **kw)
-    
-    def Ek_loglog_no_interp(self, **kw):
-        """
-        Plot the energy spectrum calculated without interpolation in loglog scale.
-        """
-        data = np.load(self.input_path('espec_result_0.npz'))
-        plt.loglog(data['k'], data['Ek_no_interp'], **kw)
-    
+
     def l2_error_no_interp(self, **kw):
         """
-        Plot the l2 error (wrt solution calculated without interpolation) in loglog scale.
+        Plot the L_2 error of the solution calculated without interpolation vs
+        the exact solution in loglog scale.
         """
         data = np.load(self.input_path('espec_result_0.npz'))
-        plt.loglog(data['k'], data['l2_error_no_interp'], **kw)
+        l2_error_expected = data['Ek_exact'] - data['Ek_no_interp']
+        l2_error_expected = np.sqrt(l2_error_expected**2)
+
+        kw.pop('label', None)
+        plt.loglog(
+            data['k'], l2_error_expected,
+            label=r'$L_2$ error (no interpolation)', **kw
+        )
     
     
 class SineVelProfile(PySPHProblem):
@@ -88,8 +100,8 @@ class SineVelProfile(PySPHProblem):
         return 'sine_vel_profiles'
 
     def plot_energy_spectrum(
-        self, cases, labels, plt_type="loglog", styles=styles,
-        title_suffix=""
+        self, cases, labels, plt_type="loglog", title_suffix="", plot_legend:bool=True, plot_grid:bool=False, axis_scale:str=None,
+        styles=styles
     ):
         """
         Plot the energy spectrum.
@@ -103,71 +115,98 @@ class SineVelProfile(PySPHProblem):
         plt_type : str
             Type of plot. Can be: 'loglog', 'plot', 'l2_error',
             'l2_error_no_interp'
+        title_suffix : str
+            Suffix to be added to the title. Default is an empty string.
+        plot_legend : bool
+            Whether to plot the legend or not. Default is True.
+        plot_grid : bool
+            Whether to plot the grid or not. Default is False.
+        axis_scale : str
+            Passed to plt.axis(). Default is None.
         styles: callable: returns an iterator/iterable of style keyword
             arguments.
             Defaults to the ``styles`` function defined in this module.
-        title_suffix : str
-            Suffix to be added to the title. Default is an empty string.
         """
-        plt.figure()
-        if plt_type == "loglog":
-            compare_runs(
-                sims=cases,
+        title_beginning = "Energy spectrum"
+        plotter_map = dict(
+            loglog=dict(
                 method=SineVelProfilePlotters.Ek_loglog,
-                exact=None,
-                labels=labels,
-                styles=styles,
-            )
-        elif plt_type == "plot":
-            compare_runs(
-                sims=cases,
+                exact=SineVelProfilePlotters.Ek_loglog_no_interp,
+                xlabel=r'$log(k)$',
+                ylabel=r'$log(E_k)$',
+                title_middle="(loglog)"
+            ),
+            plot=dict(
                 method=SineVelProfilePlotters.Ek_plot,
                 exact=None,
-                labels=labels,
-                styles=styles,
-            )
-        elif plt_type == "l2_error":
-            compare_runs(
-                sims=cases,
+                xlabel=r'$k$',
+                ylabel=r'$E_k$',
+                title_middle="(plot)"
+            ),
+            l2_error=dict(
                 method=SineVelProfilePlotters.l2_error,
-                exact=None,
-                labels=labels,
-                styles=styles,
-            )
-        elif plt_type == "l2_error_no_interp":
-            compare_runs(
-                sims=cases,
+                exact=SineVelProfilePlotters.l2_error_no_interp,
+                xlabel=r'$log(k)$',
+                ylabel=r'$log(L_2)$',
+                title_middle=r"($L_2$ error wrt exact solution)"
+            ),
+            l2_error_no_interp=dict(
                 method=SineVelProfilePlotters.l2_error_no_interp,
                 exact=None,
-                labels=labels,
-                styles=styles,
+                xlabel=r'$log(k)$',
+                ylabel=r'$log(L_2)$',
+                title_middle=r"($L_2$ error wrt no interpolation solution)"
             )
-        else:
-            raise ValueError("Invalid plt_type: {}".format(plt_type))
+        )
 
-        title = "Energy spectrum"
-        if plt_type == "loglog":
-            xlabel = r"$log(k)$"
-            ylabel = r"$log(E_k)$"
-            title += " (loglog)"
-        elif plt_type == "plot":
-            xlabel = r"$k$"
-            ylabel = r"$E_k$"
-            title += " (loglog)"
-        elif plt_type == "l2_error":
-            xlabel = r"$log(k)$"
-            ylabel = r"$log(L_2 error)$"
-            title += r" ($L_2$ error)"
-        elif plt_type == "l2_error_no_interp":
-            xlabel = r"$log(k)$"
-            ylabel = r"$log(L_2 error)$"
-            title += r" ($L_2$ error, no interpolation)"
+        # Check if the plotter type is valid.
+        if plt_type not in plotter_map.keys():
+            raise ValueError(
+                f"Invalid plotter type: {plt_type}. Valid types are: {plotter_map.keys()}"
+            )
+
+        # Get the plotter method and exact plotter method from the map.
+        method = plotter_map[plt_type]['method']
+        exact = plotter_map[plt_type]['exact']
+
+        plt.figure()
+        custom_compare_runs(
+            sims=cases,
+            method=method,
+            exact=exact,
+            labels=labels,
+            styles=styles,
+            exact_sim_idx=-1
+        )
+
+        def _get_title(beginning, middle, suffix):
+            # Trim leading and trailing spaces for all the parts.
+            beginning = beginning.strip()
+            middle = middle.strip()
+            suffix = suffix.strip()
+
+            # Join the parts with a space in between.
+            title = " ".join([beginning, middle, suffix])
+
+            # Use title case for the title.
+            title = title.title()
+
+            return title
         
-        title += " ({})".format(", ".join(labels)) + title_suffix
+        plt.xlabel(plotter_map[plt_type]['xlabel'])
+        plt.ylabel(plotter_map[plt_type]['ylabel'])
+        title = _get_title(
+            title_beginning, plotter_map[plt_type]['title_middle'],
+            title_suffix
+        )
         plt.title(title)
-        plt.xlabel(xlabel)
-        plt.ylabel(ylabel)
-        plt.legend()
+
+        if plot_legend:
+            plt.legend()
+        if plot_grid:
+            plt.grid()
+        if axis_scale:
+            plt.axis(axis_scale)
 
         title = title.replace("$", "")
         plt.savefig(
@@ -206,10 +245,10 @@ class SineVelProfile(PySPHProblem):
             return all_options
 
         def get_example_opts():
-            perturb_opts = mdict(perturb=[0])
+            perturb_opts = mdict(perturb=[0, 1e-2 , 1e-1])
             dim_nx_opts = mdict(dim=[1], nx=[5001, 10001, 20001])
             dim_nx_opts += mdict(dim=[2], nx=[251, 501])
-            # dim_nx_opts += mdict(dim=[3], nx=[101])
+            dim_nx_opts += mdict(dim=[3], nx=[101])
 
             all_options = dprod(perturb_opts, dim_nx_opts)
 
@@ -256,8 +295,7 @@ class SineVelProfile(PySPHProblem):
                 fcases, labels, plt_type="l2_error", title_suffix=title_suffix
             )
             self.plot_energy_spectrum(
-                fcases, labels, plt_type="l2_error_no_interp",
-                title_suffix=f"{title_suffix} (no interpolation)"
+                fcases, labels, plt_type="loglog", title_suffix=title_suffix
             )
 
 
@@ -269,8 +307,7 @@ class SineVelProfile(PySPHProblem):
                 fcases, labels, plt_type="l2_error", title_suffix=title_suffix
             )
             self.plot_energy_spectrum(
-                fcases, labels, plt_type="l2_error_no_interp",
-                title_suffix=f"{title_suffix} (no interpolation)"
+                fcases, labels, plt_type="loglog", title_suffix=title_suffix
             )
 
 
