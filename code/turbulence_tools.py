@@ -22,9 +22,9 @@ from pysph.sph.wc.kernel_correction import (
     MixedKernelCorrectionPreStep, MixedGradientCorrection
 )
 
-#TODO: Add support for openmp in interpolator and m_mat in interpolator cls
-#TODO: Add more kernel corrections
-#TODO Add second order interpolator?
+# TODO: Add support for openmp in interpolator and m_mat in interpolator cls
+# TODO: Add more kernel corrections
+# TODO Add second order interpolator?
 
 # Local imports
 from energy_spectrum import EnergySpectrum
@@ -85,6 +85,10 @@ class TurbulentFlowApp(Application):
     """
 
     def __init__(self, *args, **kw):
+        """
+        Initialize the application object, and add options required for
+        turbulent flow simulations.
+        """
         super(TurbulentFlowApp, self).__init__(*args, **kw)
         self._add_turbulence_options()
         self.initial_vel_field_fname = None
@@ -154,33 +158,33 @@ class TurbulentFlowApp(Application):
         msg = "Using interpolator:\n"
         msg += "-" * 70 + "\n"
         msg += "Reading data from: %s" % fname + "\n"
-        msg += f"Kernel: {interp_ob.kernel.__class__.__name__}(dim={dim})" + "\n"
+        msg += f"Kernel: {interp_ob.kernel.__class__.__name__}(dim={dim})\n"
         msg += f"Method: {interp_ob.method}" + "\n"
         msg += f"Equations: \n"
         for eqn in interp_ob.func_eval.equation_groups:
-            msg += f"\t{eqn}" + "\n" 
+            msg += f"\t{eqn}" + "\n"
         msg += "-" * 70
         logger.info(msg)
-    
-    def _set_initial_vel_field_fname(self, fname:str):
+
+    def _set_initial_vel_field_fname(self, fname: str):
         """
         Set the name of the file containing the initial velocity field.
 
         Parameters
         ----------
         fname : str
-            Base name of the file containing the initial velocity field.
+            Name of the file containing the initial velocity field.
         """
-        self.initial_vel_field_fname = os.basename(fname)
+        self.initial_vel_field_fname = fname
 
     # Public methods
     def save_initial_vel_field(
-        self, dim:int, u:np.ndarray, v:np.ndarray, w:np.ndarray,
-        fname:str=None, **kwargs
+        self, dim: int, u: np.ndarray, v: np.ndarray, w: np.ndarray,
+        fname: str = None, **kwargs
     ):
         """
         Save the initial velocity field to a *.npz file in the output
-        directory. The velocity field components should have appropriate 
+        directory. The velocity field components should have appropriate
         dimensions, i.e. len(shape(u)) = len(shape(v)) = len(shape(w)) = dim.
         If a float is passed for (v or w) component  of velocity, it is
         converted to a numpy array of the shape of (u).
@@ -196,14 +200,14 @@ class TurbulentFlowApp(Application):
         w : np.ndarray
             Initial velocity field in z direction.
         fname : str, optional
-            Name of the output file. If not specified, it is set to 
+            Name of the output file. If not specified, it is set to
             "initial_vel_field.npz".
         **kwargs : dict, optional
             Additional keyword arguments to be passed to numpy.savez.
         """
         if fname is None:
             fname = "initial_vel_field.npz"
-        
+
         # Convert to numpy arrays if necessary
         if not isinstance(v, np.ndarray):
             v = np.full_like(u, v)

@@ -179,12 +179,8 @@ class SinVelocityProfile(TurbulentFlowApp):
 
         print("Created %d particles" % pa.get_number_of_particles())
 
-        # Save data for later use
-        fname = f"initial.npz"
-        fname = os.path.join(self.output_dir, fname)
-        np.savez(
-            fname, x=x, y=y, z=z, m=m, h=h, u=u0, v=v0, w=w0, rho=self.rho0,
-            vmag=vmag
+        self.save_initial_vel_field(
+            dim=self.dim, x=x, y=y, z=z, m=m, h=h, u=u0, v=v0, w=w0
         )
 
         return [pa]

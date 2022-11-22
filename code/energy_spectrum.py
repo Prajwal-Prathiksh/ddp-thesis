@@ -307,7 +307,7 @@ class EnergySpectrum(object):
     dim : int
         Dimension of the flow.
     u : np.ndarray
-        Velocity field in x-direction. 
+        Velocity field in x-direction.
     v : np.ndarray
         Velocity field in y-direction. None for 1D data.
     w : np.ndarray
@@ -358,7 +358,9 @@ class EnergySpectrum(object):
     # Class methods
     @classmethod
     def from_pysph_file(
-        cls, fname: str, dim: int, L: float, i_nx: int, kernel: object = None, domain_manager: object = None, U0=1., debug=False, **kwargs
+        cls, fname: str, dim: int, L: float, i_nx: int,
+        kernel: object = None, domain_manager: object = None, U0=1.,
+        debug=False, **kwargs
     ):
         """
         Create an EnergySpectrum object from a PySPH output file by
@@ -395,9 +397,8 @@ class EnergySpectrum(object):
         u = data["arrays"]["fluid"].get("u")
 
         if i_nx is None:
-            i_nx = int(np.power(len(u), 1/dim))
+            i_nx = int(np.power(len(u), 1 / dim))
 
-        #TODO: Seperate into sep function
         # Create meshgrid based on dimension
         _x = np.linspace(0, L, i_nx)
         if dim == 1:
@@ -435,17 +436,31 @@ class EnergySpectrum(object):
             ui = _u.reshape(i_nx, i_nx, i_nx)
             vi = _v.reshape(i_nx, i_nx, i_nx)
             wi = _w.reshape(i_nx, i_nx, i_nx)
-        
+
         if debug:
             return cls(dim=dim, u=ui, v=vi, w=wi, t=t, U0=U0), interp_ob
         else:
             return cls(dim=dim, u=ui, v=vi, w=wi, t=t, U0=U0)
 
     @classmethod
-    def from_initial_npz_file(cls, fname:str, dim:int, U0:float=1.):
+    def from_initial_npz_file(cls, fname: str, dim: int, U0: float = 1.):
         """
         Create an EnergySpectrum object from a npz file containing the
         initial velocity field.
+
+        Parameters
+        ----------
+        fname : str
+            Name of the file containing the velocity field, in appropriate
+            dimensions, i.e. len(shape(u)) = dim.
+        dim : int
+            Dimension of the flow.
+        U0 : float, optional
+            Reference velocity. Default is 1.
+
+        Returns
+        -------
+        EnergySpectrum object.
         """
         data = np.load(fname)
         u = data["u"]
@@ -455,9 +470,7 @@ class EnergySpectrum(object):
             v = w = None
         elif dim == 2:
             w = None
-        
         return cls(dim=dim, u=u, v=v, w=w, t=0., U0=U0)
-
 
     @classmethod
     def from_example(
