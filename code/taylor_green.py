@@ -239,6 +239,8 @@ class TaylorGreen(TurbulentFlowApp):
         # create the arrays
         fluid = get_particle_array(name='fluid', x=x, y=y, m=m, h=h, u=u0,
                                    v=v0, rho=rho0, p=p0, color=color0, c0=c0)
+        
+        self.save_initial_vel_field(dim=2, u=u0, v=v0, w=0.)
         return fluid
 
     def create_particles(self):
@@ -349,8 +351,6 @@ class TaylorGreen(TurbulentFlowApp):
         decay_ex = U * np.exp(decay_rate * t)
 
         # Plots
-        self.plot_energy_spectrum_evolution()
-
         import matplotlib
         matplotlib.use('Agg')
 
@@ -384,6 +384,8 @@ class TaylorGreen(TurbulentFlowApp):
         plt.ylabel(r'$L_1$ error for $p$')
         fig = os.path.join(self.output_dir, "p_l1_error.png")
         plt.savefig(fig, dpi=300)
+        
+        self.plot_energy_spectrum_evolution()
 
     def customize_output(self):
         self._mayavi_config('''
@@ -395,6 +397,8 @@ class TaylorGreen(TurbulentFlowApp):
 if __name__ == '__main__':
     turb_app = TaylorGreen()
     turb_app.run()
-    turb_app.dump_enery_spectrum(dim=2, L=L, iter_idx=0)
-    turb_app.dump_enery_spectrum(dim=2, L=L, iter_idx=-1)
+    turb_app.energy_spectrum_post_processing(
+        dim=2, L=L, U0=1., f_idx=0, compute_without_interp=True
+    )
+    turb_app.energy_spectrum_post_processing(dim=2, L=L, U0=1., f_idx=-1)
     turb_app.post_process(turb_app.info_filename)

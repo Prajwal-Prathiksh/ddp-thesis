@@ -537,6 +537,7 @@ class EnergySpectrum(object):
         styles : itertools.cycle, optional
             Styles to use for plotting. Default is styles.
         """
+        plt.clf()
         plt.figure()
         ls = styles(None)
         for fname in fnames:
