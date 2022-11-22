@@ -289,7 +289,7 @@ class TurbulentFlowApp(Application):
         eqs, method = self.get_interpolation_equations(
             method=self.options.i_method, dim=dim
         )
-        espec_ob, interp_ob = EnergySpectrum.from_pysph_file_with_interp(
+        espec_ob, interp_ob = EnergySpectrum.from_pysph_file(
             fname=self.output_files[iter_idx],
             dim=dim,
             L=L,
@@ -308,15 +308,15 @@ class TurbulentFlowApp(Application):
 
         Ek_no_interp, l2_error_no_interp = None, None
         # if compute_without_interp:
-        espec_no_interp_ob = EnergySpectrum.from_pysph_file_no_interp(
-            fname=self.output_files[iter_idx],
+        fname = os.path.join(self.output_dir, "initial.npz")
+        espec_initial_ob = EnergySpectrum.from_initial_npz_file(
+            fname=fname,
             dim=dim,
-            L=L,
-            U0=1.
+            U0=1.,
         )
-        print(f"Outside {np.max(np.abs(espec_no_interp_ob.u))}")
-        espec_no_interp_ob.compute()
-        Ek_no_interp = espec_no_interp_ob.Ek
+        # print(f"Outside {np.max(np.abs(espec_initial_ob.u))}")
+        espec_initial_ob.compute()
+        Ek_no_interp = espec_initial_ob.Ek
         l2_error_no_interp = np.sqrt((espec_ob.Ek - Ek_no_interp)**2)
 
         # Save npz file

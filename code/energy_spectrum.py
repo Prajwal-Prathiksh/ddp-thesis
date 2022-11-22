@@ -357,33 +357,7 @@ class EnergySpectrum(object):
 
     # Class methods
     @classmethod
-    def from_pysph_file_no_interp(
-        cls, fname:str, dim:int, L:float, U0:float=1.
-    ):
-        """
-        Initialize the class from a PySPH file without interpolating the
-        velocity field.
-        """
-        data = load(fname)
-        t = data["solver_data"]["t"]
-        u = data["arrays"]["fluid"].get("u")
-        v = data["arrays"]["fluid"].get("v")
-        w = data["arrays"]["fluid"].get("w")
-        nx = int(np.power(u.size, 1./dim))
-        if dim == 1:
-            v = w = None
-        elif dim == 2:
-            u = u.reshape(nx, nx)
-            v = v.reshape(nx, nx)
-            w = None
-        else:
-            u = u.reshape(nx, nx, nx)
-            v = v.reshape(nx, nx, nx)
-            w = w.reshape(nx, nx, nx)
-        return cls(dim, u, v, w, t, U0)
-
-    @classmethod
-    def from_pysph_file_with_interp(
+    def from_pysph_file(
         cls, fname: str, dim: int, L: float, i_nx: int, kernel: object = None, domain_manager: object = None, U0=1., debug=False, **kwargs
     ):
         """
@@ -466,6 +440,23 @@ class EnergySpectrum(object):
             return cls(dim=dim, u=ui, v=vi, w=wi, t=t, U0=U0), interp_ob
         else:
             return cls(dim=dim, u=ui, v=vi, w=wi, t=t, U0=U0)
+
+    @classmethod
+    def from_initial_npz_file(cls, fname:str, dim:int, U0:float=1.):
+        """
+        Create an EnergySpectrum object from a npz file containing the
+        initial velocity field.
+        """
+        data = np.load(fname)
+        u = data["u"]
+        v = data["v"]
+        w = data["w"]
+        if dim == 1:
+            v = w = None
+        elif dim == 2:
+            w = None
+        
+        return cls(dim=dim, u=u, v=v, w=w, t=0., U0=U0)
 
 
     @classmethod

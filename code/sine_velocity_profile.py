@@ -178,6 +178,15 @@ class SinVelocityProfile(TurbulentFlowApp):
         )
 
         print("Created %d particles" % pa.get_number_of_particles())
+
+        # Save data for later use
+        fname = f"initial.npz"
+        fname = os.path.join(self.output_dir, fname)
+        np.savez(
+            fname, x=x, y=y, z=z, m=m, h=h, u=u0, v=v0, w=w0, rho=self.rho0,
+            vmag=vmag
+        )
+
         return [pa]
 
     def create_solver(self):
@@ -243,7 +252,7 @@ class SinVelocityProfile(TurbulentFlowApp):
         method = self.options.i_method
         if method not in ['sph', 'shepard', 'order1']:
             method = 'order1'
-        espec_ob = EnergySpectrum.from_pysph_file_with_interp(
+        espec_ob = EnergySpectrum.from_pysph_file(
             fname=self.output_files[0],
             dim=dim,
             L=self.L,
