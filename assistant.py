@@ -206,7 +206,7 @@ def main():
                 find_missing_doctrings(cwd, fpath) or found_missing_docstrings
             )
             if not found_missing_docstrings:
-                print("\nNo missing docstrings found!")
+                print("\033[33mNo missing docstrings found.\033[0m")
             print(end_border)
         if check_todos:
             print(start_border)
@@ -214,7 +214,7 @@ def main():
             print(f"[file: .\\{os.path.basename(fpath)}]")
             found_todos = find_todos(cwd, fpath) or found_todos
             if not found_todos:
-                print("\nNo TODOs found!")
+                print("\033[33mNo TODOs found.\033[0m")
             print(end_border)
         if run_pep8:
             print(start_border)
