@@ -458,8 +458,11 @@ class EnergySpectrum(object):
                 vi = vi.reshape(i_nx, i_nx, i_nx)
                 wi = wi.reshape(i_nx, i_nx, i_nx)
         
+        print(f"Inside from _pysph {np.max(np.abs(ui))}")
         if debug:
-            return cls(dim, ui, vi, wi, t, U0), interp_ob
+            return cls(
+                dim=dim, u=ui, v=vi, w=wi, t=0.0, U0=1.0
+            ), interp_ob
         else:
             return cls(dim, ui, vi, wi, t, U0)
 

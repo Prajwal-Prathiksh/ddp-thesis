@@ -316,6 +316,8 @@ class TurbulentFlowApp(Application):
                 interpolate=False,
                 debug=False
             )
+            print(f"Outside {np.max(np.abs(espec_no_interp_ob.u))}")
+            print(np.max(np.abs(espec_no_interp_ob.u)))
             espec_no_interp_ob.compute()
             Ek_no_interp = espec_no_interp_ob.Ek
             l2_error_no_interp = np.sqrt((self.espec_ob.Ek - Ek_no_interp)**2)
