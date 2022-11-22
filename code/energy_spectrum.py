@@ -443,36 +443,6 @@ class EnergySpectrum(object):
             return cls(dim=dim, u=ui, v=vi, w=wi, t=t, U0=U0)
 
     @classmethod
-    def from_initial_npz_file(cls, fname: str, dim: int, U0: float = 1.):
-        """
-        Create an EnergySpectrum object from a npz file containing the
-        initial velocity field.
-
-        Parameters
-        ----------
-        fname : str
-            Name of the file containing the velocity field, in appropriate
-            dimensions, i.e. len(shape(u)) = dim.
-        dim : int
-            Dimension of the flow.
-        U0 : float, optional
-            Reference velocity. Default is 1.
-
-        Returns
-        -------
-        EnergySpectrum object.
-        """
-        data = np.load(fname)
-        u = data["u"]
-        v = data["v"]
-        w = data["w"]
-        if dim == 1:
-            v = w = None
-        elif dim == 2:
-            w = None
-        return cls(dim=dim, u=u, v=v, w=w, t=0., U0=U0)
-
-    @classmethod
     def from_example(
         cls, dim: int, nx: int, custom_formula: list = None
     ):

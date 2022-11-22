@@ -5,7 +5,6 @@ Tools required for turbulent flow simulations and analysis.
 import os
 import logging
 import numpy as np
-from pysph.base.utils import get_particle_array
 from pysph.solver.application import Application
 from pysph.sph.equation import Group
 from pysph.sph.basic_equations import SummationDensity
@@ -21,6 +20,7 @@ from pysph.sph.wc.kernel_correction import (
     GradientCorrectionPreStep, GradientCorrection,
     MixedKernelCorrectionPreStep, MixedGradientCorrection
 )
+from pysph.solver.utils import dump, load
 
 # TODO: Add support for openmp in interpolator and m_mat in interpolator cls
 # TODO: Add more kernel corrections
@@ -89,7 +89,7 @@ class TurbulentFlowApp(Application):
         Initialize the application object, and add options required for
         turbulent flow simulations.
         """
-        super(TurbulentFlowApp, self).__init__(*args, **kw)
+        super().__init__(*args, **kw)
         self._add_turbulence_options()
         self.initial_vel_field_fname = None
 
@@ -137,7 +137,7 @@ class TurbulentFlowApp(Application):
         """
         Parse command line arguments specific to turbulent flow simulations.
         """
-        super(TurbulentFlowApp, self)._parse_command_line(*args, **kw)
+        super()._parse_command_line(*args, **kw)
         nx = self.options.nx
         i_nx = self.options.i_nx
         self.options.i_nx = i_nx if i_nx is not None else nx
@@ -157,13 +157,13 @@ class TurbulentFlowApp(Application):
         """
         msg = "Using interpolator:\n"
         msg += "-" * 70 + "\n"
-        msg += "Reading data from: %s" % fname + "\n"
-        msg += f"Kernel: {interp_ob.kernel.__class__.__name__}(dim={dim})\n"
-        msg += f"Method: {interp_ob.method}" + "\n"
-        msg += f"Equations: \n"
+        msg += f"Reading data from:\n\t{fname}\n"
+        msg += f"Kernel:\n\t{interp_ob.kernel.__class__.__name__}(dim={dim})\n"
+        msg += f"Method:\n\t{interp_ob.method}" + "\n"
+        msg += "Equations:\n\t["
         for eqn in interp_ob.func_eval.equation_groups:
-            msg += f"\t{eqn}" + "\n"
-        msg += "-" * 70
+            msg += f"\n\t\t{eqn}"
+        msg += "\n" + "-" * 70
         logger.info(msg)
 
     def _set_initial_vel_field_fname(self, fname: str):
@@ -308,7 +308,7 @@ class TurbulentFlowApp(Application):
             ]
 
         else:
-            raise ValueError("Unknown method: %s" % method)
+            raise ValueError(f"Unknown method: {method}")
 
         if equations:
             consistent_method = 'order1'
@@ -319,15 +319,157 @@ class TurbulentFlowApp(Application):
         Get the exact energy spectrum of the flow.
         If not implemented, return None, and warns the user.
         """
-        logger.warn("get_exact_energy_spectrum() is not implemented.")
+        logger.warning("get_exact_energy_spectrum() is not implemented.")
         return None
 
-    def dump_enery_spectrum(
-        self, dim: int, L: float, iter_idx: int = 0,
+    def get_energy_spectrum_from_initial_vel_field(self, dim:int, U0: float):
+        """
+        Computes the energy spectrum from the initial velocity field saved
+        using `save_initial_vel_field()`.
+
+        Parameters
+        ----------
+        dim : int
+            Dimension of the problem.
+        U0 : float
+            Initial velocity of the flow.
+        
+        Returns
+        -------
+        espec_initial_ob : `EnergySpectrum` object
+            Energy spectrum object with computed energy spectrum.
+        """
+        fname = self.initial_vel_field_fname
+        if fname is None:
+            logger.warning(
+                "Could not find initial velocity field file. "
+                "Skipping computation of energy spectrum without "
+                "interpolation! \nForgot to call "
+                "`save_initial_vel_field()`?"
+            )
+            return None
+
+        data = np.load(fname)
+        u = data["u"]
+        v = data["v"]
+        w = data["w"]
+        if dim == 1:
+            v = w = None
+        elif dim == 2:
+            w = None
+
+        espec_initial_ob = EnergySpectrum(
+            dim=dim, u=u, v=v, w=w, t=0., U0=U0
+        )
+        espec_initial_ob.compute()
+
+        return espec_initial_ob
+
+    def get_energy_spectrum(self, fname: str, dim: int, L: float, U0:float=1):
+        """
+        Compute and get the energy spectrum from a given PySPH output file.
+
+        Parameters
+        ----------
+        fname : str
+            Name of the PySPH output file.
+        dim : int
+            Dimension of the problem.
+        L : float
+            Length of the domain.
+        U0 : float, optional
+            Reference velocity of the flow. Default is 1.
+        
+        Returns
+        -------
+        espec_ob : `EnergySpectrum` object
+            Energy spectrum object with computed energy spectrum.
+        """
+        i_kernel_cls = get_kernel_cls(name=self.options.i_kernel, dim=dim)
+        eqs, method = self.get_interpolation_equations(
+            method=self.options.i_method, dim=dim
+        )
+
+        espec_ob, interp_ob = EnergySpectrum.from_pysph_file(
+            fname=fname,
+            dim=dim,
+            L=L,
+            i_nx=self.options.i_nx,
+            kernel=i_kernel_cls,
+            domain_manager=self.create_domain(),
+            method=method,
+            equations=eqs,
+            U0=U0,
+            debug=True
+        )
+        espec_ob.compute()
+
+        self._log_interpolator_details(
+            fname, dim, interp_ob
+        )
+        return espec_ob
+
+    def save_energy_spectrum_as_pysph_view_file(
+        self, fname:str, dim:int, espec_ob:object,
+    ):
+        """
+        Save the energy spectrum as a PySPH viewable file.
+        The file is saved as "espec_<counter>.npz/hdf5" in the output
+        directory.
+        The file can be viewed using the `pysph view` command.
+
+        Parameters
+        ----------
+        fname : str
+            Name of the file from which the energy spectrum was computed.
+        dim : int
+            Dimension of the problem.
+        espec_ob : `EnergySpectrum` object
+            The corresponding energy spectrum object of `fname` with the
+            computed energy spectrum.
+        """
+        data = load(fname)
+
+        # Add energy spectrum data to the particle array
+        pa = data['arrays']['fluid']
+        pa.add_property('EK_U', 'double', data=espec_ob.EK_U.flatten())
+        pa.add_property(
+            'EK_V', 'double', data=espec_ob.EK_V.flatten() if dim > 1 else 0.0
+        )
+        pa.add_property(
+            'EK_W', 'double', data=espec_ob.EK_W.flatten() if dim > 2 else 0.0
+        )
+        pa.add_output_arrays(['EK_U', 'EK_V', 'EK_W'])
+
+        # Save the data
+        # Get the file index counter
+        counter = fname.split("_")[-1].split('.')[0]
+        fname = os.path.join(self.output_dir, f"espec_{counter}")
+        if fname.endswith(".npz"):
+            fname += ".npz"
+        else:
+            fname += ".hdf5"
+
+        # Dump the file
+        dump(
+            filename=fname,
+            particles=[pa],
+            solver_data=data['solver_data'],
+            detailed_output=self.solver.detailed_output,
+            only_real=self.solver.output_only_real,
+            mpi_comm=None,
+            compress=self.solver.compress_output
+        )
+        msg = f"Energy spectrum PySPH viewable file saved to: {fname}"
+        msg += f'. Can be viewed by running: \n\t$ pysph view "{fname}"'
+        logger.info(msg)
+
+    def energy_spectrum_post_processing(
+        self, dim: int, L: float, U0:float=1.0, f_idx: int = 0,
         compute_without_interp: bool = False
     ):
         """
-        Dump the energy spectrum to a *.npz file.
+        Post-processing of the energy spectrum.
 
         Parameters
         ----------
@@ -335,8 +477,11 @@ class TurbulentFlowApp(Application):
             Dimension of the problem.
         L : float
             Length of the domain.
-        iter_idx : int
-            Iteration index.
+        U0 : float, optional
+            Reference velocity of the flow. Default is 1.
+        f_idx : int, optional
+            Index of the output file to be used for computing the energy
+            spectrum. Default is 0.
         compute_without_interp : bool
             If True, computes the energy spectrum with and without
             interpolating the velocity field. This requires the initial
@@ -344,43 +489,23 @@ class TurbulentFlowApp(Application):
         """
         if len(self.output_files) == 0:
             return
-
-        i_kernel_cls = get_kernel_cls(self.options.i_kernel, dim)
-
-        eqs, method = self.get_interpolation_equations(
-            method=self.options.i_method, dim=dim
-        )
-        espec_ob, interp_ob = EnergySpectrum.from_pysph_file(
-            fname=self.output_files[iter_idx], dim=dim, L=L,
-            i_nx=self.options.i_nx, kernel=i_kernel_cls,
-            domain_manager=self.create_domain(), method=method, equations=eqs,
-            U0=1., debug=True
-        )
-        espec_ob.compute()
-        self._log_interpolator_details(
-            self.output_files[iter_idx], dim, interp_ob
+        
+        # Get the energy spectrum
+        espec_ob = self.get_energy_spectrum(
+            fname=self.output_files[f_idx], dim=dim, L=L
         )
 
         Ek_no_interp, l2_error_no_interp = None, None
         if compute_without_interp:
-            fname = self.initial_vel_field_fname
-            if fname:
-                espec_initial_ob = EnergySpectrum.from_initial_npz_file(
-                    fname=fname, dim=dim, U0=1.,
-                )
-                espec_initial_ob.compute()
+            espec_initial_ob = self.get_energy_spectrum_from_initial_vel_field(
+                dim=dim, U0=U0
+            )
+            if espec_initial_ob is not None:
                 Ek_no_interp = espec_initial_ob.Ek
                 l2_error_no_interp = np.sqrt((espec_ob.Ek - Ek_no_interp)**2)
-            else:
-                logger.warn(
-                    "Could not find initial velocity field file. "
-                    "Skipping computation of energy spectrum without "
-                    "interpolation! \nForgot to call "
-                    "`save_initial_vel_field`?"
-                )
 
         # Save npz file
-        fname = os.path.join(self.output_dir, f"espec_result_{iter_idx}.npz")
+        fname = os.path.join(self.output_dir, f"espec_result_{f_idx}.npz")
 
         Ek_exact = self.get_exact_energy_spectrum()
         if Ek_exact is not None:
@@ -401,43 +526,14 @@ class TurbulentFlowApp(Application):
             Ek_no_interp=Ek_no_interp,
             l2_error_no_interp=l2_error_no_interp
         )
-        logger.info("Energy spectrum results saved to: %s" % fname)
+        logger.info("Energy spectrum results saved to: %s", fname)
 
-        # Save PySPH file
-        from pysph.solver.utils import dump, load
-        data = load(self.output_files[iter_idx])
-
-        pa = data['arrays']['fluid']
-        pa.add_property('EK_U', 'double', data=espec_ob.EK_U.flatten())
-        pa.add_property(
-            'EK_V',
-            'double',
-            data=espec_ob.EK_V.flatten() if dim > 1 else 0.)
-        pa.add_property(
-            'EK_W',
-            'double',
-            data=espec_ob.EK_W.flatten() if dim > 2 else 0.)
-
-        pa.add_output_arrays(['EK_U', 'EK_V', 'EK_W'])
-
-        counter = self.output_files[iter_idx].split("_")[-1].split('.')[0]
-        fname = os.path.join(self.output_dir, f"espec_{counter}")
-        if self.output_files[iter_idx].endswith(".npz"):
-            fname += ".npz"
-        else:
-            fname += ".hdf5"
-        dump(
-            filename=fname,
-            particles=[pa],
-            solver_data=data['solver_data'],
-            detailed_output=self.solver.detailed_output,
-            only_real=self.solver.output_only_real,
-            mpi_comm=None,
-            compress=self.solver.compress_output
+        # Save PySPH viewable file
+        self.save_energy_spectrum_as_pysph_view_file(
+            fname=self.output_files[f_idx], dim=dim, espec_ob=espec_ob
         )
-        logger.info("Energy spectrum PySPH-viz file saved to: %s" % fname)
 
-    def plot_energy_spectrum_evolution(self, f_idx: list = [0, -1]):
+    def plot_energy_spectrum_evolution(self, f_idx: list = None):
         """
         Plot the evolution of energy spectrum for the given files indices.
 
@@ -447,7 +543,8 @@ class TurbulentFlowApp(Application):
             List of file indices to plot. Default is [0, -1] which plots the
             first and last files.
         """
-        from energy_spectrum import EnergySpectrum
+        if f_idx is None:
+            f_idx = [0, -1]
         fnames = [
             os.path.join(self.output_dir, f'espec_result_{i}.npz')
             for i in f_idx
