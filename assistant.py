@@ -144,6 +144,10 @@ def cli_args():
         "-A", "--all", action="store_true",
         help="Run all checks."
     )
+    parser.add_argument(
+        "-f", "--force", action="store_true",
+        help="Run a specified check even if the file has a '#NOQA' comment."
+    )
     args = parser.parse_args()
     return args
 
@@ -192,7 +196,7 @@ def main():
     for fpath in py_files:
         with open(fpath, "r", encoding="utf-8") as f:
             first_line = f.readline()
-            if "#NOQA" in first_line:
+            if "#NOQA" in first_line and not args.force:
                 continue
         if check_docstrings:
             print(start_border)
