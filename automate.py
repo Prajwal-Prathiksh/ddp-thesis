@@ -27,7 +27,7 @@ from code.automate_utils import styles
 #TODO: Refacto code to make the above possible
 
 BACKEND = " --openmp"
-N_CORES, N_THREADS = 1, 1
+N_CORES, N_THREADS = 1, 2
 
 class SineVelProfilePlotters(Simulation):
     """
@@ -35,20 +35,48 @@ class SineVelProfilePlotters(Simulation):
     profile problem.
     """
     def Ek_loglog(self, **kw):
+        """
+        Plot the energy spectrum in loglog scale.
+        """
         data = np.load(self.input_path('espec_result_0.npz'))
         plt.loglog(data['k'], data['Ek'], **kw)
-    
-    def Ek_loglog_exact(self, **kw):
-        data = np.load(self.input_path('espec_result_0.npz'))
-        plt.loglog(data['k'], data['Ek_exact'], **kw)
-    
+
     def Ek_plot(self, **kw):
+        """
+        Plot the energy spectrum.
+        """
         data = np.load(self.input_path('espec_result_0.npz'))
         plt.plot(data['k'], data['Ek'], **kw)
     
+    def Ek_loglog_exact(self, **kw):
+        """
+        Plot the exact energy spectrum in loglog scale.
+        """
+        data = np.load(self.input_path('espec_result_0.npz'))
+        plt.loglog(data['k'], data['Ek_exact'], **kw)    
+    
     def l2_error(self, **kw):
+        """
+        Plot the l2 error (wrt exact solution) in loglog scale.
+        """
         data = np.load(self.input_path('espec_result_0.npz'))
         plt.loglog(data['k'], data['l2_error'], **kw)
+    
+    def Ek_loglog_no_interp(self, **kw):
+        """
+        Plot the energy spectrum calculated without interpolation in loglog scale.
+        """
+        data = np.load(self.input_path('espec_result_0.npz'))
+        plt.loglog(data['k'], data['Ek_no_interp'], **kw)
+    
+    def l2_error_no_interp(self, **kw):
+        """
+        Plot the l2 error (wrt solution calculated without interpolation) in loglog scale.
+        """
+        data = np.load(self.input_path('espec_result_0.npz'))
+        plt.loglog(data['k'], data['l2_error_no_interp'], **kw)
+    
+    
 class SineVelProfile(PySPHProblem):
     """
     Automator to run the sinusoidal velocity profile problem.
@@ -73,11 +101,13 @@ class SineVelProfile(PySPHProblem):
         labels : sequence
             Sequence of labels for the cases.
         plt_type : str
-            Type of plot. Can be: 'loglog', 'plot', 'l2_error'
-        styles: callable: returns an iterator/iterable of style keyword arguments.
+            Type of plot. Can be: 'loglog', 'plot', 'l2_error',
+            'l2_error_no_interp'
+        styles: callable: returns an iterator/iterable of style keyword
+            arguments.
             Defaults to the ``styles`` function defined in this module.
         title_suffix : str
-            Suffix to be added to the title.
+            Suffix to be added to the title. Default is an empty string.
         """
         plt.figure()
         if plt_type == "loglog":
@@ -104,6 +134,14 @@ class SineVelProfile(PySPHProblem):
                 labels=labels,
                 styles=styles,
             )
+        elif plt_type == "l2_error_no_interp":
+            compare_runs(
+                sims=cases,
+                method=SineVelProfilePlotters.l2_error_no_interp,
+                exact=None,
+                labels=labels,
+                styles=styles,
+            )
         else:
             raise ValueError("Invalid plt_type: {}".format(plt_type))
 
@@ -120,6 +158,10 @@ class SineVelProfile(PySPHProblem):
             xlabel = r"$log(k)$"
             ylabel = r"$log(L_2 error)$"
             title += r" ($L_2$ error)"
+        elif plt_type == "l2_error_no_interp":
+            xlabel = r"$log(k)$"
+            ylabel = r"$log(L_2 error)$"
+            title += r" ($L_2$ error, no interpolation)"
         
         title += " ({})".format(", ".join(labels)) + title_suffix
         plt.title(title)
@@ -164,10 +206,10 @@ class SineVelProfile(PySPHProblem):
             return all_options
 
         def get_example_opts():
-            perturb_opts = mdict(perturb=[0, 0.1])
+            perturb_opts = mdict(perturb=[0])
             dim_nx_opts = mdict(dim=[1], nx=[5001, 10001, 20001])
             dim_nx_opts += mdict(dim=[2], nx=[251, 501])
-            dim_nx_opts += mdict(dim=[3], nx=[101])
+            # dim_nx_opts += mdict(dim=[3], nx=[101])
 
             all_options = dprod(perturb_opts, dim_nx_opts)
 
@@ -175,7 +217,7 @@ class SineVelProfile(PySPHProblem):
             KERNEL_CHOICES = [
                 'WendlandQuinticC4'
             ]
-            INTERPOLATING_METHOD_CHOICES = ['order1', 'order1BL']
+            INTERPOLATING_METHOD_CHOICES = ['order1']#, 'order1BL', 'order1MC']
             
             i_kernel_opts = mdict(i_kernel=KERNEL_CHOICES)
             i_method_opts = mdict(i_method=INTERPOLATING_METHOD_CHOICES)
@@ -213,6 +255,10 @@ class SineVelProfile(PySPHProblem):
             self.plot_energy_spectrum(
                 fcases, labels, plt_type="l2_error", title_suffix=title_suffix
             )
+            self.plot_energy_spectrum(
+                fcases, labels, plt_type="l2_error_no_interp",
+                title_suffix=f"{title_suffix} (no interpolation)"
+            )
 
 
         for dim in tmp['dim']:
@@ -221,6 +267,10 @@ class SineVelProfile(PySPHProblem):
             labels = ['i_method', 'nx']
             self.plot_energy_spectrum(
                 fcases, labels, plt_type="l2_error", title_suffix=title_suffix
+            )
+            self.plot_energy_spectrum(
+                fcases, labels, plt_type="l2_error_no_interp",
+                title_suffix=f"{title_suffix} (no interpolation)"
             )
 
 
