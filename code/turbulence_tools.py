@@ -18,7 +18,8 @@ from pysph.tools.interpolator import (
     SPHFirstOrderApproximationPreStep, SPHFirstOrderApproximation
 )
 from pysph.sph.wc.kernel_correction import (
-    GradientCorrectionPreStep, GradientCorrection
+    GradientCorrectionPreStep, GradientCorrection,
+    MixedKernelCorrectionPreStep, MixedGradientCorrection
 )
 
 #TODO: Add support for openmp in interpolator and m_mat in interpolator cls
@@ -37,7 +38,9 @@ KERNEL_CHOICES = [
 ]
 
 # Interpolating method choices
-INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1', 'order1BL']
+INTERPOLATING_METHOD_CHOICES = [
+    'sph', 'shepard', 'order1', 'order1BL', 'order1MC'
+]
 
 
 def get_kernel_cls(name: str, dim: int):
@@ -103,7 +106,7 @@ class TurbulentFlowApp(Application):
         )
         turb_options.add_argument(
             "--i-kernel", action="store", type=str, dest="i_kernel",
-            default='WendlandQuinticC2', choices=KERNEL_CHOICES,
+            default='WendlandQuinticC4', choices=KERNEL_CHOICES,
             help="Interpolation kernel."
         )
         turb_options.add_argument(
@@ -134,14 +137,26 @@ class TurbulentFlowApp(Application):
         i_nx = self.options.i_nx
         self.options.i_nx = i_nx if i_nx is not None else nx
 
-    def _log_interpolator_details(self, fname, dim, interp):
+    def _log_interpolator_details(self, fname, dim, interp_ob):
+        """
+        Log details of the interpolator used.
+
+        Parameters
+        ----------
+        fname : str
+            Name of the file from which the PySPH particles are loaded.
+        dim : int
+            Dimension of the problem.
+        interp_ob : object
+            Interpolator object used.
+        """
         msg = "Using interpolator:\n"
         msg += "-" * 70 + "\n"
         msg += "Reading data from: %s" % fname + "\n"
-        msg += f"Kernel: {interp.kernel.__class__.__name__}(dim={dim})" + "\n"
-        msg += f"Method: {interp.method}" + "\n"
+        msg += f"Kernel: {interp_ob.kernel.__class__.__name__}(dim={dim})" + "\n"
+        msg += f"Method: {interp_ob.method}" + "\n"
         msg += f"Equations: \n"
-        for eqn in interp.func_eval.equation_groups:
+        for eqn in interp_ob.func_eval.equation_groups:
             msg += f"\t{eqn}" + "\n" 
         msg += "-" * 70
         logger.info(msg)
@@ -164,9 +179,13 @@ class TurbulentFlowApp(Application):
         -------
         equations : sequence
             Equations for interpolating the velocity field.
+        consistent_method : str
+            Consistent interpolating method to be used by the `Interpolator`
+            class.
         """
         if method in ['sph', 'shepard', 'order1']:
             equations = None
+            consistent_method = method
         elif method == 'order1BL':
             equations = [
                 Group(
@@ -178,8 +197,7 @@ class TurbulentFlowApp(Application):
                 Group(
                     equations=[
                         GradientCorrectionPreStep(
-                            dest='interpolate', sources=['fluid'],
-                            dim=dim
+                            dest='interpolate', sources=['fluid'], dim=dim
                         ),
 
                     ], real=False
@@ -187,7 +205,8 @@ class TurbulentFlowApp(Application):
                 Group(
                     equations=[
                         GradientCorrection(
-                            dest='interpolate', sources=['fluid'], dim=dim, tol=0.1
+                            dest='interpolate', sources=['fluid'], dim=dim,
+                            tol=0.1
                         ),
                         SPHFirstOrderApproximationPreStep(
                             dest='interpolate', sources=['fluid'], dim=dim
@@ -198,9 +217,42 @@ class TurbulentFlowApp(Application):
                     ], real=True
                 )
             ]
+        elif method == 'order1MC':
+            equations = [
+                Group(
+                    equations=[
+                        SummationDensity(dest='fluid', sources=['fluid'])
+                    ], real=False
+                ),
+                Group(
+                    equations=[
+                        MixedKernelCorrectionPreStep(
+                            dest='interpolate', sources=['fluid'], dim=dim
+                        )
+                    ], real=False
+                ),
+                Group(
+                    equations=[
+                        MixedGradientCorrection(
+                            dest='interpolate', sources=['fluid'], dim=dim,
+                            tol=0.1
+                        ),
+                        SPHFirstOrderApproximationPreStep(
+                            dest='interpolate', sources=['fluid'], dim=dim
+                        ),
+                        SPHFirstOrderApproximation(
+                            dest='interpolate', sources=['fluid'], dim=dim
+                        )
+                    ], real=True
+                )
+            ]
+
         else:
             raise ValueError("Unknown method: %s" % method)
-        return equations
+
+        if equations:
+            consistent_method = 'order1'
+        return equations, consistent_method
 
     def get_exact_energy_spectrum(self):
         """
@@ -210,7 +262,10 @@ class TurbulentFlowApp(Application):
         logger.warn("get_exact_energy_spectrum() is not implemented.")
         return None
 
-    def dump_enery_spectrum(self, dim: int, L: float, iter_idx: int = 0):
+    def dump_enery_spectrum(
+        self, dim: int, L: float, iter_idx: int = 0,
+        compute_without_interp: bool = False
+    ):
         """
         Dump the energy spectrum to a *.npz file.
 
@@ -218,29 +273,27 @@ class TurbulentFlowApp(Application):
         ----------
         dim : int
             Dimension of the problem.
-
         L : float
             Length of the domain.
-
         iter_idx : int
             Iteration index.
+        compute_without_interp : bool
+            If True, computes the energy spectrum with and without
+            interpolating the velocity field.
         """
         if len(self.output_files) == 0:
             return
 
-        method = self.options.i_method
-        if method not in ['sph', 'shepard', 'order1']:
-            method = 'order1'
-
         i_kernel_cls = get_kernel_cls(self.options.i_kernel, dim)
 
-        eqs = self.get_interpolation_equations(
+        eqs, method = self.get_interpolation_equations(
             method=self.options.i_method, dim=dim
         )
-        self.espec_ob, interp = EnergySpectrum.from_pysph_file(
+        self.espec_ob, interp_ob = EnergySpectrum.from_pysph_file(
             fname=self.output_files[iter_idx],
             dim=dim,
             L=L,
+            interpolate=True,
             i_nx=self.options.i_nx,
             kernel=i_kernel_cls,
             domain_manager=self.create_domain(),
@@ -250,7 +303,26 @@ class TurbulentFlowApp(Application):
             debug=True
         )
         self.espec_ob.compute()
-        self._log_interpolator_details(self.output_files[iter_idx], dim, interp)
+        self._log_interpolator_details(
+            self.output_files[iter_idx], dim, interp_ob
+        )
+
+        Ek_no_interp, l2_error_no_interp = None, None
+        if compute_without_interp:
+            espec_no_interp_ob = EnergySpectrum.from_pysph_file(
+                fname=self.output_files[iter_idx],
+                dim=dim,
+                L=L,
+                interpolate=False,
+                debug=False
+            )
+            espec_no_interp_ob.compute()
+            Ek_no_interp = espec_no_interp_ob.Ek
+            l2_error_no_interp = np.sqrt((self.espec_ob.Ek - Ek_no_interp)**2)
+    
+
+
+
 
         # Save npz file
         fname = os.path.join(self.output_dir, f"espec_result_{iter_idx}.npz")
@@ -270,7 +342,9 @@ class TurbulentFlowApp(Application):
             EK_V=self.espec_ob.EK_V,
             EK_W=self.espec_ob.EK_W,
             Ek_exact=Ek_exact,
-            l2_error=l2_error
+            l2_error=l2_error,
+            Ek_no_interp=Ek_no_interp,
+            l2_error_no_interp=l2_error_no_interp
         )
         logger.info("Energy spectrum results saved to: %s" % fname)
 
