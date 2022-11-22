@@ -243,7 +243,7 @@ class SinVelocityProfile(TurbulentFlowApp):
         method = self.options.i_method
         if method not in ['sph', 'shepard', 'order1']:
             method = 'order1'
-        espec_ob = EnergySpectrum.from_pysph_file(
+        espec_ob = EnergySpectrum.from_pysph_file_with_interp(
             fname=self.output_files[0],
             dim=dim,
             L=self.L,

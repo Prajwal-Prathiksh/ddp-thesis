@@ -289,11 +289,10 @@ class TurbulentFlowApp(Application):
         eqs, method = self.get_interpolation_equations(
             method=self.options.i_method, dim=dim
         )
-        self.espec_ob, interp_ob = EnergySpectrum.from_pysph_file(
+        espec_ob, interp_ob = EnergySpectrum.from_pysph_file_with_interp(
             fname=self.output_files[iter_idx],
             dim=dim,
             L=L,
-            interpolate=True,
             i_nx=self.options.i_nx,
             kernel=i_kernel_cls,
             domain_manager=self.create_domain(),
@@ -302,47 +301,41 @@ class TurbulentFlowApp(Application):
             U0=1.,
             debug=True
         )
-        self.espec_ob.compute()
+        espec_ob.compute()
         self._log_interpolator_details(
             self.output_files[iter_idx], dim, interp_ob
         )
 
         Ek_no_interp, l2_error_no_interp = None, None
-        if compute_without_interp:
-            espec_no_interp_ob = EnergySpectrum.from_pysph_file(
-                fname=self.output_files[iter_idx],
-                dim=dim,
-                L=L,
-                interpolate=False,
-                debug=False
-            )
-            print(f"Outside {np.max(np.abs(espec_no_interp_ob.u))}")
-            print(np.max(np.abs(espec_no_interp_ob.u)))
-            espec_no_interp_ob.compute()
-            Ek_no_interp = espec_no_interp_ob.Ek
-            l2_error_no_interp = np.sqrt((self.espec_ob.Ek - Ek_no_interp)**2)
-    
-
-
-
+        # if compute_without_interp:
+        espec_no_interp_ob = EnergySpectrum.from_pysph_file_no_interp(
+            fname=self.output_files[iter_idx],
+            dim=dim,
+            L=L,
+            U0=1.
+        )
+        print(f"Outside {np.max(np.abs(espec_no_interp_ob.u))}")
+        espec_no_interp_ob.compute()
+        Ek_no_interp = espec_no_interp_ob.Ek
+        l2_error_no_interp = np.sqrt((espec_ob.Ek - Ek_no_interp)**2)
 
         # Save npz file
         fname = os.path.join(self.output_dir, f"espec_result_{iter_idx}.npz")
 
         Ek_exact = self.get_exact_energy_spectrum()
         if Ek_exact is not None:
-            l2_error = np.sqrt((self.espec_ob.Ek - Ek_exact)**2)
+            l2_error = np.sqrt((espec_ob.Ek - Ek_exact)**2)
         else:
             l2_error = None
 
         np.savez(
             fname,
-            k=self.espec_ob.k,
-            t=self.espec_ob.t,
-            Ek=self.espec_ob.Ek,
-            EK_U=self.espec_ob.EK_U,
-            EK_V=self.espec_ob.EK_V,
-            EK_W=self.espec_ob.EK_W,
+            k=espec_ob.k,
+            t=espec_ob.t,
+            Ek=espec_ob.Ek,
+            EK_U=espec_ob.EK_U,
+            EK_V=espec_ob.EK_V,
+            EK_W=espec_ob.EK_W,
             Ek_exact=Ek_exact,
             l2_error=l2_error,
             Ek_no_interp=Ek_no_interp,
@@ -355,15 +348,15 @@ class TurbulentFlowApp(Application):
         data = load(self.output_files[iter_idx])
 
         pa = data['arrays']['fluid']
-        pa.add_property('EK_U', 'double', data=self.espec_ob.EK_U.flatten())
+        pa.add_property('EK_U', 'double', data=espec_ob.EK_U.flatten())
         pa.add_property(
             'EK_V',
             'double',
-            data=self.espec_ob.EK_V.flatten() if dim > 1 else 0.)
+            data=espec_ob.EK_V.flatten() if dim > 1 else 0.)
         pa.add_property(
             'EK_W',
             'double',
-            data=self.espec_ob.EK_W.flatten() if dim > 2 else 0.)
+            data=espec_ob.EK_W.flatten() if dim > 2 else 0.)
 
         pa.add_output_arrays(['EK_U', 'EK_V', 'EK_W'])
 

@@ -357,13 +357,38 @@ class EnergySpectrum(object):
 
     # Class methods
     @classmethod
-    def from_pysph_file(
-        cls, fname: str, dim: int, L: float, interpolate: bool = True,
-        i_nx: int=None, kernel: object = None, domain_manager: object = None,
-        U0=1., debug=False, **kwargs
+    def from_pysph_file_no_interp(
+        cls, fname:str, dim:int, L:float, U0:float=1.
     ):
         """
-        Create an EnergySpectrum object from a PySPH output file.
+        Initialize the class from a PySPH file without interpolating the
+        velocity field.
+        """
+        data = load(fname)
+        t = data["solver_data"]["t"]
+        u = data["arrays"]["fluid"].get("u")
+        v = data["arrays"]["fluid"].get("v")
+        w = data["arrays"]["fluid"].get("w")
+        nx = int(np.power(u.size, 1./dim))
+        if dim == 1:
+            v = w = None
+        elif dim == 2:
+            u = u.reshape(nx, nx)
+            v = v.reshape(nx, nx)
+            w = None
+        else:
+            u = u.reshape(nx, nx, nx)
+            v = v.reshape(nx, nx, nx)
+            w = w.reshape(nx, nx, nx)
+        return cls(dim, u, v, w, t, U0)
+
+    @classmethod
+    def from_pysph_file_with_interp(
+        cls, fname: str, dim: int, L: float, i_nx: int, kernel: object = None, domain_manager: object = None, U0=1., debug=False, **kwargs
+    ):
+        """
+        Create an EnergySpectrum object from a PySPH output file by
+        interpolating the velocity field.
 
         Parameters
         ----------
@@ -373,11 +398,9 @@ class EnergySpectrum(object):
             Dimension of the flow.
         L : float
             Length of the domain.
-        interpolate : bool, optional
-            Whether to interpolate the velocity field or not. Default is True.
         i_nx : int, optional
             Number of points to interpolate the energy spectrum (i_nx**2 for 2D
-            data, i_nx**3 for 3D data). Default is pow(len(u), 1/dim).
+            data, i_nx**3 for 3D data).
         kernel : object, optional
             Kernel object. Default is WendlandQuinticC4.
         domain_manager : object, optional
@@ -400,71 +423,49 @@ class EnergySpectrum(object):
         if i_nx is None:
             i_nx = int(np.power(len(u), 1/dim))
 
-        interp_ob = None
-        if interpolate:
-            #TODO: Seperate into sep function
-            # Create meshgrid based on dimension
-            _x = np.linspace(0, L, i_nx)
-            if dim == 1:
-                x = _x
-                y = z = None
-            elif dim == 2:
-                x, y = np.meshgrid(_x, _x)
-                z = None
-            elif dim == 3:
-                x, y, z = np.meshgrid(_x, _x, _x)
+        #TODO: Seperate into sep function
+        # Create meshgrid based on dimension
+        _x = np.linspace(0, L, i_nx)
+        if dim == 1:
+            x = _x
+            y = z = None
+        elif dim == 2:
+            x, y = np.meshgrid(_x, _x)
+            z = None
+        elif dim == 3:
+            x, y, z = np.meshgrid(_x, _x, _x)
 
-            # Setup default interpolator properties
-            if kernel is None:
-                kernel = WendlandQuinticC4(dim=dim)
+        # Setup default interpolator properties
+        if kernel is None:
+            kernel = WendlandQuinticC4(dim=dim)
 
-            # Interpolate velocity
-            interp_ob = Interpolator(
-                list(data['arrays'].values()), x=x, y=y, z=z,
-                kernel=kernel, domain_manager=domain_manager, **kwargs
-            )
-            if dim == 1:
-                _u = interp_ob.interpolate('u')
-                ui = _u
-                vi = wi = None
-            elif dim == 2:
-                _u = interp_ob.interpolate('u')
-                _v = interp_ob.interpolate('v')
-                ui = _u.reshape(i_nx, i_nx)
-                vi = _v.reshape(i_nx, i_nx)
-                wi = None
-            elif dim == 3:
-                _u = interp_ob.interpolate('u')
-                _v = interp_ob.interpolate('v')
-                _w = interp_ob.interpolate('w')
-                ui = _u.reshape(i_nx, i_nx, i_nx)
-                vi = _v.reshape(i_nx, i_nx, i_nx)
-                wi = _w.reshape(i_nx, i_nx, i_nx)
-            
-        else:
-            i_nx = int(np.power(len(u), 1/dim))
-            if dim == 1:
-                ui = u
-                vi = wi = None
-            elif dim == 2:
-                vi = data["arrays"]["fluid"].get("v")
-                wi = None
-                ui = u.reshape(i_nx, i_nx)
-                vi = vi.reshape(i_nx, i_nx)
-            elif dim == 3:
-                vi = data["arrays"]["fluid"].get("v")
-                wi = data["arrays"]["fluid"].get("w")
-                ui = u.reshape(i_nx, i_nx, i_nx)
-                vi = vi.reshape(i_nx, i_nx, i_nx)
-                wi = wi.reshape(i_nx, i_nx, i_nx)
+        # Interpolate velocity
+        interp_ob = Interpolator(
+            list(data['arrays'].values()), x=x, y=y, z=z,
+            kernel=kernel, domain_manager=domain_manager, **kwargs
+        )
+        if dim == 1:
+            _u = interp_ob.interpolate('u')
+            ui = _u
+            vi = wi = None
+        elif dim == 2:
+            _u = interp_ob.interpolate('u')
+            _v = interp_ob.interpolate('v')
+            ui = _u.reshape(i_nx, i_nx)
+            vi = _v.reshape(i_nx, i_nx)
+            wi = None
+        elif dim == 3:
+            _u = interp_ob.interpolate('u')
+            _v = interp_ob.interpolate('v')
+            _w = interp_ob.interpolate('w')
+            ui = _u.reshape(i_nx, i_nx, i_nx)
+            vi = _v.reshape(i_nx, i_nx, i_nx)
+            wi = _w.reshape(i_nx, i_nx, i_nx)
         
-        print(f"Inside from _pysph {np.max(np.abs(ui))}")
         if debug:
-            return cls(
-                dim=dim, u=ui, v=vi, w=wi, t=0.0, U0=1.0
-            ), interp_ob
+            return cls(dim=dim, u=ui, v=vi, w=wi, t=t, U0=U0), interp_ob
         else:
-            return cls(dim, ui, vi, wi, t, U0)
+            return cls(dim=dim, u=ui, v=vi, w=wi, t=t, U0=U0)
 
 
     @classmethod
