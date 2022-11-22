@@ -56,7 +56,11 @@ def find_missing_doctrings(cwd, fpath):
                 while not lines[j].endswith(":\n"):
                     j += 1
                 next_line = lines[j + 1].strip()
-                if not next_line.startswith('"""'):
+                cond1 = next_line.startswith('"""')
+                cond2 = next_line.startswith("'''")
+                cond3 = next_line.startswith("r'''")
+                cond4 = next_line.startswith('r"""')
+                if not (cond1 or cond2 or cond3 or cond4):
                     print(f"{fpath[len(cwd) + 1:]}: {i + 1}: {line.strip()}")
                     found_missing_docstrings = True
 
