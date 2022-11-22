@@ -87,6 +87,7 @@ class TurbulentFlowApp(Application):
     def __init__(self, *args, **kw):
         super(TurbulentFlowApp, self).__init__(*args, **kw)
         self._add_turbulence_options()
+        self.initial_vel_field_fname = None
 
     # Private methods
     def _add_turbulence_options(self):
@@ -160,8 +161,63 @@ class TurbulentFlowApp(Application):
             msg += f"\t{eqn}" + "\n" 
         msg += "-" * 70
         logger.info(msg)
+    
+    def _set_initial_vel_field_fname(self, fname:str):
+        """
+        Set the name of the file containing the initial velocity field.
+
+        Parameters
+        ----------
+        fname : str
+            Base name of the file containing the initial velocity field.
+        """
+        self.initial_vel_field_fname = os.basename(fname)
 
     # Public methods
+    def save_initial_vel_field(
+        self, dim:int, u:np.ndarray, v:np.ndarray, w:np.ndarray,
+        fname:str=None, **kwargs
+    ):
+        """
+        Save the initial velocity field to a *.npz file in the output
+        directory. The velocity field components should have appropriate 
+        dimensions, i.e. len(shape(u)) = len(shape(v)) = len(shape(w)) = dim.
+        If a float is passed for (v or w) component  of velocity, it is
+        converted to a numpy array of the shape of (u).
+
+        Parameters
+        ----------
+        dim : int
+            Dimension of the flow.
+        u : np.ndarray
+            Initial velocity field in x direction.
+        v : np.ndarray
+            Initial velocity field in y direction.
+        w : np.ndarray
+            Initial velocity field in z direction.
+        fname : str, optional
+            Name of the output file. If not specified, it is set to 
+            "initial_vel_field.npz".
+        **kwargs : dict, optional
+            Additional keyword arguments to be passed to numpy.savez.
+        """
+        if fname is None:
+            fname = "initial_vel_field.npz"
+        
+        # Convert to numpy arrays if necessary
+        if not isinstance(v, np.ndarray):
+            v = np.full_like(u, v)
+        if not isinstance(w, np.ndarray):
+            w = np.full_like(u, w)
+
+        assert len(u.shape) == dim, "u must have dimension dim"
+        assert len(v.shape) == dim, "v must have dimension dim"
+        assert len(w.shape) == dim, "w must have dimension dim"
+
+        fname = os.path.join(self.output_dir, fname)
+        np.savez(fname, dim=dim, u=u, v=v, w=w, **kwargs)
+        self._set_initial_vel_field_fname(fname)
+
     # Post-processing methods
     def get_interpolation_equations(self, method: str, dim: int):
         """
@@ -279,7 +335,8 @@ class TurbulentFlowApp(Application):
             Iteration index.
         compute_without_interp : bool
             If True, computes the energy spectrum with and without
-            interpolating the velocity field.
+            interpolating the velocity field. This requires the initial
+            velocity field to be saved using `save_initial_vel_field()`.
         """
         if len(self.output_files) == 0:
             return
@@ -290,16 +347,10 @@ class TurbulentFlowApp(Application):
             method=self.options.i_method, dim=dim
         )
         espec_ob, interp_ob = EnergySpectrum.from_pysph_file(
-            fname=self.output_files[iter_idx],
-            dim=dim,
-            L=L,
-            i_nx=self.options.i_nx,
-            kernel=i_kernel_cls,
-            domain_manager=self.create_domain(),
-            method=method,
-            equations=eqs,
-            U0=1.,
-            debug=True
+            fname=self.output_files[iter_idx], dim=dim, L=L,
+            i_nx=self.options.i_nx, kernel=i_kernel_cls,
+            domain_manager=self.create_domain(), method=method, equations=eqs,
+            U0=1., debug=True
         )
         espec_ob.compute()
         self._log_interpolator_details(
@@ -307,17 +358,22 @@ class TurbulentFlowApp(Application):
         )
 
         Ek_no_interp, l2_error_no_interp = None, None
-        # if compute_without_interp:
-        fname = os.path.join(self.output_dir, "initial.npz")
-        espec_initial_ob = EnergySpectrum.from_initial_npz_file(
-            fname=fname,
-            dim=dim,
-            U0=1.,
-        )
-        # print(f"Outside {np.max(np.abs(espec_initial_ob.u))}")
-        espec_initial_ob.compute()
-        Ek_no_interp = espec_initial_ob.Ek
-        l2_error_no_interp = np.sqrt((espec_ob.Ek - Ek_no_interp)**2)
+        if compute_without_interp:
+            fname = self.initial_vel_field_fname
+            if fname:
+                espec_initial_ob = EnergySpectrum.from_initial_npz_file(
+                    fname=fname, dim=dim, U0=1.,
+                )
+                espec_initial_ob.compute()
+                Ek_no_interp = espec_initial_ob.Ek
+                l2_error_no_interp = np.sqrt((espec_ob.Ek - Ek_no_interp)**2)
+            else:
+                logger.warn(
+                    "Could not find initial velocity field file. "
+                    "Skipping computation of energy spectrum without "
+                    "interpolation! \nForgot to call "
+                    "`save_initial_vel_field`?"
+                )
 
         # Save npz file
         fname = os.path.join(self.output_dir, f"espec_result_{iter_idx}.npz")
