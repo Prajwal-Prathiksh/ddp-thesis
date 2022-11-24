@@ -14,6 +14,13 @@ from pysph.tools.sph_evaluator import SPHEvaluator
 from pysph.base.kernels import WendlandQuinticC4
 from pysph.solver.utils import load
 from pysph.base.utils import get_particle_array
+from pysph.sph.equation import Equation, Group
+from compyle.api import declare
+
+from pysph.base.nnps import LinkedListNNPS as NNPS
+from pysph.sph.acceleration_eval import AccelerationEval
+from pysph.sph.sph_compiler import SPHCompiler
+from pysph.sph.wc.linalg import gj_solve, augmented_matrix
 
 def extract_counter(fname: str):
     """
@@ -58,43 +65,36 @@ def rename_fnames_according_to_time(fname0:str, fname1:str):
         return fname0, fname1
     return fname1, fname0
 
+class DeformationGradientForward(Equation):
+    def initialize(self, d_idx, d_F):
+        i9 = declare('int')
+        i9 = 9*d_idx
+
+        for i in range(9):
+            d_F[i9 + i] = 0.0
+
+    def l
+    
+
+
+#TODO: Equation to calculate the Cauchy-Green strain tensor.
+#TODO: Equation to calculate eigenvalues of the Cauchy-Green strain tensor.
+#TODO: Compyle eigenvalue
+
 
 FTLE_TYPES = ['forward', 'backward']
 FLTE_METHODS = ['postprocessing']
 
 class FTLE(object):
     def __init__(
-        self, dim:int, t0:float, x0:np.ndarray, y0:np.ndarray, z0:np.ndarray,
-        m0:np.ndarray, rho0:np.ndarray, h0:np.ndarray, 
-        t1:float, x1:np.ndarray, y1:np.ndarray, z1:np.ndarray,
-        m1:np.ndarray, rho1:np.ndarray, h1:np.ndarray, 
-        ftle_type:str='backward', method:str='postprocessing',
+        self, dim:int, pa_0, pa_f,
+        method:str='postprocessing', kernel=None, domain_manager=None,
+        mode=None, backend=None
     ):
         self.dim = dim
 
-        self.t0 = t0
-        self.x0 = x0
-        self.y0 = y0
-        self.z0 = z0
-        self.m0 = m0
-        self.rho0 = rho0
-        self.h0 = h0
-    
-        self.t1 = t1
-        self.x1 = x1
-        self.y1 = y1
-        self.z1 = z1
-        self.m1 = m1
-        self.rho1 = rho1
-        self.h1 = h1
-
-        
-        if ftle_type not in FTLE_TYPES:
-            raise ValueError(
-                f"{ftle_type} is not a valid FTLE type. Valid types "
-                f"are {FTLE_TYPES}"
-            )
-        self.ftle_type = ftle_type
+        self.pa_0 = pa_0
+        self.pa_f = pa_f
 
         if method not in FLTE_METHODS:
             raise ValueError(
@@ -102,174 +102,160 @@ class FTLE(object):
                 f"are {FLTE_METHODS}"
             )    
         self.method = method
+
+        # Setup particle arrays
+        self.pa_0, self.pa_f = self._setup_particle_arrays()
+        self.arrays = [self.pa_0, self.pa_f]
+
+        # Solver related attributes
+        self.nnps = None
+        self.equations = None
+        self.func_eval = None
+        self.domain_manager = domain_manager
+        if kernel is None:
+            kernel = WendlandQuinticC4(dim=dim)
+        self.kernel = kernel
+        self.mode = mode
+        self.backend = backend
     
     # Class methods
     @classmethod
     def from_pysph_files(
-        cls, dim:int, fname0:str, fname1:str, ftle_type:str='backward'
+        cls, dim:int, fname_i:str, fname_f:str, kernel=None, 
+        domain_manager=None, mode=None, backend=None
     ):
-        fname0, fname1 = rename_fnames_according_to_time(fname0, fname1)
+        fname_i, fname_f = rename_fnames_according_to_time(fname_i, fname_f)
 
         def _read_pysph_data(fname:str):
             data = load(fname)
             t = data['solver_data']['t']
-
-            fluid_data = data['arrays']['fluid']
-            x = fluid_data.get('x')
-            y = fluid_data.get('y')
-            z = fluid_data.get('z')
-
-            m, rho = fluid_data.get('m'), fluid_data.get('rho')
-
-            h = fluid_data.get('h')
-
-            return t, x, y, z, m, rho, h
-
-        t0, x0, y0, z0, m0, rho0, h0 = _read_pysph_data(fname0)
-        t1, x1, y1, z1, m1, rho1, h1 = _read_pysph_data(fname1)
+            pa = data['arrays']['fluid']
+            return t, pa
+        
+        t0, pa0 = _read_pysph_data(fname_i)
+        t1, pa1 = _read_pysph_data(fname_f)
 
         return cls(
             dim=dim,
-            t0=t0, x0=x0, y0=y0, z0=z0, m0=m0, rho0=rho0, h0=h0,
-            t1=t1, x1=x1, y1=y1, z1=z1, m1=m1, rho1=rho1, h1=h1,
-            ftle_type=ftle_type,
+            pa_init=pa0,
+            pa_final=pa1,
+            method='postprocessing'
+            kernel=kernel,
+            domain_manager=domain_manager,
+            mode=mode,
+            backend=backend
+        )
+    
+    @classmethod
+    def from_ndarray(
+        cls, t0, x0:np.ndarray, y0:np.ndarray, z0:np.ndarray,
+        
+        
+         y_i:np.ndarray, z_i:np.ndarray,
+        m_i:np.ndarray, rho_i:np.ndarray, h_i:np.ndarray,
+
+
+
+    ):
+
+    @classmethod
+    def from_example(
+        cls, dim:int, nx:int, flow_type:str,
+    ):
+        pi = np.pi
+        sin, cos = np.sin, np.cos
+
+        _x = np.arange(0, 1+1./nx, 1./nx)
+        if dim == 2:
+            X, Y = np.meshgrid(_x, _x)
+            R2 = X**2 + Y**2
+            flow_types = ['parabolic', 'spiral']
+            if flow_type not in flow_types:
+                raise ValueError(
+                    f"{flow_type} is not a valid flow type. Valid flow types "
+                    f"are {flow_types}"
+                )
+            
+            if flow_type == 'parabolic':
+                x = 1.5*X
+                y = X**2 + Y
+            elif flow_type == 'spiral':
+                x = X + cos(2*pi*R2)
+                y = Y + sin(2*pi*R2)
+            
+            z = np.zeros_like(x)
+
+        else:
+            raise NotImplementedError("Only 2D is implemented.")
+        
+        m = np.ones_like(x)
+        rho = np.ones_like(x)
+        h = np.ones_like(x)
+
+        return cls(
+            dim=dim,
+            t0=0, x0=X, y0=Y, z0=z, m0=m, rho0=rho, h0=h,
+            t1=1, x1=x, y1=y, z1=z, m1=m, rho1=rho, h1=h,
             method='postprocessing'
         )
 
-    @classmethod
-    def from_example(cls, dim:int, ftle_type:str='backward'):
-        pi = np.pi
-        pass
-
-
     
+    # Private methods
+    def _setup_particle_arrays(self):
+        props = {
+            'deform_grad': 9,
+            'm_mat': 9,
+            'ftle': 1,
+        }
+        for prop in props.keys():
+            if prop not in self.pa_i.properties:
+                self.pa_i.add_property(prop, stride=props[prop])
+            if prop not in self.pa_f.properties:
+                self.pa_f.add_property(prop, stride=props[prop])
+
+    def _get_equations(self, ftle_type):
+        if ftle_type == 'forward':
+            pass
+        elif ftle_type == 'backward':
+            pass
+            #TODO
+        return None
     
-
-
-def calculate_ftle_backward(
-    fname1: str, fname2: str, dim: int, h: float, particle_name: str = 'fluid',
-    kernel: object = None, domain_manager: object = None, **kwargs
-):
-    """
-    Calculate the backward-in-time finite-time Lyapunov exponent (FTLE) from
-    two time instances of a flow field.
-
-    Parameters
-    ----------
-    fname1 : str
-        Filename of the first time instance.
-    fname2 : str
-        Filename of the second time instance.
-    dim : int
-        Dimension of the flow field.
-    h : float
-        Smoothing length.
-    particle_name : str, optional
-        Name of the particle group. The default is 'fluid'.
-    kernel : object, optional
-        Kernel object. The default is WendlandQuinticC4.
-    domain_manager : object, optional
-        Domain manager object. The default is None.
-    **kwargs : dict
-        Keyword arguments for the SPHEvaluator.
-
-    Returns
-    -------
-    ftle : np.ndarray
-        Finite-time Lyapunov exponent.
-    """
-    if kernel is None:
-        kernel = WendlandQuinticC4(dim=dim)
-
-    # Load data
-    data1 = load(fname1)
-    data2 = load(fname2)
-    data1, data2 = rename_fnames_according_to_time(data1, data2)
-
-    # Time instances
-    t0 = data1['solver_data']['t']  # Initial time
-    t = data2['solver_data']['t']  # Final time
-
-    # Get positions and volumes
-    # Initial states
-    x0 = data1[particle_name]['x']
-    y0 = data1[particle_name]['y']
-    z0 = data1[particle_name]['z']
-    m0 = data1[particle_name]['m']
-    rho0 = data1[particle_name]['rho']
-
-    # Final states
-    x = data2[particle_name]['x']
-    y = data2[particle_name]['y']
-    z = data2[particle_name]['z']
-    m = data2[particle_name]['m']
-    rho = data2[particle_name]['rho']
-
-    # f(x) = sph_sum(Xij)
-    # Create particle array
-    bit_pa = get_particle_array(
-        name='bit_pa', x=x, y=y, z=z, V=V, h=h, m=m, rho=rho,
-        xprime=x0, yprime=y0, zprime=z0, mprime=m0, rhoprime=rho0
-    )
-    bit_pa.add_property('F', stride=9)
-
-    # Equation to solve
-    equations = [
-        # Group1: GradientCorrectionPreStep
-        # Group2:
-        #   GradientCorrection
-        #   DeformationGradientEquation --> f(xprime_ij, DWIJ, mj, rhoj)
-    ]
-
-    # Create SPH evaluator
-    bit_ftle_eval = SPHEvaluator(
-        arrays=[bit_pa], equations=equations, dim=dim, kernel=kernel,
-        domain_manager=domain_manager, **kwargs
-    )
-
-
-def calculate_ftle_forward():
-    pass
-
-
-def calculate_ftle(
-    fname1: str, fname2: str, dim: int = 2, particle_name: str = 'fluid',
-    method: str = 'backward', kernel: object = None
-):
-    """
-    Calculate the finite-time Lyapunov exponent (FTLE) from two time instances
-    of a flow field.
-
-    Parameters
-    ----------
-    fname1 : str
-        Filename of the first time instance.
-    fname2 : str
-        Filename of the second time instance.
-    particle_name : str, optional
-        Name of the particle group. The default is 'fluid'.
-    method : str, optional
-        Method to calculate the FTLE. The default is 'backward'.
-    kernel : object, optional
-        Kernel object. The default is WendlandQuinticC4.
-
-    Returns
-    -------
-    ftle : np.ndarray
-        Finite-time Lyapunov exponent.
-    """
-    if kernel is None:
-        kernel = WendlandQuinticC4(dim=dim)
-
-    if method == 'backward':
-        return calculate_ftle_backward(
-            fname1, fname2, dim, particle_name, kernel
+    def _compile_acceleration_eval(self):
+        self.func_eval = AccelerationEval(
+            particle_arrays=self.arrays, equations=self.equations,
+            kernel=self.kernel, mode=self.mode, backend=self.backend
         )
-    elif method == 'forward':
-        return calculate_ftle_forward(
-            fname1, fname2, dim, particle_name, kernel
+        compiler = SPHCompiler(
+            acceleration_evals=self.func_eval, integrator=None
         )
-    else:
-        raise ValueError(
-            "Invalid method. Choose from 'backward' or 'forward'."
+        compiler.compile()
+
+    def _create_nnps(self):
+        self.nnps = NNPS(
+            dim=self.dim, particles=self.arrays,
+            radius_scale=self.kernel.radius_scale, domain=self.domain_manager,
+            cache=True
         )
+        self.func_eval.set_nnps(self.nnps)
+    
+    # Public methods
+    def compute(self, ftle_type):
+        if ftle_type not in FTLE_TYPES:
+            raise ValueError(
+                f"{ftle_type} is not a valid FTLE type. Valid types "
+                f"are {FTLE_TYPES}"
+            )
+
+        self.equations = self._get_equations(ftle_type, self.t0, self.tf)
+        self._compile_acceleration_eval()
+        self._create_nnps()
+        self.func_eval.compute(t=0.0, dt=0.1) # Passing junk arguments
+
+        if ftle_type == 'forward':
+            result = self.pa_i.get('ftle').copy()
+        elif ftle_type == 'backward':
+            result = self.pa_f.get('ftle').copy()
+        
+        result.shape = self.shape
+        return result.squeeze()
