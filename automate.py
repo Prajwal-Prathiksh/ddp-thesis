@@ -245,18 +245,26 @@ class SineVelProfile(PySPHProblem):
             return all_options
 
         def get_example_opts():
-            perturb_opts = mdict(perturb=[0, 1e-2 , 1e-1])
-            dim_nx_opts = mdict(dim=[1], nx=[5001, 10001, 20001])
-            dim_nx_opts += mdict(dim=[2], nx=[251, 501])
+            perturb_opts = mdict(perturb=[0, 1e-2, 1e-1, 1, 5, 10])
+            dim_nx_opts = mdict(dim=[1], nx=[20001])#5001, 10001, 20001])
+            dim_nx_opts += mdict(dim=[2], nx=[501])#251, 501])
             dim_nx_opts += mdict(dim=[3], nx=[101])
 
             all_options = dprod(perturb_opts, dim_nx_opts)
 
-            # from code.sine_velocity_profile import KERNEL_CHOICES, INTERPOLATING_METHOD_CHOICES
+            # KERNEL_CHOICES = [
+            #     'CubicSpline', 'WendlandQuinticC2', 'WendlandQuinticC4',
+            #     'WendlandQuinticC6', 'Gaussian', 'SuperGaussian', 'QuinticSpline'
+            # ]
             KERNEL_CHOICES = [
                 'WendlandQuinticC4'
             ]
-            INTERPOLATING_METHOD_CHOICES = ['order1']#, 'order1BL', 'order1MC']
+            INTERPOLATING_METHOD_CHOICES = [
+                'sph', 'shepard', 'order1', 'order1BL', 'order1MC'
+            ]
+            INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1',]
+            # INTERPOLATING_METHOD_CHOICES = ['order1', 'order1BL', 'order1MC']
+            INTERPOLATING_METHOD_CHOICES = ['shepard']
             
             i_kernel_opts = mdict(i_kernel=KERNEL_CHOICES)
             i_method_opts = mdict(i_method=INTERPOLATING_METHOD_CHOICES)
@@ -288,8 +296,9 @@ class SineVelProfile(PySPHProblem):
             nx=[20001, 501, 101]
         )
         for dim, nx in zip(tmp['dim'], tmp['nx']):
-            fcases = filter_cases(self.cases, dim=dim, nx=nx)
-            title_suffix = " (dim={}, nx={})".format(dim, nx)
+            perturb=1e-2
+            fcases = filter_cases(self.cases, dim=dim, nx=nx)#, perturb=perturb)
+            title_suffix = f"(dim={dim}, nx={nx})"#, perturb={perturb})"
             labels = ['i_method', 'perturb']
             self.plot_energy_spectrum(
                 fcases, labels, plt_type="l2_error", title_suffix=title_suffix
