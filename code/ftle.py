@@ -9,38 +9,141 @@ References
     doi: 10.1016/j.cma.2016.03.027.
 """
 # Library imports.
+import numpy as np
 from pysph.tools.sph_evaluator import SPHEvaluator
 from pysph.base.kernels import WendlandQuinticC4
 from pysph.solver.utils import load
 from pysph.base.utils import get_particle_array
 
-# Method 1 (Postprocessing-based)
-# Forward-in-time FTLE and Backward-in-time FTLE
-
-
-def rename_fnames_according_to_time(data1: dict, data2: dict):
+def extract_counter(fname: str):
     """
-    Rename the filenames of the two time instances of a flow field according
-    to the time of the flow field.
+    Extract the counter at the end of the filename after the last underscore
+    and before the extension.
+    Example: 'output_000000.npz' --> '000000'
 
     Parameters
     ----------
-    data1 : dict
-        Data of the first file.
-    data2 : dict
-        Data of the second file.
+    fname : str
+        Filename.
+    
+    Returns
+    -------
+    counter : str
+        Counter.
+    """
+    return fname.split('_')[-1].split('.')[0]
+
+def rename_fnames_according_to_time(fname0:str, fname1:str):
+    """
+    Rename the filenames according to the time instance, by reading the counter
+    from the filenames and returning the filenames in ascending order of time.
+
+    Parameters
+    ----------
+    fname0 : str
+        First filename.
+    fname1 : str
+        Second filename.
 
     Returns
     -------
-    data1 : dict
-        Data of the first time instance.
-    data2 : dict
-        Data of the second time instance.
+    fname0 : str
+        Filename of the first time instance.
+    fname1 : str
+        Filename of the second time instance.
     """
-    if data1['solver_data']['t'] < data2['solver_data']['t']:
-        return data1, data2
-    else:
-        return data2, data1
+    counter0 = extract_counter(fname0)
+    counter1 = extract_counter(fname1)
+    if counter0 > counter1:
+        return fname0, fname1
+    return fname1, fname0
+
+
+FTLE_TYPES = ['forward', 'backward']
+FLTE_METHODS = ['postprocessing']
+
+class FTLE(object):
+    def __init__(
+        self, dim:int, t0:float, x0:np.ndarray, y0:np.ndarray, z0:np.ndarray,
+        m0:np.ndarray, rho0:np.ndarray, h0:np.ndarray, 
+        t1:float, x1:np.ndarray, y1:np.ndarray, z1:np.ndarray,
+        m1:np.ndarray, rho1:np.ndarray, h1:np.ndarray, 
+        ftle_type:str='backward', method:str='postprocessing',
+    ):
+        self.dim = dim
+
+        self.t0 = t0
+        self.x0 = x0
+        self.y0 = y0
+        self.z0 = z0
+        self.m0 = m0
+        self.rho0 = rho0
+        self.h0 = h0
+    
+        self.t1 = t1
+        self.x1 = x1
+        self.y1 = y1
+        self.z1 = z1
+        self.m1 = m1
+        self.rho1 = rho1
+        self.h1 = h1
+
+        
+        if ftle_type not in FTLE_TYPES:
+            raise ValueError(
+                f"{ftle_type} is not a valid FTLE type. Valid types "
+                f"are {FTLE_TYPES}"
+            )
+        self.ftle_type = ftle_type
+
+        if method not in FLTE_METHODS:
+            raise ValueError(
+                f"{method} is not a valid FTLE method. Valid methods "
+                f"are {FLTE_METHODS}"
+            )    
+        self.method = method
+    
+    # Class methods
+    @classmethod
+    def from_pysph_files(
+        cls, dim:int, fname0:str, fname1:str, ftle_type:str='backward'
+    ):
+        fname0, fname1 = rename_fnames_according_to_time(fname0, fname1)
+
+        def _read_pysph_data(fname:str):
+            data = load(fname)
+            t = data['solver_data']['t']
+
+            fluid_data = data['arrays']['fluid']
+            x = fluid_data.get('x')
+            y = fluid_data.get('y')
+            z = fluid_data.get('z')
+
+            m, rho = fluid_data.get('m'), fluid_data.get('rho')
+
+            h = fluid_data.get('h')
+
+            return t, x, y, z, m, rho, h
+
+        t0, x0, y0, z0, m0, rho0, h0 = _read_pysph_data(fname0)
+        t1, x1, y1, z1, m1, rho1, h1 = _read_pysph_data(fname1)
+
+        return cls(
+            dim=dim,
+            t0=t0, x0=x0, y0=y0, z0=z0, m0=m0, rho0=rho0, h0=h0,
+            t1=t1, x1=x1, y1=y1, z1=z1, m1=m1, rho1=rho1, h1=h1,
+            ftle_type=ftle_type,
+            method='postprocessing'
+        )
+
+    @classmethod
+    def from_example(cls, dim:int, ftle_type:str='backward'):
+        pi = np.pi
+        pass
+
+
+    
+    
 
 
 def calculate_ftle_backward(
