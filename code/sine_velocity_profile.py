@@ -15,7 +15,9 @@ from pysph.solver.solver import Solver
 from energy_spectrum import EnergySpectrum
 from turbulence_tools import TurbulentFlowApp, get_kernel_cls
 
-# TODO: Add a more robust/realistic test case?
+# TODO: Use optimal values of hdx for each kernel
+# TODO: Study Gaussian kernel with multiple hdx values
+# TODO: Consider multiple modes of decaying frequencies for the velocity field
 
 
 def perturb_signal(perturb_fac: float, *args: np.ndarray):
@@ -46,7 +48,9 @@ def perturb_signal(perturb_fac: float, *args: np.ndarray):
     return args
 
 
-def get_flow_field(dim: int, dx: float, L: float, perturb_fac: float = 0):
+def get_flow_field(
+    dim: int, dx: float, L: float, perturb_fac: float = 0, 
+):
     r"""
     Get the flow field for the given domain parameters.
 

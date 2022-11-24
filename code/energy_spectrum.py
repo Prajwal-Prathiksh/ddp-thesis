@@ -18,6 +18,7 @@ from pysph.solver.utils import load
 from automate_utils import styles
 
 # TODO: Compyle iterative functions
+# TODO: Use a second-order interpolation scheme
 
 
 def compute_energy_spectrum(
