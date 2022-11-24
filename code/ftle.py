@@ -157,6 +157,8 @@ class LyapunovExponentEquation(Equation):
         # Eigenvalues
         V = declare('matrix((3,))')
 
+        # TODO: Profile this function call to identify if it is a bottleneck
+
         # Compute eigenvalues and eigenvectors
         eigen_decomposition(C_ij, R, cython.address(V[0]))
 
@@ -174,11 +176,10 @@ class LyapunovExponentEquation(Equation):
 
 
 
-class FTLE(object):
+class FTLyapunovExponent(object):
     def __init__(
         self, dim:int, t0, pa_0, tf, pa_f,
         method:str='postprocessing', kernel=None, domain_manager=None,
-        mode='mpi', backend='opencl'
     ):
         self.dim = dim
 
@@ -207,14 +208,12 @@ class FTLE(object):
         if kernel is None:
             kernel = WendlandQuinticC4(dim=dim)
         self.kernel = kernel
-        self.mode = mode
-        self.backend = backend
     
     # Class methods
     @classmethod
     def from_pysph_files(
         cls, dim:int, fname_i:str, fname_f:str, kernel=None, 
-        domain_manager=None, mode=None, backend=None
+        domain_manager=None
     ):
         fname_i, fname_f = rename_fnames_according_to_time(fname_i, fname_f)
 
@@ -234,8 +233,6 @@ class FTLE(object):
             method='postprocessing',
             kernel=kernel,
             domain_manager=domain_manager,
-            mode=mode,
-            backend=backend
         )
     
     @classmethod
@@ -244,7 +241,7 @@ class FTLE(object):
         m0:np.ndarray, rho0:np.ndarray, h0:np.ndarray,
         tf:float, xf:np.ndarray, yf:np.ndarray, zf:np.ndarray,
         mf:np.ndarray, rhof:np.ndarray, hf:np.ndarray,
-        kernel=None, domain_manager=None, mode='mpi', backend='opencl'
+        kernel=None, domain_manager=None,
     ):
         pa_0 = get_particle_array(
             name='initial', x=x0, y=y0, z=z0, m=m0, rho=rho0, h=h0
@@ -259,8 +256,6 @@ class FTLE(object):
             method='postprocessing',
             kernel=kernel,
             domain_manager=domain_manager,
-            mode=mode,
-            backend=backend
         )
 
     @classmethod
@@ -270,7 +265,7 @@ class FTLE(object):
         pi = np.pi
         sin, cos = np.sin, np.cos
 
-        _x = np.arange(0, 1+1./nx, 1./nx)
+        _x = np.arange(-1, 1+1./nx, 1./nx)
         if dim == 2:
             X, Y = np.meshgrid(_x, _x)
             R2 = X**2 + Y**2
@@ -388,11 +383,12 @@ class FTLE(object):
         
         return equations
     
-    def _compile_acceleration_eval(self):
+    def _compile_acceleration_eval(self, mode, backend):
         self.func_eval = AccelerationEval(
             particle_arrays=self.arrays, equations=self.equations,
-            kernel=self.kernel#, mode=self.mode, backend=self.backend
+            kernel=self.kernel, mode=mode, backend=backend
         )
+        print(f"{mode = }")
         compiler = SPHCompiler(
             acceleration_evals=self.func_eval, integrator=None
         )
@@ -407,7 +403,7 @@ class FTLE(object):
         self.func_eval.set_nnps(self.nnps)
     
     # Public methods
-    def compute(self, ftle_type):
+    def compute(self, ftle_type, mode='serial', backend='cython'):
         if ftle_type not in FTLE_TYPES:
             raise ValueError(
                 f"{ftle_type} is not a valid FTLE type. Valid types "
@@ -415,7 +411,7 @@ class FTLE(object):
             )
 
         self.equations = self._get_equations(ftle_type)
-        self._compile_acceleration_eval()
+        self._compile_acceleration_eval(mode=mode, backend=backend)
         self._create_nnps()
         self.func_eval.compute(t=0.0, dt=0.1) # Passing junk arguments
 
@@ -428,6 +424,47 @@ class FTLE(object):
 
 
 if __name__ == '__main__':
-    ftle = FTLE.from_example(dim=2, nx=10, flow_type='parabolic')
-    ftle.compute(ftle_type='forward')
-    print("Computed FTLE!")
+    import time
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        '--dim', type=int, default=2,
+        help='Dimension of the problem'
+    )
+    parser.add_argument(
+        '--nx', type=int, default=10,
+        help='Number of particles along x'
+    )
+    parser.add_argument(
+        '--openmp', action='store_true',
+        help='Use OpenMP'
+    )
+    parser.add_argument(
+        '--backend', type=str, default='cython',
+        help="Backend to use. Options: 'opencl', 'cython', 'cuda'"
+    )
+
+    args = parser.parse_args()
+    dim = args.dim
+    nx = args.nx
+    openmp = args.openmp
+    if openmp:
+        mode = 'mpi'
+    else:
+        mode = 'serial'
+    backend = args.backend
+
+
+
+    ftle_ob = FTLyapunovExponent.from_example(dim=dim, nx=nx, flow_type='parabolic')
+    # Time forward
+    t0 = time.time()
+    ftle_ob.compute(ftle_type='forward', mode=mode, backend=backend)
+    t1 = time.time()
+    print(f"Computed forward FTLE in {t1-t0} seconds")
+    # Time backward
+    t0 = time.time()
+    ftle_ob.compute(ftle_type='backward', mode=mode)
+    t1 = time.time()
+    print(f"Computed backward FTLE in {t1-t0} seconds")
