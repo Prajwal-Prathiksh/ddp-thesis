@@ -631,23 +631,34 @@ class EnergySpectrum(object):
 
         return EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum
 
-    def _compute_scalar_energy_spectrum(self):
+    def _compute_scalar_energy_spectrum(self, order):
         """
         Compute the energy spectrum of the flow.
+
+        Parameters
+        ----------
+        order : int
+            Order of the norm.
         """
         k, Ek, EK_U_sphere, EK_V_sphere, EK_W_sphere =\
             compute_scalar_energy_spectrum(
                 EK_U=self.EK_U,
                 EK_V=self.EK_V,
                 EK_W=self.EK_W,
+                ord=order,
                 debug=True
             )
         return k, Ek, EK_U_sphere, EK_V_sphere, EK_W_sphere
 
     # Public methods
-    def compute(self):
+    def compute(self, order:int = np.inf):
         """
         Compute the energy spectrum of the flow.
+
+        Parameters
+        ----------
+        order : int, optional
+            
         """
         # Compute energy spectrum
         res = self._compute_energy_spectrum()
@@ -663,7 +674,7 @@ class EnergySpectrum(object):
             )
 
         # Compute scalar energy spectrum
-        res = self._compute_scalar_energy_spectrum()
+        res = self._compute_scalar_energy_spectrum(order=order)
         self.k, self.Ek, self.EK_U_sphere, self.EK_V_sphere, self.EK_W_sphere \
             = res
         self.EK_U_sphere, self.EK_V_sphere, self.EK_W_sphere =\
