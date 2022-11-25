@@ -26,7 +26,6 @@ from pysph.solver.utils import dump, load
 from energy_spectrum import EnergySpectrum
 
 # TODO: Add support for openmp in interpolator and m_mat in interpolator cls
-# TODO: Add more kernel corrections
 # TODO Add second order interpolator?
 
 logger = logging.getLogger(__name__)
@@ -92,6 +91,7 @@ class TurbulentFlowApp(Application):
         super().__init__(*args, **kw)
         self._add_turbulence_options()
         self.initial_vel_field_fname = None
+        self.turb_post_processed_vars = {}
 
     # Private methods
     def _add_turbulence_options(self):
@@ -119,6 +119,11 @@ class TurbulentFlowApp(Application):
             default='sph', choices=INTERPOLATING_METHOD_CHOICES,
             help="Interpolating method."
         )
+        turb_options.add_argument(
+            "--ek-norm-order", action="store", type=str, dest="ek_norm_order",
+            default='inf', choices=['-inf', '1', '2', 'inf'],
+            help="Order of the norm used to compute the energy spectrum."
+        )
 
         # Change order of groups so that user options are printed at the end
         turb_idx, user_idx = 0, 0
@@ -141,6 +146,16 @@ class TurbulentFlowApp(Application):
         nx = self.options.nx
         i_nx = self.options.i_nx
         self.options.i_nx = i_nx if i_nx is not None else nx
+
+        order = self.options.ek_norm_order
+        if order == '-inf':
+            order = -np.inf
+        elif order == 'inf':
+            order = np.inf
+        else:
+            order = int(order)
+        self.options.ek_norm_order = order
+            
 
     def _log_interpolator_details(self, fname, dim, interp_ob):
         """
@@ -361,7 +376,7 @@ class TurbulentFlowApp(Application):
         espec_initial_ob = EnergySpectrum(
             dim=dim, u=u, v=v, w=w, t=0., U0=U0
         )
-        espec_initial_ob.compute()
+        espec_initial_ob.compute(order=self.options.ek_norm_order)
 
         return espec_initial_ob
 
@@ -402,7 +417,7 @@ class TurbulentFlowApp(Application):
             U0=U0,
             debug=True
         )
-        espec_ob.compute()
+        espec_ob.compute(order=self.options.ek_norm_order)
 
         self._log_interpolator_details(
             fname, dim, interp_ob
