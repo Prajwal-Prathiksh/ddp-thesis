@@ -61,7 +61,16 @@ def find_missing_doctrings(cwd, fpath):
                 cond3 = next_line.startswith("r'''")
                 cond4 = next_line.startswith('r"""')
                 if not (cond1 or cond2 or cond3 or cond4):
-                    print(f"{fpath[len(cwd) + 1:]}: {i + 1}: {line.strip()}")
+                    if "class" in ln:
+                        print(
+                            f"{fpath[len(cwd) + 1:]}: {i + 1}: "
+                            f"\033[1;31;40m{line.strip()}\033[0m"
+                        )
+                    else:
+                        print(
+                            f"{fpath[len(cwd) + 1:]}: {i + 1}: "
+                            f"\033[1;34m{line.strip()}\033[0m"
+                        )
                     found_missing_docstrings = True
 
     return found_missing_docstrings
@@ -88,7 +97,11 @@ def find_todos(cwd, fpath):
         lines = f.readlines()
         for i, line in enumerate(lines):
             if "TODO" in line:
-                print(f"{fpath[len(cwd) + 1:]}: {i + 1}: {line.strip()}")
+                print(
+                    f"{fpath[len(cwd) + 1:]}: {i + 1}: "
+                    f"\033[1;37;40m{line.strip()}\033[0m"
+                )
+
                 found_todos = True
 
     return found_todos
