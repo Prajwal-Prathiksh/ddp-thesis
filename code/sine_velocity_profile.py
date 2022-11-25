@@ -17,7 +17,6 @@ from turbulence_tools import TurbulentFlowApp, get_kernel_cls
 
 # TODO: Use optimal values of hdx for each kernel
 # TODO: Study Gaussian kernel with multiple hdx values
-# TODO: Consider multiple modes of decaying frequencies for the velocity field
 
 
 def perturb_signal(perturb_fac: float, *args: np.ndarray):
@@ -108,7 +107,7 @@ def get_flow_field(
     (x, y, z, u, v, w) : tuple(np.ndarray)
     """
     _x = np.arange(dx / 2, L, dx)
-    
+
     if n_freq > len(_x) / 2:
         raise Warning(
             'Number of frequencies is greater than half the number of grid '
@@ -153,7 +152,7 @@ def get_flow_field(
              sin(twopi * i * z) for i in freq_range],
             axis=0
         )
-        v0 =npsum(
+        v0 = npsum(
             [i ** -decay_rate * sin(twopi * i * x) * cos(twopi * i * y) *
              sin(twopi * i * z) for i in freq_range],
             axis=0
@@ -364,18 +363,18 @@ class SinVelocityProfile(TurbulentFlowApp):
         N = self.get_length_of_ek()
         k_i = np.arange(1, self.n_freq + 1, dtype=np.float64)
         if dim < 3:
-            ek = k_i**(-2*self.decay_rate)/8
+            ek = k_i**(-2 * self.decay_rate) / 8
         else:
-            ek = 3*k_i**(-2*self.decay_rate)/32
-        
+            ek = 3 * k_i**(-2 * self.decay_rate) / 32
+
         ek = np.insert(ek, 0, 0)
         if len(ek) < N:
             ek = np.append(ek, np.zeros(N - len(ek)))
         else:
             ek = ek[:N]
-        
+
         return ek
-    
+
     def get_expected_ek_slope(self):
         """
         Get the slope of the energy spectrum.
@@ -384,8 +383,7 @@ class SinVelocityProfile(TurbulentFlowApp):
         -------
         slope : float
         """
-        return -2*self.decay_rate
-
+        return -2 * self.decay_rate
 
     def post_process(self, info_fname: str):
         """

@@ -157,7 +157,6 @@ class TurbulentFlowApp(Application):
         else:
             order = int(order)
         self.options.ek_norm_order = order
-            
 
     def _log_interpolator_details(self, fname, dim, interp_ob):
         """
@@ -193,7 +192,7 @@ class TurbulentFlowApp(Application):
             Name of the file containing the initial velocity field.
         """
         self.initial_vel_field_fname = fname
-    
+
     def _get_ek_plot_types_mapper(self, plot_type: str):
         """
         Return the plot type corresponding to the given plot type.
@@ -210,27 +209,27 @@ class TurbulentFlowApp(Application):
             Includes: func, xlabel, ylabel
         """
         PLOT_TYPES_MAPPER = dict(
-            loglog = dict(
+            loglog=dict(
                 func=plt.loglog,
                 xlabel=r"$k$",
                 ylabel=r"$E(k)$"
             ),
-            semilogx = dict(
+            semilogx=dict(
                 func=plt.semilogx,
                 xlabel=r"$k$",
                 ylabel=r"$E(k)$"
             ),
-            semilogy = dict(
+            semilogy=dict(
                 func=plt.semilogy,
                 xlabel=r"$k$",
                 ylabel=r"$E(k)$"
             ),
-            plot = dict(
+            plot=dict(
                 func=plt.plot,
                 xlabel=r"$k$",
                 ylabel=r"$E(k)$"
             ),
-            stem = dict(
+            stem=dict(
                 func=plt.stem,
                 xlabel=r"$k$",
                 ylabel=r"$E(k)$"
@@ -393,7 +392,6 @@ class TurbulentFlowApp(Application):
         """
         N = int(1 + np.ceil(np.sqrt(self.dim * self.i_nx**2) / 2))
         return N
-        
 
     def get_exact_ek(self):
         """
@@ -407,14 +405,13 @@ class TurbulentFlowApp(Application):
 
         Note: If not implemented, return None, and warns the user, since
         some post-processing functionalities will not be available.
-        
+
         """
         func_name = inspect.stack()[0][3]
         msg = f"self.{func_name}() is not implemented. Some post-processing " \
-                f"functionalities will not be available."
+            f"functionalities will not be available."
         logger.warning(msg)
         return None
-    
 
     def get_expected_ek_slope(self):
         """
@@ -426,11 +423,11 @@ class TurbulentFlowApp(Application):
         """
         func_name = inspect.stack()[0][3]
         msg = f"self.{func_name}() is not implemented. Some post-processing " \
-                f"functionalities will not be available."
+            f"functionalities will not be available."
         logger.warning(msg)
         return None
 
-    def get_ek_fit(self, k: np.ndarray, ek: np.ndarray, tol:float=1e-10):
+    def get_ek_fit(self, k: np.ndarray, ek: np.ndarray, tol: float = 1e-10):
         """
         Fits the log10 transformed energy spectrum data with a straight line,
         using scipy.stats.linregress.
@@ -459,7 +456,7 @@ class TurbulentFlowApp(Application):
             Fitting parameters.
             Includes: slope, intercept, r_value, p_value, std_err, slope_error
         """
-        cond_len = np.logical_and(k > 0, k < len(k)/2 - 1)
+        cond_len = np.logical_and(k > 0, k < len(k) / 2 - 1)
         cond_tol = np.abs(ek) > tol
         cond = np.logical_and(cond_len, cond_tol)
         k_cal, ek_cal = np.log10(k[cond]), np.log10(ek[cond])
@@ -470,7 +467,7 @@ class TurbulentFlowApp(Application):
             raise ImportError(
                 "scipy is required for fitting the energy spectrum."
             )
-        
+
         slope, intercept, r_value, p_value, std_err = \
             scipy.stats.linregress(k_cal, ek_cal)
 
@@ -489,14 +486,13 @@ class TurbulentFlowApp(Application):
 
         # Calculate fitted energy spectrum
         k_fit = np.logspace(
-            start=np.log10(1), stop=np.log10(k[len(k)//2]), num=50
+            start=np.log10(1), stop=np.log10(k[len(k) // 2]), num=50
         )
         ek_fit = 10**(slope * np.log10(k_fit) + intercept)
 
         return k_fit, ek_fit, fit_params
-        
 
-    def get_ek_from_initial_vel_field(self, dim:int, U0: float):
+    def get_ek_from_initial_vel_field(self, dim: int, U0: float):
         """
         Computes the energy spectrum from the initial velocity field saved
         using `save_initial_vel_field()`.
@@ -507,7 +503,7 @@ class TurbulentFlowApp(Application):
             Dimension of the problem.
         U0 : float
             Initial velocity of the flow.
-        
+
         Returns
         -------
         espec_initial_ob : `EnergySpectrum` object
@@ -539,7 +535,7 @@ class TurbulentFlowApp(Application):
 
         return espec_initial_ob
 
-    def get_ek(self, fname: str, dim: int, L: float, U0:float=1):
+    def get_ek(self, fname: str, dim: int, L: float, U0: float = 1):
         """
         Compute and get the energy spectrum from a given PySPH output file.
 
@@ -553,7 +549,7 @@ class TurbulentFlowApp(Application):
             Length of the domain.
         U0 : float, optional
             Reference velocity of the flow. Default is 1.
-        
+
         Returns
         -------
         espec_ob : `EnergySpectrum` object
@@ -591,7 +587,7 @@ class TurbulentFlowApp(Application):
         return espec_ob
 
     def save_energy_spectrum_as_pysph_view_file(
-        self, fname:str, dim:int, espec_ob:object,
+        self, fname: str, dim: int, espec_ob: object,
     ):
         """
         Save the energy spectrum as a PySPH viewable file.
@@ -646,7 +642,7 @@ class TurbulentFlowApp(Application):
         logger.info(msg)
 
     def ek_post_processing(
-        self, dim: int, L: float, U0:float=1.0, f_idx: int = 0,
+        self, dim: int, L: float, U0: float = 1.0, f_idx: int = 0,
         compute_without_interp: bool = False
     ):
         """
@@ -670,7 +666,7 @@ class TurbulentFlowApp(Application):
         """
         if len(self.output_files) == 0:
             return
-        
+
         # Get the energy spectrum
         espec_ob = self.get_ek(
             fname=self.output_files[f_idx], dim=dim, L=L
@@ -720,9 +716,10 @@ class TurbulentFlowApp(Application):
         self.save_energy_spectrum_as_pysph_view_file(
             fname=self.output_files[f_idx], dim=dim, espec_ob=espec_ob
         )
-    
+
     def plot_ek(
-        self, f_idx:int, plot_type:str="loglog", exact:bool=True, no_interp:bool=True,
+        self, f_idx: int, plot_type: str = "loglog", exact: bool = True,
+        no_interp: bool = True,
     ):
         """
         Plot the computed energy spectrum stored in the *.npz file.
@@ -757,22 +754,21 @@ class TurbulentFlowApp(Application):
             plot_func(k, ek_exact, 'k-', label="Exact")
         if no_interp and ek_no_interp is not None:
             plot_func(k, ek_no_interp, 'r--', label="No interpolation")
-        
+
         plt.xlabel(plotter['xlabel'])
         plt.ylabel(plotter['ylabel'])
         plt.legend()
         plt.title(f"Energy spectrum at t = {t:.2f}")
-        
+
         fname = f"espec_{f_idx}_{plot_type}.png"
         fname = os.path.join(self.output_dir, fname)
         plt.savefig(fname, dpi=300, bbox_inches='tight')
         plt.close()
-        
+
         print(f"Energy spectrum plot saved to: {fname}")
 
-    
     def plot_ek_fit(
-        self, f_idx:int, plot_type:str="loglog", tol:float=1e-10
+        self, f_idx: int, plot_type: str = "loglog", tol: float = 1e-10
     ):
         """
         Plot the computed energy spectrum stored in the *.npz file, along with
@@ -794,12 +790,13 @@ class TurbulentFlowApp(Application):
         plt.figure()
         plotter = self._get_ek_plot_types_mapper(plot_type=plot_type)
         plot_func = plotter['func']
-        
+
         expected_slope = self.get_expected_ek_slope()
         if expected_slope is None:
             label = "Computed"
         else:
-            label = f"Computed: (expected E(k) ~ k^{expected_slope:.2f}) (error = {fit_slope_error:.2f})"
+            label = f"Computed: (expected E(k) ~ k^{expected_slope:.2f}) " \
+                f"(error = {fit_slope_error:.2f})"
         plot_func(k, ek, label=label)
 
         fit_label = f"Fit: (E(k) ~ k^{fit_slope:.2f}) (R^2 = " \
@@ -817,8 +814,6 @@ class TurbulentFlowApp(Application):
         plt.close()
 
         print(f"Energy spectrum plot saved to: {fname}")
-
-
 
     def plot_ek_evolution(self, f_idx: list = None):
         """

@@ -18,7 +18,6 @@ from pysph.solver.utils import load
 from automate_utils import styles
 
 # TODO: Compyle iterative functions
-# TODO: Use a second-order interpolation scheme
 
 
 def compute_energy_spectrum(
@@ -651,14 +650,14 @@ class EnergySpectrum(object):
         return k, ek, ek_u_sphere, ek_v_sphere, ek_w_sphere
 
     # Public methods
-    def compute(self, order:int = np.inf):
+    def compute(self, order: int = np.inf):
         """
         Compute the energy spectrum of the flow.
 
         Parameters
         ----------
         order : int, optional
-            
+
         """
         # Compute energy spectrum
         res = self._compute_energy_spectrum()
