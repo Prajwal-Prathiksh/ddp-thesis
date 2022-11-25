@@ -685,15 +685,19 @@ class TurbulentFlowApp(Application):
                 ek_no_interp = espec_initial_ob.ek
                 l2_error_no_interp = np.sqrt((espec_ob.ek - ek_no_interp)**2)
 
-        # Save npz file
-        fname = os.path.join(self.output_dir, f"espec_result_{f_idx}.npz")
-
         ek_exact = self.get_exact_ek()
         if ek_exact is not None:
             l2_error = np.sqrt((espec_ob.ek - ek_exact)**2)
         else:
             l2_error = None
 
+        # Fit the energy spectrum
+        k_fit, ek_fit, fit_params = self.get_ek_fit(
+            k=espec_ob.k, ek=espec_ob.ek
+        )
+
+        # Save npz file
+        fname = os.path.join(self.output_dir, f"espec_result_{f_idx}.npz")
         np.savez(
             fname,
             k=espec_ob.k,
@@ -705,7 +709,10 @@ class TurbulentFlowApp(Application):
             ek_exact=ek_exact,
             l2_error=l2_error,
             ek_no_interp=ek_no_interp,
-            l2_error_no_interp=l2_error_no_interp
+            l2_error_no_interp=l2_error_no_interp,
+            k_fit=k_fit,
+            ek_fit=ek_fit,
+            fit_params=fit_params
         )
         logger.info("Energy spectrum results saved to: %s", fname)
 
