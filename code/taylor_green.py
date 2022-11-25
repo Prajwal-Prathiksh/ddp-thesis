@@ -385,7 +385,7 @@ class TaylorGreen(TurbulentFlowApp):
         fig = os.path.join(self.output_dir, "p_l1_error.png")
         plt.savefig(fig, dpi=300)
         
-        self.plot_energy_spectrum_evolution()
+        self.plot_ek_evolution()
 
     def customize_output(self):
         self._mayavi_config('''
@@ -397,8 +397,8 @@ class TaylorGreen(TurbulentFlowApp):
 if __name__ == '__main__':
     turb_app = TaylorGreen()
     turb_app.run()
-    turb_app.energy_spectrum_post_processing(
+    turb_app.ek_post_processing(
         dim=2, L=L, U0=1., f_idx=0, compute_without_interp=True
     )
-    turb_app.energy_spectrum_post_processing(dim=2, L=L, U0=1., f_idx=-1)
+    turb_app.ek_post_processing(dim=2, L=L, U0=1., f_idx=-1)
     turb_app.post_process(turb_app.info_filename)

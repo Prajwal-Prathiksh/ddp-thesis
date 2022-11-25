@@ -45,11 +45,11 @@ def compute_energy_spectrum(
         Return the velocity spectrum as well. Default is False.
     Returns
     -------
-    EK_U : np.ndarray
+    ek_u : np.ndarray
         Point-wise energy spectrum of the flow in x-direction.
-    EK_V : np.ndarray
+    ek_v : np.ndarray
         Point-wise energy spectrum of the flow in y-direction.
-    EK_W : np.ndarray
+    ek_w : np.ndarray
         Point-wise energy spectrum of the flow in z-direction.
     """
     # Import FFT-functions
@@ -87,18 +87,18 @@ def compute_energy_spectrum(
     v_spectrum = np.abs(fftn(v / U0) / v.size)
     w_spectrum = np.abs(fftn(w / U0) / w.size)
 
-    EK_U = fftshift(0.5 * u_spectrum**2)
-    EK_V = fftshift(0.5 * v_spectrum**2)
-    EK_W = fftshift(0.5 * w_spectrum**2)
+    ek_u = fftshift(0.5 * u_spectrum**2)
+    ek_v = fftshift(0.5 * v_spectrum**2)
+    ek_w = fftshift(0.5 * w_spectrum**2)
 
     if debug:
-        return EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum
+        return ek_u, ek_v, ek_w, u_spectrum, v_spectrum, w_spectrum
     else:
-        return EK_U, EK_V, EK_W
+        return ek_u, ek_v, ek_w
 
 
 def compute_scalar_energy_spectrum(
-    EK_U: np.ndarray, EK_V: np.ndarray = None, EK_W: np.ndarray = None,
+    ek_u: np.ndarray, ek_v: np.ndarray = None, ek_w: np.ndarray = None,
     ord: int = 2, debug: bool = False
 ):
     """
@@ -107,11 +107,11 @@ def compute_scalar_energy_spectrum(
     radius k = (kx**2 + ky**2 + kz**2)**0.5.
     Parameters
     ----------
-    EK_U : np.ndarray
+    ek_u : np.ndarray
         Point-wise energy spectrum of the flow in x-direction.
-    EK_V : np.ndarray, optional
+    ek_v : np.ndarray, optional
         Point-wise energy spectrum of the flow in y-direction.
-    EK_W : np.ndarray, optional
+    ek_w : np.ndarray, optional
         Point-wise energy spectrum of the flow in z-direction.
     ord : int, optional
         Order of the norm. Default is 2.
@@ -121,42 +121,42 @@ def compute_scalar_energy_spectrum(
     -------
     k : np.ndarray
         1D array of wave numbers.
-    Ek : np.ndarray
+    ek : np.ndarray
         1D array of energy spectrum.
     """
     # Import numpy functions
     from numpy.linalg import norm as norm
 
     # Check shape of velocity components for given dimensions
-    dim = len(np.shape(EK_U))
+    dim = len(np.shape(ek_u))
     if dim == 1:
-        if EK_V is not None or EK_W is not None:
+        if ek_v is not None or ek_w is not None:
             raise ValueError(
-                "Energy components EK_V and EK_W should be None for 1D data."
+                "Energy components ek_v and ek_w should be None for 1D data."
             )
-        EK_U = np.array(EK_U)
+        ek_u = np.array(ek_u)
     elif dim == 2:
-        if EK_V is None:
+        if ek_v is None:
             raise ValueError(
-                "Energy component EK_V should not be None for 2D data."
+                "Energy component ek_v should not be None for 2D data."
             )
-        if EK_W is not None:
+        if ek_w is not None:
             raise ValueError(
-                "Energy component EK_W should be None for 2D data."
+                "Energy component ek_w should be None for 2D data."
             )
-        EK_U, EK_V = np.array(EK_U), np.array(EK_V)
+        ek_u, ek_v = np.array(ek_u), np.array(ek_v)
     elif dim == 3:
-        if EK_V is None or EK_W is None:
+        if ek_v is None or ek_w is None:
             raise ValueError(
-                "Energy component EK_V or EK_W should not be None for 3D data."
+                "Energy component ek_v or ek_w should not be None for 3D data."
             )
-        EK_U, EK_V, EK_W = np.array(EK_U), np.array(EK_V), np.array(EK_W)
+        ek_u, ek_v, ek_w = np.array(ek_u), np.array(ek_v), np.array(ek_w)
 
     eps = 1e-50
 
-    box_side_x = np.shape(EK_U)[0]
-    box_side_y = np.shape(EK_U)[1] if dim > 1 else 0
-    box_side_z = np.shape(EK_U)[2] if dim > 2 else 0
+    box_side_x = np.shape(ek_u)[0]
+    box_side_y = np.shape(ek_u)[1] if dim > 1 else 0
+    box_side_z = np.shape(ek_u)[2] if dim > 2 else 0
 
     box_radius = int(
         1 + np.ceil(
@@ -168,16 +168,16 @@ def compute_scalar_energy_spectrum(
     center_y = int(box_side_y / 2)
     center_z = int(box_side_z / 2)
 
-    EK_U_sphere = np.zeros((box_radius, )) + eps
-    EK_V_sphere = np.zeros((box_radius, )) + eps
-    EK_W_sphere = np.zeros((box_radius, )) + eps
+    ek_u_sphere = np.zeros((box_radius, )) + eps
+    ek_v_sphere = np.zeros((box_radius, )) + eps
+    ek_w_sphere = np.zeros((box_radius, )) + eps
 
     if dim == 1:
         for i in range(box_side_x):
             wn = np.round(norm([i - center_x], ord=ord))
             wn = int(wn)
 
-            EK_U_sphere[wn] += EK_U[i]
+            ek_u_sphere[wn] += ek_u[i]
 
     elif dim == 2:
         for i in range(box_side_x):
@@ -185,8 +185,8 @@ def compute_scalar_energy_spectrum(
                 wn = np.round(norm([i - center_x, j - center_y], ord=ord))
                 wn = int(wn)
 
-                EK_U_sphere[wn] += EK_U[i, j]
-                EK_V_sphere[wn] += EK_V[i, j]
+                ek_u_sphere[wn] += ek_u[i, j]
+                ek_v_sphere[wn] += ek_v[i, j]
 
     elif dim == 3:
         for i in range(box_side_x):
@@ -199,17 +199,17 @@ def compute_scalar_energy_spectrum(
                     )
                     wn = int(wn)
 
-                    EK_U_sphere[wn] += EK_U[i, j, k]
-                    EK_V_sphere[wn] += EK_V[i, j, k]
-                    EK_W_sphere[wn] += EK_W[i, j, k]
+                    ek_u_sphere[wn] += ek_u[i, j, k]
+                    ek_v_sphere[wn] += ek_v[i, j, k]
+                    ek_w_sphere[wn] += ek_w[i, j, k]
 
-    Ek = 0.5 * (EK_U_sphere + EK_V_sphere + EK_W_sphere)
-    k = np.arange(0, len(Ek))
+    ek = 0.5 * (ek_u_sphere + ek_v_sphere + ek_w_sphere)
+    k = np.arange(0, len(ek))
 
     if debug:
-        return k, Ek, EK_U_sphere, EK_V_sphere, EK_W_sphere
+        return k, ek, ek_u_sphere, ek_v_sphere, ek_w_sphere
     else:
-        return k, Ek
+        return k, ek
 
 
 def velocity_intepolator(
@@ -330,9 +330,9 @@ class EnergySpectrum(object):
     1. Compute energy spectrum
         >>> EnergySpectrum.compute()
     2. Plot scalar energy spectrum
-        >>> EnergySpectrum.plot_scalar_Ek()
+        >>> EnergySpectrum.plot_scalar_ek()
     3. Plot vector energy spectrum
-        >>> EnergySpectrum.plot_vector_Ek()
+        >>> EnergySpectrum.plot_vector_ek()
     """
 
     def __init__(
@@ -354,7 +354,7 @@ class EnergySpectrum(object):
 
         self._check_format_of_list_data([u, v, w])
 
-        self.k, self.Ek = None, None
+        self.k, self.ek = None, None
 
     # Class methods
     @classmethod
@@ -544,9 +544,9 @@ class EnergySpectrum(object):
         for fname in fnames:
             data = np.load(fname)
             k = data["k"]
-            Ek = data["Ek"]
+            ek = data["ek"]
             t = data["t"]
-            plt.loglog(k, Ek, label=f"t = {t:.2f}", **next(ls))
+            plt.loglog(k, ek, label=f"t = {t:.2f}", **next(ls))
 
         plt.xlabel(r"$k$")
         plt.ylabel(r"$E(k)$")
@@ -620,7 +620,7 @@ class EnergySpectrum(object):
         """
         Compute the energy spectrum of the flow.
         """
-        EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum =\
+        ek_u, ek_v, ek_w, u_spectrum, v_spectrum, w_spectrum =\
             compute_energy_spectrum(
                 u=self.u,
                 v=self.v,
@@ -629,7 +629,7 @@ class EnergySpectrum(object):
                 debug=True
             )
 
-        return EK_U, EK_V, EK_W, u_spectrum, v_spectrum, w_spectrum
+        return ek_u, ek_v, ek_w, u_spectrum, v_spectrum, w_spectrum
 
     def _compute_scalar_energy_spectrum(self, order):
         """
@@ -640,15 +640,15 @@ class EnergySpectrum(object):
         order : int
             Order of the norm.
         """
-        k, Ek, EK_U_sphere, EK_V_sphere, EK_W_sphere =\
+        k, ek, ek_u_sphere, ek_v_sphere, ek_w_sphere =\
             compute_scalar_energy_spectrum(
-                EK_U=self.EK_U,
-                EK_V=self.EK_V,
-                EK_W=self.EK_W,
+                ek_u=self.ek_u,
+                ek_v=self.ek_v,
+                ek_w=self.ek_w,
                 ord=order,
                 debug=True
             )
-        return k, Ek, EK_U_sphere, EK_V_sphere, EK_W_sphere
+        return k, ek, ek_u_sphere, ek_v_sphere, ek_w_sphere
 
     # Public methods
     def compute(self, order:int = np.inf):
@@ -662,11 +662,11 @@ class EnergySpectrum(object):
         """
         # Compute energy spectrum
         res = self._compute_energy_spectrum()
-        self.EK_U, self.EK_V, self.EK_W, self.u_spectrum, self.v_spectrum,\
+        self.ek_u, self.ek_v, self.ek_w, self.u_spectrum, self.v_spectrum,\
             self.w_spectrum = res
 
-        self.EK_U, self.EK_V, self.EK_W = self._correct_format_of_list_data(
-            [self.EK_U, self.EK_V, self.EK_W]
+        self.ek_u, self.ek_v, self.ek_w = self._correct_format_of_list_data(
+            [self.ek_u, self.ek_v, self.ek_w]
         )
         self.u_spectrum, self.v_spectrum, self.w_spectrum =\
             self._correct_format_of_list_data(
@@ -675,14 +675,14 @@ class EnergySpectrum(object):
 
         # Compute scalar energy spectrum
         res = self._compute_scalar_energy_spectrum(order=order)
-        self.k, self.Ek, self.EK_U_sphere, self.EK_V_sphere, self.EK_W_sphere \
+        self.k, self.ek, self.ek_u_sphere, self.ek_v_sphere, self.ek_w_sphere \
             = res
-        self.EK_U_sphere, self.EK_V_sphere, self.EK_W_sphere =\
+        self.ek_u_sphere, self.ek_v_sphere, self.ek_w_sphere =\
             self._correct_format_of_list_data(
-                [self.EK_U_sphere, self.EK_V_sphere, self.EK_W_sphere]
+                [self.ek_u_sphere, self.ek_v_sphere, self.ek_w_sphere]
             )
 
-    def plot_scalar_Ek(
+    def plot_scalar_ek(
         self, show=False, savefig=False, fname=None, dpi=300, plot_type="log",
     ):
         """
@@ -710,10 +710,10 @@ class EnergySpectrum(object):
         n = self.n_1d
         plt.clf()
         if plot_type == "log":
-            plt.loglog(self.k[0:n], self.Ek[0:n], 'k')
-            plt.loglog(self.k[n:], self.Ek[n:], 'k--')
+            plt.loglog(self.k[0:n], self.ek[0:n], 'k')
+            plt.loglog(self.k[n:], self.ek[n:], 'k--')
         elif plot_type == "stem":
-            plt.stem(self.Ek)
+            plt.stem(self.ek)
         plt.xlabel(r'$k$')
         plt.ylabel(r'$E(k)$')
         plt.grid()
@@ -725,7 +725,7 @@ class EnergySpectrum(object):
         if show:
             plt.show()
 
-    def plot_vector_Ek(
+    def plot_vector_ek(
         self, show=False, savefig=False, fname=None, dpi=300, shift_fft=False
     ):
         """
@@ -764,7 +764,7 @@ class EnergySpectrum(object):
 
         if dim == 1:
             plt.clf()
-            plt.stem(fftshift(self.EK_U))
+            plt.stem(fftshift(self.ek_u))
             plt.xlabel(r'$k$')
             plt.ylabel(r'$E_{u}(k)$')
             plt.grid()
@@ -779,13 +779,13 @@ class EnergySpectrum(object):
             plt.clf()
 
             fig, axes = plt.subplots(1, 2, figsize=(10, 5))
-            axes[0].imshow(fftshift(self.EK_U))
+            axes[0].imshow(fftshift(self.ek_u))
             axes[0].set_title(r"$E_u(k)$ at t = {:.2f}".format(self.t))
             axes[0].set_xlabel(r"$k_x$")
             axes[0].set_ylabel(r"$k_y$")
             axes[0].invert_yaxis()
 
-            axes[1].imshow(fftshift(self.EK_V))
+            axes[1].imshow(fftshift(self.ek_v))
             axes[1].set_title(r"$E_v(k)$ at t = {:.2f}".format(self.t))
             axes[1].set_xlabel(r"$k_x$")
             axes[1].set_ylabel(r"$k_y$")

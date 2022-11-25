@@ -330,7 +330,7 @@ class TurbulentFlowApp(Application):
             consistent_method = 'order1'
         return equations, consistent_method
 
-    def get_length_of_Ek(self):
+    def get_length_of_ek(self):
         """
         Calculate the length of the computed energy spectrum beforehand,
         by using the number of interpolation points and the number of
@@ -345,7 +345,7 @@ class TurbulentFlowApp(Application):
         return N
         
 
-    def get_exact_Ek(self):
+    def get_exact_ek(self):
         """
         Get the exact energy spectrum of the flow.
         Should return a 1D numpy array.
@@ -366,7 +366,7 @@ class TurbulentFlowApp(Application):
         return None
     
 
-    def get_expected_Ek_slope(self):
+    def get_expected_ek_slope(self):
         """
         Get the slope of the energy spectrum of the flow.
         Should return a float.
@@ -383,7 +383,7 @@ class TurbulentFlowApp(Application):
     # def get_energy
 
 
-    def get_Ek_from_initial_vel_field(self, dim:int, U0: float):
+    def get_ek_from_initial_vel_field(self, dim:int, U0: float):
         """
         Computes the energy spectrum from the initial velocity field saved
         using `save_initial_vel_field()`.
@@ -426,7 +426,7 @@ class TurbulentFlowApp(Application):
 
         return espec_initial_ob
 
-    def get_Ek(self, fname: str, dim: int, L: float, U0:float=1):
+    def get_ek(self, fname: str, dim: int, L: float, U0:float=1):
         """
         Compute and get the energy spectrum from a given PySPH output file.
 
@@ -493,14 +493,14 @@ class TurbulentFlowApp(Application):
 
         # Add energy spectrum data to the particle array
         pa = data['arrays']['fluid']
-        pa.add_property('EK_U', 'double', data=espec_ob.EK_U.flatten())
+        pa.add_property('ek_u', 'double', data=espec_ob.ek_u.flatten())
         pa.add_property(
-            'EK_V', 'double', data=espec_ob.EK_V.flatten() if dim > 1 else 0.0
+            'ek_v', 'double', data=espec_ob.ek_v.flatten() if dim > 1 else 0.0
         )
         pa.add_property(
-            'EK_W', 'double', data=espec_ob.EK_W.flatten() if dim > 2 else 0.0
+            'ek_w', 'double', data=espec_ob.ek_w.flatten() if dim > 2 else 0.0
         )
-        pa.add_output_arrays(['EK_U', 'EK_V', 'EK_W'])
+        pa.add_output_arrays(['ek_u', 'ek_v', 'ek_w'])
 
         # Save the data
         # Get the file index counter
@@ -552,25 +552,25 @@ class TurbulentFlowApp(Application):
             return
         
         # Get the energy spectrum
-        espec_ob = self.get_Ek(
+        espec_ob = self.get_ek(
             fname=self.output_files[f_idx], dim=dim, L=L
         )
 
-        Ek_no_interp, l2_error_no_interp = None, None
+        ek_no_interp, l2_error_no_interp = None, None
         if compute_without_interp:
-            espec_initial_ob = self.get_Ek_from_initial_vel_field(
+            espec_initial_ob = self.get_ek_from_initial_vel_field(
                 dim=dim, U0=U0
             )
             if espec_initial_ob is not None:
-                Ek_no_interp = espec_initial_ob.Ek
-                l2_error_no_interp = np.sqrt((espec_ob.Ek - Ek_no_interp)**2)
+                ek_no_interp = espec_initial_ob.ek
+                l2_error_no_interp = np.sqrt((espec_ob.ek - ek_no_interp)**2)
 
         # Save npz file
         fname = os.path.join(self.output_dir, f"espec_result_{f_idx}.npz")
 
-        Ek_exact = self.get_exact_Ek()
-        if Ek_exact is not None:
-            l2_error = np.sqrt((espec_ob.Ek - Ek_exact)**2)
+        ek_exact = self.get_exact_ek()
+        if ek_exact is not None:
+            l2_error = np.sqrt((espec_ob.ek - ek_exact)**2)
         else:
             l2_error = None
 
@@ -578,13 +578,13 @@ class TurbulentFlowApp(Application):
             fname,
             k=espec_ob.k,
             t=espec_ob.t,
-            Ek=espec_ob.Ek,
-            EK_U=espec_ob.EK_U,
-            EK_V=espec_ob.EK_V,
-            EK_W=espec_ob.EK_W,
-            Ek_exact=Ek_exact,
+            ek=espec_ob.ek,
+            ek_u=espec_ob.ek_u,
+            ek_v=espec_ob.ek_v,
+            ek_w=espec_ob.ek_w,
+            ek_exact=ek_exact,
             l2_error=l2_error,
-            Ek_no_interp=Ek_no_interp,
+            ek_no_interp=ek_no_interp,
             l2_error_no_interp=l2_error_no_interp
         )
         logger.info("Energy spectrum results saved to: %s", fname)
@@ -594,7 +594,7 @@ class TurbulentFlowApp(Application):
             fname=self.output_files[f_idx], dim=dim, espec_ob=espec_ob
         )
     
-    def plot_Ek(
+    def plot_ek(
         self, f_idx:int, plot_type:str="loglog", exact:bool=True, no_interp:bool=True,
     ):
         """
@@ -617,9 +617,9 @@ class TurbulentFlowApp(Application):
         data = np.load(fname)
         k = data['k']
         t = data['t']
-        Ek = data['Ek']
-        Ek_exact = data['Ek_exact']
-        Ek_no_interp = data['Ek_no_interp']
+        ek = data['ek']
+        ek_exact = data['ek_exact']
+        ek_no_interp = data['ek_no_interp']
 
         PLOT_TYPES_MAPPER = dict(
             loglog = dict(
@@ -656,11 +656,11 @@ class TurbulentFlowApp(Application):
         plot_func = PLOT_TYPES_MAPPER[plot_type]['func']
 
         plt.figure()
-        plot_func(k, Ek, label="Computed")
-        if exact and Ek_exact is not None:
-            plot_func(k, Ek_exact, 'k-', label="Exact")
-        if no_interp and Ek_no_interp is not None:
-            plot_func(k, Ek_no_interp, 'r--', label="No interpolation")
+        plot_func(k, ek, label="Computed")
+        if exact and ek_exact is not None:
+            plot_func(k, ek_exact, 'k-', label="Exact")
+        if no_interp and ek_no_interp is not None:
+            plot_func(k, ek_no_interp, 'r--', label="No interpolation")
         
         plt.xlabel(PLOT_TYPES_MAPPER[plot_type]['xlabel'])
         plt.ylabel(PLOT_TYPES_MAPPER[plot_type]['ylabel'])
@@ -673,7 +673,7 @@ class TurbulentFlowApp(Application):
         
         print(f"Energy spectrum plot saved to: {fname}")
 
-    def plot_Ek_evolution(self, f_idx: list = None):
+    def plot_ek_evolution(self, f_idx: list = None):
         """
         Plot the evolution of energy spectrum for the given files indices.
 

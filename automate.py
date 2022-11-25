@@ -34,37 +34,44 @@ class SineVelProfilePlotters(Simulation):
     Helper methods for making comparisons plots for the sinusoidal velocity
     profile problem.
     """
-    def Ek_loglog(self, **kw):
+    def ek_loglog(self, **kw):
         """
         Plot the energy spectrum in loglog scale.
         """
         data = np.load(self.input_path('espec_result_0.npz'))
-        plt.loglog(data['k'], data['Ek'], **kw)
+        plt.loglog(data['k'], data['ek'], **kw)
 
-    def Ek_plot(self, **kw):
+    def ek_plot(self, **kw):
         """
         Plot the energy spectrum.
         """
         data = np.load(self.input_path('espec_result_0.npz'))
-        plt.plot(data['k'], data['Ek'], **kw)
+        plt.plot(data['k'], data['ek'], **kw)
     
-    def Ek_loglog_no_interp(self, **kw):
+    def ek_loglog_no_interp(self, **kw):
         """
         Plot the energy spectrum calculated without interpolation in loglog scale.
         """
         data = np.load(self.input_path('espec_result_0.npz'))
         kw.pop('label', None)
         plt.loglog(
-            data['k'], data['Ek_no_interp'],
+            data['k'], data['ek_no_interp'],
             label=r'$E_k$ (no interpolation)', **kw
         )
     
-    def Ek_loglog_exact(self, **kw):
+    def ek_loglog_exact(self, **kw):
         """
         Plot the exact energy spectrum in loglog scale.
         """
         data = np.load(self.input_path('espec_result_0.npz'))
-        plt.loglog(data['k'], data['Ek_exact'], **kw)    
+        plt.loglog(data['k'], data['ek_exact'], **kw)    
+    
+    def ek_plot_exact(self, **kw):
+        """
+        Plot the exact energy spectrum.
+        """
+        data = np.load(self.input_path('espec_result_0.npz'))
+        plt.plot(data['k'], data['ek_exact'], **kw)
     
     def l2_error(self, **kw):
         """
@@ -79,7 +86,7 @@ class SineVelProfilePlotters(Simulation):
         the exact solution in loglog scale.
         """
         data = np.load(self.input_path('espec_result_0.npz'))
-        l2_error_expected = data['Ek_exact'] - data['Ek_no_interp']
+        l2_error_expected = data['ek_exact'] - data['ek_no_interp']
         l2_error_expected = np.sqrt(l2_error_expected**2)
 
         kw.pop('label', None)
@@ -130,15 +137,15 @@ class SineVelProfile(PySPHProblem):
         title_beginning = "Energy spectrum"
         plotter_map = dict(
             loglog=dict(
-                method=SineVelProfilePlotters.Ek_loglog,
-                exact=SineVelProfilePlotters.Ek_loglog_no_interp,
+                method=SineVelProfilePlotters.ek_loglog,
+                exact=SineVelProfilePlotters.ek_loglog_no_interp,
                 xlabel=r'$log(k)$',
                 ylabel=r'$log(E_k)$',
                 title_middle="(loglog)"
             ),
             plot=dict(
-                method=SineVelProfilePlotters.Ek_plot,
-                exact=None,
+                method=SineVelProfilePlotters.ek_plot,
+                exact=SineVelProfilePlotters.ek_plot_exact,
                 xlabel=r'$k$',
                 ylabel=r'$E_k$',
                 title_middle="(plot)"
@@ -201,6 +208,12 @@ class SineVelProfile(PySPHProblem):
         )
         plt.title(title)
 
+        # Limit y-axis to 1e-10 to y-axis max.
+        if "log" in plotter_map[plt_type]['xlabel']:
+            _, ymax = plt.ylim()
+            plt.ylim(1e-20, ymax)
+            plt.minorticks_on()
+
         if plot_legend:
             plt.legend()
         if plot_grid:
@@ -245,9 +258,9 @@ class SineVelProfile(PySPHProblem):
             return all_options
 
         def get_example_opts():
-            perturb_opts = mdict(perturb=[0, 1e-2, 1e-1, 1, 5, 10])
-            dim_nx_opts = mdict(dim=[1], nx=[20001])#5001, 10001, 20001])
-            dim_nx_opts += mdict(dim=[2], nx=[501])#251, 501])
+            perturb_opts = mdict(perturb=[0, 1e-2])
+            dim_nx_opts = mdict(dim=[1], nx=[5001, 10001, 20001])
+            dim_nx_opts += mdict(dim=[2], nx=[251, 501])
             dim_nx_opts += mdict(dim=[3], nx=[101])
 
             all_options = dprod(perturb_opts, dim_nx_opts)
@@ -305,6 +318,9 @@ class SineVelProfile(PySPHProblem):
             )
             self.plot_energy_spectrum(
                 fcases, labels, plt_type="loglog", title_suffix=title_suffix
+            )
+            self.plot_energy_spectrum(
+                fcases, labels, plt_type="plot", title_suffix=title_suffix
             )
 
 

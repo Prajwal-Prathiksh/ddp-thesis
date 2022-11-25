@@ -350,13 +350,18 @@ class SinVelocityProfile(TurbulentFlowApp):
         return []
 
     # The following are all related to post-processing.
-    def get_exact_energy_spectrum(self):
+    def get_exact_ek(self):
         """
         Get the exact energy spectrum.
+
+        Returns
+        -------
+        ek : array
+            The exact energy spectrum.
         """
         dim = self.dim
 
-        N = int(1 + np.ceil(np.sqrt(dim * self.i_nx**2) / 2))
+        N = self.get_length_of_ek()
         k_i = np.arange(1, self.n_freq + 1, dtype=np.float64)
         if dim < 3:
             ek = k_i**(-2*self.decay_rate)/8
@@ -370,6 +375,17 @@ class SinVelocityProfile(TurbulentFlowApp):
             ek = ek[:N]
         
         return ek
+    
+    def get_expected_ek_slope(self):
+        """
+        Get the slope of the energy spectrum.
+
+        Returns
+        -------
+        slope : float
+        """
+        return -2*self.decay_rate
+
 
     def post_process(self, info_fname: str):
         """
@@ -387,6 +403,11 @@ class SinVelocityProfile(TurbulentFlowApp):
         if len(self.output_files) == 0:
             return
 
+        self.plot_ek(
+            f_idx=0, plot_type='stem', exact=True,
+            no_interp=True
+        )
+
         method = self.options.i_method
         if method not in ['sph', 'shepard', 'order1']:
             method = 'order1'
@@ -402,23 +423,23 @@ class SinVelocityProfile(TurbulentFlowApp):
         )
         espec_ob.compute()
         fname = os.path.join(self.output_dir, 'energy_spectrum_log.png')
-        espec_ob.plot_scalar_Ek(
+        espec_ob.plot_scalar_ek(
             savefig=True,
             fname=fname,
             plot_type='log'
         )
-        espec_ob.plot_scalar_Ek(
+        espec_ob.plot_scalar_ek(
             savefig=True,
             fname=fname.replace('_log', '_stem'),
             plot_type='stem'
         )
         fname = os.path.join(self.output_dir, 'EK_spectrum_shiftted.png')
-        espec_ob.plot_vector_Ek(
+        espec_ob.plot_vector_ek(
             savefig=True,
             fname=fname,
             shift_fft=True
         )
-        espec_ob.plot_vector_Ek(
+        espec_ob.plot_vector_ek(
             savefig=True,
             fname=fname.replace('_shiftted', ''),
             shift_fft=False
@@ -428,7 +449,7 @@ class SinVelocityProfile(TurbulentFlowApp):
 if __name__ == '__main__':
     turb_app = SinVelocityProfile()
     turb_app.run()
-    turb_app.energy_spectrum_post_processing(
+    turb_app.ek_post_processing(
         dim=turb_app.dim, L=turb_app.L, U0=1., f_idx=0,
         compute_without_interp=True
     )
