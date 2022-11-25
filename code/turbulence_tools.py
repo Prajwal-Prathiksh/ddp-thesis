@@ -5,6 +5,7 @@ Tools required for turbulent flow simulations and analysis.
 import os
 import logging
 import inspect
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 from pysph.solver.application import Application
@@ -192,6 +193,55 @@ class TurbulentFlowApp(Application):
             Name of the file containing the initial velocity field.
         """
         self.initial_vel_field_fname = fname
+    
+    def _get_ek_plot_types_mapper(self, plot_type: str):
+        """
+        Return the plot type corresponding to the given plot type.
+
+        Parameters
+        ----------
+        plot_type : str
+            Plot type.
+
+        Returns
+        -------
+        plot_type : dict
+            Plot type dictionary.
+            Includes: func, xlabel, ylabel
+        """
+        PLOT_TYPES_MAPPER = dict(
+            loglog = dict(
+                func=plt.loglog,
+                xlabel=r"$k$",
+                ylabel=r"$E(k)$"
+            ),
+            semilogx = dict(
+                func=plt.semilogx,
+                xlabel=r"$k$",
+                ylabel=r"$E(k)$"
+            ),
+            semilogy = dict(
+                func=plt.semilogy,
+                xlabel=r"$k$",
+                ylabel=r"$E(k)$"
+            ),
+            plot = dict(
+                func=plt.plot,
+                xlabel=r"$k$",
+                ylabel=r"$E(k)$"
+            ),
+            stem = dict(
+                func=plt.stem,
+                xlabel=r"$k$",
+                ylabel=r"$E(k)$"
+            ),
+        )
+        if plot_type not in PLOT_TYPES_MAPPER:
+            raise ValueError(
+                f"Invalid plot_type: {plot_type}. Valid options are: "
+                f"{list(PLOT_TYPES_MAPPER.keys())}"
+            )
+        return PLOT_TYPES_MAPPER[plot_type]
 
     # Public methods
     def save_initial_vel_field(
@@ -380,8 +430,71 @@ class TurbulentFlowApp(Application):
         logger.warning(msg)
         return None
 
-    # def get_energy
+    def get_ek_fit(self, k: np.ndarray, ek: np.ndarray, tol:float=1e-10):
+        """
+        Fits the log10 transformed energy spectrum data with a straight line,
+        using scipy.stats.linregress.
+        Only the first half of the data is used for fitting, i.e., data points
+        from k[1] to k[N//2], where N = len(k).
+        This is because of the Nyquist criterion.
+        Additionally, data points with |ek| < tol are ignored.
 
+        Parameters
+        ----------
+        k : np.ndarray
+            Wavenumbers.
+        ek : np.ndarray
+            Energy spectrum.
+        tol : float, optional
+            Tolerance for ignoring data points with |ek| < tol.
+            Default: 1e-10
+
+        Returns
+        -------
+        k_fit : np.ndarray
+            Wavenumbers after fitting.
+        ek_fit : np.ndarray
+            Energy spectrum after fitting.
+        fit_params : dict
+            Fitting parameters.
+            Includes: slope, intercept, r_value, p_value, std_err, slope_error
+        """
+        cond_len = np.logical_and(k > 0, k < len(k)/2 - 1)
+        cond_tol = np.abs(ek) > tol
+        cond = np.logical_and(cond_len, cond_tol)
+        k_cal, ek_cal = np.log10(k[cond]), np.log10(ek[cond])
+
+        try:
+            import scipy.stats
+        except ImportError:
+            raise ImportError(
+                "scipy is required for fitting the energy spectrum."
+            )
+        
+        slope, intercept, r_value, p_value, std_err = \
+            scipy.stats.linregress(k_cal, ek_cal)
+
+        slope_error = None
+        if self.get_expected_ek_slope() is not None:
+            slope_error = np.abs(slope - self.get_expected_ek_slope())
+
+        fit_params = dict(
+            slope=slope,
+            intercept=intercept,
+            r_value=r_value,
+            p_value=p_value,
+            std_err=std_err,
+            slope_error=slope_error
+        )
+
+        # Calculate fitted energy spectrum
+        k_fit = np.logspace(
+            start=np.log10(1), stop=np.log10(k[len(k)//2]), num=50
+        )
+        ek_fit = 10**(slope * np.log10(k_fit) + intercept)
+
+        return k_fit, ek_fit, fit_params
+        
 
     def get_ek_from_initial_vel_field(self, dim:int, U0: float):
         """
@@ -463,7 +576,14 @@ class TurbulentFlowApp(Application):
             U0=U0,
             debug=True
         )
+
+        t0 = time.time()
         espec_ob.compute(order=self.options.ek_norm_order)
+        t1 = time.time()
+
+        msg = f"Energy spectrum computation took: {t1-t0:.3f} secs"
+        logger.info(msg)
+        print(msg)
 
         self._log_interpolator_details(
             fname, dim, interp_ob
@@ -621,39 +741,8 @@ class TurbulentFlowApp(Application):
         ek_exact = data['ek_exact']
         ek_no_interp = data['ek_no_interp']
 
-        PLOT_TYPES_MAPPER = dict(
-            loglog = dict(
-                func=plt.loglog,
-                xlabel=r"$k$",
-                ylabel=r"$E(k)$"
-            ),
-            semilogx = dict(
-                func=plt.semilogx,
-                xlabel=r"$k$",
-                ylabel=r"$E(k)$"
-            ),
-            semilogy = dict(
-                func=plt.semilogy,
-                xlabel=r"$k$",
-                ylabel=r"$E(k)$"
-            ),
-            plot = dict(
-                func=plt.plot,
-                xlabel=r"$k$",
-                ylabel=r"$E(k)$"
-            ),
-            stem = dict(
-                func=plt.stem,
-                xlabel=r"$k$",
-                ylabel=r"$E(k)$"
-            ),
-        )
-        if plot_type not in PLOT_TYPES_MAPPER:
-            raise ValueError(
-                f"Invalid plot_type: {plot_type}. Valid options are: "
-                f"{list(PLOT_TYPES_MAPPER.keys())}"
-            )
-        plot_func = PLOT_TYPES_MAPPER[plot_type]['func']
+        plotter = self._get_ek_plot_types_mapper(plot_type=plot_type)
+        plot_func = plotter['func']
 
         plt.figure()
         plot_func(k, ek, label="Computed")
@@ -662,16 +751,67 @@ class TurbulentFlowApp(Application):
         if no_interp and ek_no_interp is not None:
             plot_func(k, ek_no_interp, 'r--', label="No interpolation")
         
-        plt.xlabel(PLOT_TYPES_MAPPER[plot_type]['xlabel'])
-        plt.ylabel(PLOT_TYPES_MAPPER[plot_type]['ylabel'])
+        plt.xlabel(plotter['xlabel'])
+        plt.ylabel(plotter['ylabel'])
         plt.legend()
         plt.title(f"Energy spectrum at t = {t:.2f}")
         
         fname = f"espec_{f_idx}_{plot_type}.png"
         fname = os.path.join(self.output_dir, fname)
         plt.savefig(fname, dpi=300, bbox_inches='tight')
+        plt.close()
         
         print(f"Energy spectrum plot saved to: {fname}")
+
+    
+    def plot_ek_fit(
+        self, f_idx:int, plot_type:str="loglog", tol:float=1e-10
+    ):
+        """
+        Plot the computed energy spectrum stored in the *.npz file, along with
+        the fit.
+        """
+        fname = os.path.join(self.output_dir, f"espec_result_{f_idx}.npz")
+        data = np.load(fname)
+        k = data['k']
+        t = data['t']
+        ek = data['ek']
+
+        # Fit the energy spectrum
+        k_fit, ek_fit, fit_params = self.get_ek_fit(k=k, ek=ek, tol=tol)
+        fit_slope = fit_params['slope']
+        fit_r_value = fit_params['r_value']
+        fit_r_value = fit_r_value**2
+        fit_slope_error = fit_params['slope_error']
+
+        plt.figure()
+        plotter = self._get_ek_plot_types_mapper(plot_type=plot_type)
+        plot_func = plotter['func']
+        
+        expected_slope = self.get_expected_ek_slope()
+        if expected_slope is None:
+            label = "Computed"
+        else:
+            label = f"Computed: (expected E(k) ~ k^{expected_slope:.2f}) (error = {fit_slope_error:.2f})"
+        plot_func(k, ek, label=label)
+
+        fit_label = f"Fit: (E(k) ~ k^{fit_slope:.2f}) (R^2 = " \
+            f"{fit_r_value:.2f})"
+        plot_func(k_fit, ek_fit, 'k--', label=fit_label)
+
+        plt.xlabel(plotter['xlabel'])
+        plt.ylabel(plotter['ylabel'])
+        plt.legend()
+        plt.title(f"Energy spectrum at t = {t:.2f}")
+
+        fname = f"espec_{f_idx}_{plot_type}_fit.png"
+        fname = os.path.join(self.output_dir, fname)
+        plt.savefig(fname, dpi=300, bbox_inches='tight')
+        plt.close()
+
+        print(f"Energy spectrum plot saved to: {fname}")
+
+
 
     def plot_ek_evolution(self, f_idx: list = None):
         """
