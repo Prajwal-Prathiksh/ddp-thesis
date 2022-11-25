@@ -227,12 +227,13 @@ class SinVelocityProfile(TurbulentFlowApp):
             help="Dimension of the problem."
         )
         group.add_argument(
-            "--n-freq", action="store", type=int, dest="n_freq", default=41,
-            help="Number of frequencies."
+            "--n-freq", action="store", type=int, dest="n_freq", default=None,
+            help="Number of frequencies in the velocity field. Default is "
+            "half the number of nx."
         )
         group.add_argument(
             "--decay-rate", action="store", type=float, dest="decay_rate",
-            default=2.,
+            default=1.,
             help="Decay rate of the amplitude of the frequencies in the "
             "sinusoidal velocity profile."
         )
@@ -246,6 +247,8 @@ class SinVelocityProfile(TurbulentFlowApp):
         self.hdx = self.options.hdx
         self.dim = self.options.dim
         self.n_freq = self.options.n_freq
+        if self.n_freq is None:
+            self.n_freq = self.nx // 2
         self.decay_rate = abs(self.options.decay_rate)
 
         self.i_nx = self.options.i_nx
