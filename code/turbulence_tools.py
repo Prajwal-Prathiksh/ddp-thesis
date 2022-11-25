@@ -5,6 +5,7 @@ Tools required for turbulent flow simulations and analysis.
 import os
 import logging
 import numpy as np
+import matplotlib.pyplot as plt
 from pysph.solver.application import Application
 from pysph.sph.equation import Group
 from pysph.sph.basic_equations import SummationDensity
@@ -91,7 +92,6 @@ class TurbulentFlowApp(Application):
         super().__init__(*args, **kw)
         self._add_turbulence_options()
         self.initial_vel_field_fname = None
-        self.turb_post_processed_vars = {}
 
     # Private methods
     def _add_turbulence_options(self):
@@ -547,6 +547,83 @@ class TurbulentFlowApp(Application):
         self.save_energy_spectrum_as_pysph_view_file(
             fname=self.output_files[f_idx], dim=dim, espec_ob=espec_ob
         )
+    
+    def plot_energy_spectrum(
+        self, f_idx:int, plot_type:str="loglog", exact:bool=True, no_interp:bool=True,
+    ):
+        """
+        Plot the computed energy spectrum stored in the *.npz file.
+
+        Parameters
+        ----------
+        f_idx : int
+            Index of the output file from which the energy spectrum was
+            computed.
+        plot_type : str, optional
+            Type of plot to be used. Default is "loglog".
+        exact : bool, optional
+            If True, plots the exact energy spectrum. Default is True.
+        no_interp : bool, optional
+            If True, plots the energy spectrum computed without interpolating
+            the velocity field. Default is True.
+        """
+        fname = os.path.join(self.output_dir, f"espec_result_{f_idx}.npz")
+        data = np.load(fname)
+        k = data['k']
+        t = data['t']
+        Ek = data['Ek']
+        Ek_exact = data['Ek_exact']
+        Ek_no_interp = data['Ek_no_interp']
+
+        PLOT_TYPES_MAPPER = dict(
+            loglog = dict(
+                func=plt.loglog,
+                xlabel=r"$k$",
+                ylabel=r"$E(k)$"
+            ),
+            semilogx = dict(
+                func=plt.semilogx,
+                xlabel=r"$k$",
+                ylabel=r"$E(k)$"
+            ),
+            semilogy = dict(
+                func=plt.semilogy,
+                xlabel=r"$k$",
+                ylabel=r"$E(k)$"
+            ),
+            plot = dict(
+                func=plt.plot,
+                xlabel=r"$k$",
+                ylabel=r"$E(k)$"
+            ),
+            stem = dict(
+                func=plt.stem,
+                xlabel=r"$k$",
+                ylabel=r"$E(k)$"
+            ),
+        )
+        if plot_type not in PLOT_TYPES_MAPPER:
+            raise ValueError(
+                f"Invalid plot_type: {plot_type}. Valid options are: "
+                f"{list(PLOT_TYPES_MAPPER.keys())}"
+            )
+        plot_func = PLOT_TYPES_MAPPER[plot_type]['func']
+
+        plt.figure()
+        plot_func(k, Ek, label="Computed")
+        if exact:
+            plot_func(k, Ek_exact, 'k-', label="Exact")
+        if no_interp:
+            plot_func(k, Ek_no_interp, 'r--', label="No interpolation")
+        
+        plt.xlabel(PLOT_TYPES_MAPPER[plot_type]['xlabel'])
+        plt.ylabel(PLOT_TYPES_MAPPER[plot_type]['ylabel'])
+        plt.legend()
+        plt.title(f"Energy spectrum at t = {t:.2f}")
+        
+        fname = f"espec_{f_idx}_{plot_type}.png"
+        fname = os.path.join(self.output_dir, fname)
+        plt.savefig(fname, dpi=300, bbox_inches='tight')
 
     def plot_energy_spectrum_evolution(self, f_idx: list = None):
         """
