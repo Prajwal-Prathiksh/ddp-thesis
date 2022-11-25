@@ -49,29 +49,42 @@ def perturb_signal(perturb_fac: float, *args: np.ndarray):
 
 
 def get_flow_field(
-    dim: int, dx: float, L: float, perturb_fac: float = 0, 
+    dim: int, dx: float, L: float, perturb_fac: float = 0,
+    n_freq: int = 1, decay_rate: float = 2.
 ):
     r"""
     Get the flow field for the given domain parameters.
+    The velocity field is a sinusoidal velocity profile with a given number of
+    frequencies (N) and a decay rate (gamma) for the amplitudes of the
+    frequencies in the velocity field.
+
+    Note: A warning is raised if the number of frequencies is greater than half
+    the number of grid points in the domain (N > L / (2 * dx)) - Nyquist
+    criterion.
 
     1D:
     .. math::
-        u(x) = - \cos(2 \pi x)
+        u(x) = - \sum_{i=1}^{N} i^{-\gamma} \cos(2\pi i x)
 
     2D:
     .. math::
-        u(x, y) = - \cos(2 \pi x) \sin(2 \pi y)
-        v(x, y) = \sin(2 \pi x) \cos(2 \pi y)
+        u(x, y) = - \sum_{i=1}^{N} i^{-\gamma} \cos(2\pi i x) \sin(2\pi i y)
+        v(x, y) = \sum_{i=1}^{N} i^{-\gamma} \sin(2\pi i x) \cos(2\pi i y)
 
     3D:
     .. math::
-        u(x, y, z) = - \cos(2 \pi x) \sin(2 \pi y) \sin(2 \pi z)
-        v(x, y, z) = \sin(2 \pi x) \cos(2 \pi y) \sin(2 \pi z)
-        w(x, y, z) = - \sin(2 \pi x) \sin(2 \pi y) \cos(2 \pi z)
+        u(x, y, z) = - \sum_{i=1}^{N} i^{-\gamma} \cos(2\pi i x) \sin(2\pi i y)
+            \sin(2\pi i z)
+        v(x, y, z) = \sum_{i=1}^{N} i^{-\gamma} \sin(2\pi i x) \cos(2\pi i y)
+            \sin(2\pi i z)
+        w(x, y, z) = - \sum_{i=1}^{N} i^{-\gamma} \sin(2\pi i x) \sin(2\pi i y)
+            \cos(2\pi i z)
 
     where,
     .. math::
         x, y, z \in \range{dx/2, L, dx}
+        N \in \mathbb{Z^+}
+        \gamma \in \mathbb{R^+}
 
     Parameters
     ----------
@@ -84,32 +97,72 @@ def get_flow_field(
     perturb_fac : float, optional
         Factor by which the signal is to be perturbed by a uniform random
         number. The default is 0.
+    n_freq : int, optional
+        Number of frequencies in the velocity field. Default is 1.
+    decay_rate : float, optional
+        Decay rate of the amplitudes of the frequencies in the velocity field.
+        Default is 2.
 
     Returns
     -------
     (x, y, z, u, v, w) : tuple(np.ndarray)
     """
     _x = np.arange(dx / 2, L, dx)
+    
+    if n_freq > len(_x) / 2:
+        raise Warning(
+            'Number of frequencies is greater than half the number of grid '
+            'points in the domain (N > L / (2 * dx)).'
+        )
+
+    decay_rate = np.abs(decay_rate)
     twopi = 2 * np.pi
     cos, sin = np.cos, np.sin
+    npsum = np.sum
+
+    freq_range = range(1, n_freq + 1)
+
     if dim == 1:
         x = perturb_signal(perturb_fac, _x)[0]
         y = z = 0.
-        u0 = - cos(twopi * x)
+        u0 = -npsum(
+            [i ** -decay_rate * cos(twopi * i * x) for i in freq_range],
+            axis=0
+        )
         v0 = w0 = 0.
     elif dim == 2:
         x, y = np.meshgrid(_x, _x)
         x, y = perturb_signal(perturb_fac, x, y)
         z = 0.
-        u0 = - cos(twopi * x) * sin(twopi * y)
-        v0 = sin(twopi * x) * cos(twopi * y)
+        u0 = -npsum(
+            [i ** -decay_rate * cos(twopi * i * x) * sin(twopi * i * y)
+             for i in freq_range],
+            axis=0
+        )
+        v0 = npsum(
+            [i ** -decay_rate * sin(twopi * i * x) * cos(twopi * i * y)
+             for i in freq_range],
+            axis=0
+        )
         w0 = 0.
     elif dim == 3:
         x, y, z = np.meshgrid(_x, _x, _x)
         x, y, z = perturb_signal(perturb_fac, x, y, z)
-        u0 = - cos(twopi * x) * sin(twopi * y) * sin(twopi * z)
-        v0 = sin(twopi * x) * cos(twopi * y) * sin(twopi * z)
-        w0 = - sin(twopi * x) * sin(twopi * y) * cos(twopi * z)
+        u0 = -npsum(
+            [i ** -decay_rate * cos(twopi * i * x) * sin(twopi * i * y) *
+             sin(twopi * i * z) for i in freq_range],
+            axis=0
+        )
+        v0 =npsum(
+            [i ** -decay_rate * sin(twopi * i * x) * cos(twopi * i * y) *
+             sin(twopi * i * z) for i in freq_range],
+            axis=0
+        )
+        w0 = -npsum(
+            [i ** -decay_rate * sin(twopi * i * x) * sin(twopi * i * y) *
+             cos(twopi * i * z) for i in freq_range],
+            axis=0
+        )
     else:
         raise ValueError("Dimension should be 1, 2 or 3.")
     return x, y, z, u0, v0, w0
@@ -173,6 +226,16 @@ class SinVelocityProfile(TurbulentFlowApp):
             "--dim", action="store", type=int, dest="dim", default=2,
             help="Dimension of the problem."
         )
+        group.add_argument(
+            "--n-freq", action="store", type=int, dest="n_freq", default=41,
+            help="Number of frequencies."
+        )
+        group.add_argument(
+            "--decay-rate", action="store", type=float, dest="decay_rate",
+            default=2.,
+            help="Decay rate of the amplitude of the frequencies in the "
+            "sinusoidal velocity profile."
+        )
 
     def consume_user_options(self):
         """
@@ -182,6 +245,8 @@ class SinVelocityProfile(TurbulentFlowApp):
         self.nx = self.options.nx
         self.hdx = self.options.hdx
         self.dim = self.options.dim
+        self.n_freq = self.options.n_freq
+        self.decay_rate = abs(self.options.decay_rate)
 
         self.i_nx = self.options.i_nx
         self.i_kernel = self.options.i_kernel
@@ -221,7 +286,8 @@ class SinVelocityProfile(TurbulentFlowApp):
         """
         dx = self.dx
         x, y, z, u0, v0, w0 = get_flow_field(
-            dim=self.dim, dx=dx, L=self.L, perturb_fac=self.perturb
+            dim=self.dim, dx=dx, L=self.L, perturb_fac=self.perturb,
+            n_freq=self.n_freq, decay_rate=self.decay_rate
         )
         vmag = np.sqrt(u0**2 + v0**2 + w0**2)
 
@@ -246,7 +312,8 @@ class SinVelocityProfile(TurbulentFlowApp):
 
         # Save un-perturbed velocity field for comparison
         x, y, z, u0, v0, w0 = get_flow_field(
-            dim=self.dim, dx=dx, L=self.L, perturb_fac=0
+            dim=self.dim, dx=dx, L=self.L, perturb_fac=0,
+            n_freq=self.n_freq, decay_rate=self.decay_rate
         )
         self.save_initial_vel_field(
             dim=self.dim, x=x, y=y, z=z, m=m, h=h, u=u0, v=v0, w=w0
@@ -287,16 +354,19 @@ class SinVelocityProfile(TurbulentFlowApp):
         dim = self.dim
 
         N = int(1 + np.ceil(np.sqrt(dim * self.i_nx**2) / 2))
-        Ek_exact = np.zeros(N, dtype=np.float64)
-
-        if dim == 1:
-            Ek_exact[1] = 0.125
-        elif dim == 2:
-            Ek_exact[1] = 0.125
-        elif dim == 3:
-            Ek_exact[2] = 0.09375
-
-        return Ek_exact
+        k_i = np.arange(1, self.n_freq + 1, dtype=np.float64)
+        if dim < 3:
+            ek = k_i**(-2*self.decay_rate)/8
+        else:
+            ek = 3*k_i**(-2*self.decay_rate)/32
+        
+        ek = np.insert(ek, 0, 0)
+        if len(ek) < N:
+            ek = np.append(ek, np.zeros(N - len(ek)))
+        else:
+            ek = ek[:N]
+        
+        return ek
 
     def post_process(self, info_fname: str):
         """
