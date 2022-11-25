@@ -4,6 +4,7 @@ Tools required for turbulent flow simulations and analysis.
 # Library imports
 import os
 import logging
+import inspect
 import numpy as np
 import matplotlib.pyplot as plt
 from pysph.solver.application import Application
@@ -329,15 +330,60 @@ class TurbulentFlowApp(Application):
             consistent_method = 'order1'
         return equations, consistent_method
 
-    def get_exact_energy_spectrum(self):
+    def get_length_of_Ek(self):
+        """
+        Calculate the length of the computed energy spectrum beforehand,
+        by using the number of interpolation points and the number of
+        dimensions.
+
+        Returns
+        -------
+        N : int
+            Length of the computed energy spectrum.
+        """
+        N = int(1 + np.ceil(np.sqrt(self.dim * self.i_nx**2) / 2))
+        return N
+        
+
+    def get_exact_Ek(self):
         """
         Get the exact energy spectrum of the flow.
-        If not implemented, return None, and warns the user.
+        Should return a 1D numpy array.
+        The length of the array should be the same as the length of the
+        computed energy spectrum.
+
+        `self.get_length_of_energy_spectrum()` can be used to get the
+        length of the exact energy spectrum.
+
+        Note: If not implemented, return None, and warns the user, since
+        some post-processing functionalities will not be available.
+        
         """
-        logger.warning("get_exact_energy_spectrum() is not implemented.")
+        func_name = inspect.stack()[0][3]
+        msg = f"self.{func_name}() is not implemented. Some post-processing " \
+                f"functionalities will not be available."
+        logger.warning(msg)
+        return None
+    
+
+    def get_expected_Ek_slope(self):
+        """
+        Get the slope of the energy spectrum of the flow.
+        Should return a float.
+
+        Note: If not implemented, return None, and warns the user, since
+        some post-processing functionalities will not be available.
+        """
+        func_name = inspect.stack()[0][3]
+        msg = f"self.{func_name}() is not implemented. Some post-processing " \
+                f"functionalities will not be available."
+        logger.warning(msg)
         return None
 
-    def get_energy_spectrum_from_initial_vel_field(self, dim:int, U0: float):
+    # def get_energy
+
+
+    def get_Ek_from_initial_vel_field(self, dim:int, U0: float):
         """
         Computes the energy spectrum from the initial velocity field saved
         using `save_initial_vel_field()`.
@@ -380,7 +426,7 @@ class TurbulentFlowApp(Application):
 
         return espec_initial_ob
 
-    def get_energy_spectrum(self, fname: str, dim: int, L: float, U0:float=1):
+    def get_Ek(self, fname: str, dim: int, L: float, U0:float=1):
         """
         Compute and get the energy spectrum from a given PySPH output file.
 
@@ -479,7 +525,7 @@ class TurbulentFlowApp(Application):
         msg += f'. Can be viewed by running: \n\t$ pysph view "{fname}"'
         logger.info(msg)
 
-    def energy_spectrum_post_processing(
+    def ek_post_processing(
         self, dim: int, L: float, U0:float=1.0, f_idx: int = 0,
         compute_without_interp: bool = False
     ):
@@ -506,13 +552,13 @@ class TurbulentFlowApp(Application):
             return
         
         # Get the energy spectrum
-        espec_ob = self.get_energy_spectrum(
+        espec_ob = self.get_Ek(
             fname=self.output_files[f_idx], dim=dim, L=L
         )
 
         Ek_no_interp, l2_error_no_interp = None, None
         if compute_without_interp:
-            espec_initial_ob = self.get_energy_spectrum_from_initial_vel_field(
+            espec_initial_ob = self.get_Ek_from_initial_vel_field(
                 dim=dim, U0=U0
             )
             if espec_initial_ob is not None:
@@ -522,7 +568,7 @@ class TurbulentFlowApp(Application):
         # Save npz file
         fname = os.path.join(self.output_dir, f"espec_result_{f_idx}.npz")
 
-        Ek_exact = self.get_exact_energy_spectrum()
+        Ek_exact = self.get_exact_Ek()
         if Ek_exact is not None:
             l2_error = np.sqrt((espec_ob.Ek - Ek_exact)**2)
         else:
@@ -548,7 +594,7 @@ class TurbulentFlowApp(Application):
             fname=self.output_files[f_idx], dim=dim, espec_ob=espec_ob
         )
     
-    def plot_energy_spectrum(
+    def plot_Ek(
         self, f_idx:int, plot_type:str="loglog", exact:bool=True, no_interp:bool=True,
     ):
         """
@@ -611,9 +657,9 @@ class TurbulentFlowApp(Application):
 
         plt.figure()
         plot_func(k, Ek, label="Computed")
-        if exact:
+        if exact and Ek_exact is not None:
             plot_func(k, Ek_exact, 'k-', label="Exact")
-        if no_interp:
+        if no_interp and Ek_no_interp is not None:
             plot_func(k, Ek_no_interp, 'r--', label="No interpolation")
         
         plt.xlabel(PLOT_TYPES_MAPPER[plot_type]['xlabel'])
@@ -624,8 +670,10 @@ class TurbulentFlowApp(Application):
         fname = f"espec_{f_idx}_{plot_type}.png"
         fname = os.path.join(self.output_dir, fname)
         plt.savefig(fname, dpi=300, bbox_inches='tight')
+        
+        print(f"Energy spectrum plot saved to: {fname}")
 
-    def plot_energy_spectrum_evolution(self, f_idx: list = None):
+    def plot_Ek_evolution(self, f_idx: list = None):
         """
         Plot the evolution of energy spectrum for the given files indices.
 
