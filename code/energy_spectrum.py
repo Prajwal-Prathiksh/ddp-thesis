@@ -156,8 +156,6 @@ def compute_scalar_energy_spectrum(
             )
         ek_u, ek_v, ek_w = np.array(ek_u), np.array(ek_v), np.array(ek_w)
 
-    eps = 1e-50
-
     box_side_x = np.shape(ek_u)[0]
     box_side_y = np.shape(ek_u)[1] if dim > 1 else 0
     box_side_z = np.shape(ek_u)[2] if dim > 2 else 0
@@ -169,6 +167,7 @@ def compute_scalar_energy_spectrum(
     center_y = int(box_side_y / 2)
     center_z = int(box_side_z / 2)
 
+    eps = 1e-50  # To avoid division by zero
     ek_u_sphere = np.zeros((box_radius, )) + eps
     ek_v_sphere = np.zeros((box_radius, )) + eps
     ek_w_sphere = np.zeros((box_radius, )) + eps
@@ -407,9 +406,7 @@ def compute_scalar_energy_spectrum_numba(
             raise ValueError(
                 "Energy component ek_v or ek_w should not be None for 3D data."
             )
-        ek_u, ek_v, ek_w = np.array(ek_u), np.array(ek_v), np.array(ek_w)
-
-    eps = 1e-50    
+        ek_u, ek_v, ek_w = np.array(ek_u), np.array(ek_v), np.array(ek_w)  
 
     box_side_x = np.shape(ek_u)[0]
     box_side_y = np.shape(ek_u)[1] if dim > 1 else 0
@@ -422,6 +419,7 @@ def compute_scalar_energy_spectrum_numba(
     center_y = int(box_side_y / 2)
     center_z = int(box_side_z / 2)
 
+    eps = 1e-50  # To avoid division by zero
     ek_u_sphere = np.zeros((box_radius, )) + eps
     ek_v_sphere = np.zeros((box_radius, )) + eps
     ek_w_sphere = np.zeros((box_radius, )) + eps
