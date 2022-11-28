@@ -226,9 +226,14 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
     Test the function calculate_scalar_energy_spectrum.
     """
 
-    def test_should_work_for_1d_data(self):
+    def _test_should_work_for_1d_data(self, func):
         """
         Test that the function works for 1D data.
+
+        Parameters
+        ----------
+        func : function
+            Function to test.
         """
         # Given
         N = 20
@@ -236,7 +241,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         ek_u = np.array(ek_u[::-1] + [0.] + ek_u)
 
         # When
-        k, ek = compute_scalar_energy_spectrum(
+        k, ek = func(
             ek_u=ek_u, debug=False
         )
 
@@ -260,7 +265,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         ek_u = np.array(ek_u[::-1] + [0.] + ek_u)
 
         # When
-        k, ek = compute_scalar_energy_spectrum(
+        k, ek = func(
             ek_u=ek_u, debug=False
         )
 
@@ -280,9 +285,14 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         # Check the wavenumber = arange(N + 2)
         self.assertTrue(np.allclose(k, np.arange(N + 2), atol=tol))
 
-    def test_should_work_for_2d_data(self):
+    def _test_should_work_for_2d_data(self, func):
         """
         Test that the function works for 2D data.
+
+        Parameters
+        ----------
+        func : function
+            Function to test.
         """
         # Given
         ek_u = np.array([
@@ -292,7 +302,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         ])
 
         # When
-        k, ek = compute_scalar_energy_spectrum(
+        k, ek = func(
             ek_u=ek_u, ek_v=ek_u, debug=False
         )
 
@@ -319,7 +329,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         ])
 
         # When
-        k, ek = compute_scalar_energy_spectrum(
+        k, ek = func(
             ek_u=ek_u, ek_v=ek_u, debug=False
         )
 
@@ -337,9 +347,14 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         # Check the energy spectrum
         self.assertTrue(np.allclose(ek, [0, 2, 2, 0, 0], atol=tol))
 
-    def test_should_work_for_3d_data(self):
+    def _test_should_work_for_3d_data(self, func):
         """
         Test that the function works for 3D data.
+
+        Parameters
+        ----------
+        func : function
+            Function to test.
         """
         # Given
         ek_u = np.array([
@@ -361,9 +376,10 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         ])
 
         # When
-        k, ek = compute_scalar_energy_spectrum(
+        k, ek = func(
             ek_u=ek_u, ek_v=ek_u, ek_w=ek_u, debug=False
         )
+        print(f'func_name = {func}')
 
         # Then
         # Shape check
@@ -379,165 +395,42 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         # Check the energy spectrum
         self.assertTrue(np.allclose(ek * 2. / 3., [1, 14, 4, 0], atol=tol))
 
-class TestComputeScalarEnergySpectrumNumba(unittest.TestCase):
-    """
-    Test the function compute_scalar_energy_spectrum_numba.
-    """
+    def _get_funcs(self):
+        """
+        Get the functions to test.
+
+        Returns
+        -------
+        funcs : list
+            List of functions to test.
+        """
+        FUNCS = [
+            compute_scalar_energy_spectrum,
+            compute_scalar_energy_spectrum_numba
+        ]
+        return FUNCS
+    
     def test_should_work_for_1d_data(self):
         """
         Test that the function works for 1D data.
         """
-        # Given
-        N = 20
-        ek_u = [1]*N
-        ek_u = np.array(ek_u[::-1] + [0.] + ek_u)
-        shape_ek_u = ek_u.shape
-        # Append (0, 0) to the end of shape_ek_u
-        shape_ek_u = shape_ek_u + (0, 0)
-
-        # When
-        k, ek = compute_scalar_energy_spectrum_numba(
-            ek_u=ek_u,
-        )
-
-        # Then
-        # Shape check
-        self.assertEqual(k.shape, ek.shape)
-        self.assertEqual(k.shape, (N + 2,))
-        
-        # Check the energy spectrum
-        tol = 1e-10
-        self.assertTrue(np.allclose(ek[0], 0, atol=tol))
-        self.assertTrue(np.allclose(ek[1:-1], 1, atol=tol))
-        self.assertTrue(np.allclose(ek[-1], 0., atol=tol))
-
-        # Check the wavenumber = arange(N + 2)
-        self.assertTrue(np.allclose(k, np.arange(N + 2), atol=tol))
-
-        # Given
-        N = 20
-        ek_u = list(np.arange(N) + 1)
-        ek_u = np.array(ek_u[::-1] + [0.] + ek_u)
-
-        # When
-        k, ek = compute_scalar_energy_spectrum(
-            ek_u=ek_u, debug=False
-        )
-
-        # Then
-        # Shape check
-        self.assertEqual(k.shape, ek.shape)
-        self.assertEqual(k.shape, (N + 2,))
-
-        # Energy spectrum check
-        tol = 1e-10
-        # Sum of ek and 0.5*(ek_u) must be same
-        self.assertTrue(np.allclose(np.sum(ek), 0.5 * np.sum(ek_u), atol=tol))
-        # Check the energy spectrum
-        self.assertTrue(np.allclose(ek[:-1], np.arange(N + 1), atol=tol))
-        self.assertTrue(np.allclose(ek[-1], 0., atol=tol))
-
-        # Check the wavenumber = arange(N + 2)
-        self.assertTrue(np.allclose(k, np.arange(N + 2), atol=tol))
-
+        for func in self._get_funcs():
+            self._test_should_work_for_1d_data(func=func)
+    
     def test_should_work_for_2d_data(self):
         """
         Test that the function works for 2D data.
         """
-        # Given
-        ek_u = np.array([
-            [0, 1, 0],
-            [1, 1, 1],
-            [0, 1, 0]
-        ])
-
-        # When
-        k, ek = compute_scalar_energy_spectrum_numba(
-            ek_u=ek_u, ek_v=ek_u,
-        )
-
-        # Then
-        # Shape check
-        self.assertEqual(k.shape, ek.shape)
-        self.assertEqual(k.shape, (4,))
-
-        # Energy spectrum check
-        tol = 1e-10
-        # Sum of ek and 0.5*(ek_u + ek_v) must be same
-        self.assertTrue(np.allclose(np.sum(ek), 0.5 *
-                                    (np.sum(ek_u + ek_u)), atol=tol))
-        # Check the energy spectrum
-        self.assertTrue(np.allclose(ek, [1, 4, 0, 0], atol=tol))
-
-        # Given
-        ek_u = np.array([
-            [0., 0., 1., 0., 0.],
-            [0., 0., 0., 0., 0.],
-            [0., 1., 0., 1., 0.],
-            [0., 0., 0., 0., 0.],
-            [0., 0., 1., 0., 0.]
-        ])
-
-        # When
-        k, ek = compute_scalar_energy_spectrum(
-            ek_u=ek_u, ek_v=ek_u, debug=False
-        )
-
-        # Then
-        # Shape check
-        self.assertEqual(k.shape, ek.shape)
-        self.assertEqual(k.shape, (5,))
-
-        # Energy spectrum check
-        tol = 1e-10
-        # Sum of ek and 0.5*(ek_u + ek_v) must be same
-        self.assertTrue(
-            np.allclose(np.sum(ek), 0.5 * np.sum(ek_u + ek_u), atol=tol)
-        )
-        # Check the energy spectrum
-        self.assertTrue(np.allclose(ek, [0, 2, 2, 0, 0], atol=tol))
-
+        for func in self._get_funcs():
+            self._test_should_work_for_2d_data(func=func)
+        
     def test_should_work_for_3d_data(self):
         """
         Test that the function works for 3D data.
         """
-        # Given
-        ek_u = np.array([
-            [
-                [0, 1, 0],
-                [1, 1, 1],
-                [0, 1, 0]
-            ],
-            [
-                [1, 1, 1],
-                [1, 1, 1],
-                [1, 1, 1]
-            ],
-            [
-                [1, 0, 1],
-                [0, 1, 0],
-                [1, 0, 1]
-            ]
-        ])
+        for func in self._get_funcs():
+            self._test_should_work_for_3d_data(func=func)
 
-        # When
-        k, ek = compute_scalar_energy_spectrum_numba(
-            ek_u=ek_u, ek_v=ek_u, ek_w=ek_u, debug=False
-        )
-
-        # Then
-        # Shape check
-        self.assertEqual(k.shape, ek.shape)
-        self.assertEqual(k.shape, (4,))
-
-        # Energy spectrum check
-        tol = 1e-10
-        # Sum of ek and 0.5*(ek_u + ek_v + ek_w) must be same
-        self.assertTrue(
-            np.allclose(np.sum(ek), 0.5 * np.sum(ek_u + ek_u + ek_u), atol=tol)
-        )
-        # Check the energy spectrum
-        self.assertTrue(np.allclose(ek * 2. / 3., [1, 14, 4, 0], atol=tol))
 
 if __name__ == '__main__':
     unittest.main()
