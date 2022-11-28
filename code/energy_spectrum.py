@@ -10,6 +10,7 @@ References
 import itertools as IT
 import numpy as np
 import matplotlib.pyplot as plt
+from numba import njit
 from pysph.base.kernels import WendlandQuinticC4
 from pysph.tools.interpolator import Interpolator
 from pysph.solver.utils import load
@@ -30,6 +31,7 @@ def compute_energy_spectrum(
     Note: For the calculation of the velocity spectrum, the flow is assumed
     to be periodic, and the velocity field data is from an equidistant grid of
     points.
+
     Parameters
     ----------
     u : np.ndarray
@@ -42,6 +44,7 @@ def compute_energy_spectrum(
         Reference velocity. Default is 1.
     debug : bool, optional
         Return the velocity spectrum as well. Default is False.
+
     Returns
     -------
     ek_u : np.ndarray
@@ -104,6 +107,7 @@ def compute_scalar_energy_spectrum(
     Calculate 1D energy spectrum of the flow E(k), from the point-wise energy
     spectrum E(kx, ky, kz), by integrating it over the surface of a sphere of
     radius k = (kx**2 + ky**2 + kz**2)**0.5.
+
     Parameters
     ----------
     ek_u : np.ndarray
@@ -116,6 +120,7 @@ def compute_scalar_energy_spectrum(
         Order of the norm. Default is 2.
     debug : bool, optional
         Return the averaged energy spectrum as well. Default is False.
+    
     Returns
     -------
     k : np.ndarray
@@ -157,11 +162,8 @@ def compute_scalar_energy_spectrum(
     box_side_y = np.shape(ek_u)[1] if dim > 1 else 0
     box_side_z = np.shape(ek_u)[2] if dim > 2 else 0
 
-    box_radius = int(
-        1 + np.ceil(
-            norm(np.array([box_side_x, box_side_y, box_side_z])) / 2
-        )
-    )
+    tmp = np.array([box_side_x, box_side_y, box_side_z], dtype=np.float64)
+    box_radius = int(1 + np.ceil(np.linalg.norm(tmp) / 2))
 
     center_x = int(box_side_x / 2)
     center_y = int(box_side_y / 2)
@@ -207,8 +209,252 @@ def compute_scalar_energy_spectrum(
 
     if debug:
         return k, ek, ek_u_sphere, ek_v_sphere, ek_w_sphere
-    else:
-        return k, ek
+    return k, ek
+
+@njit
+def _compute_scalar_ek_from_1d_numba_helper(
+    ek_u:np.ndarray, ek_u_sphere:np.ndarray, box_side_x:int,
+    center_x:int, ord:int=np.inf,
+):
+    """
+    Helper function for computing the scalar energy spectrum from 1D data.
+
+    Parameters
+    ----------
+    ek_u : np.ndarray
+        Point-wise energy spectrum of the flow in x-direction. Should be 1D.
+    ek_u_sphere : np.ndarray
+        1D array of energy spectrum for x-component of velocity.
+    box_side_x : int
+        Side length of the box in x-direction.
+    center_x : int
+        Center length of the box in x-direction.
+    ord : int, optional
+        Order of the norm. Default is np.inf.
+    
+    Returns
+    -------
+    ek_u_sphere : np.ndarray
+    """
+    for i in range(box_side_x):
+        tmp = np.array([i - center_x], dtype=np.float64)
+        wn = int(np.round(np.linalg.norm(tmp, ord=ord)))
+
+        ek_u_sphere[wn] += ek_u[i]
+
+    return ek_u_sphere
+
+@njit
+def _compute_scalar_ek_from_2d_numba_helper(
+    ek_u:np.ndarray, ek_v:np.ndarray, ek_u_sphere:np.ndarray,
+    ek_v_sphere:np.ndarray, box_side_x:int, box_side_y:int, center_x:int,
+    center_y:int, ord:int=np.inf
+):
+    """
+    Helper function for computing the scalar energy spectrum from 2D data.
+
+    Parameters
+    ----------
+    ek_u : np.ndarray
+        Point-wise energy spectrum of the flow in x-direction. Should be 2D.
+    ek_v : np.ndarray
+        Point-wise energy spectrum of the flow in y-direction. Should be 2D.
+    ek_u_sphere : np.ndarray
+        1D array of energy spectrum for x-component of velocity.
+    ek_v_sphere : np.ndarray
+        1D array of energy spectrum for y-component of velocity.
+    box_side_x : int
+        Side length of the box in x-direction.
+    box_side_y : int
+        Side length of the box in y-direction.
+    center_x : int
+        Center length of the box in x-direction.
+    center_y : int
+        Center length of the box in y-direction.
+    ord : int, optional
+        Order of the norm. Default is np.inf.
+    
+    Returns
+    -------
+    ek_u_sphere : np.ndarray
+    ek_v_sphere : np.ndarray
+    """
+    for i in range(box_side_x):
+        for j in range(box_side_y):
+            tmp = np.array([i - center_x, j - center_y], dtype=np.float64)
+            wn = int(np.round(np.linalg.norm(tmp, ord=ord)))
+
+            ek_u_sphere[wn] += ek_u[i, j]
+            ek_v_sphere[wn] += ek_v[i, j]
+
+    return ek_u_sphere, ek_v_sphere
+
+@njit
+def _compute_scalar_ek_from_3d_numba_helper(
+    ek_u:np.ndarray, ek_v:np.ndarray, ek_w:np.ndarray, ek_u_sphere:np.ndarray,
+    ek_v_sphere:np.ndarray, ek_w_sphere:np.ndarray, box_side_x:int,
+    box_side_y:int, box_side_z:int, center_x:int, center_y:int, center_z:int,
+    ord:int=np.inf
+):
+    """
+    Helper function for computing the scalar energy spectrum from 3D data.
+
+    Parameters
+    ----------
+    ek_u : np.ndarray
+        Point-wise energy spectrum of the flow in x-direction. Should be 3D.
+    ek_v : np.ndarray
+        Point-wise energy spectrum of the flow in y-direction. Should be 3D.
+    ek_w : np.ndarray
+        Point-wise energy spectrum of the flow in z-direction. Should be 3D.
+    ek_u_sphere : np.ndarray
+        1D array of energy spectrum for x-component of velocity.
+    ek_v_sphere : np.ndarray
+        1D array of energy spectrum for y-component of velocity.
+    ek_w_sphere : np.ndarray
+        1D array of energy spectrum for z-component of velocity.
+    box_side_x : int
+        Side length of the box in x-direction.
+    box_side_y : int
+        Side length of the box in y-direction.
+    box_side_z : int
+        Side length of the box in z-direction.
+    center_x : int
+        Center length of the box in x-direction.
+    center_y : int
+        Center length of the box in y-direction.
+    center_z : int
+        Center length of the box in z-direction.
+    ord : int, optional
+        Order of the norm. Default is np.inf.
+    
+    Returns
+    -------
+    ek_u_sphere : np.ndarray
+    ek_v_sphere : np.ndarray
+    ek_w_sphere : np.ndarray
+    """
+    for i in range(box_side_x):
+        for j in range(box_side_y):
+            for k in range(box_side_z):
+                tmp = np.array(
+                    [i - center_x, j - center_y, k - center_z],
+                    dtype=np.float64
+                )
+                wn = int(np.round(np.linalg.norm(tmp, ord=ord)))
+
+                ek_u_sphere[wn] += ek_u[i, j, k]
+                ek_v_sphere[wn] += ek_v[i, j, k]
+                ek_w_sphere[wn] += ek_w[i, j, k]
+
+    return ek_u_sphere, ek_v_sphere, ek_w_sphere
+
+
+def compute_scalar_energy_spectrum_numba(
+    ek_u: np.ndarray, ek_v: np.ndarray = None, ek_w: np.ndarray = None,
+    ord: int = 2, debug: bool = False
+):
+    """
+    Calculate 1D energy spectrum of the flow E(k), from the point-wise energy
+    spectrum E(kx, ky, kz), by integrating it over the surface of a sphere of
+    radius k = (kx**2 + ky**2 + kz**2)**0.5.
+    This function is a wrapper around the numba-compiled functions
+    `_compute_scalar_ek_from_1d_numba_helper`,
+    `_compute_scalar_ek_from_2d_numba_helper` and
+    `_compute_scalar_ek_from_3d_numba_helper`.    
+    
+    Parameters
+    ----------
+    ek_u : np.ndarray
+        Point-wise energy spectrum of the flow in x-direction.
+    ek_v : np.ndarray, optional
+        Point-wise energy spectrum of the flow in y-direction.
+    ek_w : np.ndarray, optional
+        Point-wise energy spectrum of the flow in z-direction.
+    ord : int, optional
+        Order of the norm. Default is 2.
+    debug : bool, optional
+        Return the averaged energy spectrum as well. Default is False.
+
+    Returns
+    -------
+    k : np.ndarray
+        1D array of wave numbers.
+    ek : np.ndarray
+        1D array of energy spectrum.
+    """
+    dim = len(np.shape(ek_u))
+    # Check shape of velocity components for given dimensions
+    dim = len(np.shape(ek_u))
+    if dim == 1:
+        if ek_v is not None or ek_w is not None:
+            raise ValueError(
+                "Energy components ek_v and ek_w should be None for 1D data."
+            )
+        ek_u = np.array(ek_u)
+    elif dim == 2:
+        if ek_v is None:
+            raise ValueError(
+                "Energy component ek_v should not be None for 2D data."
+            )
+        if ek_w is not None:
+            raise ValueError(
+                "Energy component ek_w should be None for 2D data."
+            )
+        ek_u, ek_v = np.array(ek_u), np.array(ek_v)
+    elif dim == 3:
+        if ek_v is None or ek_w is None:
+            raise ValueError(
+                "Energy component ek_v or ek_w should not be None for 3D data."
+            )
+        ek_u, ek_v, ek_w = np.array(ek_u), np.array(ek_v), np.array(ek_w)
+
+    eps = 1e-50    
+
+    box_side_x = np.shape(ek_u)[0]
+    box_side_y = np.shape(ek_u)[1] if dim > 1 else 0
+    box_side_z = np.shape(ek_u)[2] if dim > 2 else 0
+
+    tmp = np.array([box_side_x, box_side_y, box_side_z], dtype=np.float64)
+    box_radius = int(1 + np.ceil(np.linalg.norm(tmp) / 2))
+
+    center_x = int(box_side_x / 2)
+    center_y = int(box_side_y / 2)
+    center_z = int(box_side_z / 2)
+
+    ek_u_sphere = np.zeros((box_radius, )) + eps
+    ek_v_sphere = np.zeros((box_radius, )) + eps
+    ek_w_sphere = np.zeros((box_radius, )) + eps
+
+    if dim == 1:
+        ek_u_sphere = _compute_scalar_ek_from_1d_numba_helper(
+            ek_u=ek_u, ek_u_sphere=ek_u_sphere, box_side_x=box_side_x,
+            center_x=center_x, ord=ord
+        )
+        ek_v_sphere = np.zeros_like(ek_u_sphere)
+        ek_w_sphere = np.zeros_like(ek_u_sphere)
+    elif dim == 2:
+        ek_u_sphere, ek_v_sphere = _compute_scalar_ek_from_2d_numba_helper(
+            ek_u=ek_u, ek_v=ek_v, ek_u_sphere=ek_u_sphere,
+            ek_v_sphere=ek_v_sphere, box_side_x=box_side_x,
+            box_side_y=box_side_y, center_x=center_x, center_y=center_y,
+            ord=ord
+        )
+        ek_w_sphere = np.zeros_like(ek_u_sphere)
+    elif dim == 3:
+        ek_u_sphere, ek_v_sphere, ek_w_sphere = _compute_scalar_ek_from_3d_numba_helper(
+            ek_u=ek_u, ek_v=ek_v, ek_w=ek_w, ek_u_sphere=ek_u_sphere,
+            ek_v_sphere=ek_v_sphere, ek_w_sphere=ek_w_sphere,
+            box_side_x=box_side_x, box_side_y=box_side_y,
+            box_side_z=box_side_z, center_x=center_x, center_y=center_y,
+            center_z=center_z, ord=ord
+        )
+    ek = 0.5*(ek_u_sphere + ek_v_sphere + ek_w_sphere)
+    k = np.arange(0, len(ek))
+
+    if debug:
+        return k, ek, ek_u_sphere, ek_v_sphere, ek_w_sphere
+    return k, ek
 
 
 def velocity_intepolator(
@@ -630,7 +876,7 @@ class EnergySpectrum(object):
 
         return ek_u, ek_v, ek_w, u_spectrum, v_spectrum, w_spectrum
 
-    def _compute_scalar_energy_spectrum(self, order):
+    def _compute_scalar_energy_spectrum(self, order:int, func_config:str):
         """
         Compute the energy spectrum of the flow.
 
@@ -638,25 +884,42 @@ class EnergySpectrum(object):
         ----------
         order : int
             Order of the norm.
+        func_config : str
+            Configuration of the function to use for computing the scalar
+            energy spectrum.
         """
-        k, ek, ek_u_sphere, ek_v_sphere, ek_w_sphere =\
-            compute_scalar_energy_spectrum(
-                ek_u=self.ek_u,
-                ek_v=self.ek_v,
-                ek_w=self.ek_w,
-                ord=order,
-                debug=True
-            )
+        if func_config == 'python':
+            k, ek, ek_u_sphere, ek_v_sphere, ek_w_sphere =\
+                compute_scalar_energy_spectrum(
+                    ek_u=self.ek_u,
+                    ek_v=self.ek_v,
+                    ek_w=self.ek_w,
+                    ord=order,
+                    debug=True
+                )
+        elif func_config == 'numba':
+            k, ek, ek_u_sphere, ek_v_sphere, ek_w_sphere =\
+                compute_scalar_energy_spectrum_numba(
+                    ek_u=self.ek_u,
+                    ek_v=self.ek_v,
+                    ek_w=self.ek_w,
+                    ord=order,
+                    debug=True
+                )
         return k, ek, ek_u_sphere, ek_v_sphere, ek_w_sphere
 
     # Public methods
-    def compute(self, order: int = np.inf):
+    def compute(self, order: int = np.inf, func_config: str = 'numba'):
         """
         Compute the energy spectrum of the flow.
 
         Parameters
         ----------
         order : int, optional
+            Order of the norm. Default is np.inf.
+        func_config : str, optional
+            Configuration of the function. Default is 'python'.
+            Options: python, numba
 
         """
         # Compute energy spectrum
@@ -673,7 +936,15 @@ class EnergySpectrum(object):
             )
 
         # Compute scalar energy spectrum
-        res = self._compute_scalar_energy_spectrum(order=order)
+        FUNC_CONFIG = ['python', 'numba']
+        if func_config not in FUNC_CONFIG:
+            raise ValueError(
+                f"{func_config} is not a valid function configuration. "
+                f"Valid configurations are {FUNC_CONFIG}."
+            )
+        res = self._compute_scalar_energy_spectrum(
+            order=order, func_config=func_config
+        )
         self.k, self.ek, self.ek_u_sphere, self.ek_v_sphere, self.ek_w_sphere \
             = res
         self.ek_u_sphere, self.ek_v_sphere, self.ek_w_sphere =\
