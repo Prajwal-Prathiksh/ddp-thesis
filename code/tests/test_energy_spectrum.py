@@ -379,7 +379,6 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         k, ek = func(
             ek_u=ek_u, ek_v=ek_u, ek_w=ek_u, debug=False
         )
-        print(f'func_name = {func}')
 
         # Then
         # Shape check

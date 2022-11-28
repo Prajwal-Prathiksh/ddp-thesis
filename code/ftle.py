@@ -45,10 +45,17 @@ def extract_counter(fname: str):
     
     Returns
     -------
-    counter : str
-        Counter.
+    counter : int
+        Counter at the end of the filename.
     """
-    return fname.split('_')[-1].split('.')[0]
+    try:
+        counter_str = fname.split('_')[-1].split('.')[0]
+    except:
+        msg = f"Filename {fname} is not in the correct format. "
+        msg += "Valid format: 'dir/fname_000000.npz', "
+        msg += "'dir1/dir2/fname_<counter>.hdf5'"
+        raise ValueError(msg)
+    return int(counter_str)
 
 def rename_fnames_according_to_time(fname0:str, fname1:str):
     """
@@ -72,8 +79,8 @@ def rename_fnames_according_to_time(fname0:str, fname1:str):
     counter0 = extract_counter(fname0)
     counter1 = extract_counter(fname1)
     if counter0 > counter1:
-        return fname0, fname1
-    return fname1, fname0
+        return fname1, fname0
+    return fname0, fname1
 
 class DeformationGradientEquation(Equation):
     def initialize(self, d_idx, d_deform_grad):
