@@ -389,7 +389,6 @@ def compute_scalar_energy_spectrum_numba(
     ek : np.ndarray
         1D array of energy spectrum.
     """
-    dim = len(np.shape(ek_u))
     # Check shape of velocity components for given dimensions
     dim = len(np.shape(ek_u))
     if dim == 1:
@@ -397,7 +396,7 @@ def compute_scalar_energy_spectrum_numba(
             raise ValueError(
                 "Energy components ek_v and ek_w should be None for 1D data."
             )
-        ek_u = np.array(ek_u)
+        ek_u = np.array(ek_u, dtype=np.float64)
     elif dim == 2:
         if ek_v is None:
             raise ValueError(
@@ -407,13 +406,16 @@ def compute_scalar_energy_spectrum_numba(
             raise ValueError(
                 "Energy component ek_w should be None for 2D data."
             )
-        ek_u, ek_v = np.array(ek_u), np.array(ek_v)
+        ek_u = np.array(ek_u, dtype=np.float64)
+        ek_v = np.array(ek_v, dtype=np.float64)
     elif dim == 3:
         if ek_v is None or ek_w is None:
             raise ValueError(
                 "Energy component ek_v or ek_w should not be None for 3D data."
             )
-        ek_u, ek_v, ek_w = np.array(ek_u), np.array(ek_v), np.array(ek_w)  
+        ek_u = np.array(ek_u, dtype=np.float64)
+        ek_v = np.array(ek_v, dtype=np.float64)
+        ek_w = np.array(ek_w, dtype=np.float64)
 
     box_side_x = np.shape(ek_u)[0]
     box_side_y = np.shape(ek_u)[1] if dim > 1 else 0
@@ -557,7 +559,7 @@ def _compute_ek_from_3d_inf_norm_compyle_helper(
     iter_j = (i - iter_i * box_side_y * box_side_z) // box_side_z
     iter_k = i - iter_i * box_side_y * box_side_z - iter_j * box_side_z
 
-    wn = cast(max(abs(iter_i - center_x), abs(iter_j - center_y), abs(iter_k - center_z)), "int") # noqa
+    wn = cast(max(abs(iter_i - center_x), abs(iter_j - center_y), abs(iter_k - center_z)), "int")
 
     ek_u_sphere[wn] += ek_u[i]
     ek_v_sphere[wn] += ek_v[i]
@@ -580,7 +582,7 @@ def _compute_ek_from_3d_2_norm_compyle_helper(
 
     tmp, frac_tmp, flr_tmp = declare('double', 3)
 
-    tmp = cast(sqrt((iter_i-center_x)**2 + (iter_j-center_y)**2 + (iter_k-center_z)**2), 'double') # noqa
+    tmp = cast(sqrt((iter_i-center_x)**2 + (iter_j-center_y)**2 + (iter_k-center_z)**2), 'double')
     flr_tmp = cast(floor(tmp), 'double')
     frac_tmp = tmp - flr_tmp
 
@@ -593,7 +595,155 @@ def _compute_ek_from_3d_2_norm_compyle_helper(
     ek_v_sphere[wn] += ek_v[i]
     ek_w_sphere[wn] += ek_w[i]
 
-# def compute_scalar_ener
+def compute_scalar_energy_spectrum_compyle(
+    ek_u: np.ndarray, ek_v: np.ndarray = None, ek_w: np.ndarray = None,
+    ord: int = 2, debug: bool = False
+):
+    """
+    Calculate 1D energy spectrum of the flow E(k), from the point-wise energy
+    spectrum E(kx, ky, kz), by integrating it over the surface of a sphere of
+    radius k = (kx**2 + ky**2 + kz**2)**0.5.
+    This function is a wrapper around the Compyle helper functions
+    `_compute_ek_from_1d_inf_norm_compyle_helper`,
+    `_compute_ek_from_1d_2_norm_compyle_helper`,
+    `_compute_ek_from_2d_inf_norm_compyle_helper`,
+    `_compute_ek_from_2d_2_norm_compyle_helper`,
+    `_compute_ek_from_3d_inf_norm_compyle_helper`,
+    `_compute_ek_from_3d_2_norm_compyle_helper`.
+    
+    Parameters
+    ----------
+    ek_u : np.ndarray
+        Point-wise energy spectrum of the flow in x-direction.
+    ek_v : np.ndarray, optional
+        Point-wise energy spectrum of the flow in y-direction.
+    ek_w : np.ndarray, optional
+        Point-wise energy spectrum of the flow in z-direction.
+    ord : int, optional
+        Order of the norm. Default is 2.
+    debug : bool, optional
+        Return the averaged energy spectrum as well. Default is False.
+
+    Returns
+    -------
+    k : np.ndarray
+        1D array of wave numbers.
+    ek : np.ndarray
+        1D array of energy spectrum.
+    """
+    # Check shape of velocity components for given dimensions
+    dim = len(np.shape(ek_u))
+    if dim == 1:
+        if ek_v is not None or ek_w is not None:
+            raise ValueError(
+                "Energy components ek_v and ek_w should be None for 1D data."
+            )
+        ek_u = np.array(ek_u, dtype=np.float64)
+    elif dim == 2:
+        if ek_v is None:
+            raise ValueError(
+                "Energy component ek_v should not be None for 2D data."
+            )
+        if ek_w is not None:
+            raise ValueError(
+                "Energy component ek_w should be None for 2D data."
+            )
+        ek_u = np.array(ek_u, dtype=np.float64)
+        ek_v = np.array(ek_v, dtype=np.float64)
+    elif dim == 3:
+        if ek_v is None or ek_w is None:
+            raise ValueError(
+                "Energy component ek_v or ek_w should not be None for 3D data."
+            )
+        ek_u = np.array(ek_u, dtype=np.float64)
+        ek_v = np.array(ek_v, dtype=np.float64)
+        ek_w = np.array(ek_w, dtype=np.float64)
+
+    box_side_x = np.shape(ek_u)[0]
+    box_side_y = np.shape(ek_u)[1] if dim > 1 else 0
+    box_side_z = np.shape(ek_u)[2] if dim > 2 else 0
+
+    tmp = np.array([box_side_x, box_side_y, box_side_z], dtype=np.float64)
+    box_radius = int(1 + np.ceil(np.linalg.norm(tmp) / 2))
+
+    center_x = int(box_side_x / 2)
+    center_y = int(box_side_y / 2)
+    center_z = int(box_side_z / 2)
+
+    ek_u_sphere = np.zeros((box_radius, ))
+    ek_v_sphere = np.zeros((box_radius, ))
+    ek_w_sphere = np.zeros((box_radius, ))
+
+    if ord not in [np.inf, 2]:
+        raise ValueError(
+            f"Order of the norm should be either np.inf or 2, not {ord}."
+        )
+
+    if dim == 1:
+        with use_config(use_openmp=True):
+            ek_u = wrap(ek_u.ravel())
+            ek_u_sphere = wrap(ek_u_sphere.ravel())
+
+            if ord == np.inf:
+                _compute_ek_from_1d_inf_norm_compyle_helper(
+                    ek_u, ek_u_sphere, center_x
+                )
+            elif ord == 2:
+                _compute_ek_from_1d_2_norm_compyle_helper(
+                    ek_u, ek_u_sphere, center_x
+                )
+            ek_u_sphere.pull()
+            ek_u_sphere = ek_u_sphere.data
+    elif dim == 2:
+        with use_config(use_openmp=True):
+            ek_u, ek_v = wrap(ek_u.ravel(), ek_v.ravel())
+            ek_u_sphere, ek_v_sphere = wrap(
+                ek_u_sphere.ravel(), ek_v_sphere.ravel()
+            )
+
+            if ord == np.inf:
+                _compute_ek_from_2d_inf_norm_compyle_helper(
+                    ek_u, ek_v, ek_u_sphere, ek_v_sphere, box_side_y,
+                    center_x, center_y
+                )
+            elif ord == 2:
+                _compute_ek_from_2d_2_norm_compyle_helper(
+                    ek_u, ek_v, ek_u_sphere, ek_v_sphere, box_side_y,
+                    center_x, center_y
+                )
+            ek_u_sphere.pull()
+            ek_v_sphere.pull()
+            ek_u_sphere, ek_v_sphere = ek_u_sphere.data, ek_v_sphere.data
+    elif dim == 3:
+        with use_config(use_openmp=True):
+            ek_u, ek_v, ek_w = wrap(ek_u.ravel(), ek_v.ravel(), ek_w.ravel())
+            ek_u_sphere, ek_v_sphere, ek_w_sphere = wrap(
+                ek_u_sphere.ravel(), ek_v_sphere.ravel(), ek_w_sphere.ravel()
+            )
+
+            if ord == np.inf:
+                _compute_ek_from_3d_inf_norm_compyle_helper(
+                    ek_u, ek_v, ek_w, ek_u_sphere, ek_v_sphere, ek_w_sphere,
+                    box_side_y, box_side_z, center_x, center_y, center_z
+                )
+            elif ord == 2:
+                _compute_ek_from_3d_2_norm_compyle_helper(
+                    ek_u, ek_v, ek_w, ek_u_sphere, ek_v_sphere, ek_w_sphere,
+                    box_side_y, box_side_z, center_x, center_y, center_z
+                )
+            ek_u_sphere.pull()
+            ek_v_sphere.pull()
+            ek_w_sphere.pull()
+            ek_u_sphere, ek_v_sphere, ek_w_sphere = (
+                ek_u_sphere.data, ek_v_sphere.data, ek_w_sphere.data
+            )
+
+    ek = 0.5*(ek_u_sphere + ek_v_sphere + ek_w_sphere)
+    k = np.arange(0, len(ek))
+
+    if debug:
+        return k, ek, ek_u_sphere, ek_v_sphere, ek_w_sphere
+    return k, ek
 
 
 def velocity_intepolator(
