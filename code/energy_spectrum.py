@@ -588,7 +588,8 @@ def _compute_ek_from_3d_inf_norm_compyle_helper(
 @elementwise
 @annotate
 def _compute_ek_from_3d_2_norm_compyle_helper(
-    i, ek_u, ek_v, ek_w, ek_u_sphere, ek_v_sphere, ek_w_sphere, box_side_y, box_side_z, center_x, center_y, center_z
+    i, ek_u, ek_v, ek_w, ek_u_sphere, ek_v_sphere, ek_w_sphere,
+    box_side_y, box_side_z, center_x, center_y, center_z
 ):
     """
     Compyle helper function for computing the scalar energy spectrum from 3D
