@@ -167,10 +167,9 @@ def compute_scalar_energy_spectrum(
     center_y = int(box_side_y / 2)
     center_z = int(box_side_z / 2)
 
-    eps = 1e-50  # To avoid division by zero
-    ek_u_sphere = np.zeros((box_radius, )) + eps
-    ek_v_sphere = np.zeros((box_radius, )) + eps
-    ek_w_sphere = np.zeros((box_radius, )) + eps
+    ek_u_sphere = np.zeros((box_radius, ))
+    ek_v_sphere = np.zeros((box_radius, ))
+    ek_w_sphere = np.zeros((box_radius, ))
 
     if dim == 1:
         for i in range(box_side_x):
@@ -419,10 +418,9 @@ def compute_scalar_energy_spectrum_numba(
     center_y = int(box_side_y / 2)
     center_z = int(box_side_z / 2)
 
-    eps = 1e-50  # To avoid division by zero
-    ek_u_sphere = np.zeros((box_radius, )) + eps
-    ek_v_sphere = np.zeros((box_radius, )) + eps
-    ek_w_sphere = np.zeros((box_radius, )) + eps
+    ek_u_sphere = np.zeros((box_radius, ))
+    ek_v_sphere = np.zeros((box_radius, ))
+    ek_w_sphere = np.zeros((box_radius, ))
 
     if dim == 1:
         ek_u_sphere = _compute_scalar_ek_from_1d_numba_helper(

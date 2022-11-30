@@ -82,19 +82,12 @@ def compyle_ek_3d_helper_inf_norm(
     ek_v_sphere[wn] += ek_v[i]
     ek_w_sphere[wn] += ek_w[i]
 
-    printf("i: %d\n", i)
-    printf("iter_i: %d, ", iter_i)
-    printf("iter_j: %d, ", iter_j)
-    printf("iter_k: %d\n", iter_k)
+    # printf("i: %d\n", i)
+    # printf("iter_i: %d, iter_j: %d, iter_k: %d\n", iter_i, iter_j, iter_k)
 
-    printf("wn: %d\n", wn)
-    printf("ek_u: %f, ", ek_u[i])
-    printf("ek_v: %f, ", ek_v[i])
-    printf("ek_w: %f\n", ek_w[i])
-    printf("ek_u_sp: %f, ", ek_u_sphere[wn])
-    printf("ek_v_sp: %f, ", ek_v_sphere[wn])
-    printf("ek_w_sp: %f\n\n", ek_w_sphere[wn])
-
+    # printf("wn: %d\n", wn)
+    # printf("ek_u: %f, ek_v: %f, ek_w: %f\n", ek_u[i], ek_v[i], ek_w[i])
+    # printf("ek_u_sp: %f, ek_v_sp: %f, ek_w_sp: %f\n\n", ek_u_sphere[wn], ek_v_sphere[wn], ek_w_sphere[wn])
 
 
 @elementwise
@@ -122,9 +115,15 @@ def compyle_ek_3d_helper_2_norm(
     ek_v_sphere[wn] += ek_v[i]
     ek_w_sphere[wn] += ek_w[i]
 
+    # printf("i: %d\n", i)
+    # printf("iter_i: %d, iter_j: %d, iter_k: %d\n", iter_i, iter_j, iter_k)
+
+    # printf("wn: %d\n", wn)
+    # printf("ek_u: %f, ek_v: %f, ek_w: %f\n", ek_u[i], ek_v[i], ek_w[i])
+    # printf("ek_u_sp: %f, ek_v_sp: %f, ek_w_sp: %f\n\n", ek_u_sphere[wn], ek_v_sphere[wn], ek_w_sphere[wn])
 
 def make_data():
-    EPS = 1e-50
+    EPS = 1e-18
     x = np.zeros(10)
     x[4] = x[6] = 0.125
 
@@ -176,7 +175,7 @@ def make_data_multi_dim(dim, nx, order):
     center_y = int(box_side_y / 2)
     center_z = int(box_side_z / 2)
 
-    eps = 1e-50  # To avoid division by zero
+    eps = 0.0  # To avoid division by zero
     ek_u_sphere = np.zeros((box_radius, )) + eps
     ek_v_sphere = np.zeros((box_radius, )) + eps
     ek_w_sphere = np.zeros((box_radius, )) + eps
@@ -231,15 +230,15 @@ def main_multi_dim(func_idx:int, dim:int, nx:int, order):
         else:
             raise NotImplementedError
 
-    tmp = ek_u.data.reshape(box_side_x, box_side_y, box_side_z)
-    print(f"box_side_x: {box_side_x}, box_side_y: {box_side_y}")
-    print(f"ek_u (actual):\n{tmp}")
-    print(f"ek_u_sphere (actual):\n\t{ek_u_sphere.data}")
-    print(f"ek_v_sphere (actual):\n\t{ek_v_sphere.data}")
-    print(f"ek_w_sphere (actual):\n\t{ek_w_sphere.data}")
+    # tmp = ek_u.data.reshape(box_side_x, box_side_y, box_side_z)
+    # print(f"box_side_x: {box_side_x}, box_side_y: {box_side_y}")
+    # print(f"ek_u (actual):\n{tmp}")
+    # print(f"ek_u_sphere (actual):\n\t{ek_u_sphere.data}")
+    # print(f"ek_v_sphere (actual):\n\t{ek_v_sphere.data}")
+    # print(f"ek_w_sphere (actual):\n\t{ek_w_sphere.data}")
 
-    print(f"ek (actual):\n\t{ek_actual}")
-    print(f"ek (expected):\n\t{ek}")
+    # print(f"ek (actual):\n\t{ek_actual}")
+    # print(f"ek (expected):\n\t{ek}")
     error = np.max(np.abs(ek_actual - ek))
     print(f"Max error:\n\t{error}")
 
@@ -254,9 +253,9 @@ def main(func_idx:int, dim:int, nx):
         main_multi_dim(func_idx=func_idx, dim=dim, nx=nx, order=order)
     else:
         raise NotImplementedError
-    bord = '*'*35
+    # bord = '*'*35
     # Print run success in green color
-    print(f"\033[92m{bord} RUN SUCCESSFUL {bord}\033[0m")
+    # print(f"\033[92m{bord} RUN SUCCESSFUL {bord}\033[0m")
 
 if __name__ == "__main__":
     import argparse
