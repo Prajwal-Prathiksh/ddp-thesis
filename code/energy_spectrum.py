@@ -595,7 +595,7 @@ def _compute_ek_from_3d_2_norm_compyle_helper(
     ek_v_sphere[wn] += ek_v[i]
     ek_w_sphere[wn] += ek_w[i]
 
-def compute_scalar_energy_spectrum_compyle(
+def compute_scalar_energy_spectrum_compyle(\
     ek_u: np.ndarray, ek_v: np.ndarray = None, ek_w: np.ndarray = None,
     ord: int = 2, debug: bool = False
 ):
@@ -1091,7 +1091,6 @@ class EnergySpectrum(object):
         plt.savefig(figname, dpi=300, bbox_inches="tight")
 
     # Private methods
-
     def _check_format_of_list_data(self, data: list):
         """
         Check the format of the list data.
@@ -1195,6 +1194,15 @@ class EnergySpectrum(object):
                     ord=order,
                     debug=True
                 )
+        elif func_config == 'compyle':
+            k, ek, ek_u_sphere, ek_v_sphere, ek_w_sphere =\
+                compute_scalar_energy_spectrum_compyle(
+                    ek_u=self.ek_u,
+                    ek_v=self.ek_v,
+                    ek_w=self.ek_w,
+                    ord=order,
+                    debug=True
+                )
         return k, ek, ek_u_sphere, ek_v_sphere, ek_w_sphere
 
     # Public methods
@@ -1208,7 +1216,7 @@ class EnergySpectrum(object):
             Order of the norm. Default is np.inf.
         func_config : str, optional
             Configuration of the function. Default is 'python'.
-            Options: python, numba
+            Options: python, numba, 'compyle'
 
         """
         # Compute energy spectrum
@@ -1225,7 +1233,7 @@ class EnergySpectrum(object):
             )
 
         # Compute scalar energy spectrum
-        FUNC_CONFIG = ['python', 'numba']
+        FUNC_CONFIG = ['python', 'numba', 'compyle']
         if func_config not in FUNC_CONFIG:
             raise ValueError(
                 f"{func_config} is not a valid function configuration. "
