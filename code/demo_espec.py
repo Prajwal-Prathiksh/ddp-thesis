@@ -50,17 +50,42 @@ def compyle_1d_helper_2_norm_explicit_annotate(i, x, y, center_x):
 
 @elementwise
 @annotate
-def compyle_ek_2d_helper(
+def compyle_ek_2d_helper_inf_norm(
     i, ek_u, ek_v, ek_u_sphere, ek_v_sphere, box_side_y, center_x, center_y
 ):
-    j, wn_x, wn_y, wn = declare('int', 4)
-    for j in range(box_side_y):
-        wn_x = cast(abs(i - center_x), "int")
-        wn_y = cast(abs(j - center_y), "int")
-        wn = cast(max(wn_x, wn_y), "int")
-        ek_u_sphere[wn] += ek_u[i*box_side_y + j]
-        ek_v_sphere[wn] += ek_v[i*box_side_y + j]
-        # Hello
+    iter_i, iter_j, wn = declare('int', 3)
+
+    iter_i = i // box_side_y
+    iter_j = i - iter_i * box_side_y
+
+    wn = cast(max(abs(iter_i - center_x), abs(iter_j - center_y)), "int")
+
+    ek_u_sphere[wn] += ek_u[i]
+    ek_v_sphere[wn] += ek_v[i]
+
+@elementwise
+@annotate
+def compyle_ek_2d_helper_2_norm(
+    i, ek_u, ek_v, ek_u_sphere, ek_v_sphere, box_side_y, center_x, center_y
+):
+    iter_i, iter_j, wn = declare('int', 3)
+
+    iter_i = i // box_side_y
+    iter_j = i - iter_i * box_side_y
+
+    tmp, frac_tmp, floor_tmp = declare('double', 2)
+
+    tmp = cast(sqrt((iter_i-center_x)**2 + (iter_j-center_y)**2), 'double')
+    floor_tmp = cast(floor(tmp), 'double')
+    frac_tmp = tmp - floor_tmp
+    if frac_tmp < 0.5:
+        wn = cast(floor_tmp, "int")
+    else:
+        wn = cast(floor_tmp + 1.0, "int")
+    
+    ek_u_sphere[wn] += ek_u[i]
+    ek_v_sphere[wn] += ek_v[i]
+
 
 def make_data():
     EPS = 1e-50
@@ -76,7 +101,6 @@ def make_data():
     y_expected[1] += 0.125
     
     return x, center_x, y, y_expected
-
 
 def main_1d(func_idx:int):
     x, center_x, y, y_expected = make_data()
@@ -121,7 +145,7 @@ def main_1d(func_idx:int):
     print(f"Max error: {error}")
 
 def make_data_multi_dim(dim):
-    es_ob = EnergySpectrum.from_example(dim=dim, nx=10, custom_formula=None)
+    es_ob = EnergySpectrum.from_example(dim=dim, nx=15, custom_formula=None)
     es_ob.compute(order=np.inf)
     ek_u = es_ob.ek_u
     ek_v = es_ob.ek_v
@@ -153,38 +177,50 @@ def main_multi_dim(func_idx:int, dim:int):
         make_data_multi_dim(dim=dim)
     
     with use_config(use_openmp=True):
-        ek_u, ek_v, ek_u_sphere, ek_v_sphere = wrap(
-            ek_u.ravel(), ek_v.ravel(), ek_u_sphere.ravel(),
-            ek_v_sphere.ravel()
+        ek_u, ek_v = wrap(ek_u.ravel(), ek_v.ravel())
+        ek_u_sphere, ek_v_sphere = wrap(
+            ek_u_sphere.ravel(), ek_v_sphere.ravel()
         )
         if dim == 2:
-            func = compyle_ek_2d_helper
-            func(ek_u, ek_v, ek_u_sphere, ek_v_sphere, box_side_y, center_x, center_y)
+            if func_idx == 0:
+                func = compyle_ek_2d_helper_inf_norm
+            elif func_idx == 1:
+                func = compyle_ek_2d_helper_2_norm
+            else:
+                raise NotImplementedError
+            
+            func(
+                ek_u, ek_v, ek_u_sphere, ek_v_sphere, box_side_y, center_x, center_y
+            )
 
         # Print function definition
-        bord = "-"*80
-        print(bord)
-        print(f"<<< Function definition for {func.__name__} >>>")
-        print(inspect.getsource(func))
-        print(bord)
+        # bord = "-"*80
+        # print(bord)
+        # print(f"<<< Function definition for {func.__name__} >>>")
+        # print(inspect.getsource(func))
+        # print(bord)
 
-        # Print the function source
-        print(bord)
-        print(f"<<< Function source for {func.__name__} >>>")
-        print(func.all_source)
-        print(bord)
+        # # Print the function source
+        # print(bord)
+        # print(f"<<< Function source for {func.__name__} >>>")
+        # print(func.all_source)
+        # print(bord)
         
 
         ek_u_sphere.pull()
         ek_v_sphere.pull()
     ek_actual = (ek_u_sphere.data + ek_v_sphere.data)/2
-    
-    print(len(ek))
-    print(f"{ek = }")
-    print(len(ek_actual))
-    print(f"{ek_actual = }")
+
+    # tmp = ek_u.data.reshape(box_side_x, box_side_y)
+    # print(f"box_side_x: {box_side_x}, box_side_y: {box_side_y}")
+    # print(f"ek_u (actual):\n{tmp}")
+    # print(f"ek_u_sphere (actual):\n\t{ek_u_sphere.data}")
+    # print(f"ek_v_sphere (actual):\n\t{ek_v_sphere.data}")
+
+    # print(f"ek (actual):\n\t{ek_actual}")
+    # print(f"ek (expected):\n\t{ek}")
     error = np.max(np.abs(ek_actual - ek))
-    print(f"Max error: {error}")
+    print(f"Max error:\n\t{error}")
 
 
 def main(func_idx:int, dim:int):
@@ -207,7 +243,7 @@ if __name__ == "__main__":
         "-f", "--func_idx", type=int, choices=FUNC_IDX_CHOICES, default=0
     )
     parser.add_argument(
-        "-d", "--dim", type=int, choices=DIM_CHOICES, default=1
+        "-d", "--dim", type=int, choices=DIM_CHOICES, default=2
     )
     args = parser.parse_args()
     main(func_idx=args.func_idx, dim=args.dim)
