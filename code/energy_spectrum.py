@@ -14,6 +14,11 @@ from numba import njit
 from pysph.base.kernels import WendlandQuinticC4
 from pysph.tools.interpolator import Interpolator
 from pysph.solver.utils import load
+from compyle.api import annotate, wrap, declare
+from compyle.low_level import cast
+from compyle.parallel import elementwise
+from compyle.config import use_config
+from math import sqrt,  floor
 
 # Local imports
 from automate_utils import styles
@@ -210,12 +215,13 @@ def compute_scalar_energy_spectrum(
     return k, ek
 
 @njit
-def _compute_scalar_ek_from_1d_numba_helper(
+def _compute_ek_from_1d_numba_helper(
     ek_u:np.ndarray, ek_u_sphere:np.ndarray, box_side_x:int,
     center_x:int, ord:int=np.inf,
 ):
     """
-    Helper function for computing the scalar energy spectrum from 1D data.
+    Numba helper function for computing the scalar energy spectrum from 1D
+    data.
 
     Parameters
     ----------
@@ -243,13 +249,14 @@ def _compute_scalar_ek_from_1d_numba_helper(
     return ek_u_sphere
 
 @njit
-def _compute_scalar_ek_from_2d_numba_helper(
+def _compute_ek_from_2d_numba_helper(
     ek_u:np.ndarray, ek_v:np.ndarray, ek_u_sphere:np.ndarray,
     ek_v_sphere:np.ndarray, box_side_x:int, box_side_y:int, center_x:int,
     center_y:int, ord:int=np.inf
 ):
     """
-    Helper function for computing the scalar energy spectrum from 2D data.
+    Numba helper function for computing the scalar energy spectrum from 2D
+    data.
 
     Parameters
     ----------
@@ -288,14 +295,15 @@ def _compute_scalar_ek_from_2d_numba_helper(
     return ek_u_sphere, ek_v_sphere
 
 @njit
-def _compute_scalar_ek_from_3d_numba_helper(
+def _compute_ek_from_3d_numba_helper(
     ek_u:np.ndarray, ek_v:np.ndarray, ek_w:np.ndarray, ek_u_sphere:np.ndarray,
     ek_v_sphere:np.ndarray, ek_w_sphere:np.ndarray, box_side_x:int,
     box_side_y:int, box_side_z:int, center_x:int, center_y:int, center_z:int,
     ord:int=np.inf
 ):
     """
-    Helper function for computing the scalar energy spectrum from 3D data.
+    Numba helper function for computing the scalar energy spectrum from 3D
+    data.
 
     Parameters
     ----------
@@ -423,14 +431,14 @@ def compute_scalar_energy_spectrum_numba(
     ek_w_sphere = np.zeros((box_radius, ))
 
     if dim == 1:
-        ek_u_sphere = _compute_scalar_ek_from_1d_numba_helper(
+        ek_u_sphere = _compute_ek_from_1d_numba_helper(
             ek_u=ek_u, ek_u_sphere=ek_u_sphere, box_side_x=box_side_x,
             center_x=center_x, ord=ord
         )
         ek_v_sphere = np.zeros_like(ek_u_sphere)
         ek_w_sphere = np.zeros_like(ek_u_sphere)
     elif dim == 2:
-        ek_u_sphere, ek_v_sphere = _compute_scalar_ek_from_2d_numba_helper(
+        ek_u_sphere, ek_v_sphere = _compute_ek_from_2d_numba_helper(
             ek_u=ek_u, ek_v=ek_v, ek_u_sphere=ek_u_sphere,
             ek_v_sphere=ek_v_sphere, box_side_x=box_side_x,
             box_side_y=box_side_y, center_x=center_x, center_y=center_y,
@@ -438,7 +446,7 @@ def compute_scalar_energy_spectrum_numba(
         )
         ek_w_sphere = np.zeros_like(ek_u_sphere)
     elif dim == 3:
-        ek_u_sphere, ek_v_sphere, ek_w_sphere = _compute_scalar_ek_from_3d_numba_helper(
+        ek_u_sphere, ek_v_sphere, ek_w_sphere = _compute_ek_from_3d_numba_helper(
             ek_u=ek_u, ek_v=ek_v, ek_w=ek_w, ek_u_sphere=ek_u_sphere,
             ek_v_sphere=ek_v_sphere, ek_w_sphere=ek_w_sphere,
             box_side_x=box_side_x, box_side_y=box_side_y,
@@ -451,6 +459,141 @@ def compute_scalar_energy_spectrum_numba(
     if debug:
         return k, ek, ek_u_sphere, ek_v_sphere, ek_w_sphere
     return k, ek
+
+@elementwise
+@annotate
+def _compute_ek_from_1d_inf_norm_compyle_helper(
+    i, ek_u, ek_u_sphere, center_x
+):
+    """
+    Compyle helper function for computing the scalar energy spectrum from 1D
+    data, using the infinity norm.
+    """
+    wn = declare('int')
+    wn = cast(abs(i - center_x), 'int')
+    ek_u_sphere[wn] += ek_u[i]
+
+@elementwise
+@annotate
+def _compute_ek_from_1d_2_norm_compyle_helper(
+    i, ek_u, ek_u_sphere, center_x
+):
+    """
+    Compyle helper function for computing the scalar energy spectrum from 1D
+    data, using the 2-norm.
+    """
+    wn = declare('int')
+    tmp, frac_tmp, flr_tmp = declare('double', 3)
+
+    tmp = cast(sqrt((i - center_x)**2), 'double')
+    flr_tmp = cast(floor(tmp), 'double')
+    frac_tmp = cast(tmp - flr_tmp, 'double')
+
+    if frac_tmp < 0.5:
+        wn = cast(flr_tmp, 'int')
+    else:
+        wn = cast(flr_tmp + 1.0, 'int')
+    ek_u_sphere[wn] += ek_u[i]
+
+@elementwise
+@annotate
+def _compute_ek_from_2d_inf_norm_compyle_helper(
+    i, ek_u, ek_v, ek_u_sphere, ek_v_sphere, box_side_y, center_x, center_y
+):
+    """
+    Compyle helper function for computing the scalar energy spectrum from 2D
+    data, using the infinity norm.
+    """
+    iter_i, iter_j, wn = declare('int', 3)
+
+    iter_i = i // box_side_y
+    iter_j = i - iter_i * box_side_y
+
+    wn = cast(max(abs(iter_i - center_x), abs(iter_j - center_y)), "int")
+
+    ek_u_sphere[wn] += ek_u[i]
+    ek_v_sphere[wn] += ek_v[i]
+
+@elementwise
+@annotate
+def _compute_ek_from_2d_2_norm_compyle_helper(
+    i, ek_u, ek_v, ek_u_sphere, ek_v_sphere, box_side_y, center_x, center_y
+):
+    """
+    Compyle helper function for computing the scalar energy spectrum from 2D
+    data, using the 2-norm.
+    """
+    iter_i, iter_j, wn = declare('int', 3)
+
+    iter_i = i // box_side_y
+    iter_j = i - iter_i * box_side_y
+
+    tmp, frac_tmp, flr_tmp = declare('double', 3)
+
+    tmp = cast(sqrt((iter_i-center_x)**2 + (iter_j-center_y)**2), 'double')
+    flr_tmp = cast(floor(tmp), 'double')
+    frac_tmp = tmp - flr_tmp
+
+    if frac_tmp < 0.5:
+        wn = cast(flr_tmp, "int")
+    else:
+        wn = cast(flr_tmp + 1.0, "int")
+    
+    ek_u_sphere[wn] += ek_u[i]
+    ek_v_sphere[wn] += ek_v[i]
+    
+@elementwise
+@annotate
+def _compute_ek_from_3d_inf_norm_compyle_helper(
+    i, ek_u, ek_v, ek_w, ek_u_sphere, ek_v_sphere, ek_w_sphere, box_side_y, box_side_z, center_x, center_y, center_z
+):
+    """
+    Compyle helper function for computing the scalar energy spectrum from 3D
+    data, using the infinity norm.
+    """
+    iter_i, iter_j, iter_k, wn = declare('int', 4)
+
+    iter_i = i // (box_side_y * box_side_z)
+    iter_j = (i - iter_i * box_side_y * box_side_z) // box_side_z
+    iter_k = i - iter_i * box_side_y * box_side_z - iter_j * box_side_z
+
+    wn = cast(max(abs(iter_i - center_x), abs(iter_j - center_y), abs(iter_k - center_z)), "int") # noqa
+
+    ek_u_sphere[wn] += ek_u[i]
+    ek_v_sphere[wn] += ek_v[i]
+    ek_w_sphere[wn] += ek_w[i]
+
+@elementwise
+@annotate
+def _compute_ek_from_3d_2_norm_compyle_helper(
+    i, ek_u, ek_v, ek_w, ek_u_sphere, ek_v_sphere, ek_w_sphere, box_side_y, box_side_z, center_x, center_y, center_z
+):
+    """
+    Compyle helper function for computing the scalar energy spectrum from 3D
+    data, using the 2-norm.
+    """
+    iter_i, iter_j, iter_k, wn = declare('int', 4)
+
+    iter_i = i // (box_side_y * box_side_z)
+    iter_j = (i - iter_i * box_side_y * box_side_z) // box_side_z
+    iter_k = i - iter_i * box_side_y * box_side_z - iter_j * box_side_z
+
+    tmp, frac_tmp, flr_tmp = declare('double', 3)
+
+    tmp = cast(sqrt((iter_i-center_x)**2 + (iter_j-center_y)**2 + (iter_k-center_z)**2), 'double') # noqa
+    flr_tmp = cast(floor(tmp), 'double')
+    frac_tmp = tmp - flr_tmp
+
+    if frac_tmp < 0.5:
+        wn = cast(flr_tmp, "int")
+    else:
+        wn = cast(flr_tmp + 1.0, "int")
+    
+    ek_u_sphere[wn] += ek_u[i]
+    ek_v_sphere[wn] += ek_v[i]
+    ek_w_sphere[wn] += ek_w[i]
+
+# def compute_scalar_ener
 
 
 def velocity_intepolator(
