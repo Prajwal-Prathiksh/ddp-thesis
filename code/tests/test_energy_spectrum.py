@@ -15,7 +15,8 @@ import numpy as np
 # Local imports.
 from energy_spectrum import (
     compute_energy_spectrum, compute_scalar_energy_spectrum,
-    compute_scalar_energy_spectrum_numba
+    compute_scalar_energy_spectrum_numba,
+    compute_scalar_energy_spectrum_compyle
 )
 
 
@@ -226,7 +227,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
     Test the function calculate_scalar_energy_spectrum.
     """
 
-    def _test_should_work_for_1d_data(self, func):
+    def _test_should_work_for_1d_data(self, func, ord):
         """
         Test that the function works for 1D data.
 
@@ -234,6 +235,8 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         ----------
         func : function
             Function to test.
+        ord : int
+            Order of the norm.
         """
         # Given
         N = 20
@@ -242,7 +245,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
 
         # When
         k, ek = func(
-            ek_u=ek_u, debug=False
+            ek_u=ek_u, debug=False, ord=ord
         )
 
         # Then
@@ -266,7 +269,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
 
         # When
         k, ek = func(
-            ek_u=ek_u, debug=False
+            ek_u=ek_u, debug=False, ord=ord
         )
 
         # Then
@@ -285,7 +288,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         # Check the wavenumber = arange(N + 2)
         self.assertTrue(np.allclose(k, np.arange(N + 2), atol=tol))
 
-    def _test_should_work_for_2d_data(self, func):
+    def _test_should_work_for_2d_data(self, func, ord):
         """
         Test that the function works for 2D data.
 
@@ -293,6 +296,8 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         ----------
         func : function
             Function to test.
+        ord : int
+            Order of the norm.
         """
         # Given
         ek_u = np.array([
@@ -303,7 +308,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
 
         # When
         k, ek = func(
-            ek_u=ek_u, ek_v=ek_u, debug=False
+            ek_u=ek_u, ek_v=ek_u, debug=False, ord=ord
         )
 
         # Then
@@ -330,7 +335,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
 
         # When
         k, ek = func(
-            ek_u=ek_u, ek_v=ek_u, debug=False
+            ek_u=ek_u, ek_v=ek_u, debug=False, ord=ord
         )
 
         # Then
@@ -347,7 +352,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         # Check the energy spectrum
         self.assertTrue(np.allclose(ek, [0, 2, 2, 0, 0], atol=tol))
 
-    def _test_should_work_for_3d_data(self, func):
+    def _test_should_work_for_3d_data(self, func, ord):
         """
         Test that the function works for 3D data.
 
@@ -355,6 +360,8 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         ----------
         func : function
             Function to test.
+        ord : int
+            Order of the norm.
         """
         # Given
         ek_u = np.array([
@@ -377,7 +384,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
 
         # When
         k, ek = func(
-            ek_u=ek_u, ek_v=ek_u, ek_w=ek_u, debug=False
+            ek_u=ek_u, ek_v=ek_u, ek_w=ek_u, debug=False, ord=ord
         )
 
         # Then
@@ -392,7 +399,11 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
             np.allclose(np.sum(ek), 0.5 * np.sum(ek_u + ek_u + ek_u), atol=tol)
         )
         # Check the energy spectrum
-        self.assertTrue(np.allclose(ek * 2. / 3., [1, 14, 4, 0], atol=tol))
+        if ord == np.inf:
+            ex_exact = [1, 18, 0, 0]
+        if ord == 2:
+            ex_exact = [1, 14, 4, 0]
+        self.assertTrue(np.allclose(ek * 2. / 3., ex_exact, atol=tol))
 
     def _get_funcs(self):
         """
@@ -405,30 +416,47 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         """
         FUNCS = [
             compute_scalar_energy_spectrum,
-            compute_scalar_energy_spectrum_numba
+            compute_scalar_energy_spectrum_numba,
+            compute_scalar_energy_spectrum_compyle
         ]
         return FUNCS
+    
+    def _get_orders(self):
+        """
+        Get the orders to test.
+
+        Returns
+        -------
+        orders : list
+            List of orders to test.
+        """
+        ORDERS = [np.inf, 2]
+        return ORDERS
     
     def test_should_work_for_1d_data(self):
         """
         Test that the function works for 1D data.
         """
+        # Get every combination of functions and orders
         for func in self._get_funcs():
-            self._test_should_work_for_1d_data(func=func)
+            for ord in self._get_orders():
+                self._test_should_work_for_1d_data(func=func, ord=ord)
     
     def test_should_work_for_2d_data(self):
         """
         Test that the function works for 2D data.
         """
         for func in self._get_funcs():
-            self._test_should_work_for_2d_data(func=func)
+            for ord in self._get_orders():
+                self._test_should_work_for_2d_data(func=func, ord=ord)
         
     def test_should_work_for_3d_data(self):
         """
         Test that the function works for 3D data.
         """
         for func in self._get_funcs():
-            self._test_should_work_for_3d_data(func=func)
+            for ord in self._get_orders():
+                self._test_should_work_for_3d_data(func=func, ord=ord)
 
 
 if __name__ == '__main__':
