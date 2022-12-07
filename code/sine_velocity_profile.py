@@ -81,7 +81,7 @@ def get_flow_field(
 
     where,
     .. math::
-        x, y, z \in \range{dx/2, L, dx}
+        x, y, z \in range\{dx/2, L, dx\}
         N \in \mathbb{Z^+}
         \gamma \in \mathbb{R^+}
 
@@ -108,10 +108,10 @@ def get_flow_field(
     """
     _x = np.arange(dx / 2, L, dx)
 
-    if n_freq > len(_x) / 2:
+    if n_freq >= len(_x) / 2:
         raise Warning(
             'Number of frequencies is greater than half the number of grid '
-            'points in the domain (N > L / (2 * dx)).'
+            'points in the domain (N >= L / (2 * dx)).'
         )
 
     decay_rate = np.abs(decay_rate)
@@ -234,7 +234,8 @@ class SinVelocityProfile(TurbulentFlowApp):
             "--decay-rate", action="store", type=float, dest="decay_rate",
             default=1.,
             help="Decay rate of the amplitude of the frequencies in the "
-            "sinusoidal velocity profile."
+            "sinusoidal velocity profile. Therefore, the decay rate of the "
+            "energy spectrum should be (decay_rate*2)."
         )
 
     def consume_user_options(self):
@@ -406,7 +407,8 @@ class SinVelocityProfile(TurbulentFlowApp):
             no_interp=True
         )
         self.plot_ek_fit(
-            f_idx=0, plot_type='loglog', tol=1e-8
+            f_idx=0, plot_type='loglog', tol=1e-8,
+            exact=True, no_interp=True
         )
 
         method = self.options.i_method
@@ -452,5 +454,5 @@ if __name__ == '__main__':
     turb_app.run()
     turb_app.ek_post_processing(
         dim=turb_app.dim, L=turb_app.L, U0=1., f_idx=0,
-        compute_without_interp=True
+        compute_without_interp=True, func_config='compyle'
     )
