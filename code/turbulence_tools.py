@@ -693,6 +693,12 @@ class TurbulentFlowApp(Application):
             func_config=func_config
         )
 
+        # Fit the energy spectrum
+        k_fit, ek_fit, fit_params = self.get_ek_fit(
+            k=espec_ob.k, ek=espec_ob.ek
+        )
+
+        # Get the energy spectrum for data without interpolation
         ek_no_interp, l2_error_no_interp = None, None
         if compute_without_interp:
             espec_initial_ob = self.get_ek_from_initial_vel_field(
@@ -702,16 +708,12 @@ class TurbulentFlowApp(Application):
                 ek_no_interp = espec_initial_ob.ek
                 l2_error_no_interp = np.sqrt((espec_ob.ek - ek_no_interp)**2)
 
+        # Get the exact energy spectrum
         ek_exact = self.get_exact_ek()
         if ek_exact is not None:
             l2_error = np.sqrt((espec_ob.ek - ek_exact)**2)
         else:
             l2_error = None
-
-        # Fit the energy spectrum
-        k_fit, ek_fit, fit_params = self.get_ek_fit(
-            k=espec_ob.k, ek=espec_ob.ek
-        )
 
         # Save npz file
         fname = os.path.join(self.output_dir, f"espec_result_{f_idx}.npz")
@@ -755,7 +757,7 @@ class TurbulentFlowApp(Application):
             Default is loglog.
             Valid options: loglog, semilogx, semilogy, plot, stem
         exact : bool, optional
-            If True, plots the exact energy spectrum. Default is True.
+            If True, plots the exact expected energy spectrum. Default is True.
         no_interp : bool, optional
             If True, plots the energy spectrum computed without interpolating
             the velocity field. Default is True.
@@ -791,7 +793,8 @@ class TurbulentFlowApp(Application):
         print(f"Energy spectrum plot saved to: {fname}")
 
     def plot_ek_fit(
-        self, f_idx: int, plot_type: str = "loglog", tol: float = 1e-10
+        self, f_idx: int, plot_type: str = "loglog", tol: float = 1e-10,
+        exact: bool = True, no_interp: bool = True,
     ):
         """
         Plot the computed energy spectrum stored in the *.npz file, along with
@@ -808,6 +811,11 @@ class TurbulentFlowApp(Application):
             Valid options: loglog, semilogx, semilogy, plot, stem
         tol : float, optional
             Tolerance for the fit. Default is 1e-10.
+        exact : bool, optional
+            If True, plots the exact expected energy spectrum. Default is True.
+        no_interp : bool, optional
+            If True, plots the energy spectrum computed without interpolating
+            the velocity field. Default is True.
         """
         fname = os.path.join(self.output_dir, f"espec_result_{f_idx}.npz")
         data = np.load(fname)
@@ -832,11 +840,25 @@ class TurbulentFlowApp(Application):
         plot_func(k_fit, ek_fit, 'k--', label=fit_label)
 
         expected_slope = self.get_expected_ek_slope()
-        if expected_slope is not None:
-            label = f"Expected: (E(k) ~ k^{expected_slope:.2f})" \
+        if exact and expected_slope is not None:
+            label = f"Exact: (E(k) ~ k^{expected_slope:.2f})" \
                 f"(error = {fit_slope_error:.2f})"
             ek_expected = k_fit**expected_slope
             plot_func(k_fit, ek_expected, 'r--', label=label)
+        
+        ek_no_interp = data['ek_no_interp']
+        if no_interp and ek_no_interp is not None:
+            k_fit, ek_fit, fit_params = self.get_ek_fit(
+                k=k, ek=ek_no_interp, tol=tol
+            )
+            fit_slope = fit_params['slope']
+            fit_r_value = fit_params['r_value']
+            fit_r_value = fit_r_value**2
+
+            label = fr"No interp: (E(k) ~ k^{fit_slope:.2f}) ($R^2$ = " \
+                f"{fit_r_value:.2f})"
+            plot_func(k_fit, ek_fit, 'g--', label=label)
+
 
         plt.xlabel(plotter['xlabel'])
         plt.ylabel(plotter['ylabel'])
