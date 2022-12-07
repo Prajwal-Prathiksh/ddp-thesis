@@ -158,7 +158,9 @@ class TurbulentFlowApp(Application):
             order = int(order)
         self.options.ek_norm_order = order
 
-    def _log_interpolator_details(self, fname, dim, interp_ob):
+    def _log_interpolator_details(
+        self, fname: str, dim: int, interp_ob: object
+    ):
         """
         Log details of the interpolator used.
 
@@ -201,6 +203,7 @@ class TurbulentFlowApp(Application):
         ----------
         plot_type : str
             Plot type.
+            Valid options: loglog, semilogx, semilogy, plot, stem
 
         Returns
         -------
@@ -535,7 +538,10 @@ class TurbulentFlowApp(Application):
 
         return espec_initial_ob
 
-    def get_ek(self, fname: str, dim: int, L: float, U0: float = 1):
+    def get_ek(
+        self, fname: str, dim: int, L: float, U0: float = 1,
+        func_config: str = 'compyle'
+    ):
         """
         Compute and get the energy spectrum from a given PySPH output file.
 
@@ -549,6 +555,9 @@ class TurbulentFlowApp(Application):
             Length of the domain.
         U0 : float, optional
             Reference velocity of the flow. Default is 1.
+        func_config : str, optional
+            Configuration of the function. Default is 'compyle'.
+            Options: python, numba, 'compyle'
 
         Returns
         -------
@@ -573,17 +582,24 @@ class TurbulentFlowApp(Application):
             debug=True
         )
 
+        self._log_interpolator_details(
+            fname=fname, dim=dim, interp_ob=interp_ob
+        )
+
+        msg = f'Running Energy spectrum computation using "{func_config}" ' \
+                f'function configuration.'
+        logger.info(msg)
+
         t0 = time.time()
-        espec_ob.compute(order=self.options.ek_norm_order)
+        espec_ob.compute(
+            order=self.options.ek_norm_order, func_config=func_config
+        )
         t1 = time.time()
 
         msg = f"Energy spectrum computation took: {t1-t0:.3f} secs"
         logger.info(msg)
         print(msg)
 
-        self._log_interpolator_details(
-            fname, dim, interp_ob
-        )
         return espec_ob
 
     def save_energy_spectrum_as_pysph_view_file(
@@ -643,7 +659,7 @@ class TurbulentFlowApp(Application):
 
     def ek_post_processing(
         self, dim: int, L: float, U0: float = 1.0, f_idx: int = 0,
-        compute_without_interp: bool = False
+        compute_without_interp: bool = False, func_config: str = 'compyle'
     ):
         """
         Post-processing of the energy spectrum.
@@ -663,13 +679,18 @@ class TurbulentFlowApp(Application):
             If True, computes the energy spectrum with and without
             interpolating the velocity field. This requires the initial
             velocity field to be saved using `save_initial_vel_field()`.
+            Default is False.
+        func_config : str, optional
+            Configuration of the function. Default is 'compyle'.
+            Options: python, numba, 'compyle'
         """
         if len(self.output_files) == 0:
             return
 
         # Get the energy spectrum
         espec_ob = self.get_ek(
-            fname=self.output_files[f_idx], dim=dim, L=L
+            fname=self.output_files[f_idx], dim=dim, L=L,
+            func_config=func_config
         )
 
         ek_no_interp, l2_error_no_interp = None, None
@@ -730,7 +751,9 @@ class TurbulentFlowApp(Application):
             Index of the output file from which the energy spectrum was
             computed.
         plot_type : str, optional
-            Type of plot to be used. Default is "loglog".
+            Plot type.
+            Default is loglog.
+            Valid options: loglog, semilogx, semilogy, plot, stem
         exact : bool, optional
             If True, plots the exact energy spectrum. Default is True.
         no_interp : bool, optional
@@ -773,6 +796,18 @@ class TurbulentFlowApp(Application):
         """
         Plot the computed energy spectrum stored in the *.npz file, along with
         the fit.
+
+        Parameters
+        ----------
+        f_idx : int
+            Index of the output file from which the energy spectrum was
+            computed.
+        plot_type : str, optional
+            Plot type.
+            Default is "loglog".
+            Valid options: loglog, semilogx, semilogy, plot, stem
+        tol : float, optional
+            Tolerance for the fit. Default is 1e-10.
         """
         fname = os.path.join(self.output_dir, f"espec_result_{f_idx}.npz")
         data = np.load(fname)
@@ -790,18 +825,18 @@ class TurbulentFlowApp(Application):
         plt.figure()
         plotter = self._get_ek_plot_types_mapper(plot_type=plot_type)
         plot_func = plotter['func']
+        plot_func(k, ek, label="Computed")
 
-        expected_slope = self.get_expected_ek_slope()
-        if expected_slope is None:
-            label = "Computed"
-        else:
-            label = f"Computed: (expected E(k) ~ k^{expected_slope:.2f}) " \
-                f"(error = {fit_slope_error:.2f})"
-        plot_func(k, ek, label=label)
-
-        fit_label = f"Fit: (E(k) ~ k^{fit_slope:.2f}) (R^2 = " \
+        fit_label = fr"Fit: (E(k) ~ k^{fit_slope:.2f}) ($R^2$ = " \
             f"{fit_r_value:.2f})"
         plot_func(k_fit, ek_fit, 'k--', label=fit_label)
+
+        expected_slope = self.get_expected_ek_slope()
+        if expected_slope is not None:
+            label = f"Expected: (E(k) ~ k^{expected_slope:.2f})" \
+                f"(error = {fit_slope_error:.2f})"
+            ek_expected = k_fit**expected_slope
+            plot_func(k_fit, ek_expected, 'r--', label=label)
 
         plt.xlabel(plotter['xlabel'])
         plt.ylabel(plotter['ylabel'])
