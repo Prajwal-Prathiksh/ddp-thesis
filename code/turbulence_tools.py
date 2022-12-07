@@ -8,6 +8,7 @@ import inspect
 import time
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.stats
 from pysph.solver.application import Application
 from pysph.sph.equation import Group
 from pysph.sph.basic_equations import SummationDensity
@@ -463,13 +464,6 @@ class TurbulentFlowApp(Application):
         cond_tol = np.abs(ek) > tol
         cond = np.logical_and(cond_len, cond_tol)
         k_cal, ek_cal = np.log10(k[cond]), np.log10(ek[cond])
-
-        try:
-            import scipy.stats
-        except ImportError:
-            raise ImportError(
-                "scipy is required for fitting the energy spectrum."
-            )
 
         slope, intercept, r_value, p_value, std_err = \
             scipy.stats.linregress(k_cal, ek_cal)

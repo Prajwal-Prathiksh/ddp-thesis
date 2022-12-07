@@ -379,7 +379,9 @@ class FTLyapunovExponent(object):
                     GradientCorrection(
                         dest=pa_name, sources=[pa_name], dim=self.dim
                     ),
-                    DeformationGradientEquation(dest=pa_name, sources=[pa_name]),
+                    DeformationGradientEquation(
+                        dest=pa_name, sources=[pa_name]
+                    ),
                     LyapunovExponentEquation(
                         dest=pa_name, sources=[pa_name], t0=self.t0,
                         tf=self.tf, dim=self.dim, ftle_type=ftle_type
@@ -410,7 +412,7 @@ class FTLyapunovExponent(object):
         self.func_eval.set_nnps(self.nnps)
     
     # Public methods
-    def compute(self, ftle_type, mode='serial', backend='cython'):
+    def compute(self, ftle_type, mode='mpi', backend='cython'):
         if ftle_type not in FTLE_TYPES:
             raise ValueError(
                 f"{ftle_type} is not a valid FTLE type. Valid types "
