@@ -2,14 +2,8 @@ r"""
 Test-cases for energy_spectrum.py
 ###
 """
-# Standard library imports
-try:
-    # This is for Python-2.6.x
-    import unittest2 as unittest  # type: ignore
-except ImportError:
-    import unittest
-
 # Library imports.
+import unittest
 import numpy as np
 
 # Local imports.

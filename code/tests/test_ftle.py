@@ -1,12 +1,9 @@
-# Standard library imports
-try:
-    # This is for Python-2.6.x
-    import unittest2 as unittest
-except ImportError:
-    import unittest
-
+r"""
+Test-cases for ftle.py
+###
+"""
 # Library imports.
-import numpy as np
+import unittest
 import os
 
 # Local imports.
