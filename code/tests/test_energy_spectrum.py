@@ -8,7 +8,7 @@ import numpy as np
 
 # Local imports.
 from energy_spectrum import (
-    compute_energy_spectrum, compute_scalar_energy_spectrum,
+    compute_energy_spectrum, compute_scalar_energy_spectrum_python,
     compute_scalar_energy_spectrum_numba,
     compute_scalar_energy_spectrum_compyle
 )
@@ -221,7 +221,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
     Test the function calculate_scalar_energy_spectrum.
     """
 
-    def _test_should_work_for_1d_data(self, func, ord):
+    def _test_should_work_for_1d_data(self, func, ord, msg):
         """
         Test that the function works for 1D data.
 
@@ -231,6 +231,8 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
             Function to test.
         ord : int
             Order of the norm.
+        msg : str
+            Message to display in case of failure.
         """
         # Given
         N = 20
@@ -244,17 +246,17 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
 
         # Then
         # Shape check
-        self.assertEqual(k.shape, ek.shape)
-        self.assertEqual(k.shape, (N + 2,))
+        self.assertEqual(k.shape, ek.shape, msg=msg)
+        self.assertEqual(k.shape, (N + 2,), msg=msg)
 
         # Check the energy spectrum
         tol = 1e-10
-        self.assertTrue(np.allclose(ek[0], 0, atol=tol))
-        self.assertTrue(np.allclose(ek[1:-1], 1, atol=tol))
-        self.assertTrue(np.allclose(ek[-1], 0., atol=tol))
+        self.assertTrue(np.allclose(ek[0], 0, atol=tol), msg=msg)
+        self.assertTrue(np.allclose(ek[1:-1], 1, atol=tol), msg=msg)
+        self.assertTrue(np.allclose(ek[-1], 0., atol=tol), msg=msg)
 
         # Check the wavenumber = arange(N + 2)
-        self.assertTrue(np.allclose(k, np.arange(N + 2), atol=tol))
+        self.assertTrue(np.allclose(k, np.arange(N + 2), atol=tol), msg=msg)
 
         # Given
         N = 20
@@ -268,21 +270,25 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
 
         # Then
         # Shape check
-        self.assertEqual(k.shape, ek.shape)
-        self.assertEqual(k.shape, (N + 2,))
+        self.assertEqual(k.shape, ek.shape, msg=msg)
+        self.assertEqual(k.shape, (N + 2,), msg=msg)
 
         # Energy spectrum check
         tol = 1e-10
         # Sum of ek and 0.5*(ek_u) must be same
-        self.assertTrue(np.allclose(np.sum(ek), 0.5 * np.sum(ek_u), atol=tol))
+        self.assertTrue(
+            np.allclose(np.sum(ek), 0.5 * np.sum(ek_u), atol=tol), msg=msg
+        )
         # Check the energy spectrum
-        self.assertTrue(np.allclose(ek[:-1], np.arange(N + 1), atol=tol))
-        self.assertTrue(np.allclose(ek[-1], 0., atol=tol))
+        self.assertTrue(
+            np.allclose(ek[:-1], np.arange(N + 1), atol=tol), msg=msg
+        )
+        self.assertTrue(np.allclose(ek[-1], 0., atol=tol), msg=msg)
 
         # Check the wavenumber = arange(N + 2)
-        self.assertTrue(np.allclose(k, np.arange(N + 2), atol=tol))
+        self.assertTrue(np.allclose(k, np.arange(N + 2), atol=tol), msg=msg)
 
-    def _test_should_work_for_2d_data(self, func, ord):
+    def _test_should_work_for_2d_data(self, func, ord, msg):
         """
         Test that the function works for 2D data.
 
@@ -292,6 +298,8 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
             Function to test.
         ord : int
             Order of the norm.
+        msg : str
+            Message to display in case of failure.
         """
         # Given
         ek_u = np.array([
@@ -307,16 +315,18 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
 
         # Then
         # Shape check
-        self.assertEqual(k.shape, ek.shape)
-        self.assertEqual(k.shape, (4,))
+        self.assertEqual(k.shape, ek.shape, msg=msg)
+        self.assertEqual(k.shape, (4,), msg=msg)
 
         # Energy spectrum check
         tol = 1e-10
         # Sum of ek and 0.5*(ek_u + ek_v) must be same
-        self.assertTrue(np.allclose(np.sum(ek), 0.5 *
-                                    (np.sum(ek_u + ek_u)), atol=tol))
-        # Check the energy spectrum
-        self.assertTrue(np.allclose(ek, [1, 4, 0, 0], atol=tol))
+        self.assertTrue(
+            np.allclose(np.sum(ek), 0.5*(np.sum(ek_u + ek_u)), atol=tol),
+            msg=msg
+        )
+        # Check the energy spectrum        
+        self.assertTrue(np.allclose(ek, [1, 4, 0, 0], atol=tol), msg=msg)
 
         # Given
         ek_u = np.array([
@@ -334,19 +344,20 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
 
         # Then
         # Shape check
-        self.assertEqual(k.shape, ek.shape)
-        self.assertEqual(k.shape, (5,))
+        self.assertEqual(k.shape, ek.shape, msg=msg)
+        self.assertEqual(k.shape, (5,), msg=msg)
 
         # Energy spectrum check
         tol = 1e-10
         # Sum of ek and 0.5*(ek_u + ek_v) must be same
         self.assertTrue(
-            np.allclose(np.sum(ek), 0.5 * np.sum(ek_u + ek_u), atol=tol)
+            np.allclose(np.sum(ek), 0.5 * np.sum(ek_u + ek_u), atol=tol),
+            msg=msg
         )
         # Check the energy spectrum
-        self.assertTrue(np.allclose(ek, [0, 2, 2, 0, 0], atol=tol))
+        self.assertTrue(np.allclose(ek, [0, 2, 2, 0, 0], atol=tol), msg=msg)
 
-    def _test_should_work_for_3d_data(self, func, ord):
+    def _test_should_work_for_3d_data(self, func, ord, msg):
         """
         Test that the function works for 3D data.
 
@@ -356,6 +367,8 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
             Function to test.
         ord : int
             Order of the norm.
+        msg : str
+            Message to display in case of failure.
         """
         # Given
         ek_u = np.array([
@@ -383,21 +396,24 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
 
         # Then
         # Shape check
-        self.assertEqual(k.shape, ek.shape)
-        self.assertEqual(k.shape, (4,))
+        self.assertEqual(k.shape, ek.shape, msg=msg)
+        self.assertEqual(k.shape, (4,), msg=msg)
 
         # Energy spectrum check
         tol = 1e-10
         # Sum of ek and 0.5*(ek_u + ek_v + ek_w) must be same
         self.assertTrue(
-            np.allclose(np.sum(ek), 0.5 * np.sum(ek_u + ek_u + ek_u), atol=tol)
+            np.allclose(
+                np.sum(ek), 0.5 * np.sum(ek_u + ek_u + ek_u), atol=tol
+            ),
+            msg=msg
         )
         # Check the energy spectrum
         if ord == np.inf:
             ex_exact = [1, 18, 0, 0]
         if ord == 2:
             ex_exact = [1, 14, 4, 0]
-        self.assertTrue(np.allclose(ek * 2. / 3., ex_exact, atol=tol))
+        self.assertTrue(np.allclose(ek * 2. / 3., ex_exact, atol=tol), msg=msg)
 
     def _get_funcs(self):
         """
@@ -409,7 +425,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
             List of functions to test.
         """
         FUNCS = [
-            compute_scalar_energy_spectrum,
+            compute_scalar_energy_spectrum_python,
             compute_scalar_energy_spectrum_numba,
             compute_scalar_energy_spectrum_compyle
         ]
@@ -427,30 +443,41 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         ORDERS = [np.inf, 2]
         return ORDERS
     
-    def test_should_work_for_1d_data(self):
+    def _get_error_msg(self, func, dim, ord):
         """
-        Test that the function works for 1D data.
+        Get the error message to display in case of failure.
+
+        Parameters
+        ----------
+        func : function
+            Function to test.
+        dim : int
+            Dimension of the data.
+        ord : int
+            Order of the norm.
+        """
+        msg = '\n\n' + '*'*40
+        msg += "\n\tERROR in --> Function: {0}".format(func.__name__)
+        msg += "\n\tDimension: {0}".format(dim)
+        msg += "\n\tOrder: {0}".format(ord)
+        msg += "\n" + '*'*40
+        return msg
+    
+    def test_should_work_for_all_dimensions(self):
+        """
+        Test that the function works for data of all dimensions.
         """
         # Get every combination of functions and orders
         for func in self._get_funcs():
             for ord in self._get_orders():
-                self._test_should_work_for_1d_data(func=func, ord=ord)
-    
-    def test_should_work_for_2d_data(self):
-        """
-        Test that the function works for 2D data.
-        """
-        for func in self._get_funcs():
-            for ord in self._get_orders():
-                self._test_should_work_for_2d_data(func=func, ord=ord)
-        
-    def test_should_work_for_3d_data(self):
-        """
-        Test that the function works for 3D data.
-        """
-        for func in self._get_funcs():
-            for ord in self._get_orders():
-                self._test_should_work_for_3d_data(func=func, ord=ord)
+                msg = self._get_error_msg(func=func, dim=1, ord=ord)
+                self._test_should_work_for_1d_data(func=func, ord=ord, msg=msg)
+
+                msg = self._get_error_msg(func=func, dim=2, ord=ord)
+                self._test_should_work_for_2d_data(func=func, ord=ord, msg=msg)
+
+                msg = self._get_error_msg(func=func, dim=3, ord=ord)
+                self._test_should_work_for_3d_data(func=func, ord=ord, msg=msg)
 
 
 if __name__ == '__main__':
