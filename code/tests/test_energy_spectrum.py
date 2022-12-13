@@ -237,7 +237,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         # Given
         N = 20
         ek_u = [1] * N
-        ek_u = np.array(ek_u[::-1] + [0.] + ek_u)
+        ek_u = np.array(ek_u[::-1] + [0.] + ek_u, dtype=np.float64)
 
         # When
         k, ek = func(
@@ -261,7 +261,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         # Given
         N = 20
         ek_u = list(np.arange(N) + 1)
-        ek_u = np.array(ek_u[::-1] + [0.] + ek_u)
+        ek_u = np.array(ek_u[::-1] + [0.] + ek_u, dtype=np.float64)
 
         # When
         k, ek = func(
@@ -306,7 +306,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
             [0, 1, 0],
             [1, 1, 1],
             [0, 1, 0]
-        ])
+        ], dtype=np.float64)
 
         # When
         k, ek = func(
@@ -335,7 +335,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
             [0., 1., 0., 1., 0.],
             [0., 0., 0., 0., 0.],
             [0., 0., 1., 0., 0.]
-        ])
+        ], dtype=np.float64)
 
         # When
         k, ek = func(
@@ -387,7 +387,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
                 [0, 1, 0],
                 [1, 0, 1]
             ]
-        ])
+        ], dtype=np.float64)
 
         # When
         k, ek = func(

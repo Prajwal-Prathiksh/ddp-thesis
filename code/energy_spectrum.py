@@ -648,48 +648,15 @@ def compute_scalar_energy_spectrum_compyle(
     ek : np.ndarray
         1D array of energy spectrum.
     """
-    # Check shape of velocity components for given dimensions
-    dim = len(np.shape(ek_u))
-    if dim == 1:
-        if ek_v is not None or ek_w is not None:
-            raise ValueError(
-                "Energy components ek_v and ek_w should be None for 1D data."
-            )
-        ek_u = np.array(ek_u, dtype=np.float64)
-    elif dim == 2:
-        if ek_v is None:
-            raise ValueError(
-                "Energy component ek_v should not be None for 2D data."
-            )
-        if ek_w is not None:
-            raise ValueError(
-                "Energy component ek_w should be None for 2D data."
-            )
-        ek_u = np.array(ek_u, dtype=np.float64)
-        ek_v = np.array(ek_v, dtype=np.float64)
-    elif dim == 3:
-        if ek_v is None or ek_w is None:
-            raise ValueError(
-                "Energy component ek_v or ek_w should not be None for 3D data."
-            )
-        ek_u = np.array(ek_u, dtype=np.float64)
-        ek_v = np.array(ek_v, dtype=np.float64)
-        ek_w = np.array(ek_w, dtype=np.float64)
-
-    box_side_x = np.shape(ek_u)[0]
-    box_side_y = np.shape(ek_u)[1] if dim > 1 else 0
-    box_side_z = np.shape(ek_u)[2] if dim > 2 else 0
-
-    tmp = np.array([box_side_x, box_side_y, box_side_z], dtype=np.float64)
-    box_radius = int(1 + np.ceil(np.linalg.norm(tmp) / 2))
-
-    center_x = int(box_side_x / 2)
-    center_y = int(box_side_y / 2)
-    center_z = int(box_side_z / 2)
-
-    ek_u_sphere = np.zeros((box_radius, ))
-    ek_v_sphere = np.zeros((box_radius, ))
-    ek_w_sphere = np.zeros((box_radius, ))
+    dim, box_dimensions, ek_u_sphere, ek_v_sphere, ek_w_sphere =\
+        _scalar_energy_spectrum_helper(ek_u, ek_v, ek_w)
+    print(f"dim = {dim}, ord = {ord}")
+    box_side_x = int(box_dimensions['box_side_x'])
+    box_side_y = int(box_dimensions['box_side_y'])
+    box_side_z = int(box_dimensions['box_side_z'])
+    center_x = int(box_dimensions['center_x'])
+    center_y = int(box_dimensions['center_y'])
+    center_z = int(box_dimensions['center_z'])
 
     if ord not in [np.inf, 2]:
         raise ValueError(
