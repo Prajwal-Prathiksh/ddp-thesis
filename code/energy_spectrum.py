@@ -104,6 +104,58 @@ def compute_energy_spectrum(
     else:
         return ek_u, ek_v, ek_w
 
+def _scalar_energy_spectrum_helper(ek_u, ek_v, ek_w):
+   # Check shape of velocity components for given dimensions
+    dim = len(np.shape(ek_u))
+    if dim == 1:
+        if ek_v is not None or ek_w is not None:
+            raise ValueError(
+                "Energy components ek_v and ek_w should be None for 1D data."
+            )
+        ek_u = np.array(ek_u, dtype=np.float64)
+    elif dim == 2:
+        if ek_v is None:
+            raise ValueError(
+                "Energy component ek_v should not be None for 2D data."
+            )
+        if ek_w is not None:
+            raise ValueError(
+                "Energy component ek_w should be None for 2D data."
+            )
+        ek_u = np.array(ek_u, dtype=np.float64)
+        ek_v = np.array(ek_v, dtype=np.float64)
+    elif dim == 3:
+        if ek_v is None or ek_w is None:
+            raise ValueError(
+                "Energy component ek_v or ek_w should not be None for 3D data."
+            )
+        ek_u = np.array(ek_u, dtype=np.float64)
+        ek_v = np.array(ek_v, dtype=np.float64)
+        ek_w = np.array(ek_w, dtype=np.float64)
+
+    box_side_x = np.shape(ek_u)[0]
+    box_side_y = np.shape(ek_u)[1] if dim > 1 else 0
+    box_side_z = np.shape(ek_u)[2] if dim > 2 else 0
+
+    tmp = np.array([box_side_x, box_side_y, box_side_z], dtype=np.float64)
+    box_radius = int(1 + np.ceil(np.linalg.norm(tmp) / 2))
+
+    center_x = int(box_side_x / 2)
+    center_y = int(box_side_y / 2)
+    center_z = int(box_side_z / 2)
+
+    box_dimensions = dict(
+        box_side_x=box_side_x, box_side_y=box_side_y, box_side_z=box_side_z,
+        box_radius=box_radius,
+        center_x=center_x, center_y=center_y, center_z=center_z
+    )
+
+    ek_u_sphere = np.zeros((box_radius, ))
+    ek_v_sphere = np.zeros((box_radius, ))
+    ek_w_sphere = np.zeros((box_radius, ))
+
+    return dim, box_dimensions, ek_u_sphere, ek_v_sphere, ek_w_sphere
+
 
 def compute_scalar_energy_spectrum_python(
     ek_u: np.ndarray, ek_v: np.ndarray = None, ek_w: np.ndarray = None,
@@ -137,45 +189,14 @@ def compute_scalar_energy_spectrum_python(
     # Import numpy functions
     from numpy.linalg import norm as norm
 
-    # Check shape of velocity components for given dimensions
-    dim = len(np.shape(ek_u))
-    if dim == 1:
-        if ek_v is not None or ek_w is not None:
-            raise ValueError(
-                "Energy components ek_v and ek_w should be None for 1D data."
-            )
-        ek_u = np.array(ek_u)
-    elif dim == 2:
-        if ek_v is None:
-            raise ValueError(
-                "Energy component ek_v should not be None for 2D data."
-            )
-        if ek_w is not None:
-            raise ValueError(
-                "Energy component ek_w should be None for 2D data."
-            )
-        ek_u, ek_v = np.array(ek_u), np.array(ek_v)
-    elif dim == 3:
-        if ek_v is None or ek_w is None:
-            raise ValueError(
-                "Energy component ek_v or ek_w should not be None for 3D data."
-            )
-        ek_u, ek_v, ek_w = np.array(ek_u), np.array(ek_v), np.array(ek_w)
-
-    box_side_x = np.shape(ek_u)[0]
-    box_side_y = np.shape(ek_u)[1] if dim > 1 else 0
-    box_side_z = np.shape(ek_u)[2] if dim > 2 else 0
-
-    tmp = np.array([box_side_x, box_side_y, box_side_z], dtype=np.float64)
-    box_radius = int(1 + np.ceil(np.linalg.norm(tmp) / 2))
-
-    center_x = int(box_side_x / 2)
-    center_y = int(box_side_y / 2)
-    center_z = int(box_side_z / 2)
-
-    ek_u_sphere = np.zeros((box_radius, ))
-    ek_v_sphere = np.zeros((box_radius, ))
-    ek_w_sphere = np.zeros((box_radius, ))
+    dim, box_dimensions, ek_u_sphere, ek_v_sphere, ek_w_sphere =\
+        _scalar_energy_spectrum_helper(ek_u, ek_v, ek_w)
+    box_side_x = box_dimensions['box_side_x']
+    box_side_y = box_dimensions['box_side_y']
+    box_side_z = box_dimensions['box_side_z']
+    center_x = box_dimensions['center_x']
+    center_y = box_dimensions['center_y']
+    center_z = box_dimensions['center_z']
 
     if dim == 1:
         for i in range(box_side_x):
@@ -393,48 +414,14 @@ def compute_scalar_energy_spectrum_numba(
     ek : np.ndarray
         1D array of energy spectrum.
     """
-    # Check shape of velocity components for given dimensions
-    dim = len(np.shape(ek_u))
-    if dim == 1:
-        if ek_v is not None or ek_w is not None:
-            raise ValueError(
-                "Energy components ek_v and ek_w should be None for 1D data."
-            )
-        ek_u = np.array(ek_u, dtype=np.float64)
-    elif dim == 2:
-        if ek_v is None:
-            raise ValueError(
-                "Energy component ek_v should not be None for 2D data."
-            )
-        if ek_w is not None:
-            raise ValueError(
-                "Energy component ek_w should be None for 2D data."
-            )
-        ek_u = np.array(ek_u, dtype=np.float64)
-        ek_v = np.array(ek_v, dtype=np.float64)
-    elif dim == 3:
-        if ek_v is None or ek_w is None:
-            raise ValueError(
-                "Energy component ek_v or ek_w should not be None for 3D data."
-            )
-        ek_u = np.array(ek_u, dtype=np.float64)
-        ek_v = np.array(ek_v, dtype=np.float64)
-        ek_w = np.array(ek_w, dtype=np.float64)
-
-    box_side_x = np.shape(ek_u)[0]
-    box_side_y = np.shape(ek_u)[1] if dim > 1 else 0
-    box_side_z = np.shape(ek_u)[2] if dim > 2 else 0
-
-    tmp = np.array([box_side_x, box_side_y, box_side_z], dtype=np.float64)
-    box_radius = int(1 + np.ceil(np.linalg.norm(tmp) / 2))
-
-    center_x = int(box_side_x / 2)
-    center_y = int(box_side_y / 2)
-    center_z = int(box_side_z / 2)
-
-    ek_u_sphere = np.zeros((box_radius, ))
-    ek_v_sphere = np.zeros((box_radius, ))
-    ek_w_sphere = np.zeros((box_radius, ))
+    dim, box_dimensions, ek_u_sphere, ek_v_sphere, ek_w_sphere =\
+        _scalar_energy_spectrum_helper(ek_u, ek_v, ek_w)
+    box_side_x = box_dimensions['box_side_x']
+    box_side_y = box_dimensions['box_side_y']
+    box_side_z = box_dimensions['box_side_z']
+    center_x = box_dimensions['center_x']
+    center_y = box_dimensions['center_y']
+    center_z = box_dimensions['center_z']
 
     if dim == 1:
         ek_u_sphere = _compute_ek_from_1d_numba_helper(
@@ -871,6 +858,10 @@ class EnergySpectrum(object):
     ----------
     dim : int
         Dimension of the flow.
+    L : float
+        Length of the box.
+    dx : float
+        Grid spacing.
     u : np.ndarray
         Velocity field in x-direction.
     v : np.ndarray
@@ -900,13 +891,16 @@ class EnergySpectrum(object):
     """
 
     def __init__(
-        self, dim: int, u: np.ndarray, v: np.ndarray = None,
-        w: np.ndarray = None, t: float = 0., U0: float = 1.
+        self, dim: int, L: float, dx: float, u: np.ndarray,
+        v: np.ndarray = None, w: np.ndarray = None, t: float = 0.,
+        U0: float = 1.
     ):
         """
         Initialize the class.
         """
         self.dim = dim
+        self.L = L
+        self.dx = dx
         self.u, self.v, self.w = u, v, w
         self.t = t
         self.U0 = U0
@@ -968,6 +962,7 @@ class EnergySpectrum(object):
 
         # Create meshgrid based on dimension
         _x = np.linspace(0, L, i_nx)
+        dx = _x[1] - _x[0]
         if dim == 1:
             x = _x
             y = z = None
@@ -1008,10 +1003,11 @@ class EnergySpectrum(object):
             vi = _v.reshape(i_nx, i_nx, i_nx)
             wi = _w.reshape(i_nx, i_nx, i_nx)
 
+        cls_ob = cls(dim=dim, L=L, dx=dx, u=ui, v=vi, w=wi, t=t, U0=U0)
         if debug:
-            return cls(dim=dim, u=ui, v=vi, w=wi, t=t, U0=U0), interp_ob
+            return cls_ob, interp_ob
         else:
-            return cls(dim=dim, u=ui, v=vi, w=wi, t=t, U0=U0)
+            return cls_ob
 
     @classmethod
     def from_example(
@@ -1057,7 +1053,11 @@ class EnergySpectrum(object):
         twopi = 2 * pi
         cos, sin = np.cos, np.sin
 
-        _x = np.arange(0., 1., 1. / nx)
+        L = 1.
+        U0 = 1.
+
+        _x = np.arange(0., L, 1. / nx)
+        dx = _x[1] - _x[0]
         if dim == 1:
             if custom_formula is None:
                 x = _x
@@ -1088,7 +1088,7 @@ class EnergySpectrum(object):
             raise ValueError("Dimension should be 1, 2 or 3.")
 
         return cls(
-            dim=dim, u=u, v=v, w=w, t=0.0, U0=1.0
+            dim=dim, L=L, dx=dx, u=u, v=v, w=w, t=0.0, U0=U0
         )
 
     # Static methods
