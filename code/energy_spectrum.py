@@ -23,6 +23,9 @@ from math import sqrt, floor
 # Local imports
 from automate_utils import styles
 
+# TODO: Refactor compute_scalar_energy_spectrum code
+# TODO: Push compyle update
+
 
 def compute_energy_spectrum(
     u: np.ndarray, v: np.ndarray = None, w: np.ndarray = None, U0: float = 1.0,
@@ -921,8 +924,8 @@ class EnergySpectrum(object):
     @classmethod
     def from_pysph_file(
         cls, fname: str, dim: int, L: float, i_nx: int,
-        kernel: object = None, domain_manager: object = None, U0=1.,
-        debug=False, **kwargs
+        kernel: object = None, radius_scale: float = None,
+        domain_manager: object = None, U0=1., debug=False, **kwargs
     ):
         """
         Create an EnergySpectrum object from a PySPH output file by
@@ -941,6 +944,8 @@ class EnergySpectrum(object):
             data, i_nx**3 for 3D data).
         kernel : object, optional
             Kernel object. Default is WendlandQuinticC4.
+        radius_scale : float, optional
+            Radius scale for the kernel. Default is None.
         domain_manager : object, optional
             DomainManager object. Default is None.
         U0 : float, optional
@@ -975,6 +980,10 @@ class EnergySpectrum(object):
         # Setup default interpolator properties
         if kernel is None:
             kernel = WendlandQuinticC4(dim=dim)
+
+        # Check if radius_scale is instance of float
+        if isinstance(radius_scale, float):
+            kernel.radius_scale = radius_scale
 
         # Interpolate velocity
         interp_ob = Interpolator(
@@ -1397,3 +1406,7 @@ class EnergySpectrum(object):
         elif dim == 3:
             import warnings
             warnings.warn("The feature is not implemented yet.")
+
+if __name__ == "__main__":
+    test_espec_obj = EnergySpectrum.from_example(dim=2, nx=15)
+    test_espec_obj.compute(order=2, func_config='compyle')

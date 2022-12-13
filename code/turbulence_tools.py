@@ -77,8 +77,20 @@ def get_kernel_cls(name: str, dim: int):
         'SuperGaussian': SuperGaussian,
         'QuinticSpline': QuinticSpline
     }
-    if name not in mapper:
-        raise ValueError("Kernel name not recognized")
+
+    name = name.lower().strip()
+    not_found = True
+    for key in mapper.keys():
+        if key.lower() == name:
+            name = key
+            not_found = False
+            break
+
+    if not_found:
+        raise ValueError(
+            f"Kernel {name} not supported. Valid choices are {KERNEL_CHOICES}"
+        )
+
     return mapper[name](dim=dim)
 
 
@@ -116,6 +128,11 @@ class TurbulentFlowApp(Application):
             "--i-kernel", action="store", type=str, dest="i_kernel",
             default='WendlandQuinticC4', choices=KERNEL_CHOICES,
             help="Interpolation kernel."
+        )
+        turb_options.add_argument(
+            "--i-radius-scale", action="store", type=float,
+            dest="i_radius_scale", default=3.0,
+            help="Interpolation kernel radius scale."
         )
         turb_options.add_argument(
             "--i-method", action="store", type=str, dest="i_method",
@@ -178,6 +195,7 @@ class TurbulentFlowApp(Application):
         msg += "-" * 70 + "\n"
         msg += f"Reading data from:\n\t{fname}\n"
         msg += f"Kernel:\n\t{interp_ob.kernel.__class__.__name__}(dim={dim})\n"
+        msg += f"Kernel radius scale:\n\t{interp_ob.kernel.radius_scale}\n"
         msg += f"Method:\n\t{interp_ob.method}" + "\n"
         msg += "Equations:\n\t["
         for eqn in interp_ob.func_eval.equation_groups:
@@ -569,6 +587,7 @@ class TurbulentFlowApp(Application):
             L=L,
             i_nx=self.options.i_nx,
             kernel=i_kernel_cls,
+            radius_scale=self.options.i_radius_scale,
             domain_manager=self.create_domain(),
             method=method,
             equations=eqs,
