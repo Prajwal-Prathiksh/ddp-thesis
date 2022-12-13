@@ -322,10 +322,10 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         tol = 1e-10
         # Sum of ek and 0.5*(ek_u + ek_v) must be same
         self.assertTrue(
-            np.allclose(np.sum(ek), 0.5*(np.sum(ek_u + ek_u)), atol=tol),
+            np.allclose(np.sum(ek), 0.5 * (np.sum(ek_u + ek_u)), atol=tol),
             msg=msg
         )
-        # Check the energy spectrum        
+        # Check the energy spectrum
         self.assertTrue(np.allclose(ek, [1, 4, 0, 0], atol=tol), msg=msg)
 
         # Given
@@ -430,7 +430,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
             compute_scalar_energy_spectrum_compyle
         ]
         return FUNCS
-    
+
     def _get_orders(self):
         """
         Get the orders to test.
@@ -442,7 +442,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         """
         ORDERS = [np.inf, 2]
         return ORDERS
-    
+
     def _get_error_msg(self, func, dim, ord):
         """
         Get the error message to display in case of failure.
@@ -456,13 +456,13 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
         ord : int
             Order of the norm.
         """
-        msg = '\n\n' + '*'*40
+        msg = '\n\n' + '*' * 40
         msg += "\n\tERROR in --> Function: {0}".format(func.__name__)
         msg += "\n\tDimension: {0}".format(dim)
         msg += "\n\tOrder: {0}".format(ord)
-        msg += "\n" + '*'*40
+        msg += "\n" + '*' * 40
         return msg
-    
+
     def test_should_work_for_all_dimensions(self):
         """
         Test that the function works for data of all dimensions.

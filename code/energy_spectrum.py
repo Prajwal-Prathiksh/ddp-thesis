@@ -23,9 +23,6 @@ from math import sqrt, floor
 # Local imports
 from automate_utils import styles
 
-# TODO: Refactor compute_scalar_energy_spectrum code
-# TODO: Push compyle update
-
 
 def compute_energy_spectrum(
     u: np.ndarray, v: np.ndarray = None, w: np.ndarray = None, U0: float = 1.0,
@@ -104,8 +101,31 @@ def compute_energy_spectrum(
     else:
         return ek_u, ek_v, ek_w
 
-def _scalar_energy_spectrum_helper(ek_u, ek_v, ek_w):
-   # Check shape of velocity components for given dimensions
+
+def _get_scalar_energy_spectrum_params(ek_u, ek_v, ek_w):
+    """
+    Get parameters for the scalar energy spectrum calculation.
+
+    Parameters
+    ----------
+    ek_u : np.ndarray
+        Point-wise energy spectrum of the flow in x-direction.
+    ek_v : np.ndarray
+        Point-wise energy spectrum of the flow in y-direction.
+    ek_w : np.ndarray
+        Point-wise energy spectrum of the flow in z-direction.
+
+    Returns
+    -------
+    dim : int
+        Dimension of the flow.
+    box_dimensions : dict
+        Dimensions of the box containing the flow.
+    ek_u_sphere, ek_v_sphere, ek_w_sphere : np.ndarray
+        1D zero arrays for the energy spectrum of the flow in spherical
+        coordinates.
+    """
+    # Check shape of velocity components for given dimensions
     dim = len(np.shape(ek_u))
     if dim == 1:
         if ek_v is not None or ek_w is not None:
@@ -190,7 +210,7 @@ def compute_scalar_energy_spectrum_python(
     from numpy.linalg import norm as norm
 
     dim, box_dimensions, ek_u_sphere, ek_v_sphere, ek_w_sphere =\
-        _scalar_energy_spectrum_helper(ek_u, ek_v, ek_w)
+        _get_scalar_energy_spectrum_params(ek_u, ek_v, ek_w)
     box_side_x = box_dimensions['box_side_x']
     box_side_y = box_dimensions['box_side_y']
     box_side_z = box_dimensions['box_side_z']
@@ -415,7 +435,7 @@ def compute_scalar_energy_spectrum_numba(
         1D array of energy spectrum.
     """
     dim, box_dimensions, ek_u_sphere, ek_v_sphere, ek_w_sphere =\
-        _scalar_energy_spectrum_helper(ek_u, ek_v, ek_w)
+        _get_scalar_energy_spectrum_params(ek_u, ek_v, ek_w)
     box_side_x = box_dimensions['box_side_x']
     box_side_y = box_dimensions['box_side_y']
     box_side_z = box_dimensions['box_side_z']
@@ -649,9 +669,7 @@ def compute_scalar_energy_spectrum_compyle(
         1D array of energy spectrum.
     """
     dim, box_dimensions, ek_u_sphere, ek_v_sphere, ek_w_sphere =\
-        _scalar_energy_spectrum_helper(ek_u, ek_v, ek_w)
-    print(f"dim = {dim}, ord = {ord}")
-    box_side_x = int(box_dimensions['box_side_x'])
+        _get_scalar_energy_spectrum_params(ek_u, ek_v, ek_w)
     box_side_y = int(box_dimensions['box_side_y'])
     box_side_z = int(box_dimensions['box_side_z'])
     center_x = int(box_dimensions['center_x'])
@@ -1373,6 +1391,7 @@ class EnergySpectrum(object):
         elif dim == 3:
             import warnings
             warnings.warn("The feature is not implemented yet.")
+
 
 if __name__ == "__main__":
     test_espec_obj = EnergySpectrum.from_example(dim=2, nx=15)
