@@ -105,7 +105,7 @@ def compute_energy_spectrum(
         return ek_u, ek_v, ek_w
 
 
-def compute_scalar_energy_spectrum(
+def compute_scalar_energy_spectrum_python(
     ek_u: np.ndarray, ek_v: np.ndarray = None, ek_w: np.ndarray = None,
     ord: int = 2, debug: bool = False
 ):
@@ -1214,7 +1214,7 @@ class EnergySpectrum(object):
         """
         if func_config == 'python':
             k, ek, ek_u_sphere, ek_v_sphere, ek_w_sphere =\
-                compute_scalar_energy_spectrum(
+                compute_scalar_energy_spectrum_python(
                     ek_u=self.ek_u,
                     ek_v=self.ek_v,
                     ek_w=self.ek_w,
