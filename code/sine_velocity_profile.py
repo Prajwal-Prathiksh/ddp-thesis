@@ -17,6 +17,7 @@ from turbulence_tools import TurbulentFlowApp, get_kernel_cls
 
 # TODO: Use optimal values of hdx for each kernel
 # TODO: Study Gaussian kernel with multiple hdx values
+# TODO: Study the effect h, hdx, and dx on the energy spectrum
 
 
 def perturb_signal(perturb_fac: float, *args: np.ndarray):
@@ -209,7 +210,8 @@ class SinVelocityProfile(TurbulentFlowApp):
         Add user options to the given group.
         """
         group.add_argument(
-            "--perturb", action="store", type=float, dest="perturb", default=0,
+            "--perturb", action="store", type=float, dest="perturb",
+            default=0.01,
             help="Random perturbation of initial particles as a fraction "
             "of dx (setting it to zero disables it, the default)."
         )
@@ -319,7 +321,8 @@ class SinVelocityProfile(TurbulentFlowApp):
             n_freq=self.n_freq, decay_rate=self.decay_rate
         )
         self.save_initial_vel_field(
-            dim=self.dim, x=x, y=y, z=z, m=m, h=h, u=u0, v=v0, w=w0
+            dim=self.dim, x=x, y=y, z=z, m=m, h=h, u=u0, v=v0, w=w0, L=self.L,
+            dx=dx
         )
 
         return [pa]
@@ -402,51 +405,51 @@ class SinVelocityProfile(TurbulentFlowApp):
         if len(self.output_files) == 0:
             return
 
-        self.plot_ek(
-            f_idx=0, plot_type='loglog', exact=True,
-            no_interp=True
-        )
-        self.plot_ek_fit(
-            f_idx=0, plot_type='loglog', tol=1e-8,
-            exact=True, no_interp=True
-        )
+        # self.plot_ek_fit(
+        #     f_idx=0, plot_type='loglog', tol=1e-8,
+        #     exact=True, no_interp=True
+        # )
+        # self.plot_ek(
+        #     f_idx=0, plot_type='loglog', exact=True,
+        #     no_interp=True
+        # )
 
-        method = self.options.i_method
-        if method not in ['sph', 'shepard', 'order1']:
-            method = 'order1'
-        espec_ob = EnergySpectrum.from_pysph_file(
-            fname=self.output_files[0],
-            dim=dim,
-            L=self.L,
-            i_nx=self.i_nx,
-            kernel=self.i_kernel_cls,
-            domain_manager=self.create_domain(),
-            method=method,
-            U0=1.
-        )
-        espec_ob.compute()
-        fname = os.path.join(self.output_dir, 'energy_spectrum_log.png')
-        espec_ob.plot_scalar_ek(
-            savefig=True,
-            fname=fname,
-            plot_type='log'
-        )
-        espec_ob.plot_scalar_ek(
-            savefig=True,
-            fname=fname.replace('_log', '_stem'),
-            plot_type='stem'
-        )
-        fname = os.path.join(self.output_dir, 'EK_spectrum_shiftted.png')
-        espec_ob.plot_vector_ek(
-            savefig=True,
-            fname=fname,
-            shift_fft=True
-        )
-        espec_ob.plot_vector_ek(
-            savefig=True,
-            fname=fname.replace('_shiftted', ''),
-            shift_fft=False
-        )
+        # method = self.options.i_method
+        # if method not in ['sph', 'shepard', 'order1']:
+        #     method = 'order1'
+        # espec_ob = EnergySpectrum.from_pysph_file(
+        #     fname=self.output_files[0],
+        #     dim=dim,
+        #     L=self.L,
+        #     i_nx=self.i_nx,
+        #     kernel=self.i_kernel_cls,
+        #     domain_manager=self.create_domain(),
+        #     method=method,
+        #     U0=1.
+        # )
+        # espec_ob.compute()
+        # fname = os.path.join(self.output_dir, 'energy_spectrum_log.png')
+        # espec_ob.plot_scalar_ek(
+        #     savefig=True,
+        #     fname=fname,
+        #     plot_type='log'
+        # )
+        # espec_ob.plot_scalar_ek(
+        #     savefig=True,
+        #     fname=fname.replace('_log', '_stem'),
+        #     plot_type='stem'
+        # )
+        # fname = os.path.join(self.output_dir, 'EK_spectrum_shiftted.png')
+        # espec_ob.plot_vector_ek(
+        #     savefig=True,
+        #     fname=fname,
+        #     shift_fft=True
+        # )
+        # espec_ob.plot_vector_ek(
+        #     savefig=True,
+        #     fname=fname.replace('_shiftted', ''),
+        #     shift_fft=False
+        # )
 
 
 if __name__ == '__main__':
@@ -456,3 +459,4 @@ if __name__ == '__main__':
         dim=turb_app.dim, L=turb_app.L, U0=1., f_idx=0,
         compute_without_interp=True, func_config='compyle'
     )
+    turb_app.post_process(turb_app.info_filename)
