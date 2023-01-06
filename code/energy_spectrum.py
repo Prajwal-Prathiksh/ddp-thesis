@@ -1110,6 +1110,16 @@ class EnergySpectrum(object):
         if figname is None:
             figname = "./energy_spectrum.png"
         plt.savefig(figname, dpi=300, bbox_inches="tight")
+    
+    @staticmethod
+    def calculate_wavenumber_of_dx(L, dx, box_radius):
+        if dx > L:
+            raise ValueError("dx is larger than the box size.")
+        tmp_linspace = np.linspace(0., L, box_radius)
+        diff = tmp_linspace[1] - tmp_linspace[0]
+        wn = np.ceil(np.abs(dx/diff))
+        wn = int(box_radius - wn + 1)
+        return wn
 
     # Private methods
     def _check_format_of_list_data(self, data: list):
