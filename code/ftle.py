@@ -197,8 +197,10 @@ class FTLyapunovExponent(object):
     def __init__(
         self, dim:int, t0, pa_0, tf, pa_f,
         method:str='postprocessing', kernel=None, domain_manager=None,
+        tol=0.1
     ):
         self.dim = dim
+        self.tol = tol
 
         self.t0 = t0
         self.pa_0 = pa_0
@@ -286,7 +288,7 @@ class FTLyapunovExponent(object):
         if dim == 2:
             X, Y = np.meshgrid(_x, _x)
             R2 = X**2 + Y**2
-            flow_types = ['parabolic', 'spiral']
+            flow_types = ['parabolic', 'spiral', 'exp']
             if flow_type not in flow_types:
                 raise ValueError(
                     f"{flow_type} is not a valid flow type. Valid flow types "
@@ -297,8 +299,13 @@ class FTLyapunovExponent(object):
                 x = 1.5*X
                 y = X**2 + Y
             elif flow_type == 'spiral':
-                x = X + cos(2*pi*R2)
-                y = Y + sin(2*pi*R2)
+                fac = 0.1
+                x = X + fac*cos(2*pi*R2)
+                y = Y + fac*sin(2*pi*R2)
+            elif flow_type == 'exp':
+                X = Y = np.linspace(0, 1, nx)
+                x = np.exp(-X)
+                y = np.exp(-Y)
             
             Z = z = np.zeros_like(x)
 
@@ -370,7 +377,7 @@ class FTLyapunovExponent(object):
             pa_name = 'initial'
         elif ftle_type == 'backward':
             pa_name = 'final'
-    
+            
         equations = [
             Group(
                 equations=[
@@ -387,7 +394,8 @@ class FTLyapunovExponent(object):
             Group(
                 equations=[
                     GradientCorrection(
-                        dest=pa_name, sources=[pa_name], dim=self.dim, tol=0.2
+                        dest=pa_name, sources=[pa_name],
+                        dim=self.dim, tol=self.tol
                     ),
                     DeformationGradientEquation(
                         dest=pa_name, sources=[pa_name], dim=self.dim
@@ -407,7 +415,6 @@ class FTLyapunovExponent(object):
             particle_arrays=self.arrays, equations=self.equations,
             kernel=self.kernel, mode=mode, backend=backend
         )
-        print(f"{mode = }")
         compiler = SPHCompiler(
             acceleration_evals=self.func_eval, integrator=None
         )
@@ -422,7 +429,8 @@ class FTLyapunovExponent(object):
         self.func_eval.set_nnps(self.nnps)
     
     # Public methods
-    def compute(self, ftle_type, mode='mpi', backend='cython'):
+    def compute(self, ftle_type, mode='mpi', backend='cython', tol=0.1):
+        self.tol = tol
         if ftle_type not in FTLE_TYPES:
             raise ValueError(
                 f"{ftle_type} is not a valid FTLE type. Valid types "
@@ -448,6 +456,10 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
+        '--flow', type=str, default='exp',
+        help='Flow type. Options: "parabolic", "spiral", "exp"'
+    )
+    parser.add_argument(
         '--dim', type=int, default=2,
         help='Dimension of the problem'
     )
@@ -465,6 +477,7 @@ if __name__ == '__main__':
     )
 
     args = parser.parse_args()
+    flow = args.flow
     dim = args.dim
     nx = args.nx
     openmp = args.openmp
@@ -476,7 +489,8 @@ if __name__ == '__main__':
 
 
     t0 = time.time()
-    ftle_ob = FTLyapunovExponent.from_example(dim=dim, nx=nx, flow_type='parabolic')
+    ftle_ob = FTLyapunovExponent.from_example(dim=dim, nx=nx, flow_type=flow)
+    print(f"{flow = }")
     t1 = time.time()
     print(f"Initialized FTLE object in {t1-t0} seconds")
 
@@ -488,6 +502,6 @@ if __name__ == '__main__':
     
     # Time backward
     t0 = time.time()
-    ftle_ob.compute(ftle_type='backward', mode=mode)
+    ftle_ob.compute(ftle_type='backward', mode=mode, tol=0.1)
     t1 = time.time()
     print(f"Computed backward FTLE in {t1-t0} seconds")
