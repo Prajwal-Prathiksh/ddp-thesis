@@ -83,23 +83,33 @@ def rename_fnames_according_to_time(fname0:str, fname1:str):
     return fname0, fname1
 
 class DeformationGradientEquation(Equation):
+    def __init__(self, dest, sources, dim):
+        self.dim = dim
+        super().__init__(dest, sources)
+
     def initialize(self, d_idx, d_deform_grad):
         i9, i = declare('int', 2)
         i9 = 9*d_idx
 
         for i in range(9):
             d_deform_grad[i9 + i] = 0.0
+        
+        d_deform_grad[i9] = 1.0
+        d_deform_grad[i9 + 4] = 1.0
+        if self.dim == 3:
+            d_deform_grad[i9 + 8] = 1.0
 
     def loop(
-        self, d_idx, s_idx, d_deform_grad, d_x, d_y, d_z, DWIJ,
-        s_x_prime, s_y_prime, s_z_prime, s_m, s_rho
+        self, d_idx, s_idx, d_deform_grad, d_x_prime, d_y_prime, d_z_prime,
+        s_x_prime, s_y_prime, s_z_prime, s_m, s_rho,
+        DWIJ,
     ):
         # Volume
         Vj = s_m[s_idx]/s_rho[s_idx]
-        x_prime_ij = declare('matrix(3)')
-        x_prime_ij[0] = s_x_prime[s_idx] - d_x[d_idx]
-        x_prime_ij[1] = s_y_prime[s_idx] - d_y[d_idx]
-        x_prime_ij[2] = s_z_prime[s_idx] - d_z[d_idx]
+        x_prime_ji = declare('matrix(3)')
+        x_prime_ji[0] = s_x_prime[s_idx] - d_x_prime[d_idx]
+        x_prime_ji[1] = s_y_prime[s_idx] - d_y_prime[d_idx]
+        x_prime_ji[2] = s_z_prime[s_idx] - d_z_prime[d_idx]
 
         i9, i, j = declare('int', 3)
         i9 = 9*d_idx
@@ -107,7 +117,7 @@ class DeformationGradientEquation(Equation):
         # Tensor product of x_prime_ij and DWIJ
         for i in range(3):
             for j in range(3):
-                d_deform_grad[i9 + 3*i + j] += x_prime_ij[i]*DWIJ[j]*Vj
+                d_deform_grad[i9 + 3*i + j] += x_prime_ji[i]*DWIJ[j]*Vj
 
 class LyapunovExponentEquation(Equation):
     def __init__(self, dest, sources, t0, tf, dim, ftle_type):
@@ -377,10 +387,10 @@ class FTLyapunovExponent(object):
             Group(
                 equations=[
                     GradientCorrection(
-                        dest=pa_name, sources=[pa_name], dim=self.dim
+                        dest=pa_name, sources=[pa_name], dim=self.dim, tol=0.2
                     ),
                     DeformationGradientEquation(
-                        dest=pa_name, sources=[pa_name]
+                        dest=pa_name, sources=[pa_name], dim=self.dim
                     ),
                     LyapunovExponentEquation(
                         dest=pa_name, sources=[pa_name], t0=self.t0,
@@ -465,13 +475,17 @@ if __name__ == '__main__':
     backend = args.backend
 
 
-
+    t0 = time.time()
     ftle_ob = FTLyapunovExponent.from_example(dim=dim, nx=nx, flow_type='parabolic')
+    t1 = time.time()
+    print(f"Initialized FTLE object in {t1-t0} seconds")
+
     # Time forward
     t0 = time.time()
     ftle_ob.compute(ftle_type='forward', mode=mode, backend=backend)
     t1 = time.time()
     print(f"Computed forward FTLE in {t1-t0} seconds")
+    
     # Time backward
     t0 = time.time()
     ftle_ob.compute(ftle_type='backward', mode=mode)
