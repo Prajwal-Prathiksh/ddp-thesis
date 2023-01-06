@@ -267,7 +267,7 @@ class TurbulentFlowApp(Application):
     # Public methods
     def save_initial_vel_field(
         self, dim: int, u: np.ndarray, v: np.ndarray, w: np.ndarray,
-        fname: str = None, **kwargs
+        L: float, dx: float, fname: str = None, **kwargs
     ):
         """
         Save the initial velocity field to a *.npz file in the output
@@ -286,6 +286,10 @@ class TurbulentFlowApp(Application):
             Initial velocity field in y direction.
         w : np.ndarray
             Initial velocity field in z direction.
+        L : float
+            Length of the domain.
+        dx : float
+            Grid spacing.
         fname : str, optional
             Name of the output file. If not specified, it is set to
             "initial_vel_field.npz".
@@ -306,7 +310,9 @@ class TurbulentFlowApp(Application):
         assert len(w.shape) == dim, "w must have dimension dim"
 
         fname = os.path.join(self.output_dir, fname)
-        np.savez(fname, dim=dim, u=u, v=v, w=w, **kwargs)
+        np.savez(
+            fname, dim=dim, u=u, v=v, w=w, L=L, dx=dx, **kwargs
+        )
         self._set_initial_vel_field_fname(fname)
 
     # Post-processing methods
@@ -538,13 +544,15 @@ class TurbulentFlowApp(Application):
         u = data["u"]
         v = data["v"]
         w = data["w"]
+        L = data["L"]
+        dx = data["dx"]
         if dim == 1:
             v = w = None
         elif dim == 2:
             w = None
 
         espec_initial_ob = EnergySpectrum(
-            dim=dim, u=u, v=v, w=w, t=0., U0=U0
+            dim=dim, L=L, dx=dx, u=u, v=v, w=w, t=0., U0=U0
         )
         espec_initial_ob.compute(order=self.options.ek_norm_order)
 
@@ -581,6 +589,7 @@ class TurbulentFlowApp(Application):
             method=self.options.i_method, dim=dim
         )
 
+        t0 = time.time()
         espec_ob, interp_ob = EnergySpectrum.from_pysph_file(
             fname=fname,
             dim=dim,
@@ -594,13 +603,18 @@ class TurbulentFlowApp(Application):
             U0=U0,
             debug=True
         )
+        t1 = time.time()
+
+        msg = f"Velocity field interpolation took: {t1-t0:.3f} secs"
+        logger.info(msg)
+        print(msg)
 
         self._log_interpolator_details(
             fname=fname, dim=dim, interp_ob=interp_ob
         )
 
         msg = f'Running Energy spectrum computation using "{func_config}" ' \
-                f'function configuration.'
+            f'function configuration.'
         logger.info(msg)
 
         t0 = time.time()
@@ -706,6 +720,17 @@ class TurbulentFlowApp(Application):
             func_config=func_config
         )
 
+        # Calculate the wavenumber corresponding to the interolating radius
+        L = espec_ob.L
+        box_radius = self.get_length_of_ek()
+        dx = espec_ob.dx
+        radius_scale = self.options.i_radius_scale
+        interp_wn = EnergySpectrum.calculate_wavenumber_of_dx(
+            L=L, box_radius=box_radius,
+            dx=dx*radius_scale
+        )
+        print(f"Interpolating wave number: {interp_wn}")
+
         # Fit the energy spectrum
         k_fit, ek_fit, fit_params = self.get_ek_fit(
             k=espec_ob.k, ek=espec_ob.ek
@@ -734,6 +759,11 @@ class TurbulentFlowApp(Application):
             fname,
             k=espec_ob.k,
             t=espec_ob.t,
+            L=L,
+            box_radius=box_radius,
+            dx=dx,
+            radius_scale=radius_scale,
+            interp_wn=interp_wn,
             ek=espec_ob.ek,
             ek_u=espec_ob.ek_u,
             ek_v=espec_ob.ek_v,
@@ -833,8 +863,9 @@ class TurbulentFlowApp(Application):
         fname = os.path.join(self.output_dir, f"espec_result_{f_idx}.npz")
         data = np.load(fname)
         k = data['k']
-        t = data['t']
+        t = float(data['t'])
         ek = data['ek']
+        interp_wn = int(data['interp_wn'])
 
         # Fit the energy spectrum
         k_fit, ek_fit, fit_params = self.get_ek_fit(k=k, ek=ek, tol=tol)
@@ -846,7 +877,12 @@ class TurbulentFlowApp(Application):
         plt.figure()
         plotter = self._get_ek_plot_types_mapper(plot_type=plot_type)
         plot_func = plotter['func']
-        plot_func(k, ek, label="Computed")
+        plot_func(k, ek, marker='.', label="Computed")
+        plt.vlines(
+            interp_wn, ek.min(), ek.max(), linestyles='dotted',
+            colors='k',
+            label=f"Interpolation kernel width = {interp_wn:.2f}"
+        )
 
         fit_label = fr"Fit: (E(k) ~ k^{fit_slope:.2f}) ($R^2$ = " \
             f"{fit_r_value:.2f})"
@@ -858,7 +894,7 @@ class TurbulentFlowApp(Application):
                 f"(error = {fit_slope_error:.2f})"
             ek_expected = k_fit**expected_slope
             plot_func(k_fit, ek_expected, 'r--', label=label)
-        
+
         ek_no_interp = data['ek_no_interp']
         if no_interp and ek_no_interp is not None:
             k_fit, ek_fit, fit_params = self.get_ek_fit(
@@ -871,7 +907,6 @@ class TurbulentFlowApp(Application):
             label = fr"No interp: (E(k) ~ k^{fit_slope:.2f}) ($R^2$ = " \
                 f"{fit_r_value:.2f})"
             plot_func(k_fit, ek_fit, 'g--', label=label)
-
 
         plt.xlabel(plotter['xlabel'])
         plt.ylabel(plotter['ylabel'])
