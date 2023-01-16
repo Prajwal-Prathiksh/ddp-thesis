@@ -148,7 +148,7 @@ class LyapunovExponentEquation(Equation):
     def initialize(self, d_idx, d_ftle):
         d_ftle[d_idx] = 0.0
     
-    def loop(self, d_idx, d_deform_grad, d_ftle):
+    def post_loop(self, d_idx, d_deform_grad, d_ftle):
         i9, i, j, k = declare('int', 4)
         i9 = 9*d_idx
 
@@ -185,10 +185,7 @@ class LyapunovExponentEquation(Equation):
         if self.ftle_type == 'forward':
             i = 2
         else:
-            if self.dim == 2:
-                i = 0
-            else:
-                i = 1
+            i = 1
         d_ftle[d_idx] = self.delta_t_inv * log(sqrt(V[i]))
 
 
@@ -400,6 +397,10 @@ class FTLyapunovExponent(object):
                     DeformationGradientEquation(
                         dest=pa_name, sources=[pa_name], dim=self.dim
                     ),
+                ], real=True
+            ),
+            Group(
+                equations=[
                     LyapunovExponentEquation(
                         dest=pa_name, sources=[pa_name], t0=self.t0,
                         tf=self.tf, dim=self.dim, ftle_type=ftle_type
@@ -464,7 +465,7 @@ if __name__ == '__main__':
         help='Dimension of the problem'
     )
     parser.add_argument(
-        '--nx', type=int, default=10,
+        '--nx', type=int, default=3,
         help='Number of particles along x'
     )
     parser.add_argument(
@@ -496,12 +497,15 @@ if __name__ == '__main__':
 
     # Time forward
     t0 = time.time()
-    ftle_ob.compute(ftle_type='forward', mode=mode, backend=backend)
+    res_fit = ftle_ob.compute(ftle_type='forward', mode=mode, backend=backend)
     t1 = time.time()
     print(f"Computed forward FTLE in {t1-t0} seconds")
+    print(f"{res_fit = }")
+    print('\n'*5)
     
     # Time backward
     t0 = time.time()
-    ftle_ob.compute(ftle_type='backward', mode=mode, tol=0.1)
+    res_bit = ftle_ob.compute(ftle_type='backward', mode=mode, tol=0.1)
     t1 = time.time()
     print(f"Computed backward FTLE in {t1-t0} seconds")
+    print(f"{res_bit = }")
