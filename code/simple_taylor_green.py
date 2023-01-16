@@ -9,29 +9,26 @@ from numpy import pi, sin, cos, exp
 
 from pysph.base.nnps import DomainManager
 from pysph.base.utils import get_particle_array
-from pysph.base.kernels import QuinticSpline
-from pysph.solver.application import Application
+from pysph.base.kernels import WendlandQuinticC4, QuinticSpline
 
-from pysph.sph.equation import Group, Equation
-from pysph.sph.scheme import TVFScheme, WCSPHScheme, SchemeChooser
-from pysph.sph.wc.edac import ComputeAveragePressure, EDACScheme
-from pysph.sph.iisph import IISPHScheme
+from pysph.sph.equation import Equation, Group
+from pysph.sph.wc.edac import ComputeAveragePressure
+from pysph.solver.solver import Solver
+from pysph.sph.integrator import PECIntegrator
 
-from pysph.sph.wc.kernel_correction import (
-    GradientCorrectionPreStep, GradientCorrection,
-    MixedKernelCorrectionPreStep, MixedGradientCorrection
+# EDAC Imports
+from pysph.sph.wc.transport_velocity import (
+    SummationDensity, MomentumEquationViscosity,
+    MomentumEquationArtificialStress
 )
-from pysph.sph.wc.crksph import CRKSPHPreStep, CRKSPH, CRKSPHScheme
-from pysph.sph.wc.gtvf import GTVFScheme
-from pysph.sph.wc.pcisph import PCISPHScheme
-from pysph.sph.wc.shift import ShiftPositions
-from pysph.sph.isph.sisph import SISPHScheme
-from pysph.sph.isph.isph import ISPHScheme
-
-from tsph_with_pst_scheme import TSPHScheme
+from pysph.sph.wc.edac import (
+    MomentumEquationPressureGradient,
+    EDACEquation, EDACTVFStep, get_particle_array_edac
+)
 
 # Local imports
 from turbulence_tools import TurbulentFlowApp
+import okra2022 as okra
 
 # Domain and constants
 L = 1.0
@@ -109,13 +106,24 @@ class TaylorGreen(TurbulentFlowApp):
             "--hdx", action="store", type=float, dest="hdx", default=1.0,
             help="Ratio h/dx."
         )
+        group.add_argument(
+            "--turb-visc", action="store", type=str, dest="turb_visc",
+            default='SMAG', choices=['SMAG', 'SIGMA', 'SMAG_MCG'],
+            help="Turbulent viscosity model to use."
+        )
+        group.add_argument(
+            "--scheme", action="store", type=str, dest="scheme",
+            default='okra', choices=['okra', 'edac'],
+            help="Scheme to use."
+        )
 
     def consume_user_options(self):
         nx = self.options.nx
         re = self.options.re
-
+        
         self.dim = 2
-        self.i_nx = nx
+        self.turb_visc_model = self.options.turb_visc
+        self.scheme = self.options.scheme
 
         self.nu = nu = U * L / re
 
@@ -124,88 +132,14 @@ class TaylorGreen(TurbulentFlowApp):
         self.hdx = self.options.hdx
 
         self.h0 = h0 = self.hdx * self.dx
-        if self.options.scheme.endswith('isph'):
-            dt_cfl = 0.25 * h0 / U
-        else:
-            dt_cfl = 0.25 * h0 / (c0 + U)
+
+        self.cfl = 0.25
+        dt_cfl = self.cfl * h0 / (c0 + U)
         dt_viscous = 0.125 * h0**2 / nu
         dt_force = 0.25 * 1.0
 
         self.dt = min(dt_cfl, dt_viscous, dt_force)
-        self.tf = 1
-
-    def configure_scheme(self):
-        scheme = self.scheme
-        h0 = self.hdx * self.dx
-        pfreq = 100
-        kernel = QuinticSpline(dim=2)
-        if self.options.scheme == 'tvf':
-            scheme.configure(pb=self.options.pb_factor * p0, nu=self.nu, h0=h0)
-        elif self.options.scheme == 'wcsph':
-            scheme.configure(hdx=self.hdx, nu=self.nu, h0=h0)
-        elif self.options.scheme == 'edac':
-            scheme.configure(h=h0, nu=self.nu, pb=self.options.pb_factor * p0)
-        elif self.options.scheme.endswith('isph'):
-            pfreq = 10
-            scheme.configure(nu=self.nu)
-        elif self.options.scheme == 'crksph':
-            scheme.configure(h0=h0, nu=self.nu)
-        elif self.options.scheme == 'gtvf':
-            scheme.configure(pref=p0, nu=self.nu, h0=h0)
-        elif self.options.scheme == 'tsph':
-            scheme.configure()
-        scheme.configure_solver(kernel=kernel, tf=self.tf, dt=self.dt,
-                                pfreq=pfreq)
-
-    def create_scheme(self):
-        h0 = None
-        hdx = None
-        wcsph = WCSPHScheme(
-            ['fluid'], [], dim=2, rho0=rho0, c0=c0, h0=h0,
-            hdx=hdx, nu=None, gamma=7.0, alpha=0.0, beta=0.0
-        )
-        tvf = TVFScheme(
-            ['fluid'], [], dim=2, rho0=rho0, c0=c0, nu=None,
-            p0=p0, pb=None, h0=h0
-        )
-        edac = EDACScheme(
-            ['fluid'], [], dim=2, rho0=rho0, c0=c0, nu=None,
-            pb=p0, h=h0
-        )
-        iisph = IISPHScheme(
-            fluids=['fluid'], solids=[], dim=2, nu=None,
-            rho0=rho0, has_ghosts=True
-        )
-        crksph = CRKSPHScheme(
-            fluids=['fluid'], dim=2, nu=None,
-            rho0=rho0, h0=h0, c0=c0, p0=0.0
-        )
-        gtvf = GTVFScheme(
-            fluids=['fluid'], solids=[], dim=2, rho0=rho0, c0=c0,
-            nu=None, h0=None, pref=None
-        )
-        pcisph = PCISPHScheme(
-            fluids=['fluid'], dim=2, rho0=rho0, nu=None
-        )
-        sisph = SISPHScheme(
-            fluids=['fluid'], solids=[], dim=2, nu=None, rho0=rho0,
-            c0=c0, alpha=0.0, has_ghosts=True, pref=p0,
-            rho_cutoff=0.2, internal_flow=True, gtvf=True
-        )
-        isph = ISPHScheme(
-            fluids=['fluid'], solids=[], dim=2, nu=None, rho0=rho0, c0=c0,
-            alpha=0.0
-        )
-        tsph_with_pst = TSPHScheme(
-            fluids=['fluid'], solids=[], dim=2, rho0=rho0, hdx=hdx, p0=p0,
-            nu=None
-        )
-        s = SchemeChooser(
-            default='wcsph', wcsph=wcsph, tvf=tvf, edac=edac, iisph=iisph,
-            crksph=crksph, gtvf=gtvf, pcisph=pcisph, sisph=sisph, isph=isph,
-            tsph_with_pst=tsph_with_pst
-        )
-        return s
+        self.tf = 1.0
 
     def create_domain(self):
         return DomainManager(
@@ -213,7 +147,7 @@ class TaylorGreen(TurbulentFlowApp):
             periodic_in_y=True
         )
 
-    def create_fluid(self):
+    def create_particles(self):
         # create the particles
         dx = self.dx
         _x = np.arange(dx / 2, L, dx)
@@ -240,43 +174,94 @@ class TaylorGreen(TurbulentFlowApp):
         color0 = cos(2 * pi * x) * cos(4 * pi * y)
 
         # create the arrays
-        fluid = get_particle_array(name='fluid', x=x, y=y, m=m, h=h, u=u0,
-                                   v=v0, rho=rho0, p=p0, color=color0, c0=c0)
-        
+        fluid = okra.get_particle_array_sph_les_fluid(
+            name='fluid', x=x, y=y, m=m, h=h, u=u0,
+            v=v0, rho=rho0, p=p0, color=color0, c0=c0
+        )
+
+        # Aad properties
+        props = [
+            'uhat', 'vhat', 'what', 'ap',
+            'auhat', 'avhat', 'awhat',
+            'pavg', 'nnbr',
+            'x0', 'y0', 'z0', 'u0', 'v0', 'w0', 'rho0', 'p0',
+        ]
+        for prop in props:
+            fluid.add_property(prop)
+
         self.save_initial_vel_field(
             dim=2, u=u0, v=v0, w=0., L=L, dx=self.dx
         )
-        return fluid
-
-    def create_particles(self):
-        fluid = self.create_fluid()
-
-        self.scheme.setup_properties([fluid])
-
-        print("Taylor green vortex problem :: nfluid = %d, dt = %g" % (
-            fluid.get_number_of_particles(), self.dt))
-
-        # volume is set as dx^2
-        if self.options.scheme == 'sisph':
-            nfp = fluid.get_number_of_particles()
-            fluid.gid[:] = np.arange(nfp)
-            fluid.add_output_arrays(['gid'])
-        if self.options.scheme == 'tvf':
-            fluid.V[:] = 1. / self.volume
-        if self.options.scheme == 'iisph':
-            # These are needed to update the ghost particle properties.
-            nfp = fluid.get_number_of_particles()
-            fluid.orig_idx[:] = np.arange(nfp)
-            fluid.add_output_arrays(['orig_idx'])
-        if self.options.scheme == 'isph':
-            gid = np.arange(fluid.get_number_of_particles(real=False))
-            fluid.add_property('gid')
-            fluid.gid[:] = gid[:]
-            fluid.add_property('dpos', stride=3)
-            fluid.add_property('gradv', stride=9)
-
         return [fluid]
 
+    def create_solver(self):
+        kernel = WendlandQuinticC4(dim=2)
+
+        if self.scheme == 'okra':
+            integrator = PECIntegrator(fluid=okra.OkraLeapFrogStep())
+        elif self.scheme == 'edac':
+            integrator = PECIntegrator(fluid=EDACTVFStep())
+
+        solver = Solver(kernel=kernel, dim=2, integrator=integrator,
+                        dt=self.dt, tf=self.tf, adaptive_timestep=False,
+                        cfl=0.05, n_damp=50,
+                        output_at_times=[0.0008, 0.0038])
+
+        return solver
+    
+    def create_equations(self):
+        if self.scheme == 'okra':
+            equations = [
+                Group(equations=[
+                    okra.SummationDensity(dest='fluid', sources=['fluid',]),
+                    okra.LinearBarotropicEOS(
+                        dest='fluid', sources=None, p0=p0, rho0=rho0, K=1.0
+                    ),
+                ], real=False),
+                Group(equations=[
+                    okra.PreMomentumEquation(
+                        dest='fluid', sources=['fluid',], dim=self.dim,
+                        nu=self.nu, rho0=rho0, turb_visc_model=self.turb_visc_model,
+                        DELTA=self.dx
+                    ),
+                    okra.MomentumEquation(
+                        dest='fluid', sources=['fluid',],
+                        dim=self.dim, nu=self.nu, rho0=rho0,
+                        turb_visc_model=self.turb_visc_model
+                    )
+                ], real=True),
+            ]
+        else:
+            equations = [
+                Group(
+                    equations=[
+                        SummationDensity(dest='fluid', sources=['fluid',]),
+                        ComputeAveragePressure(
+                            dest='fluid', sources=['fluid',]
+                        ),
+                    ], real=False
+                ),
+                Group(
+                    equations=[
+                        MomentumEquationPressureGradient(
+                            dest='fluid', sources=['fluid',], pb=p0
+                        ),
+                        MomentumEquationViscosity(
+                            dest='fluid', sources=['fluid',],
+                            nu=self.nu,
+                        ),
+                        MomentumEquationArtificialStress(
+                            dest='fluid', sources=['fluid',]
+                        ),
+                        EDACEquation(
+                            dest='fluid', sources=['fluid',],
+                            rho0=rho0, cs=c0, nu=self.nu
+                        ),
+                    ], real=True
+                ),
+            ]
+
+        return equations
     # The following are all related to post-processing.
     def _get_post_process_props(self, array):
         """Return x, y, m, u, v, p.
@@ -315,7 +300,7 @@ class TaylorGreen(TurbulentFlowApp):
         return self._sph_eval
 
     def post_process(self, info_fname):
-        info = self.read_info(info_fname)
+        # info = self.read_info(info_fname)
         if len(self.output_files) == 0:
             return
 
