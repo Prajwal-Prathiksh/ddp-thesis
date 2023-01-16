@@ -14,8 +14,9 @@ References
 ###########################################################################
 from compyle.api import declare
 from math import sqrt
-from pysph.sph.equation import Equation, MultiStageEquations, Group
+from pysph.sph.equation import Equation
 from pysph.base.utils import get_particle_array
+from pysph.sph.integrator_step import IntegratorStep
 
 
 ###########################################################################
@@ -51,7 +52,8 @@ def get_particle_array_sph_les_fluid(constants=None, **props):
     """
     # Properties required for SPH-LES Scheme
     sph_les_props = [
-        'ax', 'ay', 'az', 'V', 'nu_t'
+        'ax', 'ay', 'az', 'V', 'nu_t',
+        'x0', 'y0', 'z0', 'u0', 'v0', 'w0', 'rho0', 'p0',
     ]
 
     pa = get_particle_array(
@@ -70,7 +72,7 @@ def get_particle_array_sph_les_fluid(constants=None, **props):
 
 
 ###########################################################################
-# Equations & Respective Imports
+# Equations
 ###########################################################################
 # Equation of State------------------------------------------------------
 class LinearBarotropicEOS(Equation):
@@ -93,7 +95,7 @@ class LinearBarotropicEOS(Equation):
 
     """
 
-    def __init__(self, dest, sources, p0, rho0, K):
+    def __init__(self, dest, sources, p0, rho0, K=1.0):
         r"""
         Parameters
         ----------
@@ -108,9 +110,12 @@ class LinearBarotropicEOS(Equation):
         self.K = K
         self.p0 = p0
         self.rho0 = rho0
-        super(LinearBarotropicEOS, self).__init__(dest, sources)
+        super().__init__(dest, sources)
 
-    def loop(self, d_idx, d_p, d_rho):
+    def initialize(self, d_idx, d_p):
+        d_p[d_idx] = 0.0
+
+    def post_loop(self, d_idx, d_p, d_rho):
         d_p[d_idx] = self.p0 + self.K * (d_rho[d_idx] / self.rho0 - 1.)
 
 
@@ -136,8 +141,6 @@ class SummationDensity(Equation):
 
 
 # Momentum Equation------------------------------------------------------
-
-
 class PreMomentumEquation(Equation):
     def __init__(
         self, dest, sources, dim, nu, rho0, turb_visc_model, DELTA, Cs=0.15,
@@ -178,41 +181,30 @@ class PreMomentumEquation(Equation):
         if self.turb_visc_model not in turb_visc_models:
             raise Exception("Invalid Turbulent Viscosity Model.")
 
-        super(PreMomentumEquation, self).__init__(dest, sources)
+        super().__init__(dest, sources)
 
     def initialize(self, d_idx, d_J, d_tau):
         i = declare('int', 1)
         for i in range(9):
+            # TODO: Initialize as identity or zero matrix?
             d_J[d_idx * 9 + i] = 0.
             d_tau[d_idx * 9 + i] = 0.
 
     def loop(self, d_idx, s_idx, d_J, s_V, VIJ, DWIJ):
-
         Vj = s_V[s_idx]
-
         i, j = declare('int', 2)
 
+        # Calculate Jacobian of the velocity field
         for i in range(3):
             for j in range(3):
                 d_J[d_idx * 9 + i * 3 + j] = - VIJ[i] * DWIJ[j] * Vj
 
-        # d_J[d_idx*9 + 0] += - VIJ[0]*DWIJ[0]*Vj # 2D
-        # d_J[d_idx*9 + 1] += - VIJ[0]*DWIJ[1]*Vj # 2D
-        # d_J[d_idx*9 + 2] += - VIJ[0]*DWIJ[2]*Vj
-
-        # d_J[d_idx*9 + 3] += - VIJ[1]*DWIJ[0]*Vj # 2D
-        # d_J[d_idx*9 + 4] += - VIJ[1]*DWIJ[1]*Vj # 2D
-        # d_J[d_idx*9 + 5] += - VIJ[1]*DWIJ[2]*Vj
-
-        # d_J[d_idx*9 + 6] += - VIJ[2]*DWIJ[0]*Vj
-        # d_J[d_idx*9 + 7] += - VIJ[2]*DWIJ[1]*Vj
-        # d_J[d_idx*9 + 8] += - VIJ[2]*DWIJ[2]*Vj
-
-    def post_loop(self, d_idx, d_J, d_nu_t, s_idx, d_tau, s_tau):
-        i, j = declare('int', 2)
+    def post_loop(self, d_idx, d_J, d_nu_t, d_tau):
+        i, j, n = declare('int', 3)
         n = 3
-        D = declare('matrix((3,3))')
+        D = declare('matrix(9)')
 
+        # Compute the Favre-Averaged Strain Rate Tensor
         for i in range(n):
             for j in range(n):
                 D[i * n + j] = 0.5 * (
@@ -225,37 +217,40 @@ class PreMomentumEquation(Equation):
             trace_D_square = D[0]**2 + D[4]**2 + D[8]**2
             trace_D_square += 2 * (D[1]**2 + D[2]**2 + D[5]**2)
 
-        if self.turb_visc_model == "SMAG":
-            d_nu_t[d_idx] = self.SMAG_prefactor * sqrt(2 * trace_D_square)
+        if not self.turb_visc_model == "SMAG_MCG":
+            if self.turb_visc_model == "SMAG":
+                d_nu_t[d_idx] = self.SMAG_prefactor * sqrt(2 * trace_D_square)
 
-        elif self.turb_visc_model == "SIGMA":
+            elif self.turb_visc_model == "SIGMA":
+                # Compute singular values of D
+                if self.dim == 2:
+                    sigma1 = D[0] + D[4]
+                    sigma2 = 0.5 * (sigma1**2 - trace_D_square)
+                    sigma3 = D[0] * D[4] - D[1]**2
+                elif self.dim == 3:
+                    sigma1 = D[0] + D[4] + D[8]
+                    sigma2 = 0.5 * (sigma1**2 - trace_D_square)
+
+                    A = D[0] * (D[4] * D[8] - D[5] * D[7])
+                    B = D[1] * (D[3] * D[8] - D[5] * D[6])
+                    C = D[2] * (D[3] * D[7] - D[4] * D[6])
+                    sigma3 = A - B + C
+
+                # Compute the Eddy Viscosity
+                d_nu_t[d_idx] = sigma3 * \
+                    (sigma1 - sigma2) * (sigma2 - sigma3) / sigma1**2
+                d_nu_t[d_idx] *= self.SIGMA_prefactor
+
+            tau_pre_fac = -2. * d_nu_t[d_idx] * self.rho0
             if self.dim == 2:
-                sigma1 = D[0] + D[4]
-                sigma2 = 0.5 * (sigma1**2 - trace_D_square)
-                sigma3 = D[0] * D[4] - D[1]**2
+                d_tau[d_idx * 9 + 0] = tau_pre_fac * D[0]
+                d_tau[d_idx * 9 + 1] = tau_pre_fac * D[1]
+                d_tau[d_idx * 9 + 3] = tau_pre_fac * D[3]
+                d_tau[d_idx * 9 + 4] = tau_pre_fac * D[4]
             elif self.dim == 3:
-                sigma1 = D[0] + D[4] + D[8]
-                sigma2 = 0.5 * (sigma1**2 - trace_D_square)
-
-                A = D[0] * (D[4] * D[8] - D[5] * D[7])
-                B = D[1] * (D[3] * D[8] - D[5] * D[6])
-                C = D[2] * (D[3] * D[7] - D[4] * D[6])
-                sigma3 = A - B + C
-
-            d_nu_t[d_idx] = sigma3 * \
-                (sigma1 - sigma2) * (sigma2 - sigma3) / sigma1**2
-            d_nu_t[d_idx] *= self.SIGMA_prefactor
-
-        fac = -2. * d_nu_t[d_idx] * self.rho0
-        if self.dim == 2:
-            d_tau[d_idx * 9 + 0] = fac * D[0]
-            d_tau[d_idx * 9 + 1] = fac * D[1]
-            d_tau[d_idx * 9 + 3] = fac * D[3]
-            d_tau[d_idx * 9 + 4] = fac * D[4]
-        elif self.dim == 3:
-            for i in range(3):
-                for j in range(3):
-                    d_tau[d_idx * 9 + i * n + j] = fac * D[i * n + j]
+                for i in range(3):
+                    for j in range(3):
+                        d_tau[d_idx * 9 + i * n + j] = tau_pre_fac * D[i * n + j]
 
 
 class MomentumEquation(Equation):
@@ -349,7 +344,7 @@ class MomentumEquation(Equation):
         if self.turb_visc_model not in turb_visc_models:
             raise Exception("Invalid Turbulent Viscosity Model.")
 
-        super(MomentumEquation, self).__init__(dest, sources)
+        super().__init__(dest, sources)
 
     def initialize(self, d_idx, d_au, d_av, d_aw):
         d_au[d_idx] = 0.
@@ -367,24 +362,27 @@ class MomentumEquation(Equation):
         Pj = s_p[s_idx]
 
         # Pressure Gradient Term
-        gradp_fac = (Pi + Pj) * Vj
+        gradp_fac = - (Pi + Pj) * Vj
 
         # Velocity Laplacian Term
         vijdotxij = VIJ[0] * XIJ[0] + VIJ[1] * XIJ[1] + VIJ[2] * XIJ[2]
         lap_vel_fac = self.lap_vel_prefactor * vijdotxij * Vj / (R2IJ + EPS)
 
         # Subfilter Stress Term
+        i, j, n = declare('int', 3)
+        tau_ij = declare('matrix(9)')
+        div_tau = declare('matrix(3)')
+
         if not self.turb_visc_model == "SMAG_MCG":
-            i, j = declare('int', 3)
             n = 3
-            tau_ij = declare('matrix((3,3))')
+
+            # Add the stress tensors
             for i in range(n):
                 for j in range(n):
                     tau_ij[i * n + j] = d_tau[d_idx * 9 + i * n + j] + \
                         s_tau[s_idx * 9 + i * n + j]
 
-            div_tau = declare('matrix((3,1))')
-
+            # Compute the divergence of the stress tensor
             if self.dim == 2:
                 div_tau[0] = Vj * (tau_ij[0] * DWIJ[0] + tau_ij[1] * DWIJ[1])
                 div_tau[1] = Vj * (tau_ij[3] * DWIJ[0] + tau_ij[4] * DWIJ[1])
@@ -392,23 +390,60 @@ class MomentumEquation(Equation):
             elif self.dim == 3:
                 for i in range(n):
                     for j in range(n):
+                        # Matrix-vector multiplication
                         div_tau[i] = Vj * (tau_ij[i * n + j] * DWIJ[j])
 
             tmp = gradp_fac + lap_vel_fac
             # Accelerations
-            d_au[d_idx] += tmp * DWIJ[0] + div_tau[0]
-            d_av[d_idx] += tmp * DWIJ[1] + div_tau[1]
-            d_aw[d_idx] += tmp * DWIJ[2] + div_tau[2]
+            d_au[d_idx] += tmp * DWIJ[0] - div_tau[0]
+            d_av[d_idx] += tmp * DWIJ[1] - div_tau[1]
+            d_aw[d_idx] += tmp * DWIJ[2] - div_tau[2]
 
         else:
             nu_ti = d_nu_t[d_idx]
             nu_tj = s_nu_t[s_idx]
+
+            # Compute the divergence of the stress tensor
             div_tau_fac = 2 * (2 + self.dim) * rhoi * rhoj
             div_tau_fac *= (nu_ti + nu_tj) / (rhoi + rhoj)
             div_tau_fac *= vijdotxij * Vj / (R2IJ + EPS)
 
-            tmp = gradp_fac + lap_vel_fac + div_tau_fac
+            tmp = gradp_fac + lap_vel_fac - div_tau_fac
             # Accelerations
             d_au[d_idx] += tmp * DWIJ[0]
             d_av[d_idx] += tmp * DWIJ[1]
             d_aw[d_idx] += tmp * DWIJ[2]
+
+###########################################################################
+# Integrator Step
+###########################################################################
+class OkraLeapFrogStep(IntegratorStep):
+    def initialize(self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
+                   d_u0, d_v0, d_w0, d_u, d_v, d_w):
+        d_x0[d_idx] = d_x[d_idx]
+        d_y0[d_idx] = d_y[d_idx]
+        d_z0[d_idx] = d_z[d_idx]
+
+        d_u0[d_idx] = d_u[d_idx]
+        d_v0[d_idx] = d_v[d_idx]
+        d_w0[d_idx] = d_w[d_idx]
+
+    def stage1(self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
+                   d_u0, d_v0, d_w0, d_u, d_v, d_w, d_au, d_av,
+                   d_aw, dt):
+        dtb2 = 0.5*dt
+        d_u[d_idx] = d_u0[d_idx] + dtb2*d_au[d_idx]
+        d_v[d_idx] = d_v0[d_idx] + dtb2*d_av[d_idx]
+        d_w[d_idx] = d_w0[d_idx] + dtb2*d_aw[d_idx]
+
+        d_x[d_idx] = d_x0[d_idx] + dt * d_u[d_idx]
+        d_y[d_idx] = d_y0[d_idx] + dt * d_v[d_idx]
+        d_z[d_idx] = d_z0[d_idx] + dt * d_w[d_idx]
+
+    def stage2(
+        self, d_idx, d_u, d_v, d_w, d_au, d_av, d_aw, dt
+    ):
+        dtb2 = 0.5*dt
+        d_u[d_idx] += dtb2*d_au[d_idx]
+        d_v[d_idx] += dtb2*d_av[d_idx]
+        d_w[d_idx] += dtb2*d_aw[d_idx]
