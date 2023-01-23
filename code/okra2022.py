@@ -418,7 +418,7 @@ class MomentumEquation(Equation):
 ###########################################################################
 # Integrator Step
 ###########################################################################
-class OkraRK2(IntegratorStep):
+class OkraRK2Step(IntegratorStep):
     def initialize(
         self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
         d_u0, d_v0, d_w0, d_u, d_v, d_w
@@ -462,7 +462,7 @@ class OkraRK2(IntegratorStep):
 ###########################################################################
 class Okra2022Scheme(Scheme):
     def __init__(
-        self, fluids, solids, dim, rho0, p0, c0, nu, dx, h0, K=1.
+        self, fluids, solids, dim, rho0, p0, c0, nu, dx, h0, K=1., turb_visc='SMAG'
     ):
         self.fluids = fluids
         self.solids = solids
@@ -474,6 +474,7 @@ class Okra2022Scheme(Scheme):
         self.dx = dx
         self.h0 = h0
         self.K = K
+        self.turb_visc = turb_visc
     
     def add_user_options(self, group):
         group.add_argument(
@@ -491,14 +492,16 @@ class Okra2022Scheme(Scheme):
     def get_timestep(self, cfl=0.5):
         return cfl*self.h0/self.c0
     
-    def configure_solver(self, kernel=None,  **kw):
+    def configure_solver(
+        self, kernel=None, integrator_cls=None, extra_steppers=None, **kw
+    ):
         from pysph.base.kernels import WendlandQuinticC4
         if kernel is None:
             kernel = WendlandQuinticC4(dim=self.dim)
 
         from pysph.sph.integrator import PECIntegrator
 
-        integrator = PECIntegrator(Okra2022Scheme())
+        integrator = PECIntegrator(fluid=OkraRK2Step())
 
         from pysph.solver.solver import Solver
         if 'dt' not in kw:
@@ -521,13 +524,13 @@ class Okra2022Scheme(Scheme):
             Group(equations=[
                 PreMomentumEquation(
                     dest='fluid', sources=['fluid',], dim=self.dim,
-                    nu=self.nu, rho0=self.rho0, turb_visc_model=self.turb_visc_model,
+                    nu=self.nu, rho0=self.rho0, turb_visc_model=self.turb_visc,
                     DELTA=self.dx
                 ),
                 MomentumEquation(
                     dest='fluid', sources=['fluid',],
                     dim=self.dim, nu=self.nu, rho0=self.rho0,
-                    turb_visc_model=self.turb_visc_model
+                    turb_visc_model=self.turb_visc
                 )
             ], real=True),
         ]
