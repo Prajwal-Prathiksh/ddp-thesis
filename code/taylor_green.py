@@ -28,6 +28,7 @@ from pysph.sph.isph.isph import ISPHScheme
 
 # Local imports
 from okra2022 import Okra2022Scheme
+from monaghan2017 import Monaghan2017Scheme
 
 #
 # domain and constants
@@ -210,17 +211,20 @@ class TaylorGreen(Application):
             fluids=['fluid'], solids=[], dim=2, rho0=rho0, p0=p0, c0=c0,
             nu=None, dx=None, h0=h0
         )
+        monaghan2017 = Monaghan2017Scheme(
+            fluids=['fluid'], solids=[], dim=2, rho0=rho0, c0=c0, h0=h0
+        )
         s = SchemeChooser(
             default='okra2022', wcsph=wcsph, tvf=tvf, edac=edac, iisph=iisph,
             crksph=crksph, gtvf=gtvf, pcisph=pcisph, sisph=sisph, isph=isph,
-            okra2022=okra2022
+            okra2022=okra2022, monaghan2017=monaghan2017
         )
         return s
 
     def configure_scheme(self):
         scheme = self.scheme
         h0 = self.hdx * self.dx
-        pfreq = 1
+        pfreq = 50
         kernel = WendlandQuinticC4(dim=2)
         if self.options.scheme == 'tvf':
             scheme.configure(pb=self.options.pb_factor * p0, nu=self.nu, h0=h0)
@@ -237,6 +241,8 @@ class TaylorGreen(Application):
             scheme.configure(pref=p0, nu=self.nu, h0=h0)
         elif self.options.scheme == 'okra2022':
             scheme.configure(nu=self.nu, dx=self.dx, h0=h0)
+        elif self.options.scheme == 'monaghan2017':
+            scheme.configure(h0=h0)
 
         scheme.configure_solver(
             kernel=kernel, tf=self.tf, dt=self.dt, pfreq=pfreq
