@@ -540,6 +540,13 @@ class Okra2022Scheme(Scheme):
     def setup_properties(self, particles, clean=False):
         dummy = get_particle_array_sph_les_fluid(name='junk')
         props = list(dummy.properties.keys())
+        props.remove('tau')
+        props.remove('J')
+        turb_props = [
+            {'name': 'tau', 'stride': 9},
+            {'name': 'J', 'stride': 9},
+        ]
+        props += turb_props
         output_props = dummy.output_property_arrays
         for pa in particles:
             self._ensure_properties(pa, props, clean)
