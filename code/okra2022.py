@@ -66,7 +66,7 @@ def get_particle_array_sph_les_fluid(constants=None, **props):
 
     # default property arrays to save out
     pa.set_output_arrays([
-        'x', 'y', 'z', 'u', 'v', 'w', 'rho', 'p', 'h', 'm',
+        'x', 'y', 'z', 'u', 'v', 'w', 'rho', 'p', 'h', 'm', 'V', 'nu_t',
         'pid', 'gid', 'tag',
     ])
     return pa
@@ -537,13 +537,11 @@ class Okra2022Scheme(Scheme):
 
         return equations
     
-    def setup_properties(self, particles, clean=True):
-        particle_arrays = dict([(p.name, p) for p in particles])
+    def setup_properties(self, particles, clean=False):
         dummy = get_particle_array_sph_les_fluid(name='junk')
         props = list(dummy.properties.keys())
         output_props = dummy.output_property_arrays
-        for fluid in self.fluids:
-            pa = particle_arrays[fluid]
+        for pa in particles:
             self._ensure_properties(pa, props, clean)
             pa.set_output_arrays(output_props)
             
