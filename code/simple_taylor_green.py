@@ -175,7 +175,7 @@ class TaylorGreen(TurbulentFlowApp):
             'auhat', 'avhat', 'awhat',
             'pavg', 'nnbr',
             'x0', 'y0', 'z0', 'u0', 'v0', 'w0', 'rho0', 'p0',
-            'cs', 'arho', 'dt_force', 'dt_cfl'
+            'cs', 'arho', 'dt_force', 'dt_cfl', 'vmag'
         ]
         for prop in props:
             fluid.add_property(prop)
@@ -183,13 +183,15 @@ class TaylorGreen(TurbulentFlowApp):
         self.save_initial_vel_field(
             dim=2, u=u0, v=v0, w=0., L=L, dx=self.dx
         )
+        print("Taylor green vortex problem :: nfluid = %d, dt = %g" % (
+            fluid.get_number_of_particles(), self.dt))
         return [fluid]
 
     def create_solver(self):
         kernel = WendlandQuinticC4(dim=2)
 
         if self.scheme == 'okra':
-            integrator = PECIntegrator(fluid=okra.OkraRK2())
+            integrator = PECIntegrator(fluid=okra.OkraRK2Step())
         elif self.scheme == 'edac':
             from pysph.sph.wc.edac import EDACTVFStep
             integrator = PECIntegrator(fluid=EDACTVFStep())
