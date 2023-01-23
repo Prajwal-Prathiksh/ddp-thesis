@@ -417,9 +417,11 @@ class MomentumEquation(Equation):
 ###########################################################################
 # Integrator Step
 ###########################################################################
-class OkraLeapFrogStep(IntegratorStep):
-    def initialize(self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
-                   d_u0, d_v0, d_w0, d_u, d_v, d_w):
+class OkraRK2(IntegratorStep):
+    def initialize(
+        self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
+        d_u0, d_v0, d_w0, d_u, d_v, d_w
+    ):
         d_x0[d_idx] = d_x[d_idx]
         d_y0[d_idx] = d_y[d_idx]
         d_z0[d_idx] = d_z[d_idx]
@@ -428,22 +430,29 @@ class OkraLeapFrogStep(IntegratorStep):
         d_v0[d_idx] = d_v[d_idx]
         d_w0[d_idx] = d_w[d_idx]
 
-    def stage1(self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
-                   d_u0, d_v0, d_w0, d_u, d_v, d_w, d_au, d_av,
-                   d_aw, dt):
+    def stage1(
+        self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
+        d_u0, d_v0, d_w0, d_u, d_v, d_w, d_au, d_av, d_aw, dt
+    ):
         dtb2 = 0.5*dt
+        d_x[d_idx] = d_x0[d_idx] + dtb2*d_u[d_idx]
+        d_y[d_idx] = d_y0[d_idx] + dtb2*d_v[d_idx]
+        d_z[d_idx] = d_z0[d_idx] + dtb2*d_w[d_idx]
+
         d_u[d_idx] = d_u0[d_idx] + dtb2*d_au[d_idx]
         d_v[d_idx] = d_v0[d_idx] + dtb2*d_av[d_idx]
         d_w[d_idx] = d_w0[d_idx] + dtb2*d_aw[d_idx]
 
-        d_x[d_idx] = d_x0[d_idx] + dt * d_u[d_idx]
-        d_y[d_idx] = d_y0[d_idx] + dt * d_v[d_idx]
-        d_z[d_idx] = d_z0[d_idx] + dt * d_w[d_idx]
 
     def stage2(
-        self, d_idx, d_u, d_v, d_w, d_au, d_av, d_aw, dt
+        self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
+        d_u0, d_v0, d_w0, d_u, d_v, d_w, d_au, d_av, d_aw, dt
     ):
-        dtb2 = 0.5*dt
-        d_u[d_idx] += dtb2*d_au[d_idx]
-        d_v[d_idx] += dtb2*d_av[d_idx]
-        d_w[d_idx] += dtb2*d_aw[d_idx]
+        d_x[d_idx] = d_x0[d_idx] + dt*d_u[d_idx]
+        d_y[d_idx] = d_y0[d_idx] + dt*d_v[d_idx]
+        d_z[d_idx] = d_z0[d_idx] + dt*d_w[d_idx]
+
+        d_u[d_idx] = d_u0[d_idx] + dt*d_au[d_idx]
+        d_v[d_idx] = d_v0[d_idx] + dt*d_av[d_idx]
+        d_w[d_idx] = d_w0[d_idx] + dt*d_aw[d_idx]
+        
