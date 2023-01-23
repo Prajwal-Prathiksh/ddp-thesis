@@ -17,6 +17,7 @@ from math import sqrt
 from pysph.sph.equation import Equation
 from pysph.base.utils import get_particle_array
 from pysph.sph.integrator_step import IntegratorStep
+from pysph.sph.scheme import Scheme
 
 
 ###########################################################################
@@ -53,7 +54,7 @@ def get_particle_array_sph_les_fluid(constants=None, **props):
     # Properties required for SPH-LES Scheme
     sph_les_props = [
         'ax', 'ay', 'az', 'V', 'nu_t',
-        'x0', 'y0', 'z0', 'u0', 'v0', 'w0', 'rho0', 'p0',
+        'x0', 'y0', 'z0', 'u0', 'v0', 'w0',
     ]
 
     pa = get_particle_array(
@@ -456,3 +457,90 @@ class OkraRK2(IntegratorStep):
         d_v[d_idx] = d_v0[d_idx] + dt*d_av[d_idx]
         d_w[d_idx] = d_w0[d_idx] + dt*d_aw[d_idx]
         
+###########################################################################
+# Scheme
+###########################################################################
+class Okra2022Scheme(Scheme):
+    def __init__(
+        self, fluids, solids, dim, rho0, p0, c0, nu, dx, h0, K=1.
+    ):
+        self.fluids = fluids
+        self.solids = solids
+        self.dim = dim
+        self.rho0 = rho0
+        self.p0 = p0
+        self.c0 = c0
+        self.nu = nu
+        self.dx = dx
+        self.h0 = h0
+        self.K = K
+    
+    def add_user_options(self, group):
+        group.add_argument(
+            "--turb-visc", action="store", type=str, dest="turb_visc",
+            default='SMAG', choices=['SMAG', 'SIGMA', 'SMAG_MCG'],
+            help="Turbulent viscosity model to use."
+        )
+
+    def consume_user_options(self, options):
+        vars = ['turb_visc']
+        data = dict((var, self._smart_getattr(options, var))
+                    for var in vars)
+        self.configure(**data)
+
+    def get_timestep(self, cfl=0.5):
+        return cfl*self.h0/self.c0
+    
+    def configure_solver(self, kernel=None,  **kw):
+        from pysph.base.kernels import WendlandQuinticC4
+        if kernel is None:
+            kernel = WendlandQuinticC4(dim=self.dim)
+
+        from pysph.sph.integrator import PECIntegrator
+
+        integrator = PECIntegrator(Okra2022Scheme())
+
+        from pysph.solver.solver import Solver
+        if 'dt' not in kw:
+            kw['dt'] = self.get_timestep()
+
+        self.solver = Solver(
+            dim=self.dim, integrator=integrator, kernel=kernel, **kw
+        )
+    
+    def get_equations(self):
+        from pysph.sph.equation import Group
+        equations = [
+            Group(equations=[
+                SummationDensity(dest='fluid', sources=['fluid',]),
+                LinearBarotropicEOS(
+                    dest='fluid', sources=None, p0=self.p0, rho0=self.rho0,
+                    K=self.K
+                ),
+            ], real=False),
+            Group(equations=[
+                PreMomentumEquation(
+                    dest='fluid', sources=['fluid',], dim=self.dim,
+                    nu=self.nu, rho0=self.rho0, turb_visc_model=self.turb_visc_model,
+                    DELTA=self.dx
+                ),
+                MomentumEquation(
+                    dest='fluid', sources=['fluid',],
+                    dim=self.dim, nu=self.nu, rho0=self.rho0,
+                    turb_visc_model=self.turb_visc_model
+                )
+            ], real=True),
+        ]
+
+        return equations
+    
+    def setup_properties(self, particles, clean=True):
+        particle_arrays = dict([(p.name, p) for p in particles])
+        dummy = get_particle_array_sph_les_fluid(name='junk')
+        props = list(dummy.properties.keys())
+        output_props = dummy.output_property_arrays
+        for fluid in self.fluids:
+            pa = particle_arrays[fluid]
+            self._ensure_properties(pa, props, clean)
+            pa.set_output_arrays(output_props)
+            
