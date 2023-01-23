@@ -16,16 +16,6 @@ from pysph.sph.wc.edac import ComputeAveragePressure
 from pysph.solver.solver import Solver
 from pysph.sph.integrator import PECIntegrator
 
-# EDAC Imports
-from pysph.sph.wc.transport_velocity import (
-    SummationDensity, MomentumEquationViscosity,
-    MomentumEquationArtificialStress
-)
-from pysph.sph.wc.edac import (
-    MomentumEquationPressureGradient,
-    EDACEquation, EDACTVFStep, get_particle_array_edac
-)
-
 # Local imports
 from turbulence_tools import TurbulentFlowApp
 import okra2022 as okra
@@ -113,7 +103,7 @@ class TaylorGreen(TurbulentFlowApp):
         )
         group.add_argument(
             "--scheme", action="store", type=str, dest="scheme",
-            default='okra', choices=['okra', 'edac'],
+            default='okra', choices=['okra', 'wcsph', 'edac'],
             help="Scheme to use."
         )
 
@@ -185,6 +175,7 @@ class TaylorGreen(TurbulentFlowApp):
             'auhat', 'avhat', 'awhat',
             'pavg', 'nnbr',
             'x0', 'y0', 'z0', 'u0', 'v0', 'w0', 'rho0', 'p0',
+            'cs', 'arho', 'dt_force', 'dt_cfl'
         ]
         for prop in props:
             fluid.add_property(prop)
@@ -198,9 +189,14 @@ class TaylorGreen(TurbulentFlowApp):
         kernel = WendlandQuinticC4(dim=2)
 
         if self.scheme == 'okra':
-            integrator = PECIntegrator(fluid=okra.OkraLeapFrogStep())
+            integrator = PECIntegrator(fluid=okra.OkraRK2())
         elif self.scheme == 'edac':
+            from pysph.sph.wc.edac import EDACTVFStep
             integrator = PECIntegrator(fluid=EDACTVFStep())
+        elif self.scheme == 'wcsph':
+            from pysph.sph.integrator_step import WCSPHStep
+            integrator = PECIntegrator(fluid=WCSPHStep())
+
 
         solver = Solver(kernel=kernel, dim=2, integrator=integrator,
                         dt=self.dt, tf=self.tf, adaptive_timestep=False,
@@ -231,7 +227,14 @@ class TaylorGreen(TurbulentFlowApp):
                     )
                 ], real=True),
             ]
-        else:
+        elif self.scheme == 'edac':
+            from pysph.sph.wc.transport_velocity import (
+                SummationDensity, MomentumEquationViscosity,
+                MomentumEquationArtificialStress
+            )
+            from pysph.sph.wc.edac import (
+                MomentumEquationPressureGradient, EDACEquation
+            )
             equations = [
                 Group(
                     equations=[
@@ -259,6 +262,35 @@ class TaylorGreen(TurbulentFlowApp):
                         ),
                     ], real=True
                 ),
+            ]
+        elif self.scheme == 'wcsph':
+            from pysph.sph.wc.basic import TaitEOS, MomentumEquation
+            from pysph.sph.basic_equations import (
+                ContinuityEquation, XSPHCorrection
+            )
+            from pysph.sph.wc.viscosity import LaminarViscosity
+            equations = [
+                Group(
+                    equations=[
+                        TaitEOS(
+                            dest='fluid', sources=None, rho0=rho0, c0=c0,
+                            gamma=7.0, p0=0.0
+                        )
+                    ], real=False
+                ),
+                Group(
+                    equations=[
+                        ContinuityEquation(dest='fluid', sources=['fluid']), 
+                        MomentumEquation(
+                            dest='fluid', sources=['fluid'], c0=c0, alpha=0.0,
+                            beta=0.0
+                        ), 
+                        LaminarViscosity(
+                            dest='fluid', sources=['fluid'], nu=self.nu,
+                        ), 
+                        XSPHCorrection(dest='fluid', sources=['fluid'])
+                    ], real=True
+                )
             ]
 
         return equations
