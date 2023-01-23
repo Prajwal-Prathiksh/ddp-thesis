@@ -1,8 +1,6 @@
-r"""
-Taylor Green vortex flow (5 minutes).
-######################################
+"""Taylor Green vortex flow (5 minutes).
 """
-# Library imports
+
 import os
 import numpy as np
 from numpy import pi, sin, cos, exp
@@ -28,12 +26,8 @@ from pysph.sph.wc.shift import ShiftPositions
 from pysph.sph.isph.sisph import SISPHScheme
 from pysph.sph.isph.isph import ISPHScheme
 
-from tsph_with_pst_scheme import TSPHScheme
-
-# Local imports
-from turbulence_tools import TurbulentFlowApp
-
-# Domain and constants
+#
+# domain and constants
 L = 1.0
 U = 1.0
 rho0 = 1.0
@@ -47,9 +41,9 @@ def m4p(x=0.0):
     if x < 0.0:
         return 0.0
     elif x < 1.0:
-        return 1.0 - 0.5 * x * x * (5.0 - 3.0 * x)
+        return 1.0 - 0.5*x*x*(5.0 - 3.0*x)
     elif x < 2.0:
-        return (1 - x) * (2 - x) * (2 - x) * 0.5
+        return (1 - x)*(2 - x)*(2 - x)*0.5
     else:
         return 0.0
 
@@ -65,22 +59,22 @@ class M4(Equation):
         return [m4p]
 
     def loop(self, s_idx, d_idx, s_temp_prop, d_prop, d_h, XIJ):
-        xij = abs(XIJ[0] / d_h[d_idx])
-        yij = abs(XIJ[1] / d_h[d_idx])
-        d_prop[d_idx] += m4p(xij) * m4p(yij) * s_temp_prop[s_idx]
+        xij = abs(XIJ[0]/d_h[d_idx])
+        yij = abs(XIJ[1]/d_h[d_idx])
+        d_prop[d_idx] += m4p(xij)*m4p(yij)*s_temp_prop[s_idx]
 
 
 def exact_solution(U, b, t, x, y):
-    factor = U * exp(b * t)
+    factor = U * exp(b*t)
 
-    u = -cos(2 * pi * x) * sin(2 * pi * y)
-    v = sin(2 * pi * x) * cos(2 * pi * y)
-    p = -0.25 * (cos(4 * pi * x) + cos(4 * pi * y))
+    u = -cos(2*pi*x) * sin(2*pi*y)
+    v = sin(2*pi*x) * cos(2*pi*y)
+    p = -0.25 * (cos(4*pi*x) + cos(4*pi*y))
 
     return factor * u, factor * v, factor * factor * p
 
 
-class TaylorGreen(TurbulentFlowApp):
+class TaylorGreen(Application):
 
     def add_user_options(self, group):
         group.add_argument(
@@ -91,11 +85,6 @@ class TaylorGreen(TurbulentFlowApp):
             "--perturb", action="store", type=float, dest="perturb", default=0,
             help="Random perturbation of initial particles as a fraction "
             "of dx (setting it to zero disables it, the default)."
-        )
-        group.add_argument(
-            "--pb-factor", action="store", type=float, dest="pb_factor",
-            default=1.0,
-            help="Use fraction of the background pressure (default: 1.0)."
         )
         group.add_argument(
             "--nx", action="store", type=int, dest="nx", default=50,
@@ -109,13 +98,53 @@ class TaylorGreen(TurbulentFlowApp):
             "--hdx", action="store", type=float, dest="hdx", default=1.0,
             help="Ratio h/dx."
         )
+        group.add_argument(
+            "--pb-factor", action="store", type=float, dest="pb_factor",
+            default=1.0,
+            help="Use fraction of the background pressure (default: 1.0)."
+        )
+        corrections = ['', 'mixed', 'gradient', 'crksph']
+        group.add_argument(
+            "--kernel-correction", action="store", type=str,
+            dest='kernel_correction',
+            default='', help="Type of Kernel Correction", choices=corrections
+        )
+        group.add_argument(
+            "--remesh", action="store", type=int, dest="remesh", default=0,
+            help="Remeshing frequency (setting it to zero disables it)."
+        )
+        remesh_types = ['m4', 'sph']
+        group.add_argument(
+            "--remesh-eq", action="store", type=str, dest="remesh_eq",
+            default='m4', choices=remesh_types,
+            help="Remeshing strategy to use."
+        )
+        group.add_argument(
+            "--shift-freq", action="store", type=int, dest="shift_freq",
+            default=0,
+            help="Particle position shift frequency.(set zero to disable)."
+        )
+        shift_types = ['simple', 'fickian']
+        group.add_argument(
+            "--shift-kind", action="store", type=str, dest="shift_kind",
+            default='simple', choices=shift_types,
+            help="Use of fickian shift in positions."
+        )
+        group.add_argument(
+            "--shift-parameter", action="store", type=float,
+            dest="shift_parameter", default=None,
+            help="Constant used in shift, range for 'simple' is 0.01-0.1"
+            "range 'fickian' is 1-10."
+        )
+        group.add_argument(
+            "--shift-correct-vel", action="store_true",
+            dest="correct_vel", default=False,
+            help="Correct velocities after shifting (defaults to false)."
+        )
 
     def consume_user_options(self):
         nx = self.options.nx
         re = self.options.re
-
-        self.dim = 2
-        self.i_nx = nx
 
         self.nu = nu = U * L / re
 
@@ -123,7 +152,7 @@ class TaylorGreen(TurbulentFlowApp):
         self.volume = dx * dx
         self.hdx = self.options.hdx
 
-        self.h0 = h0 = self.hdx * self.dx
+        h0 = self.hdx * self.dx
         if self.options.scheme.endswith('isph'):
             dt_cfl = 0.25 * h0 / U
         else:
@@ -132,7 +161,8 @@ class TaylorGreen(TurbulentFlowApp):
         dt_force = 0.25 * 1.0
 
         self.dt = min(dt_cfl, dt_viscous, dt_force)
-        self.tf = 1
+        self.tf = 2.0
+        self.kernel_correction = self.options.kernel_correction
 
     def configure_scheme(self):
         scheme = self.scheme
@@ -152,8 +182,6 @@ class TaylorGreen(TurbulentFlowApp):
             scheme.configure(h0=h0, nu=self.nu)
         elif self.options.scheme == 'gtvf':
             scheme.configure(pref=p0, nu=self.nu, h0=h0)
-        elif self.options.scheme == 'tsph':
-            scheme.configure()
         scheme.configure_solver(kernel=kernel, tf=self.tf, dt=self.dt,
                                 pfreq=pfreq)
 
@@ -196,16 +224,41 @@ class TaylorGreen(TurbulentFlowApp):
             fluids=['fluid'], solids=[], dim=2, nu=None, rho0=rho0, c0=c0,
             alpha=0.0
         )
-        tsph_with_pst = TSPHScheme(
-            fluids=['fluid'], solids=[], dim=2, rho0=rho0, hdx=hdx, p0=p0,
-            nu=None
-        )
         s = SchemeChooser(
-            default='wcsph', wcsph=wcsph, tvf=tvf, edac=edac, iisph=iisph,
-            crksph=crksph, gtvf=gtvf, pcisph=pcisph, sisph=sisph, isph=isph,
-            tsph_with_pst=tsph_with_pst
+            default='tvf', wcsph=wcsph, tvf=tvf, edac=edac, iisph=iisph,
+            crksph=crksph, gtvf=gtvf, pcisph=pcisph, sisph=sisph, isph=isph
         )
         return s
+
+    def create_equations(self):
+        eqns = self.scheme.get_equations()
+        # This tolerance needs to be fixed.
+        tol = 0.5
+        if self.kernel_correction == 'gradient':
+            cls1 = GradientCorrectionPreStep
+            cls2 = GradientCorrection
+        elif self.kernel_correction == 'mixed':
+            cls1 = MixedKernelCorrectionPreStep
+            cls2 = MixedGradientCorrection
+        elif self.kernel_correction == 'crksph':
+            cls1 = CRKSPHPreStep
+            cls2 = CRKSPH
+
+        if self.kernel_correction:
+            g1 = Group(equations=[cls1('fluid', ['fluid'], dim=2)])
+            eq2 = cls2(dest='fluid', sources=['fluid'], dim=2, tol=tol)
+
+            if self.options.scheme == 'wcsph':
+                eqns.insert(1, g1)
+                eqns[2].equations.insert(0, eq2)
+            elif self.options.scheme == 'tvf':
+                eqns[1].equations.append(g1.equations[0])
+                eqns[2].equations.insert(0, eq2)
+            elif self.options.scheme == 'edac':
+                eqns.insert(1, g1)
+                eqns[2].equations.insert(0, eq2)
+
+        return eqns
 
     def create_domain(self):
         return DomainManager(
@@ -235,17 +288,13 @@ class TaylorGreen(TurbulentFlowApp):
         m = self.volume * rho0
         h = self.hdx * dx
         re = self.options.re
-        b = -8.0 * pi * pi / re
+        b = -8.0*pi*pi / re
         u0, v0, p0 = exact_solution(U=U, b=b, t=0, x=x, y=y)
-        color0 = cos(2 * pi * x) * cos(4 * pi * y)
+        color0 = cos(2*pi*x) * cos(4*pi*y)
 
         # create the arrays
         fluid = get_particle_array(name='fluid', x=x, y=y, m=m, h=h, u=u0,
-                                   v=v0, rho=rho0, p=p0, color=color0, c0=c0)
-        
-        self.save_initial_vel_field(
-            dim=2, u=u0, v=v0, w=0., L=L, dx=self.dx
-        )
+                                   v=v0, rho=rho0, p=p0, color=color0)
         return fluid
 
     def create_particles(self):
@@ -268,6 +317,24 @@ class TaylorGreen(TurbulentFlowApp):
             nfp = fluid.get_number_of_particles()
             fluid.orig_idx[:] = np.arange(nfp)
             fluid.add_output_arrays(['orig_idx'])
+
+        corr = self.kernel_correction
+        if corr in ['mixed', 'crksph']:
+            fluid.add_property('cwij')
+        if corr == 'mixed' or corr == 'gradient':
+            fluid.add_property('m_mat', stride=9)
+            fluid.add_property('dw_gamma', stride=3)
+        elif corr == 'crksph':
+            fluid.add_property('ai')
+            fluid.add_property('gradbi', stride=4)
+            for prop in ['gradai', 'bi']:
+                fluid.add_property(prop, stride=2)
+
+        if self.options.shift_freq > 0:
+            fluid.add_constant('vmax', [0.0])
+            fluid.add_property('dpos', stride=3)
+            fluid.add_property('gradv', stride=9)
+
         if self.options.scheme == 'isph':
             gid = np.arange(fluid.get_number_of_particles(real=False))
             fluid.add_property('gid')
@@ -276,6 +343,55 @@ class TaylorGreen(TurbulentFlowApp):
             fluid.add_property('gradv', stride=9)
 
         return [fluid]
+
+    def create_tools(self):
+        tools = []
+        options = self.options
+        if options.remesh > 0:
+            if options.remesh_eq == 'm4':
+                equations = [M4(dest='interpolate', sources=['fluid'])]
+            else:
+                equations = None
+            from pysph.solver.tools import SimpleRemesher
+            if options.scheme == 'wcsph' or options.scheme == 'crksph':
+                props = ['u', 'v', 'au', 'av', 'ax', 'ay', 'arho']
+            elif options.scheme == 'pcisph':
+                props = ['u', 'v', 'p']
+            elif options.scheme == 'tvf':
+                props = ['u', 'v', 'uhat', 'vhat',
+                         'au', 'av', 'auhat', 'avhat']
+            elif options.scheme == 'edac':
+                if 'uhat' in self.particles[0].properties:
+                    props = ['u', 'v', 'uhat', 'vhat', 'p',
+                             'au', 'av', 'auhat', 'avhat', 'ap']
+                else:
+                    props = ['u', 'v', 'p', 'au', 'av', 'ax', 'ay', 'ap']
+            elif options.scheme == 'iisph' or options.scheme == 'isph':
+                # The accelerations are not really needed since the current
+                # stepper is a single stage stepper.
+                props = ['u', 'v', 'p']
+            elif options.scheme == 'gtvf':
+                props = [
+                    'uhat', 'vhat', 'what', 'rho0', 'rhodiv', 'p0',
+                    'auhat', 'avhat', 'awhat', 'arho', 'arho0'
+                ]
+
+            remesher = SimpleRemesher(
+                self, 'fluid', props=props,
+                freq=self.options.remesh, equations=equations
+            )
+            tools.append(remesher)
+
+        if options.shift_freq > 0:
+            shift = ShiftPositions(
+                self, 'fluid', freq=self.options.shift_freq,
+                shift_kind=self.options.shift_kind,
+                correct_velocity=self.options.correct_vel,
+                parameter=self.options.shift_parameter
+            )
+            tools.append(shift)
+
+        return tools
 
     # The following are all related to post-processing.
     def _get_post_process_props(self, array):
@@ -354,8 +470,12 @@ class TaylorGreen(TurbulentFlowApp):
             np.asarray, (t, ke, ke_ex, decay, l1, linf, p_l1))
         )
         decay_ex = U * np.exp(decay_rate * t)
+        fname = os.path.join(self.output_dir, 'results.npz')
+        np.savez(
+            fname, t=t, ke=ke, ke_ex=ke_ex, decay=decay, linf=linf, l1=l1,
+            p_l1=p_l1, decay_ex=decay_ex
+        )
 
-        # Plots
         import matplotlib
         matplotlib.use('Agg')
 
@@ -389,8 +509,6 @@ class TaylorGreen(TurbulentFlowApp):
         plt.ylabel(r'$L_1$ error for $p$')
         fig = os.path.join(self.output_dir, "p_l1_error.png")
         plt.savefig(fig, dpi=300)
-        
-        # self.plot_ek_evolution()
 
     def customize_output(self):
         self._mayavi_config('''
@@ -400,10 +518,6 @@ class TaylorGreen(TurbulentFlowApp):
 
 
 if __name__ == '__main__':
-    turb_app = TaylorGreen()
-    turb_app.run()
-    # turb_app.ek_post_processing(
-    #     dim=2, L=L, U0=1., f_idx=0, compute_without_interp=True
-    # )
-    # turb_app.ek_post_processing(dim=2, L=L, U0=1., f_idx=-1)
-    turb_app.post_process(turb_app.info_filename)
+    app = TaylorGreen()
+    app.run()
+    app.post_process(app.info_filename)
