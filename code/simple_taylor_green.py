@@ -170,15 +170,15 @@ class TaylorGreen(TurbulentFlowApp):
         )
 
         # Aad properties
-        props = [
-            'uhat', 'vhat', 'what', 'ap',
-            'auhat', 'avhat', 'awhat',
-            'pavg', 'nnbr',
-            'x0', 'y0', 'z0', 'u0', 'v0', 'w0', 'rho0', 'p0',
-            'cs', 'arho', 'dt_force', 'dt_cfl', 'vmag'
-        ]
-        for prop in props:
-            fluid.add_property(prop)
+        # props = [
+        #     'uhat', 'vhat', 'what', 'ap',
+        #     'auhat', 'avhat', 'awhat',
+        #     'pavg', 'nnbr',
+        #     'x0', 'y0', 'z0', 'u0', 'v0', 'w0', 'rho0', 'p0',
+        #     'cs', 'arho', 'dt_force', 'dt_cfl', 'vmag'
+        # ]
+        # for prop in props:
+        #     fluid.add_property(prop)
 
         self.save_initial_vel_field(
             dim=2, u=u0, v=v0, w=0., L=L, dx=self.dx

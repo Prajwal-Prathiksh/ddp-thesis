@@ -211,7 +211,7 @@ class TaylorGreen(Application):
             nu=None, dx=None, h0=h0
         )
         s = SchemeChooser(
-            default='wcsph', wcsph=wcsph, tvf=tvf, edac=edac, iisph=iisph,
+            default='okra2022', wcsph=wcsph, tvf=tvf, edac=edac, iisph=iisph,
             crksph=crksph, gtvf=gtvf, pcisph=pcisph, sisph=sisph, isph=isph,
             okra2022=okra2022
         )
