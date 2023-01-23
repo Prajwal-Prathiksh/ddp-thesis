@@ -7,7 +7,7 @@ from numpy import pi, sin, cos, exp
 
 from pysph.base.nnps import DomainManager
 from pysph.base.utils import get_particle_array
-from pysph.base.kernels import QuinticSpline
+from pysph.base.kernels import QuinticSpline, WendlandQuinticC4
 from pysph.solver.application import Application
 
 from pysph.sph.equation import Group, Equation
@@ -25,6 +25,9 @@ from pysph.sph.wc.pcisph import PCISPHScheme
 from pysph.sph.wc.shift import ShiftPositions
 from pysph.sph.isph.sisph import SISPHScheme
 from pysph.sph.isph.isph import ISPHScheme
+
+# Local imports
+from okra2022 import Okra2022Scheme
 
 #
 # domain and constants
@@ -164,27 +167,6 @@ class TaylorGreen(Application):
         self.tf = 2.0
         self.kernel_correction = self.options.kernel_correction
 
-    def configure_scheme(self):
-        scheme = self.scheme
-        h0 = self.hdx * self.dx
-        pfreq = 100
-        kernel = QuinticSpline(dim=2)
-        if self.options.scheme == 'tvf':
-            scheme.configure(pb=self.options.pb_factor * p0, nu=self.nu, h0=h0)
-        elif self.options.scheme == 'wcsph':
-            scheme.configure(hdx=self.hdx, nu=self.nu, h0=h0)
-        elif self.options.scheme == 'edac':
-            scheme.configure(h=h0, nu=self.nu, pb=self.options.pb_factor * p0)
-        elif self.options.scheme.endswith('isph'):
-            pfreq = 10
-            scheme.configure(nu=self.nu)
-        elif self.options.scheme == 'crksph':
-            scheme.configure(h0=h0, nu=self.nu)
-        elif self.options.scheme == 'gtvf':
-            scheme.configure(pref=p0, nu=self.nu, h0=h0)
-        scheme.configure_solver(kernel=kernel, tf=self.tf, dt=self.dt,
-                                pfreq=pfreq)
-
     def create_scheme(self):
         h0 = None
         hdx = None
@@ -224,11 +206,41 @@ class TaylorGreen(Application):
             fluids=['fluid'], solids=[], dim=2, nu=None, rho0=rho0, c0=c0,
             alpha=0.0
         )
+        okra2022 = Okra2022Scheme(
+            fluids=['fluid'], solids=[], dim=2, rho0=rho0, p0=p0, c0=c0,
+            nu=None, dx=None, h0=h0
+        )
         s = SchemeChooser(
-            default='tvf', wcsph=wcsph, tvf=tvf, edac=edac, iisph=iisph,
-            crksph=crksph, gtvf=gtvf, pcisph=pcisph, sisph=sisph, isph=isph
+            default='wcsph', wcsph=wcsph, tvf=tvf, edac=edac, iisph=iisph,
+            crksph=crksph, gtvf=gtvf, pcisph=pcisph, sisph=sisph, isph=isph,
+            okra2022=okra2022
         )
         return s
+
+    def configure_scheme(self):
+        scheme = self.scheme
+        h0 = self.hdx * self.dx
+        pfreq = 1
+        kernel = WendlandQuinticC4(dim=2)
+        if self.options.scheme == 'tvf':
+            scheme.configure(pb=self.options.pb_factor * p0, nu=self.nu, h0=h0)
+        elif self.options.scheme == 'wcsph':
+            scheme.configure(hdx=self.hdx, nu=self.nu, h0=h0)
+        elif self.options.scheme == 'edac':
+            scheme.configure(h=h0, nu=self.nu, pb=self.options.pb_factor * p0)
+        elif self.options.scheme.endswith('isph'):
+            pfreq = 10
+            scheme.configure(nu=self.nu)
+        elif self.options.scheme == 'crksph':
+            scheme.configure(h0=h0, nu=self.nu)
+        elif self.options.scheme == 'gtvf':
+            scheme.configure(pref=p0, nu=self.nu, h0=h0)
+        elif self.options.scheme == 'okra2022':
+            scheme.configure(nu=self.nu, dx=self.dx, h0=h0)
+
+        scheme.configure_solver(
+            kernel=kernel, tf=self.tf, dt=self.dt, pfreq=pfreq
+        )
 
     def create_equations(self):
         eqns = self.scheme.get_equations()
