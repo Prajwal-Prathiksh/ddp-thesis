@@ -1,5 +1,6 @@
 r"""
 Utilary functions and classes for the automate.py script.
+Author: K T Prajwal Prathiksh
 ###
 """
 # Library imports.

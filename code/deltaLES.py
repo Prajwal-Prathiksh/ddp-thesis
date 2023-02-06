@@ -1,7 +1,8 @@
 #NOQA
 r"""
 :math:`\delta` LES-SPH
-#####################
+Author: K T Prajwal Prathiksh
+###
 References
 -----------
     .. [Colagrossi2021] A. Colagrossi, “Smoothed particle hydrodynamics method

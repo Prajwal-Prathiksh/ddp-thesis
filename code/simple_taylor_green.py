@@ -1,4 +1,7 @@
-"""Taylor Green vortex flow (5 minutes).
+r"""
+Taylor Green vortex flow (5 minutes).
+Author: K T Prajwal Prathiksh
+###
 """
 
 import os
@@ -26,57 +29,20 @@ from pysph.sph.wc.shift import ShiftPositions
 from pysph.sph.isph.sisph import SISPHScheme
 from pysph.sph.isph.isph import ISPHScheme
 
+# convergence_sph imports
+from convergence_sph.tg_config import exact_solution
+from convergence_sph.remesh import M4
+
 # Local imports
 from okra2022 import Okra2022Scheme
 from monaghan2017 import Monaghan2017Scheme
 
-#
 # domain and constants
 L = 1.0
 U = 1.0
 rho0 = 1.0
 c0 = 10 * U
 p0 = c0**2 * rho0
-
-
-def m4p(x=0.0):
-    """From the paper by Chaniotis et al. (JCP 2002).
-    """
-    if x < 0.0:
-        return 0.0
-    elif x < 1.0:
-        return 1.0 - 0.5*x*x*(5.0 - 3.0*x)
-    elif x < 2.0:
-        return (1 - x)*(2 - x)*(2 - x)*0.5
-    else:
-        return 0.0
-
-
-class M4(Equation):
-    '''An equation to be used for remeshing.
-    '''
-
-    def initialize(self, d_idx, d_prop):
-        d_prop[d_idx] = 0.0
-
-    def _get_helpers_(self):
-        return [m4p]
-
-    def loop(self, s_idx, d_idx, s_temp_prop, d_prop, d_h, XIJ):
-        xij = abs(XIJ[0]/d_h[d_idx])
-        yij = abs(XIJ[1]/d_h[d_idx])
-        d_prop[d_idx] += m4p(xij)*m4p(yij)*s_temp_prop[s_idx]
-
-
-def exact_solution(U, b, t, x, y):
-    factor = U * exp(b*t)
-
-    u = -cos(2*pi*x) * sin(2*pi*y)
-    v = sin(2*pi*x) * cos(2*pi*y)
-    p = -0.25 * (cos(4*pi*x) + cos(4*pi*y))
-
-    return factor * u, factor * v, factor * factor * p
-
 
 class TaylorGreen(Application):
 

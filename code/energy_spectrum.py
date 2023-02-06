@@ -1,5 +1,6 @@
 r"""
-Energy Spectrum of the Flow
+Energy Spectrum of the 
+Author: K T Prajwal Prathiksh
 ###
 References
 -----------

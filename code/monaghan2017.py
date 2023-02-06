@@ -1,7 +1,8 @@
 #NOQA
 r"""
 SPH-ϵ Model
-#####################
+Author: K T Prajwal Prathiksh
+###
 References
 -----------
     .. [Monaghan2017] J. J. Monaghan, “SPH-ϵ simulation of 2D turbulence driven by a moving cylinder,” Eur. J. Mech. B/Fluids, vol. 65, pp. 486–493, 2017, doi: 10.1016/j.euromechflu.2017.03.011.

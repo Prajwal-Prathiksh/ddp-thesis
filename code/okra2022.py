@@ -1,7 +1,8 @@
 #NOQA
 r"""
 SPH-LES Model
-#####################
+Author: K T Prajwal Prathiksh
+###
 References
 -----------
     .. [Okraschevski2022] M. Okraschevski, N. Bürkle, R. Koch, and H.-J. Bauer,

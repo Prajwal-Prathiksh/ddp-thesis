@@ -1,6 +1,7 @@
 r"""
 A Sinusoidal Velocity Profile
-##############################
+Author: K T Prajwal Prathiksh
+###
 """
 # Library imports
 import os
