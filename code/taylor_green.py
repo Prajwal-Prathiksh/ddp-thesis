@@ -214,10 +214,15 @@ class TaylorGreen(Application):
         monaghan2017 = Monaghan2017Scheme(
             fluids=['fluid'], solids=[], dim=2, rho0=rho0, c0=c0, h0=h0
         )
+        tsph = TSPHScheme(
+            fluids=['fluid'], solids=[], dim=2, rho0=rho0, p0=p0,             ios=[], hdx=hdx, nu=None, gamma=7.0, kernel_corr=False,
+            pst_freq=10, method='no_sd', scm='wcsph', eos='linear', pst='ipst',
+            intg='rk2'
+        )
         s = SchemeChooser(
             default='okra2022', wcsph=wcsph, tvf=tvf, edac=edac, iisph=iisph,
             crksph=crksph, gtvf=gtvf, pcisph=pcisph, sisph=sisph, isph=isph,
-            okra2022=okra2022, monaghan2017=monaghan2017
+            okra2022=okra2022, monaghan2017=monaghan2017, tsph=tsph
         )
         return s
 
@@ -243,6 +248,8 @@ class TaylorGreen(Application):
             scheme.configure(nu=self.nu, dx=self.dx, h0=h0)
         elif self.options.scheme == 'monaghan2017':
             scheme.configure(h0=h0)
+        elif self.options.scheme == 'tsph_pst':
+            scheme.configure(hdx=self.hdx, nu=self.nu)
 
         scheme.configure_solver(
             kernel=kernel, tf=self.tf, dt=self.dt, pfreq=pfreq
