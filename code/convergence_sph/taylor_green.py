@@ -97,7 +97,6 @@ class TaylorGreen(Application):
             help="Make periodic domain"
         )
 
-
     def consume_user_options(self):
         nx = self.options.nx
         re = self.options.re
@@ -155,11 +154,10 @@ class TaylorGreen(Application):
         dx = self.dx
         x, y, h = None, None, None
         filename = '%d_tg.npz'%self.options.nx
-        # filename = '%s_%d_%.2f.npz'%(self.options.kernel, self.options.nx, self.hdx)
         dirname = os.path.dirname(os.path.abspath(__file__))
-        print(dirname)
+        # print(dirname)
         datafile = os.path.join(os.path.dirname(dirname), 'data', filename)
-        print(datafile)
+        # print(datafile)
         if os.path.exists(datafile) and (not(self.options.scheme=='ewcsph' or self.options.scheme=='rsph')):
             data = np.load(datafile)
             x = data['x']
@@ -191,9 +189,7 @@ class TaylorGreen(Application):
         if self.options.scheme == 'ewcsph':
             print('ewcsph')
             rhoc = (p0 / self.c0**2 + 1)
-            # rho = (p0 / self.c0**2 + 1)
             rho = (p0 * 7.0 / self.c0**2 + 1)**(1./7.0)
-            # rhoc = (p0 * 7.0 / self.c0**2 + 1)**(1./7.0)
         # create the arrays
         fluid = get_particle_array(name='fluid', x=x, y=y, m=m, h=h, u=u0,
                                    v=v0, rho=rho, rhoc=rhoc, p=p0, color=color0, V0=V0)

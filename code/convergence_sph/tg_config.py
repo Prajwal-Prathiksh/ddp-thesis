@@ -26,6 +26,12 @@ from tisph import SummationDensity, TISPHScheme
 from ewcsph import EWCSPHScheme
 from remesh import RemeshScheme
 
+# import monaghan2017, okra2022
+# Monaghan2017Scheme = monaghan2017.Monaghan2017Scheme
+# Okra2022Scheme = okra2022.Okra2022Scheme
+from ..monaghan2017 import Monaghan2017Scheme
+from ..okra2022 import Okra2022Scheme
+
 from compyle.api import declare
 
 
@@ -108,6 +114,10 @@ def configure_scheme(app, p0, gx=0.0):
         if correction == '':
             correction = 'gradient'
         scheme.configure(hdx=app.hdx, nu=app.nu, h0=h0, correction=correction)
+    elif app.options.scheme == 'monaghan2017':
+        scheme.configure(h0=h0)
+    elif app.options.scheme == 'okra2022':
+        scheme.configure(nu=app.nu, dx=app.dx, h0=h0)
 
     times = linspace(0, app.tf, 50)
     scheme.configure_solver(kernel=kernel, tf=app.tf, dt=app.dt,
@@ -178,10 +188,17 @@ def create_scheme(rho0, c0, p0, solids=[]):
         c0=c0, alpha=0.0, has_ghosts=True, pref=p0,
         rho_cutoff=0.2, internal_flow=True, gtvf=True
     )
+    monaghan2017 = Monaghan2017Scheme(
+        fluids=['fluid'], solids=[], dim=2, rho0=rho0, c0=c0, h0=h0
+    )
+    okra2022 = Okra2022Scheme(
+        fluids=['fluid'], solids=[], dim=2, rho0=rho0, p0=p0, c0=c0,
+        nu=None, dx=None, h0=h0
+    )
     s = SchemeChooser(
         default='tvf', wcsph=wcsph, tvf=tvf, edac=edac, iisph=iisph,
         crksph=crksph, gtvf=gtvf, pcisph=pcisph, sisph=sisph, isph=isph,
-        delta_plus=delta_plus, tsph=tsph, tdsph=tdsph, tisph=tisph, ewcsph=ewcsph, rsph=rsph
+        delta_plus=delta_plus, tsph=tsph, tdsph=tdsph, tisph=tisph, ewcsph=ewcsph, rsph=rsph, monaghan2017=monaghan2017, okra2022=okra2022
     )
     return s
 
@@ -450,7 +467,6 @@ def create_tools(app):
 
 
 def prestep(app, solver):
-    pass
     if app.options.scheme == 'wcsph':
         if app.scheme.scheme.delta_sph:
             p = app.particles[0].p
