@@ -5,7 +5,6 @@ from pst import IterativePST, ModifiedFickian, DeltaPlusSPHPST, NumberDensityMom
 from pysph.sph.wc.linalg import gj_solve
 from compyle.api import declare
 
-from solid_bc import AdamiSlipWallVelocity
 
 
 class RK2Integrator(Integrator):
@@ -829,7 +828,7 @@ class TSPHScheme(Scheme):
             (SummationDensity)
         # from pysph.sph.wc.basic import TaitEOS
         from pysph.sph.wc.transport_velocity import MomentumEquationArtificialViscosity
-        from solid_bc import SourceNumberDensity, AdamiPressureBC, AdamiWallVelocity
+
 
         equations = []
         g1 = []
@@ -848,6 +847,10 @@ class TSPHScheme(Scheme):
 
         g1 = []
         for name in self.solids:
+            from solid_bc import (
+                SourceNumberDensity, AdamiPressureBC,
+                AdamiWallVelocity, AdamiSlipWallVelocity
+            )
             g1.append(SourceNumberDensity(dest=name, sources=self.fluids))
             g1.append(
                 AdamiPressureBC(dest=name,
