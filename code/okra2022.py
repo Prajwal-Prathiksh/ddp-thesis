@@ -481,7 +481,7 @@ class Okra2022Scheme(Scheme):
         group.add_argument(
             "--turb-visc", action="store", type=str, dest="turb_visc",
             default='SMAG', choices=['SMAG', 'SIGMA', 'SMAG_MCG'],
-            help="Turbulent viscosity model to use."
+            help="Turbulent viscosity model to use for Okra2022 scheme."
         )
 
     def consume_user_options(self, options):

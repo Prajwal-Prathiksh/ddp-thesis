@@ -4,6 +4,7 @@ from pysph.sph.integrator import Integrator, IntegratorStep
 from pst import IterativePST, ModifiedFickian, DeltaPlusSPHPST, NumberDensityMoment
 from pysph.sph.wc.linalg import gj_solve
 from compyle.api import declare
+from math import sqrt
 
 
 
@@ -682,27 +683,12 @@ class DivGrad(Equation):
 
 
 class TSPHScheme(Scheme):
-    def __init__(self,
-                 fluids,
-                 solids,
-                 dim,
-                 rho0,
-                 c0,
-                 h0,
-                 hdx,
-                 gx=0.0,
-                 gy=0.0,
-                 gz=0.0,
-                 nu=0.0,
-                 gamma=7.0,
-                 kernel_corr=False,
-                 pst_freq=0,
-                 method='no_sd',
-                 scm='wcsph',
-                 eos='tait',
-                 pst='ipst',
-                 damp_pre=False,
-                 periodic=True):
+    def __init__(
+        self, fluids, solids, dim, rho0, c0, h0, hdx, gx=0.0, gy=0.0, gz=0.0,
+        nu=0.0, gamma=7.0, kernel_corr=False, pst_freq=0, method='no_sd',
+        scm='wcsph', eos='tait', pst='ipst', damp_pre=False,
+        periodic=True
+):
         """Parameters
         ----------
 

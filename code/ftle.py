@@ -1,7 +1,6 @@
 r"""
 Calculation of Backward & Forward-in-time Finite-Time Lyapunov Exponent (FTLE)
 Author: K T Prajwal Prathiksh
-###
 References
 -----------
     .. [Sun2016] P. N. Sun, A. Colagrossi, S. Marrone, and A. M. Zhang,
@@ -178,7 +177,7 @@ class LyapunovExponentEquation(Equation):
         # TODO: Profile this function call to identify if it is a bottleneck
 
         # Compute eigenvalues and eigenvectors
-        eigen_decomposition(C_ij, R, cython.address(V[0]))
+        eigen_decomposition(C_ij, R, cython.address(V[0])) # type: ignore
 
         # Sort eigenvalues in ascending order
         V.sort()

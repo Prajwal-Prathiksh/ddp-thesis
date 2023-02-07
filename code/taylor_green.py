@@ -163,7 +163,7 @@ class TaylorGreen(Application):
             x = data['x']
             y = data['y']
             # h = data['h']
-            print(x, y)
+            # print(x, y)
         else:
             _x = np.arange(dx / 2, L, dx)
             x, y = np.meshgrid(_x, _x)
