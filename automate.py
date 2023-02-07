@@ -356,8 +356,7 @@ class TempTGV(PySPHProblem):
             opts, 
             mdict(
                 re=[500, 1000, 5000, 10_000, 20_000, 50_000],
-                tf=[1.],
-                perturb=[0.2]
+                tf=[1.], perturb=[0.2], nx=[50]
             )
         )
         
