@@ -13,7 +13,6 @@ from pysph.solver.application import Application
 from tg_config import exact_solution
 
 # domain and constants
-L = 1.0
 U = 1.0
 rho0 = 1.0
 c0 = 10 * U
@@ -30,6 +29,10 @@ class TaylorGreen(Application):
             "--perturb", action="store", type=float, dest="perturb", default=0,
             help="Random perturbation of initial particles as a fraction "
             "of dx (setting it to zero disables it, the default)."
+        )
+        group.add_argument(
+            "--length", action="store", type=float, dest="length", default=1.0,
+            help="Length of the domain (default 1.0)."
         )
         group.add_argument(
             "--nx", action="store", type=int, dest="nx", default=50,
@@ -100,11 +103,12 @@ class TaylorGreen(Application):
     def consume_user_options(self):
         nx = self.options.nx
         re = self.options.re
+        self.L = self.options.length
 
         self.c0 = self.options.c0_fac * U
-        self.nu = nu = U * L / re
+        self.nu = nu = U * self.L / re
 
-        self.dx = dx = L / nx
+        self.dx = dx = self.L / nx
         self.volume = dx * dx
         self.hdx = self.options.hdx
 
@@ -145,7 +149,7 @@ class TaylorGreen(Application):
     def create_domain(self):
         if self.options.no_periodic:
             return DomainManager(
-                xmin=0, xmax=L, ymin=0, ymax=L, periodic_in_x=True,
+                xmin=0, xmax=self.L, ymin=0, ymax=self.L, periodic_in_x=True,
                 periodic_in_y=True
             )
 
@@ -162,10 +166,8 @@ class TaylorGreen(Application):
             data = np.load(datafile)
             x = data['x']
             y = data['y']
-            # h = data['h']
-            # print(x, y)
         else:
-            _x = np.arange(dx / 2, L, dx)
+            _x = np.arange(dx / 2, self.L, dx)
             x, y = np.meshgrid(_x, _x)
 
         # Initialize
