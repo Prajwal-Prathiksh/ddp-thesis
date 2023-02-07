@@ -1,6 +1,6 @@
 #NOQA
 r"""
-SPH-ϵ Model
+SPH-ϵ Scheme
 Author: K T Prajwal Prathiksh
 ###
 References
@@ -83,6 +83,22 @@ class Monaghan2017Scheme(Scheme):
         self.alpha = alpha
         self.eps = eps
         self.gamma = gamma
+
+    def add_user_options(self, group):
+        group.add_argument(
+            "--mon2017-eps", action="store", type=float, dest="eps",
+            default=0.5, help="Epsilon for SPH-ϵ scheme"
+        )
+        group.add_argument(
+            "--mon2017-alpha", action="store", type=float, dest="alpha",
+            default=1.0, help="Alpha for SPH-ϵ scheme"
+        )
+    
+    def consume_user_options(self, options):
+        vars = ['eps', 'alpha']
+        data = dict((var, self._smart_getattr(options, var))
+                    for var in vars)
+        self.configure(**data)
 
     def get_timestep(self, cfl=0.5):
         return cfl*self.h0/self.c0
