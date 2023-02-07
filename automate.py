@@ -14,7 +14,7 @@ from automan.api import Automator, Simulation
 from automan.api import CondaClusterManager
 from automan.api import PySPHProblem
 from automan.api import mdict, dprod, opts2path
-from automan.utils import filter_cases
+from automan.utils import filter_cases, filter_by_name
 
 # Local imports.
 from code.automate_utils import styles, custom_compare_runs
@@ -336,10 +336,57 @@ class SineVelProfile(PySPHProblem):
             )
 
 
+class TempTGV(PySPHProblem):
+    def get_name(self):
+        """
+        Problem name.
+        """
+        return "temp_tgv"
+    
+    def setup(self):
+        """
+        Setup the problem.
+        """
+        base_cmd = "python code/taylor_green.py" + BACKEND
+        opts = mdict(scheme=[
+            'edac', 'tsph --method sd --scm wcsph --pst-freq 10',
+            'mon2017', 'ok2022'
+        ])
+        opts = dprod(
+            opts, 
+            mdict(
+                re=[500, 1000, 5000, 10_000, 20_000, 50_000],
+                tf=[1.],
+                perturb=[0.2]
+            )
+        )
+        
+        def get_path(opt):
+            temp = 'tsph' if 'tsph' in opt['scheme'] else opt['scheme']
+            return f'scheme_{temp}_re_{opt["re"]}'
+    
+        # Setup cases
+        self.cases = [
+            Simulation(
+                root=self.input_path(get_path(kw)),
+                base_command=base_cmd,
+                job_info=dict(n_core=N_CORES, n_thread=N_THREADS),
+                **kw
+            )
+            for kw in opts
+        ]
+    
+    def run(self):
+        """
+        Run the problem.
+        """
+        self.make_output_dir()
+
 
 if __name__ == "__main__":
     PROBLEMS = [
         SineVelProfile,
+        TempTGV,
     ]
     automator = Automator(
         simulation_dir='outputs',
