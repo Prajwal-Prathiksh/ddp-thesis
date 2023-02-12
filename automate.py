@@ -20,8 +20,8 @@ from automan.utils import filter_cases, filter_by_name
 # Local imports.
 from code.automate_utils import styles, custom_compare_runs, plot_vline
 
-BACKEND = " --openmp"
-N_CORES, N_THREADS = 2, 4
+BACKEND = " --openmp "
+N_CORES, N_THREADS = 3, 6
 
 class SineVelProfilePlotters(Simulation):
     """
@@ -326,12 +326,12 @@ class SineVelProfile(PySPHProblem):
             labels = ['i_method', 'i_radius_scale']
             _temp_plotter(fcases, title_suffix, labels)
 
-class TempTGV(PySPHProblem):
+class TGVBasicSchemeComparison(PySPHProblem):
     def get_name(self):
         """
         Problem name.
         """
-        return "temp_tgv"
+        return "tgv_basic_scheme_comparison"
     
     def setup(self):
         """
@@ -371,11 +371,45 @@ class TempTGV(PySPHProblem):
         """
         self.make_output_dir()
 
+class TGVExternalForcingColagrossi2021(PySPHProblem):
+    def get_name(self):
+        """
+        Problem name.
+        """
+        return "tgv_external_forcing_colagrossi2021"
+    
+    def setup(self):
+        """
+        Setup the problem.
+        """
+        base_cmd = "python code/taylor_green.py --ext-forcing " + BACKEND
+        base_cmd += "--scheme=tsph --method sd --scm wcsph --pst-freq 10 "
+        base_cmd += "--max-steps=50"
+        opts = mdict(re=[1_000, 10_000, 100_000], nx=[20])
+    
+        # Setup cases
+        self.cases = [
+            Simulation(
+                root=self.input_path(opts2path(kw)),
+                base_command=base_cmd,
+                job_info=dict(n_core=N_CORES, n_thread=N_THREADS),
+                **kw
+            )
+            for kw in opts
+        ]
+    
+    def run(self):
+        """
+        Run the problem.
+        """
+        self.make_output_dir()
+
 
 if __name__ == "__main__":
     PROBLEMS = [
         SineVelProfile,
-        TempTGV,
+        TGVBasicSchemeComparison,
+        TGVExternalForcingColagrossi2021,
     ]
     automator = Automator(
         simulation_dir='outputs',
