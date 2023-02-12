@@ -11,7 +11,6 @@ References
 import itertools as IT
 import numpy as np
 import matplotlib.pyplot as plt
-from numba import njit
 from pysph.base.kernels import WendlandQuinticC4
 from pysph.tools.interpolator import Interpolator
 from pysph.solver.utils import load
@@ -20,6 +19,15 @@ from compyle.low_level import cast
 from compyle.parallel import elementwise
 from compyle.config import use_config
 from math import sqrt, floor
+try:
+    from numba import njit
+except ImportError:
+    # Define a dummy njit decorator
+    njit = lambda x: x
+    import warnings
+    warnings.warn(
+        "Numba not installed. Some functions will not be compiled."
+    )
 
 # Local imports
 from automate_utils import styles
