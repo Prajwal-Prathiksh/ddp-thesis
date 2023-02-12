@@ -386,14 +386,13 @@ class TGVExternalForcingColagrossi2021(PySPHProblem):
         base_cmd = "python code/taylor_green.py " + BACKEND
         base_cmd += "--scheme=tsph --method sd --scm wcsph --pst-freq 10 "
         base_cmd += " --ext-forcing "
-    
-        res_opts = mdict(nx=[100], tf=[6.])
-        res_opts += mdict(nx=[200], tf=[2.])
-        res_opts += mdict(nx=[400], tf=[1.])
-    
-        opts = mdict(re=[1_000, 10_000, 100_000])
 
-        opts = dprod(opts, res_opts)
+    
+        res_opts = mdict(
+            nx=[100], tf=[6.], re=[10_000, 100_000, 1_000_000]
+        )
+        res_opts += mdict(nx=[200], tf=[2.], re=[1_000, 10_000, 100_000])
+        res_opts += mdict(nx=[400], tf=[1.], re=[1_000, 10_000])
     
         # Setup cases
         self.cases = [
