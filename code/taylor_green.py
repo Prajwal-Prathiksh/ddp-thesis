@@ -1,4 +1,7 @@
-"""Taylor Green vortex flow (5 minutes).
+r"""
+Taylor-Green Vortex Problem
+Author: K T Prajwal Prathiksh
+###
 """
 
 import os
@@ -11,6 +14,7 @@ from pysph.base.kernels import QuinticSpline
 from pysph.solver.application import Application
 
 from tg_config import exact_solution
+from turbulence_tools import TurbulentFlowApp
 
 # domain and constants
 U = 1.0
@@ -19,7 +23,7 @@ c0 = 10 * U
 p0 = c0**2 * rho0
 
 
-class TaylorGreen(Application):
+class TaylorGreen(TurbulentFlowApp):
     def add_user_options(self, group):
         group.add_argument(
             "--init", action="store", type=str, default=None,
@@ -385,3 +389,15 @@ if __name__ == '__main__':
     app = TaylorGreen()
     app.run()
     app.post_process(app.info_filename)
+    app.ek_post_processing(
+        dim=2, L=app.L, U0=U, f_idx=0,
+        compute_without_interp=True
+    )
+    app.ek_post_processing(
+        dim=2, L=app.L, U0=U, f_idx=-1,
+        compute_without_interp=True
+    )
+    # app.plot_ek(f_idx=0)
+    # app.plot_ek(f_idx=-1)
+    app.plot_ek_fit(f_idx=0)
+    app.plot_ek_fit(f_idx=-1)
