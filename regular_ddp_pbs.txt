@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N DDP_Project
+#PBS -N Regular_DDP_Project
 #PBS -q regular
 #PBS -l select=1:ncpus=16
 #PBS -j oe

@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -N Big_DDP_Project
+#PBS -q big
+#PBS -l select=1:ncpus=32
+#PBS -j oe
+#PBS -V
+#PBS -o log.out
+
+cd $PBS_O_WORKDIR
+cat $PBS_NODEFILE > ./pbsnodes
+PROCS1=$(cat $PBS_NODEFILE | wc -l)
+
+python automate.py SineVelProfile

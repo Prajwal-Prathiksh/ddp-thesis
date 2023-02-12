@@ -243,8 +243,8 @@ class SineVelProfile(PySPHProblem):
         def get_opts():
             perturb_opts = mdict(perturb=[0.01], hdx=[1.2, 3])
             dim_nx_opts = mdict(dim=[1], nx=[501, 1001], n_freq=[250])
-            # dim_nx_opts += mdict(dim=[2], nx=[501, 1001], n_freq=[250])
-            # dim_nx_opts += mdict(dim=[3], nx=[71, 101], n_freq=[35])
+            dim_nx_opts += mdict(dim=[2], nx=[501, 751], n_freq=[250])
+            dim_nx_opts += mdict(dim=[3], nx=[71, 101], n_freq=[35])
 
             all_options = dprod(perturb_opts, dim_nx_opts)
 
