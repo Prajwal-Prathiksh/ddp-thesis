@@ -419,6 +419,9 @@ if __name__ == "__main__":
         all_problems=PROBLEMS,
         cluster_manager_factory=CondaClusterManager
     )
+    tic = time.perf_counter()
     automator.run()
+    toc = time.perf_counter()
+    print(f"Total time taken = {toc-tic:.2f} seconds")
 
     
