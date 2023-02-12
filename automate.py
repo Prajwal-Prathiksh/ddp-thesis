@@ -22,7 +22,7 @@ from automan.utils import filter_cases, filter_by_name
 from code.automate_utils import styles, custom_compare_runs, plot_vline
 
 BACKEND = " --openmp "
-N_CORES, N_THREADS = 4, 16
+N_CORES, N_THREADS = 4, 8
 
 class SineVelProfilePlotters(Simulation):
     """
@@ -385,9 +385,15 @@ class TGVExternalForcingColagrossi2021(PySPHProblem):
         """
         base_cmd = "python code/taylor_green.py " + BACKEND
         base_cmd += "--scheme=tsph --method sd --scm wcsph --pst-freq 10 "
-        base_cmd += " --tf=6.0 --ext-forcing "
-        base_cmd += " --max-steps 200 "
-        opts = mdict(re=[1_000, 10_000, 100_000], nx=[20, 40])
+        base_cmd += " --ext-forcing "
+    
+        res_opts = mdict(nx=[100], tf=[6.])
+        res_opts += mdict(nx=[200], tf=[2.])
+        res_opts += mdict(nx=[400], tf=[1.])
+    
+        opts = mdict(re=[1_000, 10_000, 100_000])
+
+        opts = dprod(opts, res_opts)
     
         # Setup cases
         self.cases = [
@@ -423,5 +429,3 @@ if __name__ == "__main__":
     automator.run()
     toc = time.perf_counter()
     print(f"Total time taken = {toc-tic:.2f} seconds")
-
-    
