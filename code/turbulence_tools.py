@@ -30,6 +30,8 @@ from pysph.solver.utils import dump, load
 
 # Local imports
 from energy_spectrum import EnergySpectrum
+from automate_utils import plot_vline
+
 
 # TODO: Add support for openmp in interpolator and m_mat in interpolator cls
 # TODO Add second order interpolator?
@@ -857,6 +859,16 @@ class TurbulentFlowApp(Application):
         plt.legend()
         plt.title(f"Energy spectrum at t = {t:.2f}")
 
+        # Limit y-axis to 1e-10 to y-axis max.
+        ymin, ymax = plt.ylim()
+        ymin = max(ymin, 1e-10)
+        plt.ylim(ymin, ymax)
+        plt.minorticks_on()
+
+        # Plot a vertical line at the middle of the k range.
+        plot_vline(data, 2)
+        plot_vline(data, 8)
+
         f_idx_str = fname.split("_")[-1].split(".")[0]
         fname = f"espec_{f_idx_str}_{plot_type}.png"
         fname = os.path.join(self.output_dir, fname)
@@ -942,6 +954,16 @@ class TurbulentFlowApp(Application):
         plt.ylabel(plotter['ylabel'])
         plt.legend()
         plt.title(f"Energy spectrum at t = {t:.2f}")
+
+        # Limit y-axis to 1e-10 to y-axis max.
+        ymin, ymax = plt.ylim()
+        ymin = max(ymin, 1e-10)
+        plt.ylim(ymin, ymax)
+        plt.minorticks_on()
+
+        # Plot a vertical line at the middle of the k range.
+        plot_vline(data, 2)
+        plot_vline(data, 8)
 
         f_idx_str = fname.split("_")[-1].split(".")[0]
         fname = f"espec_{f_idx_str}_{plot_type}_fit.png"

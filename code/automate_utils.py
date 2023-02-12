@@ -69,3 +69,9 @@ def custom_compare_runs(
         exact(sims[exact_sim_idx], **next(ls))
     for s in sims:
         method(s, label=s.get_labels(labels), **next(ls))         
+
+def plot_vline(data, n=2):
+    k_by_n = data['k'][len(data['k'])//n]
+    plt.axvline(k_by_n, color='y', linestyle='--')
+    msg = f'k/{n}'
+    plt.annotate(r'$' + msg + r'$', xy=(k_by_n*1.1, 1e-2), color='y')

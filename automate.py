@@ -1,6 +1,7 @@
 #NOQA
 r"""
 An automator script to reproduce the results of the thesis
+Author: K T Prajwal Prathiksh
 ###
 """
 # Library imports.
@@ -17,7 +18,7 @@ from automan.api import mdict, dprod, opts2path
 from automan.utils import filter_cases, filter_by_name
 
 # Local imports.
-from code.automate_utils import styles, custom_compare_runs
+from code.automate_utils import styles, custom_compare_runs, plot_vline
 
 BACKEND = " --openmp"
 N_CORES, N_THREADS = 1, 2
@@ -51,13 +52,10 @@ class SineVelProfilePlotters(Simulation):
             data['k'], data['ek_no_interp'],
             label=r'$E_k$ (no interpolation)', **kw
         )
+
         # Plot a vertical line at the middle of the k range.
-        k_mid = data['k'][len(data['k'])//2]
-        plt.axvline(k_mid, color='k', linestyle='--')
-        plt.annotate(r'$k/2$', xy=(k_mid*1.1, 1e-2))
-        k_quarter = data['k'][len(data['k'])//8]
-        plt.axvline(k_quarter, color='k', linestyle='--')
-        plt.annotate(r'$k/8$', xy=(k_quarter*1.1, 1e-2))
+        plot_vline(data, 2)
+        plot_vline(data, 8)
 
     
     def ek_loglog_exact(self, **kw):
@@ -95,10 +93,10 @@ class SineVelProfilePlotters(Simulation):
             data['k'], l2_error_expected,
             label=r'$L_2$ error (no interpolation)', **kw
         )
-        k_mid = data['k'][len(data['k'])//2]
-        plt.axvline(k_mid, color='k', linestyle='--')
-        plt.annotate(r'$k/2$', xy=(k_mid*1.1, 1e-2))
-    
+
+        # Plot a vertical line at the middle of the k range.
+        plot_vline(data, 2)
+        plot_vline(data, 8)    
     
 class SineVelProfile(PySPHProblem):
     """
@@ -214,8 +212,9 @@ class SineVelProfile(PySPHProblem):
 
         # Limit y-axis to 1e-10 to y-axis max.
         if "log" in plotter_map[plt_type]['xlabel']:
-            _, ymax = plt.ylim()
-            plt.ylim(1e-20, ymax)
+            ymin, ymax = plt.ylim()
+            ymin = max(ymin, 1e-10)
+            plt.ylim(ymin, ymax)
             plt.minorticks_on()
 
         if plot_legend:
@@ -241,34 +240,11 @@ class SineVelProfile(PySPHProblem):
         base_cmd += " --max-steps 0"
         
         # Create parameteric cases
-        def get_complete_parametric_opts():
-            # Domain parameters
-            perturb_opts = mdict(perturb=[0, 1e-2, 1e-1, 1])
-            dim_nx_opts = mdict(dim=[1], nx=[401, 801, 1601])
-            dim_nx_opts += mdict(dim=[2], nx=[51, 101, 201])
-            dim_nx_opts += mdict(dim=[3], nx=[31, 51, 101])
-
-            all_options = dprod(perturb_opts, dim_nx_opts)
-
-            # Interpolator parameters
-            from code.sine_velocity_profile import (
-                KERNEL_CHOICES, INTERPOLATING_METHOD_CHOICES
-            )
-            i_kernel_opts = mdict(i_kernel=KERNEL_CHOICES)
-            i_method_opts = mdict(i_method=INTERPOLATING_METHOD_CHOICES)
-            interpolator_opts = dprod(i_kernel_opts, i_method_opts)
-
-            all_options = dprod(all_options, interpolator_opts)
-            return all_options
-
-        def get_example_opts():
-            # perturb_opts = mdict(perturb=[0, 0.01])
+        def get_opts():
             perturb_opts = mdict(perturb=[0.01], hdx=[1.2, 3])
-            # dim_nx_opts = mdict(dim=[1], nx=[5001, 10001, 20001])
-            # dim_nx_opts += mdict(dim=[2], nx=[251, 501])
-            dim_nx_opts = mdict(dim=[1], nx=[20001])
-            dim_nx_opts += mdict(dim=[2], nx=[501])
-            dim_nx_opts += mdict(dim=[3], nx=[51])
+            dim_nx_opts = mdict(dim=[1], nx=[501, 1001], n_freq=[250])
+            # dim_nx_opts += mdict(dim=[2], nx=[501, 1001], n_freq=[250])
+            # dim_nx_opts += mdict(dim=[3], nx=[71, 101], n_freq=[35])
 
             all_options = dprod(perturb_opts, dim_nx_opts)
 
@@ -281,8 +257,6 @@ class SineVelProfile(PySPHProblem):
             ]
             # INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1', 'order1BL', 'order1MC']
             INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1',]
-            # INTERPOLATING_METHOD_CHOICES = ['order1', 'order1BL', 'order1MC']
-            # INTERPOLATING_METHOD_CHOICES = ['shepard']
             
             i_kernel_opts = mdict(i_kernel=KERNEL_CHOICES)
             i_method_opts = mdict(i_method=INTERPOLATING_METHOD_CHOICES)
@@ -291,7 +265,7 @@ class SineVelProfile(PySPHProblem):
             all_options = dprod(all_options, interpolator_opts)
             return all_options
 
-        all_options = get_example_opts()
+        all_options = get_opts()
 
         # Setup cases
         self.cases = [
@@ -311,24 +285,32 @@ class SineVelProfile(PySPHProblem):
         self.make_output_dir()
         tmp = dict(
             dim=[1,2,3],
-            nx=[20001, 501, 101, 51]
+            nx=[501, 501, 71],
+            n_freq=[250, 250, 35],
         )
-        for dim, nx in zip(tmp['dim'], tmp['nx']):
-            perturb=1e-2
-            fcases = filter_cases(self.cases, dim=dim, nx=nx)#, perturb=perturb)
-            if len(fcases) == 0:
-                continue
-            title_suffix = f"(dim={dim}, nx={nx})"#, perturb={perturb})"
-            # labels = ['i_method', 'perturb']
+        for dim, nx, n_freq in zip(tmp['dim'], tmp['nx'], tmp['n_freq']):
+            def _temp_plotter(fcases, title_suffix, labels):
+                if len(fcases) == 0:
+                    return
+                print(f"title_suffix = {title_suffix}")
+                print(f"labels = {labels}")
+                self.plot_energy_spectrum(
+                    fcases, labels, plt_type="l2_error",
+                    title_suffix=title_suffix, plot_grid=True
+                )
+                self.plot_energy_spectrum(
+                    fcases, labels, plt_type="loglog", 
+                    title_suffix=title_suffix, plot_grid=True
+                )
+            fcases = filter_cases(self.cases, dim=dim, nx=nx, n_freq=n_freq)    
+            title_suffix = f"dim={dim}, nx={nx}, n_freq={n_freq}"
             labels = ['i_method', 'hdx']
-            # self.plot_energy_spectrum(
-            #     fcases, labels, plt_type="l2_error", title_suffix=title_suffix,
-            #     plot_grid=True
-            # )
-            self.plot_energy_spectrum(
-                fcases, labels, plt_type="loglog", title_suffix=title_suffix,
-                plot_grid=True
-            )
+            _temp_plotter(fcases, title_suffix, labels)
+
+            fcases = filter_cases(self.cases, dim=dim, n_freq=n_freq, hdx=1.2)
+            title_suffix = f"dim={dim}, n_freq={n_freq}, hdx=1.2"
+            labels = ['i_method', 'nx']
+            _temp_plotter(fcases, title_suffix, labels)
 
 
 class TempTGV(PySPHProblem):
