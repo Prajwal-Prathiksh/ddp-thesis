@@ -21,7 +21,7 @@ from automan.utils import filter_cases, filter_by_name
 from code.automate_utils import styles, custom_compare_runs, plot_vline
 
 BACKEND = " --openmp"
-N_CORES, N_THREADS = 2, 4
+N_CORES, N_THREADS = 3, 6
 
 class SineVelProfilePlotters(Simulation):
     """
@@ -325,7 +325,6 @@ class SineVelProfile(PySPHProblem):
                             f"hdx=1.2"
             labels = ['i_method', 'i_radius_scale']
             _temp_plotter(fcases, title_suffix, labels)
-
 
 class TempTGV(PySPHProblem):
     def get_name(self):
