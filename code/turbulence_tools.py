@@ -479,13 +479,14 @@ class TurbulentFlowApp(Application):
         logger.warning(msg)
         return None
 
-    def get_ek_fit(self, k: np.ndarray, ek: np.ndarray, tol: float = 1e-10):
+    def get_ek_fit(
+        self, k: np.ndarray, ek: np.ndarray, tol: float = 1e-10,
+        k_n: int = 2
+    ):
         """
         Fits the log10 transformed energy spectrum data with a straight line,
         using scipy.stats.linregress.
-        Only the first half of the data is used for fitting, i.e., data points
-        from k[1] to k[N//2], where N = len(k).
-        This is because of the Nyquist criterion.
+        The data used for fitting is --> k[1:N//k_n], where N = len(k).
         Additionally, data points with |ek| < tol are ignored.
 
         Parameters
@@ -497,6 +498,9 @@ class TurbulentFlowApp(Application):
         tol : float, optional
             Tolerance for ignoring data points with |ek| < tol.
             Default: 1e-10
+        k_n : int, optional
+            The data used for fitting is --> k[1:N//k_n], where N = len(k).
+            Default: 2
 
         Returns
         -------
@@ -508,7 +512,7 @@ class TurbulentFlowApp(Application):
             Fitting parameters.
             Includes: slope, intercept, r_value, p_value, std_err, slope_error
         """
-        cond_len = np.logical_and(k > 0, k < len(k) / 2 - 1)
+        cond_len = np.logical_and(k > 0, k < len(k) / k_n - 1)
         cond_tol = np.abs(ek) > tol
         cond = np.logical_and(cond_len, cond_tol)
         k_cal, ek_cal = np.log10(k[cond]), np.log10(ek[cond])
@@ -531,7 +535,7 @@ class TurbulentFlowApp(Application):
 
         # Calculate fitted energy spectrum
         k_fit = np.logspace(
-            start=np.log10(1), stop=np.log10(k[len(k) // 2]), num=50
+            start=np.log10(1), stop=np.log10(k[len(k) // k_n]), num=50
         )
         ek_fit = 10**(slope * np.log10(k_fit) + intercept)
 
@@ -754,11 +758,11 @@ class TurbulentFlowApp(Application):
         box_radius = self.get_length_of_ek(dim=dim)
         dx = espec_ob.dx
         radius_scale = self.options.i_radius_scale
-        interp_wn = EnergySpectrum.calculate_wavenumber_of_dx(
-            L=L, box_radius=box_radius,
-            dx=dx*radius_scale
-        )
-        print(f"Interpolating wave number: {interp_wn}")
+        # interp_wn = EnergySpectrum.calculate_wavenumber_of_dx(
+        #     L=L, box_radius=box_radius,
+        #     dx=dx*radius_scale
+        # )
+        # print(f"Interpolating wave number: {interp_wn}")
 
         # Fit the energy spectrum
         k_fit, ek_fit, fit_params = self.get_ek_fit(
@@ -793,7 +797,7 @@ class TurbulentFlowApp(Application):
             box_radius=box_radius,
             dx=dx,
             radius_scale=radius_scale,
-            interp_wn=interp_wn,
+            # interp_wn=interp_wn,
             ek=espec_ob.ek,
             ek_u=espec_ob.ek_u,
             ek_v=espec_ob.ek_v,
@@ -879,7 +883,7 @@ class TurbulentFlowApp(Application):
 
     def plot_ek_fit(
         self, f_idx: int, plot_type: str = "loglog", tol: float = 1e-10,
-        exact: bool = True, no_interp: bool = True,
+        exact: bool = True, no_interp: bool = True, k_n: int = 2
     ):
         """
         Plot the computed energy spectrum stored in the *.npz file, along with
@@ -901,16 +905,21 @@ class TurbulentFlowApp(Application):
         no_interp : bool, optional
             If True, plots the energy spectrum computed without interpolating
             the velocity field. Default is True.
+        k_n : int, optional
+            The data used for fitting is --> k[1:N//k_n], where N = len(k).
+            Default: 2
         """
         fname = self.espec_result_files[f_idx]
         data = np.load(fname, allow_pickle=True)
         k = data['k']
         t = float(data['t'])
         ek = data['ek']
-        interp_wn = int(data['interp_wn'])
+        # interp_wn = int(data['interp_wn'])
 
         # Fit the energy spectrum
-        k_fit, ek_fit, fit_params = self.get_ek_fit(k=k, ek=ek, tol=tol)
+        k_fit, ek_fit, fit_params = self.get_ek_fit(
+            k=k, ek=ek, tol=tol, k_n=k_n
+        )
         fit_slope = fit_params['slope']
         fit_r_value = fit_params['r_value']
         fit_r_value = fit_r_value**2
@@ -920,11 +929,11 @@ class TurbulentFlowApp(Application):
         plotter = self._get_ek_plot_types_mapper(plot_type=plot_type)
         plot_func = plotter['func']
         plot_func(k, ek, marker='.', label="Computed")
-        plt.vlines(
-            interp_wn, ek.min(), ek.max(), linestyles='dotted',
-            colors='k',
-            label=f"Interpolation kernel width = {interp_wn:.2f}"
-        )
+        # plt.vlines(
+        #     interp_wn, ek.min(), ek.max(), linestyles='dotted',
+        #     colors='k',
+        #     label=f"Interpolation kernel width = {interp_wn:.2f}"
+        # )
 
         fit_label = fr"Fit: (E(k) ~ k^{fit_slope:.2f}) ($R^2$ = " \
             f"{fit_r_value:.2f})"
@@ -940,7 +949,7 @@ class TurbulentFlowApp(Application):
         ek_no_interp = data['ek_no_interp']
         if no_interp and np.size(ek_no_interp) > 1:
             k_fit, ek_fit, fit_params = self.get_ek_fit(
-                k=k, ek=ek_no_interp, tol=tol
+                k=k, ek=ek_no_interp, tol=tol, k_n=k_n
             )
             fit_slope = fit_params['slope']
             fit_r_value = fit_params['r_value']
