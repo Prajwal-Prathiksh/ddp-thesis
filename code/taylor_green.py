@@ -103,11 +103,17 @@ class TaylorGreen(TurbulentFlowApp):
             dest="no_periodic",
             help="Make periodic domain"
         )
+        group.add_argument(
+            "--ext-forcing", action="store_true",
+            dest="ext_forcing",
+            help="Use external forcing"
+        )
 
     def consume_user_options(self):
         nx = self.options.nx
         re = self.options.re
         self.L = self.options.length
+        self.U = U
 
         self.c0 = self.options.c0_fac * U
         self.nu = nu = U * self.L / re
@@ -128,6 +134,7 @@ class TaylorGreen(TurbulentFlowApp):
         self.tf = 2.0
         self.kernel_correction = self.options.kernel_correction
         self.no_periodic = self.options.no_periodic
+        self.ext_forcing = self.options.ext_forcing
 
     def pre_step(self, solver):
         from tg_config import prestep
@@ -182,6 +189,8 @@ class TaylorGreen(TurbulentFlowApp):
         re = self.options.re
         b = -8.0*pi*pi / re
         u0, v0, p0 = exact_solution(U=U, b=b, t=0, x=x, y=y)
+        if self.ext_forcing:
+            u0, v0, p0 = 0.0, 0.0, 1.
         color0 = cos(2*pi*x) * cos(4*pi*y)
         rhoc = 0.0
         rho = rho0
@@ -330,37 +339,50 @@ class TaylorGreen(TurbulentFlowApp):
         from matplotlib import pyplot as plt
         plt.clf()
         plt.grid()
-        plt.semilogy(t, decay_ex, label="exact")
+        if not self.ext_forcing:
+            plt.semilogy(t, decay_ex, label="exact")
         plt.semilogy(t, decay, label="computed")
         plt.xlabel('t')
         plt.ylabel('max velocity')
         plt.legend()
         fig = os.path.join(self.output_dir, "decay.png")
         plt.savefig(fig, dpi=300)
-
+    
         plt.clf()
-        plt.plot(t, linf)
         plt.grid()
+        if not self.ext_forcing:
+            plt.semilogy(t, ke_ex, label="exact")
+        plt.semilogy(t, ke, label="computed")
         plt.xlabel('t')
-        plt.ylabel(r'$L_\infty$ error')
-        fig = os.path.join(self.output_dir, "linf_error.png")
+        plt.ylabel('kinetic energy')
+        plt.legend()
+        fig = os.path.join(self.output_dir, "ke.png")
         plt.savefig(fig, dpi=300)
 
-        plt.clf()
-        plt.plot(t, l1, label="error")
-        plt.grid()
-        plt.xlabel('t')
-        plt.ylabel(r'$L_1$ error')
-        fig = os.path.join(self.output_dir, "l1_error.png")
-        plt.savefig(fig, dpi=300)
+        if not self.ext_forcing:
+            plt.clf()
+            plt.plot(t, linf)
+            plt.grid()
+            plt.xlabel('t')
+            plt.ylabel(r'$L_\infty$ error')
+            fig = os.path.join(self.output_dir, "linf_error.png")
+            plt.savefig(fig, dpi=300)
 
-        plt.clf()
-        plt.plot(t, p_l1, label="error")
-        plt.grid()
-        plt.xlabel('t')
-        plt.ylabel(r'$L_1$ error for $p$')
-        fig = os.path.join(self.output_dir, "p_l1_error.png")
-        plt.savefig(fig, dpi=300)
+            plt.clf()
+            plt.plot(t, l1, label="error")
+            plt.grid()
+            plt.xlabel('t')
+            plt.ylabel(r'$L_1$ error')
+            fig = os.path.join(self.output_dir, "l1_error.png")
+            plt.savefig(fig, dpi=300)
+
+            plt.clf()
+            plt.plot(t, p_l1, label="error")
+            plt.grid()
+            plt.xlabel('t')
+            plt.ylabel(r'$L_1$ error for $p$')
+            fig = os.path.join(self.output_dir, "p_l1_error.png")
+            plt.savefig(fig, dpi=300)
 
         plt.clf()
         plt.plot(t, lm, label="total linear mom")
@@ -389,15 +411,16 @@ if __name__ == '__main__':
     app = TaylorGreen()
     app.run()
     app.post_process(app.info_filename)
-    app.ek_post_processing(
-        dim=2, L=app.L, U0=U, f_idx=0,
-        compute_without_interp=True
-    )
+    if not app.ext_forcing:
+        app.ek_post_processing(
+            dim=2, L=app.L, U0=U, f_idx=0,
+            compute_without_interp=True
+        )
+        # app.plot_ek(f_idx=0)
+        app.plot_ek_fit(f_idx=0, k_n=4)
     app.ek_post_processing(
         dim=2, L=app.L, U0=U, f_idx=-1,
         compute_without_interp=True
     )
-    # app.plot_ek(f_idx=0)
     # app.plot_ek(f_idx=-1)
-    app.plot_ek_fit(f_idx=0)
-    app.plot_ek_fit(f_idx=-1)
+    app.plot_ek_fit(f_idx=-1, k_n=4)

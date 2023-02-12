@@ -462,8 +462,38 @@ def create_tools(app):
 
     return tools
 
+def ramp(t_star):
+    if t_star>=0.0 and t_star<0.1:
+        return t_star*10.
+    elif t_star>=0.1 and t_star<0.9:
+        return 1.
+    elif t_star>=0.9 and t_star<=1.:
+        return (1.-t_star)*10.
+    else:
+        return 0.
+
+def ext_force(x, y, t, L=1., U=1.):
+    A = 1.3*U*U/L
+    x_star = x/L
+    y_star = y/L
+    t_star = t*U/L
+    eightpi = 8.*pi
+
+    fx = sin(eightpi*x_star)*cos(eightpi*y_star)
+    fy = -cos(eightpi*x_star)*sin(eightpi*y_star)
+
+    return A*ramp(t_star)*fx, A*ramp(t_star)*fy
 
 def prestep(app, solver):
+    if app.options.ext_forcing:
+        pa = app.particles[0]
+        x, y = pa.x, pa.y
+        L, U = app.L, app.U
+        dt, t = solver.dt, solver.t
+        fx, fy = ext_force(x, y, t, L, U)
+        pa.u[:] += fx*dt
+        pa.v[:] += fy*dt
+        
     if app.options.scheme == 'wcsph':
         if app.scheme.scheme.delta_sph:
             p = app.particles[0].p
