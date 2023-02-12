@@ -213,7 +213,8 @@ class SineVelProfile(PySPHProblem):
         # Limit y-axis to 1e-10 to y-axis max.
         if "log" in plotter_map[plt_type]['xlabel']:
             ymin, ymax = plt.ylim()
-            ymin = max(ymin, 1e-10)
+            ymin = max(ymin, 1e-7)
+            ymax = min(ymax, 1e-1)
             plt.ylim(ymin, ymax)
             plt.minorticks_on()
 
@@ -241,21 +242,16 @@ class SineVelProfile(PySPHProblem):
         
         # Create parameteric cases
         def get_opts():
-            perturb_opts = mdict(perturb=[0.01], hdx=[1.2, 3])
-            dim_nx_opts = mdict(dim=[1], nx=[501, 1001], n_freq=[250])
-            dim_nx_opts += mdict(dim=[2], nx=[501, 751], n_freq=[250])
-            dim_nx_opts += mdict(dim=[3], nx=[51, 71], n_freq=[25])
+            perturb_opts = mdict(
+                perturb=[0.01], hdx=[1.2, 3],
+                i_radius_scale=[1.2, 3]
+            )
+            dim_nx_opts = mdict(dim=[1], nx=[701, 1001], n_freq=[350])
+            dim_nx_opts += mdict(dim=[2], nx=[701, 801], n_freq=[350])
+            dim_nx_opts += mdict(dim=[3], nx=[71, 101], n_freq=[35])
 
             all_options = dprod(perturb_opts, dim_nx_opts)
-
-            # KERNEL_CHOICES = [
-            #     'CubicSpline', 'WendlandQuinticC2', 'WendlandQuinticC4',
-            #     'WendlandQuinticC6', 'Gaussian', 'SuperGaussian', 'QuinticSpline'
-            # ]
-            KERNEL_CHOICES = [
-                'WendlandQuinticC4'
-            ]
-            # INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1', 'order1BL', 'order1MC']
+            KERNEL_CHOICES = ['WendlandQuinticC4']
             INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1',]
             
             i_kernel_opts = mdict(i_kernel=KERNEL_CHOICES)
@@ -285,8 +281,8 @@ class SineVelProfile(PySPHProblem):
         self.make_output_dir()
         tmp = dict(
             dim=[1,2,3],
-            nx=[501, 501, 51],
-            n_freq=[250, 250, 25],
+            nx = [701, 701, 71],
+            n_freq=[350, 350, 35],
         )
         for dim, nx, n_freq in zip(tmp['dim'], tmp['nx'], tmp['n_freq']):
             def _temp_plotter(fcases, title_suffix, labels):
@@ -302,14 +298,32 @@ class SineVelProfile(PySPHProblem):
                     fcases, labels, plt_type="loglog", 
                     title_suffix=title_suffix, plot_grid=True
                 )
-            fcases = filter_cases(self.cases, dim=dim, nx=nx, n_freq=n_freq)    
-            title_suffix = f"dim={dim}, nx={nx}, n_freq={n_freq}"
+            # Set 1
+            fcases = filter_cases(
+                self.cases, dim=dim, nx=nx, n_freq=n_freq, i_radius_scale=3
+            )
+            title_suffix = f"dim={dim}, nx={nx}, n_freq={n_freq}, " \
+                            f"i_radius_scale=3"
             labels = ['i_method', 'hdx']
             _temp_plotter(fcases, title_suffix, labels)
 
-            fcases = filter_cases(self.cases, dim=dim, n_freq=n_freq, hdx=1.2)
-            title_suffix = f"dim={dim}, n_freq={n_freq}, hdx=1.2"
+            # Set 2
+            fcases = filter_cases(
+                self.cases, dim=dim, n_freq=n_freq, hdx=1.2,
+                i_radius_scale=3
+            )
+            title_suffix = f"dim={dim}, n_freq={n_freq}, hdx=1.2, " \
+                            f"i_radius_scale=3"
             labels = ['i_method', 'nx']
+            _temp_plotter(fcases, title_suffix, labels)
+            
+            # Set 3
+            fcases = filter_cases(
+                self.cases, dim=dim, nx=nx, n_freq=n_freq, hdx=1.2
+            )
+            title_suffix = f"dim={dim}, nx={nx}, n_freq={n_freq}, " \
+                            f"hdx=1.2"
+            labels = ['i_method', 'i_radius_scale']
             _temp_plotter(fcases, title_suffix, labels)
 
 
