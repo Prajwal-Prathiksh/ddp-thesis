@@ -10,4 +10,4 @@ cd $PBS_O_WORKDIR
 cat $PBS_NODEFILE > ./pbsnodes
 PROCS1=$(cat $PBS_NODEFILE | wc -l)
 
-python automate.py TempTGV
+python automate.py SineVelProfile
