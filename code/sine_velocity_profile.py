@@ -212,7 +212,7 @@ class SinVelocityProfile(TurbulentFlowApp):
         """
         group.add_argument(
             "--perturb", action="store", type=float, dest="perturb",
-            default=0.01,
+            default=0.,
             help="Random perturbation of initial particles as a fraction "
             "of dx (setting it to zero disables it, the default)."
         )
@@ -239,6 +239,10 @@ class SinVelocityProfile(TurbulentFlowApp):
             help="Decay rate of the amplitude of the frequencies in the "
             "sinusoidal velocity profile. Therefore, the decay rate of the "
             "energy spectrum should be (decay_rate*2)."
+        )
+        group.add_argument(
+            "--make-plots", action="store_true", dest="make_plots",
+            default=False, help="Make plots."
         )
 
     def consume_user_options(self):
@@ -314,7 +318,13 @@ class SinVelocityProfile(TurbulentFlowApp):
             ]
         )
 
+        print('-'*40)
+        print(f'Dimension: {self.dim}')
+        print(f'Perturbation: {self.perturb}')
+        print(f"Number of frequencies: {self.n_freq}")
+        print(f"Decay rate: {self.decay_rate}")
         print(f"Created {pa.get_number_of_particles()} particles.")
+        print('-'*40)
 
         # Save un-perturbed velocity field for comparison
         x, y, z, u0, v0, w0 = get_flow_field(
@@ -365,7 +375,7 @@ class SinVelocityProfile(TurbulentFlowApp):
         """
         dim = self.dim
 
-        N = self.get_length_of_ek()
+        N = self.get_length_of_ek(dim=dim)
         k_i = np.arange(1, self.n_freq + 1, dtype=np.float64)
         if dim < 3:
             ek = k_i**(-2 * self.decay_rate) / 8
@@ -406,51 +416,54 @@ class SinVelocityProfile(TurbulentFlowApp):
         if len(self.output_files) == 0:
             return
 
-        # self.plot_ek_fit(
-        #     f_idx=0, plot_type='loglog', tol=1e-8,
-        #     exact=True, no_interp=True
-        # )
-        # self.plot_ek(
-        #     f_idx=0, plot_type='loglog', exact=True,
-        #     no_interp=True
-        # )
+        if not self.options.make_plots:
+            return
 
-        # method = self.options.i_method
-        # if method not in ['sph', 'shepard', 'order1']:
-        #     method = 'order1'
-        # espec_ob = EnergySpectrum.from_pysph_file(
-        #     fname=self.output_files[0],
-        #     dim=dim,
-        #     L=self.L,
-        #     i_nx=self.i_nx,
-        #     kernel=self.i_kernel_cls,
-        #     domain_manager=self.create_domain(),
-        #     method=method,
-        #     U0=1.
-        # )
-        # espec_ob.compute()
-        # fname = os.path.join(self.output_dir, 'energy_spectrum_log.png')
-        # espec_ob.plot_scalar_ek(
-        #     savefig=True,
-        #     fname=fname,
-        #     plot_type='log'
-        # )
-        # espec_ob.plot_scalar_ek(
-        #     savefig=True,
-        #     fname=fname.replace('_log', '_stem'),
-        #     plot_type='stem'
-        # )
-        # fname = os.path.join(self.output_dir, 'EK_spectrum_shiftted.png')
-        # espec_ob.plot_vector_ek(
-        #     savefig=True,
-        #     fname=fname,
-        #     shift_fft=True
-        # )
-        # espec_ob.plot_vector_ek(
-        #     savefig=True,
-        #     fname=fname.replace('_shiftted', ''),
-        #     shift_fft=False
-        # )
+        self.plot_ek_fit(
+            f_idx=0, plot_type='loglog', tol=1e-8,
+            exact=True, no_interp=True
+        )
+        self.plot_ek(
+            f_idx=0, plot_type='loglog', exact=True,
+            no_interp=True
+        )
+
+        method = self.options.i_method
+        if method not in ['sph', 'shepard', 'order1']:
+            method = 'order1'
+        espec_ob = EnergySpectrum.from_pysph_file(
+            fname=self.output_files[0],
+            dim=dim,
+            L=self.L,
+            i_nx=self.i_nx,
+            kernel=self.i_kernel_cls,
+            domain_manager=self.create_domain(),
+            method=method,
+            U0=1.
+        )
+        espec_ob.compute()
+        fname = os.path.join(self.output_dir, 'energy_spectrum_log.png')
+        espec_ob.plot_scalar_ek(
+            savefig=True,
+            fname=fname,
+            plot_type='log'
+        )
+        espec_ob.plot_scalar_ek(
+            savefig=True,
+            fname=fname.replace('_log', '_stem'),
+            plot_type='stem'
+        )
+        fname = os.path.join(self.output_dir, 'EK_spectrum_shiftted.png')
+        espec_ob.plot_vector_ek(
+            savefig=True,
+            fname=fname,
+            shift_fft=True
+        )
+        espec_ob.plot_vector_ek(
+            savefig=True,
+            fname=fname.replace('_shiftted', ''),
+            shift_fft=False
+        )
 
 
 if __name__ == '__main__':
