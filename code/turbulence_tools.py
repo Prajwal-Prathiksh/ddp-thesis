@@ -140,7 +140,7 @@ class TurbulentFlowApp(Application):
         )
         turb_options.add_argument(
             "--i-method", action="store", type=str, dest="i_method",
-            default='sph', choices=INTERPOLATING_METHOD_CHOICES,
+            default='shepard', choices=INTERPOLATING_METHOD_CHOICES,
             help="Interpolating method."
         )
         turb_options.add_argument(
