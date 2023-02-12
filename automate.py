@@ -21,7 +21,7 @@ from automan.utils import filter_cases, filter_by_name
 from code.automate_utils import styles, custom_compare_runs, plot_vline
 
 BACKEND = " --openmp"
-N_CORES, N_THREADS = 1, 2
+N_CORES, N_THREADS = 2, 4
 
 class SineVelProfilePlotters(Simulation):
     """
@@ -244,7 +244,7 @@ class SineVelProfile(PySPHProblem):
             perturb_opts = mdict(perturb=[0.01], hdx=[1.2, 3])
             dim_nx_opts = mdict(dim=[1], nx=[501, 1001], n_freq=[250])
             dim_nx_opts += mdict(dim=[2], nx=[501, 751], n_freq=[250])
-            dim_nx_opts += mdict(dim=[3], nx=[71, 101], n_freq=[35])
+            dim_nx_opts += mdict(dim=[3], nx=[51, 71], n_freq=[25])
 
             all_options = dprod(perturb_opts, dim_nx_opts)
 
@@ -285,8 +285,8 @@ class SineVelProfile(PySPHProblem):
         self.make_output_dir()
         tmp = dict(
             dim=[1,2,3],
-            nx=[501, 501, 71],
-            n_freq=[250, 250, 35],
+            nx=[501, 501, 51],
+            n_freq=[250, 250, 25],
         )
         for dim, nx, n_freq in zip(tmp['dim'], tmp['nx'], tmp['n_freq']):
             def _temp_plotter(fcases, title_suffix, labels):
