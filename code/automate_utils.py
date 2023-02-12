@@ -33,8 +33,12 @@ def styles(sims):
     styles : iterable
         The styles for the given simulations.
     """
-    ls = [dict(linestyle=x[0], color=x[1]) for x in
-          IT.product(["-", "--", "-.", ":"], 'kbgrycm')]
+    ls = [
+        dict(linestyle=x[0], color=x[1])
+        for x in IT.product(
+            ["-", "-.", "--", ":"], 'bgrycm'
+        )
+    ]
     return IT.cycle(ls)
 
 def custom_compare_runs(
@@ -66,7 +70,7 @@ def custom_compare_runs(
     if isinstance(ls, collections.abc.Iterable):
         ls = iter(ls)
     if exact is not None:
-        exact(sims[exact_sim_idx], **next(ls))
+        exact(sims[exact_sim_idx], linestyle='-', color='k')
     for s in sims:
         method(s, label=s.get_labels(labels), **next(ls))         
 
