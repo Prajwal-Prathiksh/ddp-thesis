@@ -168,6 +168,7 @@ class TurbulentFlowApp(Application):
         nx = self.options.nx
         i_nx = self.options.i_nx
         self.options.i_nx = i_nx if i_nx is not None else nx
+        self.i_nx = self.options.i_nx
 
         order = self.options.ek_norm_order
         if order == '-inf':
@@ -266,6 +267,20 @@ class TurbulentFlowApp(Application):
             )
         return PLOT_TYPES_MAPPER[plot_type]
 
+    # Properties
+    @property
+    def espec_result_files(self):
+        """
+        Return the list of files containing the energy spectrum data.
+        """
+        import glob
+        espec_files = glob.glob(
+            os.path.join(self.output_dir, "espec_result_*")
+        )
+        espec_files.sort()
+        return espec_files
+        
+    
     # Public methods
     def save_initial_vel_field(
         self, dim: int, u: np.ndarray, v: np.ndarray, w: np.ndarray,
@@ -409,18 +424,23 @@ class TurbulentFlowApp(Application):
             consistent_method = 'order1'
         return equations, consistent_method
 
-    def get_length_of_ek(self):
+    def get_length_of_ek(self, dim:int):
         """
         Calculate the length of the computed energy spectrum beforehand,
         by using the number of interpolation points and the number of
         dimensions.
+
+        Parameters
+        ----------
+        dim : int
+            Dimension of the flow.
 
         Returns
         -------
         N : int
             Length of the computed energy spectrum.
         """
-        N = int(1 + np.ceil(np.sqrt(self.dim * self.i_nx**2) / 2))
+        N = int(1 + np.ceil(np.sqrt(dim * self.i_nx**2) / 2))
         return N
 
     def get_exact_ek(self):
@@ -688,10 +708,12 @@ class TurbulentFlowApp(Application):
 
     def ek_post_processing(
         self, dim: int, L: float, U0: float = 1.0, f_idx: int = 0,
-        compute_without_interp: bool = False, func_config: str = 'compyle'
+        compute_without_interp: bool = False, func_config: str = 'compyle',
+        save_pysph_view_file: bool = False
     ):
         """
-        Post-processing of the energy spectrum.
+        Post-processing of the energy spectrum, and saves the energy
+        spectrum in a `.npz` file in the output directory.
 
         Parameters
         ----------
@@ -712,6 +734,9 @@ class TurbulentFlowApp(Application):
         func_config : str, optional
             Configuration of the function. Default is 'compyle'.
             Options: python, numba, 'compyle'
+        save_pysph_view_file : bool, optional
+            If True, saves the energy spectrum as a PySPH viewable file.
+            Default is False.
         """
         if len(self.output_files) == 0:
             return
@@ -724,7 +749,7 @@ class TurbulentFlowApp(Application):
 
         # Calculate the wavenumber corresponding to the interolating radius
         L = espec_ob.L
-        box_radius = self.get_length_of_ek()
+        box_radius = self.get_length_of_ek(dim=dim)
         dx = espec_ob.dx
         radius_scale = self.options.i_radius_scale
         interp_wn = EnergySpectrum.calculate_wavenumber_of_dx(
@@ -756,7 +781,8 @@ class TurbulentFlowApp(Application):
             l2_error = None
 
         # Save npz file
-        fname = os.path.join(self.output_dir, f"espec_result_{f_idx}.npz")
+        f_idx_str = self.output_files[f_idx].split("_")[-1].split(".")[0]
+        fname = os.path.join(self.output_dir, f"espec_result_{f_idx_str}.npz")
         np.savez(
             fname,
             k=espec_ob.k,
@@ -781,9 +807,10 @@ class TurbulentFlowApp(Application):
         logger.info("Energy spectrum results saved to: %s", fname)
 
         # Save PySPH viewable file
-        self.save_energy_spectrum_as_pysph_view_file(
-            fname=self.output_files[f_idx], dim=dim, espec_ob=espec_ob
-        )
+        if save_pysph_view_file:
+            self.save_energy_spectrum_as_pysph_view_file(
+                fname=self.output_files[f_idx], dim=dim, espec_ob=espec_ob
+            )
 
     def plot_ek(
         self, f_idx: int, plot_type: str = "loglog", exact: bool = True,
@@ -807,8 +834,8 @@ class TurbulentFlowApp(Application):
             If True, plots the energy spectrum computed without interpolating
             the velocity field. Default is True.
         """
-        fname = os.path.join(self.output_dir, f"espec_result_{f_idx}.npz")
-        data = np.load(fname)
+        fname = self.espec_result_files[f_idx]
+        data = np.load(fname, allow_pickle=True)
         k = data['k']
         t = data['t']
         ek = data['ek']
@@ -820,9 +847,9 @@ class TurbulentFlowApp(Application):
 
         plt.figure()
         plot_func(k, ek, label="Computed")
-        if exact and ek_exact is not None:
+        if exact and np.size(ek_exact) > 1:
             plot_func(k, ek_exact, 'k-', label="Exact")
-        if no_interp and ek_no_interp is not None:
+        if no_interp and np.size(ek_no_interp) > 1:
             plot_func(k, ek_no_interp, 'r--', label="No interpolation")
 
         plt.xlabel(plotter['xlabel'])
@@ -830,7 +857,8 @@ class TurbulentFlowApp(Application):
         plt.legend()
         plt.title(f"Energy spectrum at t = {t:.2f}")
 
-        fname = f"espec_{f_idx}_{plot_type}.png"
+        f_idx_str = fname.split("_")[-1].split(".")[0]
+        fname = f"espec_{f_idx_str}_{plot_type}.png"
         fname = os.path.join(self.output_dir, fname)
         plt.savefig(fname, dpi=300, bbox_inches='tight')
         plt.close()
@@ -862,8 +890,8 @@ class TurbulentFlowApp(Application):
             If True, plots the energy spectrum computed without interpolating
             the velocity field. Default is True.
         """
-        fname = os.path.join(self.output_dir, f"espec_result_{f_idx}.npz")
-        data = np.load(fname)
+        fname = self.espec_result_files[f_idx]
+        data = np.load(fname, allow_pickle=True)
         k = data['k']
         t = float(data['t'])
         ek = data['ek']
@@ -898,7 +926,7 @@ class TurbulentFlowApp(Application):
             plot_func(k_fit, ek_expected, 'r--', label=label)
 
         ek_no_interp = data['ek_no_interp']
-        if no_interp and ek_no_interp is not None:
+        if no_interp and np.size(ek_no_interp) > 1:
             k_fit, ek_fit, fit_params = self.get_ek_fit(
                 k=k, ek=ek_no_interp, tol=tol
             )
@@ -915,7 +943,8 @@ class TurbulentFlowApp(Application):
         plt.legend()
         plt.title(f"Energy spectrum at t = {t:.2f}")
 
-        fname = f"espec_{f_idx}_{plot_type}_fit.png"
+        f_idx_str = fname.split("_")[-1].split(".")[0]
+        fname = f"espec_{f_idx_str}_{plot_type}_fit.png"
         fname = os.path.join(self.output_dir, fname)
         plt.savefig(fname, dpi=300, bbox_inches='tight')
         plt.close()
