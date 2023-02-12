@@ -6,6 +6,7 @@ Author: K T Prajwal Prathiksh
 """
 # Library imports.
 import os
+import time
 import itertools as IT
 import numpy as np
 import matplotlib.pyplot as plt
@@ -21,7 +22,7 @@ from automan.utils import filter_cases, filter_by_name
 from code.automate_utils import styles, custom_compare_runs, plot_vline
 
 BACKEND = " --openmp "
-N_CORES, N_THREADS = 3, 6
+N_CORES, N_THREADS = 4, 16
 
 class SineVelProfilePlotters(Simulation):
     """
@@ -382,10 +383,11 @@ class TGVExternalForcingColagrossi2021(PySPHProblem):
         """
         Setup the problem.
         """
-        base_cmd = "python code/taylor_green.py --ext-forcing " + BACKEND
+        base_cmd = "python code/taylor_green.py " + BACKEND
         base_cmd += "--scheme=tsph --method sd --scm wcsph --pst-freq 10 "
-        base_cmd += "--max-steps=50"
-        opts = mdict(re=[1_000, 10_000, 100_000], nx=[20])
+        base_cmd += " --tf=6.0 --ext-forcing "
+        base_cmd += " --max-steps 200 "
+        opts = mdict(re=[1_000, 10_000, 100_000], nx=[20, 40])
     
         # Setup cases
         self.cases = [
