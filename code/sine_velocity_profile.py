@@ -221,7 +221,7 @@ class SinVelocityProfile(TurbulentFlowApp):
             help="Number of points along x direction."
         )
         group.add_argument(
-            "--hdx", action="store", type=float, dest="hdx", default=3.0,
+            "--hdx", action="store", type=float, dest="hdx", default=1.2,
             help="Ratio h/dx."
         )
         group.add_argument(
