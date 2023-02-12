@@ -17,14 +17,7 @@ from automan.api import mdict, dprod, opts2path
 from automan.utils import filter_cases, filter_by_name
 
 # Local imports.
-from code.automate_utils import styles, custom_compare_runs
-
-#TODO: Add error checking for SimPlotter
-#TODO: Add uniform_naming for Simplotter methods
-#TODO: Run for multiple nx, perturb, i_nx
-#TODO: Add a method to dump cases generated in a json? and keep appending it when new cases are generated
-#TODO: Add a GUI for filtering and plotting comparisons plots
-#TODO: Refacto code to make the above possible
+from automate_utils import styles, custom_compare_runs
 
 BACKEND = " --openmp"
 N_CORES, N_THREADS = 1, 2
@@ -38,21 +31,21 @@ class SineVelProfilePlotters(Simulation):
         """
         Plot the energy spectrum in loglog scale.
         """
-        data = np.load(self.input_path('espec_result_0.npz'))
+        data = np.load(self.input_path('espec_result_00000.npz'))
         plt.loglog(data['k'], data['ek'], **kw)
 
     def ek_plot(self, **kw):
         """
         Plot the energy spectrum.
         """
-        data = np.load(self.input_path('espec_result_0.npz'))
+        data = np.load(self.input_path('espec_result_00000.npz'))
         plt.plot(data['k'], data['ek'], **kw)
     
     def ek_loglog_no_interp(self, **kw):
         """
         Plot the energy spectrum calculated without interpolation in loglog scale.
         """
-        data = np.load(self.input_path('espec_result_0.npz'))
+        data = np.load(self.input_path('espec_result_00000.npz'))
         kw.pop('label', None)
         plt.loglog(
             data['k'], data['ek_no_interp'],
@@ -63,21 +56,21 @@ class SineVelProfilePlotters(Simulation):
         """
         Plot the exact energy spectrum in loglog scale.
         """
-        data = np.load(self.input_path('espec_result_0.npz'))
+        data = np.load(self.input_path('espec_result_00000.npz'))
         plt.loglog(data['k'], data['ek_exact'], **kw)    
     
     def ek_plot_exact(self, **kw):
         """
         Plot the exact energy spectrum.
         """
-        data = np.load(self.input_path('espec_result_0.npz'))
+        data = np.load(self.input_path('espec_result_00000.npz'))
         plt.plot(data['k'], data['ek_exact'], **kw)
     
     def l2_error(self, **kw):
         """
         Plot the L_2 error (wrt exact solution) in loglog scale.
         """
-        data = np.load(self.input_path('espec_result_0.npz'))
+        data = np.load(self.input_path('espec_result_00000.npz'))
         plt.loglog(data['k'], data['l2_error'], **kw)
 
     def l2_error_no_interp(self, **kw):
@@ -85,7 +78,7 @@ class SineVelProfilePlotters(Simulation):
         Plot the L_2 error of the solution calculated without interpolation vs
         the exact solution in loglog scale.
         """
-        data = np.load(self.input_path('espec_result_0.npz'))
+        data = np.load(self.input_path('espec_result_00000.npz'))
         l2_error_expected = data['ek_exact'] - data['ek_no_interp']
         l2_error_expected = np.sqrt(l2_error_expected**2)
 
@@ -258,10 +251,10 @@ class SineVelProfile(PySPHProblem):
             return all_options
 
         def get_example_opts():
-            perturb_opts = mdict(perturb=[0, 1e-2])
+            perturb_opts = mdict(perturb=[0])
             dim_nx_opts = mdict(dim=[1], nx=[5001, 10001, 20001])
-            dim_nx_opts += mdict(dim=[2], nx=[251, 501])
-            dim_nx_opts += mdict(dim=[3], nx=[101])
+            # dim_nx_opts += mdict(dim=[2], nx=[251, 501])
+            # dim_nx_opts += mdict(dim=[3], nx=[101])
 
             all_options = dprod(perturb_opts, dim_nx_opts)
 
@@ -272,10 +265,8 @@ class SineVelProfile(PySPHProblem):
             KERNEL_CHOICES = [
                 'WendlandQuinticC4'
             ]
-            INTERPOLATING_METHOD_CHOICES = [
-                'sph', 'shepard', 'order1', 'order1BL', 'order1MC'
-            ]
-            INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1',]
+            # INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1', 'order1BL', 'order1MC']
+            # INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1',]
             # INTERPOLATING_METHOD_CHOICES = ['order1', 'order1BL', 'order1MC']
             INTERPOLATING_METHOD_CHOICES = ['shepard']
             
@@ -311,6 +302,8 @@ class SineVelProfile(PySPHProblem):
         for dim, nx in zip(tmp['dim'], tmp['nx']):
             perturb=1e-2
             fcases = filter_cases(self.cases, dim=dim, nx=nx)#, perturb=perturb)
+            if len(fcases) == 0:
+                continue
             title_suffix = f"(dim={dim}, nx={nx})"#, perturb={perturb})"
             labels = ['i_method', 'perturb']
             self.plot_energy_spectrum(
@@ -326,6 +319,8 @@ class SineVelProfile(PySPHProblem):
 
         for dim in tmp['dim']:
             fcases = filter_cases(self.cases, dim=dim, perturb=0)
+            if len(fcases) == 0:
+                continue
             title_suffix = " (dim={})".format(dim)
             labels = ['i_method', 'nx']
             self.plot_energy_spectrum(
