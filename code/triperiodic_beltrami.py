@@ -185,7 +185,7 @@ class TriperiodicBeltrami(TurbulentFlowApp):
 
         # create the arrays
         fluid = get_particle_array(
-            name='fluid', x=x, y=y, m=m, h=h, u=u0, v=v0, rho=rho, rhoc=rhoc, 
+            name='fluid', x=x, y=y, z=z, m=m, h=h, u=u0, v=v0, rho=rho, rhoc=rhoc, 
             p=p0, color=color0, V0=V0
         )
         self.scheme.setup_properties([fluid])
@@ -281,6 +281,7 @@ class TriperiodicBeltrami(TurbulentFlowApp):
         plt.semilogy(t, decay, label="computed")
         plt.xlabel('t')
         plt.ylabel('max velocity')
+        plt.title(f'Re={self.options.re}, U={self.U}')
         plt.legend()
         fig = os.path.join(self.output_dir, "decay.png")
         plt.savefig(fig, dpi=300)
@@ -290,6 +291,7 @@ class TriperiodicBeltrami(TurbulentFlowApp):
         plt.plot(t, ke, label="computed")
         plt.xlabel('t')
         plt.ylabel('kinetic energy')
+        plt.title(f'Re={self.options.re}, U={self.U}')
         plt.legend()
         fig = os.path.join(self.output_dir, "ke.png")
         plt.savefig(fig, dpi=300)
@@ -299,6 +301,7 @@ class TriperiodicBeltrami(TurbulentFlowApp):
         plt.grid()
         plt.xlabel('t')
         plt.ylabel(r'Total linear mom')
+        plt.title(f'Re={self.options.re}, U={self.U}')
         fig = os.path.join(self.output_dir, "mom.png")
         plt.savefig(fig, dpi=300)
 
@@ -316,4 +319,4 @@ if __name__ == '__main__':
         dim=2, L=app.L, U0=U, f_idx=-1,
         compute_without_interp=True
     )
-    app.plot_ek(f_idx=-1, k_n=4)
+    app.plot_ek(f_idx=-1)

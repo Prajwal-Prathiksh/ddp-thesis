@@ -344,6 +344,7 @@ class TaylorGreen(TurbulentFlowApp):
         plt.semilogy(t, decay, label="computed")
         plt.xlabel('t')
         plt.ylabel('max velocity')
+        plt.title(f'Re={self.options.re}, U={self.U}')
         plt.legend()
         fig = os.path.join(self.output_dir, "decay.png")
         plt.savefig(fig, dpi=300)
@@ -355,6 +356,7 @@ class TaylorGreen(TurbulentFlowApp):
         plt.plot(t, ke, label="computed")
         plt.xlabel('t')
         plt.ylabel('kinetic energy')
+        plt.title(f'Re={self.options.re}, U={self.U}')
         plt.legend()
         fig = os.path.join(self.output_dir, "ke.png")
         plt.savefig(fig, dpi=300)
@@ -365,6 +367,7 @@ class TaylorGreen(TurbulentFlowApp):
             plt.grid()
             plt.xlabel('t')
             plt.ylabel(r'$L_\infty$ error')
+            plt.title(f'Re={self.options.re}, U={self.U}')
             fig = os.path.join(self.output_dir, "linf_error.png")
             plt.savefig(fig, dpi=300)
 
@@ -373,6 +376,7 @@ class TaylorGreen(TurbulentFlowApp):
             plt.grid()
             plt.xlabel('t')
             plt.ylabel(r'$L_1$ error')
+            plt.title(f'Re={self.options.re}, U={self.U}')
             fig = os.path.join(self.output_dir, "l1_error.png")
             plt.savefig(fig, dpi=300)
 
@@ -381,6 +385,7 @@ class TaylorGreen(TurbulentFlowApp):
             plt.grid()
             plt.xlabel('t')
             plt.ylabel(r'$L_1$ error for $p$')
+            plt.title(f'Re={self.options.re}, U={self.U}')
             fig = os.path.join(self.output_dir, "p_l1_error.png")
             plt.savefig(fig, dpi=300)
 
@@ -389,6 +394,7 @@ class TaylorGreen(TurbulentFlowApp):
         plt.grid()
         plt.xlabel('t')
         plt.ylabel(r'Total linear mom')
+        plt.title(f'Re={self.options.re}, U={self.U}')
         fig = os.path.join(self.output_dir, "mom.png")
         plt.savefig(fig, dpi=300)
 
@@ -397,6 +403,7 @@ class TaylorGreen(TurbulentFlowApp):
         plt.grid()
         plt.xlabel('t')
         plt.ylabel(r'Total angular mom')
+        plt.title(f'Re={self.options.re}, U={self.U}')
         fig = os.path.join(self.output_dir, "ang_mom.png")
         plt.savefig(fig, dpi=300)
 
