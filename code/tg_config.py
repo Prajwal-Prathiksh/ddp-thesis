@@ -1,6 +1,6 @@
 # configurations for taylor green problem
 ###
-from numpy import linspace, pi, sin, cos, exp
+from numpy import linspace, pi, sin, cos, exp, sqrt
 
 from pysph.sph.equation import Group, Equation
 from pysph.sph.scheme import TVFScheme, WCSPHScheme, SchemeChooser
@@ -116,7 +116,7 @@ def configure_scheme(app, p0, gx=0.0):
     elif app.options.scheme == 'ok2022':
         scheme.configure(nu=app.nu, dx=app.dx, h0=h0)
 
-    times = linspace(0, app.tf, 50)
+    times = linspace(0, app.tf, 80)
     scheme.configure_solver(kernel=kernel, tf=app.tf, dt=app.dt,
                             output_at_times=times, pfreq=100000000)
 
@@ -486,9 +486,18 @@ def ramp(t_star):
     else:
         return 0.
 
-def ext_force(x, y, t, L=1., U=1.):
+def ext_force_colagrossi2021(x, y, t, L=1., U=1.):
     """
     External forcing term for the Taylor-Green vortex problem.
+
+    References
+    ----------
+        .. [Colagrossi2021] A. Colagrossi, “Smoothed particle hydrodynamics 
+        method from a large eddy simulation perspective . Generalization to a 
+        quasi-Lagrangian model Smoothed particle hydrodynamics method from a 
+        large eddy simulation perspective . Generalization to a 
+        quasi-Lagrangian model,” vol. 015102, no. December 2020, 2021,
+        doi: 10.1063/5.0034568.
 
     Parameters
     ----------
@@ -523,6 +532,25 @@ def ext_force(x, y, t, L=1., U=1.):
     else:
         return 0.*x_star, 0.*y_star
 
+def ext_force_antuono2020(x, y, z, t, nu, L=1., U=1.):
+    piby6, fivepiby6 = pi/6, 5*pi/6
+    k = 2*pi/L
+    kx, ky, kz = k*x, k*y, k*z
+    t_star = t*U/L
+    A = 1.25e-3 * sqrt(32./27.)
+    A = A*(-3.*nu*k**2)
+
+    if ramp(t_star) > 0.:
+        fx = sin(kx - fivepiby6)*cos(ky - piby6)*sin(kz) -\
+            cos(kz - fivepiby6)*sin(kx - piby6)*sin(ky)
+        fy = sin(ky - fivepiby6)*cos(kz - piby6)*sin(kx) -\
+            cos(kx - fivepiby6)*sin(ky - piby6)*sin(kz)
+        fz = sin(kz - fivepiby6)*cos(kx - piby6)*sin(ky) -\
+            cos(ky - fivepiby6)*sin(kz - piby6)*sin(kx)
+        return A*ramp(t_star)*fx, A*ramp(t_star)*fy, A*ramp(t_star)*fz
+    else:
+        return 0.*x, 0.*y, 0.*z
+
 def prestep(app, solver):
     """
     Pre-step function for the Taylor-Green vortex problem.
@@ -532,7 +560,7 @@ def prestep(app, solver):
         x, y = pa.x, pa.y
         L, U = app.L, app.U
         dt, t = solver.dt, solver.t
-        fx, fy = ext_force(x, y, t, L, U)
+        fx, fy = ext_force_colagrossi2021(x, y, t, L, U)
         pa.u[:] += fx*dt
         pa.v[:] += fy*dt
         
