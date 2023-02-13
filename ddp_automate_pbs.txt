@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N TGVExternalForcingColagrossi2021_nx_200
+#PBS -N TBExternalForcingColagrossi2021
 #PBS -q small
 #PBS -l select=1:ncpus=8
 #PBS -j oe
