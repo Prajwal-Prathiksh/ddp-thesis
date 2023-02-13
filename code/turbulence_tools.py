@@ -517,6 +517,14 @@ class TurbulentFlowApp(Application):
         cond = np.logical_and(cond_len, cond_tol)
         k_cal, ek_cal = np.log10(k[cond]), np.log10(ek[cond])
 
+        if len(k_cal) < 2:
+            import warnings
+            warnings.warn(
+                "Not enough data points for fitting. "
+                "Fitting parameters are set to None."
+            )
+            return None, None, None
+
         slope, intercept, r_value, p_value, std_err = \
             scipy.stats.linregress(k_cal, ek_cal)
 
