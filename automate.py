@@ -427,7 +427,7 @@ class TBExternalForcingColagrossi2021(PySPHProblem):
         base_cmd += "--scheme=tsph --method sd --scm wcsph --pst-freq 10 "
 
         opts = mdict(
-            nx=[100], tf=[3.],
+            nx=[40], tf=[3.],
             re=[1_000_000]
         )
 

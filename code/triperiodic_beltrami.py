@@ -135,7 +135,7 @@ class TriperiodicBeltrami(TurbulentFlowApp):
                 hdx=self.hdx, nu=self.nu, h0=h0, gx=0.0,
                 periodic=self.no_periodic
             )
-        times = np.linspace(0, self.tf, 80)
+        times = np.linspace(0, self.tf, 100)
         self.scheme.configure_solver(
             kernel=kernel, tf=self.tf, dt=self.dt, output_at_times=times, pfreq=pfreq
         )
