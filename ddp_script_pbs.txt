@@ -10,4 +10,4 @@ cd $PBS_O_WORKDIR
 cat $PBS_NODEFILE > ./pbsnodes
 PROCS1=$(cat $PBS_NODEFILE | wc -l)
 
-python code/triperiodic_beltrami.py --scheme=tsph --method sd --scm wcsph --pst-freq 10 --nx 100 --tf 3.0 --re 1000000
+python code/triperiodic_beltrami.py --scheme=tsph --method sd --scm wcsph --pst-freq 10 --nx 100 --tf 3.0 --re 1000000 -d outputs/triperiodic_beltrami_re_1000000
