@@ -352,7 +352,7 @@ class TaylorGreen(TurbulentFlowApp):
         plt.grid()
         if not self.ext_forcing:
             plt.semilogy(t, ke_ex, label="exact")
-        plt.semilogy(t, ke, label="computed")
+        plt.plot(t, ke, label="computed")
         plt.xlabel('t')
         plt.ylabel('kinetic energy')
         plt.legend()
