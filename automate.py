@@ -388,10 +388,8 @@ class TGVExternalForcingColagrossi2021(PySPHProblem):
         base_cmd += " --ext-forcing "
 
     
+        # opts = mdict(nx=[100], tf=[6.], re=[10_000, 50_000])
         opts = mdict(
-            nx=[100], tf=[6.], re=[1000, 10_000, 50_000]
-        )
-        opts += mdict(
             nx=[200], tf=[3.],
             re=[1_000, 10_000, 50_000, 100_000, 1_000_000]
         )
