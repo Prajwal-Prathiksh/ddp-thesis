@@ -463,6 +463,20 @@ def create_tools(app):
     return tools
 
 def ramp(t_star):
+    """
+    Ramp function for the external forcing term in the
+    Taylor-Green vortex problem.
+
+    Parameters
+    ----------
+    t_star : float
+        Dimensionless time.
+
+    Returns
+    -------
+    float
+        Value of the ramp function at time t_star.
+    """
     if t_star>=0.0 and t_star<0.1:
         return t_star*10.
     elif t_star>=0.1 and t_star<0.9:
@@ -473,18 +487,46 @@ def ramp(t_star):
         return 0.
 
 def ext_force(x, y, t, L=1., U=1.):
+    """
+    External forcing term for the Taylor-Green vortex problem.
+
+    Parameters
+    ----------
+    x : array_like
+        x-coordinates of the particles.
+    y : array_like
+        y-coordinates of the particles.
+    t : float
+        Time.
+    L : float, optional
+        Length of the domain. Default is 1.
+    U : float, optional
+        Maximum velocity of the flow. Default is 1.
+    
+    Returns
+    -------
+    fx : array_like
+        x-component of the external force.
+    fy : array_like
+        y-component of the external force.
+    """
     A = 1.3*U*U/L
     x_star = x/L
     y_star = y/L
     t_star = t*U/L
     eightpi = 8.*pi
-
-    fx = sin(eightpi*x_star)*cos(eightpi*y_star)
-    fy = -cos(eightpi*x_star)*sin(eightpi*y_star)
-
-    return A*ramp(t_star)*fx, A*ramp(t_star)*fy
+    
+    if ramp(t_star) > 0.:
+        fx = sin(eightpi*x_star)*cos(eightpi*y_star)
+        fy = -cos(eightpi*x_star)*sin(eightpi*y_star)
+        return A*ramp(t_star)*fx, A*ramp(t_star)*fy
+    else:
+        return 0.*x_star, 0.*y_star
 
 def prestep(app, solver):
+    """
+    Pre-step function for the Taylor-Green vortex problem.
+    """
     if app.options.ext_forcing:
         pa = app.particles[0]
         x, y = pa.x, pa.y
