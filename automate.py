@@ -412,12 +412,49 @@ class TGVExternalForcingColagrossi2021(PySPHProblem):
         """
         self.make_output_dir()
 
+class TBExternalForcingColagrossi2021(PySPHProblem):
+    def get_name(self):
+        """
+        Problem name.
+        """
+        return "tb_external_forcing_colagrossi2021"
+    
+    def setup(self):
+        """
+        Setup the problem.
+        """
+        base_cmd = "python code/triperiodic_beltrami.py " + BACKEND
+        base_cmd += "--scheme=tsph --method sd --scm wcsph --pst-freq 10 "
+
+        opts = mdict(
+            nx=[100], tf=[3.],
+            re=[1_000_000]
+        )
+
+        # Setup cases
+        self.cases = [
+            Simulation(
+                root=self.input_path(opts2path(kw)),
+                base_command=base_cmd,
+                job_info=dict(n_core=N_CORES, n_thread=N_THREADS),
+                **kw
+            )
+            for kw in opts
+        ]
+
+    def run(self):
+        """
+        Run the problem.
+        """
+        self.make_output_dir()
+
 
 if __name__ == "__main__":
     PROBLEMS = [
         SineVelProfile,
         TGVBasicSchemeComparison,
         TGVExternalForcingColagrossi2021,
+        TBExternalForcingColagrossi2021
     ]
     automator = Automator(
         simulation_dir='outputs',
