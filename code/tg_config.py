@@ -501,10 +501,8 @@ def ext_force_colagrossi2021(x, y, t, L=1., U=1.):
 
     Parameters
     ----------
-    x : array_like
-        x-coordinates of the particles.
-    y : array_like
-        y-coordinates of the particles.
+    x, y : array_like
+        Coordinates.
     t : float
         Time.
     L : float, optional
@@ -514,10 +512,8 @@ def ext_force_colagrossi2021(x, y, t, L=1., U=1.):
     
     Returns
     -------
-    fx : array_like
-        x-component of the external force.
-    fy : array_like
-        y-component of the external force.
+    fx, fy : array_like
+        External forcing term in the x- and y-directions.
     """
     A = 1.3*U*U/L
     x_star = x/L
@@ -533,6 +529,40 @@ def ext_force_colagrossi2021(x, y, t, L=1., U=1.):
         return 0.*x_star, 0.*y_star
 
 def ext_force_antuono2020(x, y, z, t, nu, L=1., U=1.):
+    """
+    External forcing term for the Triperiodic Beltrami flow problem.
+
+    References
+    ----------
+        .. [Antuono2020] M. Antuono, “Tri-periodic fully three-dimensional 
+        analytic solutions for the Navier-Stokes equations,” J. Fluid Mech., 
+        vol. 890, 2020, doi: 10.1017/jfm.2020.126.
+
+        .. [Colagrossi2021] A. Colagrossi, “Smoothed particle hydrodynamics 
+        method from a large eddy simulation perspective . Generalization to a 
+        quasi-Lagrangian model Smoothed particle hydrodynamics method from a 
+        large eddy simulation perspective . Generalization to a 
+        quasi-Lagrangian model,” vol. 015102, no. December 2020, 2021,
+        doi: 10.1063/5.0034568.
+
+    Parameters
+    ----------
+    x, y, z : array_like
+        Coordinates.
+    t : float
+        Time.
+    nu : float
+        Kinematic viscosity.
+    L : float, optional
+        Length of the domain. Default is 1.
+    U : float, optional
+        Maximum velocity of the flow. Default is 1.
+    
+    Returns
+    -------
+    fx, fy, fz : array_like
+        External forcing term in the x-, y-, and z-directions.
+    """
     piby6, fivepiby6 = pi/6, 5*pi/6
     k = 2*pi/L
     kx, ky, kz = k*x, k*y, k*z
