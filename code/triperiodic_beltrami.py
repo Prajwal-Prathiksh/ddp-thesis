@@ -121,6 +121,10 @@ class TriperiodicBeltrami(TurbulentFlowApp):
         pa.v[:] += fy * dt
         pa.w[:] += fz * dt
     
+    def post_step(self, solver):
+        if self.options.scheme == 'tsph' or self.options.scheme == 'tisph':
+            self.scheme.scheme.post_step(self.particles, self.domain)
+    
     def configure_scheme(self):
         h0 = self.hdx * self.dx
         pfreq = 100000000
@@ -313,10 +317,10 @@ class TriperiodicBeltrami(TurbulentFlowApp):
 
 if __name__ == '__main__':
     app = TriperiodicBeltrami()
-    # app.run()
+    app.run()
     app.post_process(app.info_filename)
     app.ek_post_processing(
-        dim=2, L=app.L, U0=U, f_idx=-1,
+        dim=3, L=app.L, U0=U, f_idx=-1,
         compute_without_interp=True
     )
     app.plot_ek(f_idx=-1)
