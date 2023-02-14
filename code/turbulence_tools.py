@@ -894,7 +894,9 @@ class TurbulentFlowApp(Application):
 
     # Plotting methods    
     def plot_ek(
-        self, f_idx: int, plot_type: str = "loglog", exact: bool = False,wo_interp_initial: bool = False, ylims: tuple = (1e-10, 1)
+        self, f_idx: int, plot_type: str = "loglog", lfit: bool = True,
+        exact: bool = False, wo_interp_initial: bool = False,
+        ylims: tuple = (1e-10, 1), fname_suffix: str = ""
     ):
         """
         Plot the computed energy spectrum stored in the *.npz file.
@@ -908,6 +910,10 @@ class TurbulentFlowApp(Application):
             Plot type.
             Default is loglog.
             Valid options: loglog, semilogx, semilogy, plot, stem
+        lfit : bool, optional
+            If True, plots the fit of the energy spectrum.
+            Default is True.
+        fit : bool, optional
         exact : bool, optional
             If True, plots the exact expected energy spectrum.
             Default is False.
@@ -918,6 +924,8 @@ class TurbulentFlowApp(Application):
         ylims : tuple, optional
             y-axis limits. If None, the limits are automatically determined.
             Default is (1e-10, 1).
+        fname_suffix : str, optional
+            Suffix to be added to the file name.
         """
         fname = self._get_ek_fname(f_idx=f_idx)
         if fname not in self.ek_files:
@@ -928,6 +936,12 @@ class TurbulentFlowApp(Application):
         data = np.load(fname, allow_pickle=True)
         t = float(data['t'])
         k, ek = data['k'], data['ek']
+
+        k_fit, ek_fit, fit_params = None, None, None
+        if lfit and np.size(data['k_fit']) > 1:
+            k_fit, ek_fit = data['k_fit'], data['ek_fit']
+            fit_params = data['fit_params']
+            fit_params = dict(enumerate(fit_params.flatten()))[0]
         
         ek_exact = data['ek_exact']
         if not exact or np.size(ek_exact) == 1:
@@ -942,12 +956,22 @@ class TurbulentFlowApp(Application):
 
         plt.figure()
         plot_func(k, ek, label="Computed")
+
+        if k_fit is not None:
+            slope, r_value = fit_params['slope'], fit_params['r_value']
+            label = r"Fit: $(E(k) \propto k^{" + f"{slope:.2f}" + r"}) (R^2 "
+            label += f"={r_value:.2f}" + r")$"
+            plot_func(k_fit, ek_fit, 'r-.', label=label)
+
         if ek_exact is not None:
-            plot_func(k, ek_exact, 'k-', label="Exact")
+            slope = fit_params['exact_slope']
+            label = r"Exact: $(E(k) \propto k^{" + f"{slope:.2f}" + r"})$"
+            plot_func(k, ek_exact, 'k-', label=label)
+
         if ek_initial_data is not None:
             plot_func(
-                ek_initial_data['k'], ek_initial_data['ek'], 'r--',
-                label="Without interpolation (t=0)"
+                ek_initial_data['k'], ek_initial_data['ek'], 'g--',
+                label=r"Without interpolation $(t=0)$"
             )
         
         plt.xlabel(plotter['xlabel'])
@@ -969,112 +993,11 @@ class TurbulentFlowApp(Application):
         plot_vline(k, 8)
 
         f_idx_str = fname.split("_")[-1].split(".")[0]
-        fname = f"ek_{f_idx_str}_{plot_type}.png"
+        fname = f"ek_{f_idx_str}_{plot_type}{fname_suffix}.png"
         fname = os.path.join(self.output_dir, fname)
         plt.savefig(fname, dpi=300, bbox_inches='tight')
         plt.close()
         print(f"Energy spectrum plot saved to: {fname}.")
-    
-    def plot_ek_fit(
-        self, f_idx: int, plot_type: str = "loglog", tol: float = 1e-10,
-        exact: bool = True, no_interp: bool = True, k_n: int = 2
-    ):
-        """
-        Plot the computed energy spectrum stored in the *.npz file, along with
-        the fit.
-
-        Parameters
-        ----------
-        f_idx : int
-            Index of the output file from which the energy spectrum was
-            computed.
-        plot_type : str, optional
-            Plot type.
-            Default is "loglog".
-            Valid options: loglog, semilogx, semilogy, plot, stem
-        tol : float, optional
-            Tolerance for the fit. Default is 1e-10.
-        exact : bool, optional
-            If True, plots the exact expected energy spectrum. Default is True.
-        no_interp : bool, optional
-            If True, plots the energy spectrum computed without interpolating
-            the velocity field. Default is True.
-        k_n : int, optional
-            The data used for fitting is --> k[1:N//k_n], where N = len(k).
-            Default: 2
-        """
-        fname = self.ek_files[f_idx]
-        data = np.load(fname, allow_pickle=True)
-        k = data['k']
-        t = float(data['t'])
-        ek = data['ek']
-        # interp_wn = int(data['interp_wn'])
-
-        # Fit the energy spectrum
-        k_fit, ek_fit, fit_params = self.get_ek_fit(
-            k=k, ek=ek, tol=tol, k_n=k_n
-        )
-        fit_slope = fit_params['slope']
-        fit_r_value = fit_params['r_value']
-        fit_r_value = fit_r_value**2
-        fit_slope_error = fit_params['slope_error']
-
-        plt.figure()
-        plotter = self._get_ek_plot_types_mapper(plot_type=plot_type)
-        plot_func = plotter['func']
-        plot_func(k, ek, marker='.', label="Computed")
-        # plt.vlines(
-        #     interp_wn, ek.min(), ek.max(), linestyles='dotted',
-        #     colors='k',
-        #     label=f"Interpolation kernel width = {interp_wn:.2f}"
-        # )
-
-        fit_label = fr"Fit: (E(k) ~ k^{fit_slope:.2f}) ($R^2$ = " \
-            f"{fit_r_value:.2f})"
-        plot_func(k_fit, ek_fit, 'k--', label=fit_label)
-
-        expected_slope = self.get_expected_ek_slope()
-        if exact and expected_slope is not None:
-            label = f"Exact: (E(k) ~ k^{expected_slope:.2f})" \
-                f"(error = {fit_slope_error:.2f})"
-            ek_expected = k_fit**expected_slope
-            plot_func(k_fit, ek_expected, 'r--', label=label)
-
-        ek_no_interp = data['ek_no_interp']
-        if no_interp and np.size(ek_no_interp) > 1:
-            k_fit, ek_fit, fit_params = self.get_ek_fit(
-                k=k, ek=ek_no_interp, tol=tol, k_n=k_n
-            )
-            fit_slope = fit_params['slope']
-            fit_r_value = fit_params['r_value']
-            fit_r_value = fit_r_value**2
-
-            label = fr"No interp: (E(k) ~ k^{fit_slope:.2f}) ($R^2$ = " \
-                f"{fit_r_value:.2f})"
-            plot_func(k_fit, ek_fit, 'g--', label=label)
-
-        plt.xlabel(plotter['xlabel'])
-        plt.ylabel(plotter['ylabel'])
-        plt.legend()
-        plt.title(f"Energy spectrum at t = {t:.2f}")
-
-        # Limit y-axis to 1e-10 to y-axis max.
-        # ymin, ymax = plt.ylim()
-        # ymin = max(ymin, 1e-10)
-        # plt.ylim(ymin, ymax)
-        plt.minorticks_on()
-
-        # Plot a vertical line at the middle of the k range.
-        plot_vline(data['k'], 2)
-        plot_vline(data['k'], 8)
-
-        f_idx_str = fname.split("_")[-1].split(".")[0]
-        fname = f"espec_{f_idx_str}_{plot_type}_fit.png"
-        fname = os.path.join(self.output_dir, fname)
-        plt.savefig(fname, dpi=300, bbox_inches='tight')
-        plt.close()
-
-        print(f"Energy spectrum plot saved to: {fname}")
 
     def plot_ek_evolution(self, f_idx: list = None):
         """

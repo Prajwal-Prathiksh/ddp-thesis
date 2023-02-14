@@ -1312,6 +1312,7 @@ class EnergySpectrum(object):
         The data used for fitting is --> k[k_start:N//k_by_n], where
         N = len(k).
         Additionally, data points with |ek| < tol are ignored.
+        **Note:** If a fit cannot be performed, the returned values are None.
 
         Parameters
         ----------
