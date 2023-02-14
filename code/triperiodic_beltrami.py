@@ -317,7 +317,7 @@ class TriperiodicBeltrami(TurbulentFlowApp):
 
 if __name__ == '__main__':
     app = TriperiodicBeltrami()
-    # app.run()
+    app.run()
     app.post_process(app.info_filename)
     app.ek_post_processing(
         dim=3, L=app.L, U0=U, f_idx=-1,
