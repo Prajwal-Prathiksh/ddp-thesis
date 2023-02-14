@@ -16,10 +16,6 @@ from pysph.solver.solver import Solver
 from energy_spectrum import EnergySpectrum
 from turbulence_tools import TurbulentFlowApp, get_kernel_cls
 
-# TODO: Use optimal values of hdx for each kernel
-# TODO: Study Gaussian kernel with multiple hdx values
-# TODO: Study the effect h, hdx, and dx on the energy spectrum
-
 
 def perturb_signal(perturb_fac: float, *args: np.ndarray):
     """
@@ -416,6 +412,10 @@ class SinVelocityProfile(TurbulentFlowApp):
         if len(self.output_files) == 0:
             return
 
+        # Turbulence specific post-processing
+        self.compute_interpolated_vel_field(f_idx_list=[0], dim=dim, L=self.L)
+        self.compute_ek(f_idx_list=[0], dim=dim, L=self.L, U0=1.)
+
         if not self.options.make_plots:
             return
 
@@ -469,8 +469,4 @@ class SinVelocityProfile(TurbulentFlowApp):
 if __name__ == '__main__':
     turb_app = SinVelocityProfile()
     turb_app.run()
-    turb_app.ek_post_processing(
-        dim=turb_app.dim, L=turb_app.L, U0=1., f_idx=0,
-        compute_without_interp=True, func_config='compyle'
-    )
     turb_app.post_process(turb_app.info_filename)

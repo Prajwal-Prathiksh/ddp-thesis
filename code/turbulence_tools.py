@@ -360,8 +360,7 @@ class TurbulentFlowApp(Application):
             x, y, z = np.meshgrid(_x, _x, _x)
 
         # Setup default interpolator properties
-        if kernel is None:
-            kernel = WendlandQuinticC4(dim=dim)
+        kernel = get_kernel_cls(self.options.i_kernel, dim=dim)
 
         # Check if radius_scale is instance of float
         if isinstance(radius_scale, float):
@@ -417,11 +416,11 @@ class TurbulentFlowApp(Application):
             EnergySpectrum object.
         """
         fname = self._get_interp_vel_fname(f_idx)
-        if os.path.basename(fname) not in self.interp_vel_files:
+        if fname not in self.interp_vel_files:
             msg = f"Interpolated velocity field file: {fname} not found."
-            msg += "\nRunning self.save_interpolated_vel_field() first."
+            msg += "\nRunning self.compute_interpolated_vel_field() first."
             warnings.warn(msg)
-            self.save_interpolated_vel_field(
+            self.compute_interpolated_vel_field(
                 f_idx_list=[f_idx], dim=dim, L=L
             )
 
@@ -526,6 +525,61 @@ class TurbulentFlowApp(Application):
                 f"{list(PLOT_TYPES_MAPPER.keys())}"
             )
         return PLOT_TYPES_MAPPER[plot_type]
+
+    def _save_energy_spectrum_as_pysph_view_file(
+        self, fname: str, dim: int, espec_ob: object,
+    ):
+        """
+        Save the energy spectrum as a PySPH viewable file.
+        The file is saved as "espec_<counter>.npz/hdf5" in the output
+        directory.
+        The file can be viewed using the `pysph view` command.
+
+        Parameters
+        ----------
+        fname : str
+            Name of the file from which the energy spectrum was computed.
+        dim : int
+            Dimension of the problem.
+        espec_ob : `EnergySpectrum` object
+            The corresponding energy spectrum object of `fname` with the
+            computed energy spectrum.
+        """
+        data = load(fname)
+
+        # Add energy spectrum data to the particle array
+        pa = data['arrays']['fluid']
+        pa.add_property('ek_u', 'double', data=espec_ob.ek_u.flatten())
+        pa.add_property(
+            'ek_v', 'double', data=espec_ob.ek_v.flatten() if dim > 1 else 0.0
+        )
+        pa.add_property(
+            'ek_w', 'double', data=espec_ob.ek_w.flatten() if dim > 2 else 0.0
+        )
+        pa.add_output_arrays(['ek_u', 'ek_v', 'ek_w'])
+
+        # Save the data
+        # Get the file index counter
+        counter = fname.split("_")[-1].split('.')[0]
+        fname = os.path.join(self.output_dir, f"espec_{counter}")
+        if fname.endswith(".npz"):
+            fname += ".npz"
+        else:
+            fname += ".hdf5"
+
+        # Dump the file
+        dump(
+            filename=fname,
+            particles=[pa],
+            solver_data=data['solver_data'],
+            detailed_output=self.solver.detailed_output,
+            only_real=self.solver.output_only_real,
+            mpi_comm=None,
+            compress=self.solver.compress_output
+        )
+        msg = f"Energy spectrum PySPH viewable file saved to: {fname}"
+        msg += f'. Can be viewed by running: \n\t$ pysph view "{fname}"'
+        logger.info(msg)
 
     # Properties
     @property
@@ -725,64 +779,9 @@ class TurbulentFlowApp(Application):
 
         return k_fit, ek_fit, fit_params
 
-    def save_energy_spectrum_as_pysph_view_file(
-        self, fname: str, dim: int, espec_ob: object,
-    ):
-        """
-        Save the energy spectrum as a PySPH viewable file.
-        The file is saved as "espec_<counter>.npz/hdf5" in the output
-        directory.
-        The file can be viewed using the `pysph view` command.
-
-        Parameters
-        ----------
-        fname : str
-            Name of the file from which the energy spectrum was computed.
-        dim : int
-            Dimension of the problem.
-        espec_ob : `EnergySpectrum` object
-            The corresponding energy spectrum object of `fname` with the
-            computed energy spectrum.
-        """
-        data = load(fname)
-
-        # Add energy spectrum data to the particle array
-        pa = data['arrays']['fluid']
-        pa.add_property('ek_u', 'double', data=espec_ob.ek_u.flatten())
-        pa.add_property(
-            'ek_v', 'double', data=espec_ob.ek_v.flatten() if dim > 1 else 0.0
-        )
-        pa.add_property(
-            'ek_w', 'double', data=espec_ob.ek_w.flatten() if dim > 2 else 0.0
-        )
-        pa.add_output_arrays(['ek_u', 'ek_v', 'ek_w'])
-
-        # Save the data
-        # Get the file index counter
-        counter = fname.split("_")[-1].split('.')[0]
-        fname = os.path.join(self.output_dir, f"espec_{counter}")
-        if fname.endswith(".npz"):
-            fname += ".npz"
-        else:
-            fname += ".hdf5"
-
-        # Dump the file
-        dump(
-            filename=fname,
-            particles=[pa],
-            solver_data=data['solver_data'],
-            detailed_output=self.solver.detailed_output,
-            only_real=self.solver.output_only_real,
-            mpi_comm=None,
-            compress=self.solver.compress_output
-        )
-        msg = f"Energy spectrum PySPH viewable file saved to: {fname}"
-        msg += f'. Can be viewed by running: \n\t$ pysph view "{fname}"'
-        logger.info(msg)
-
 
     # Post-processing methods
-    def save_interpolated_vel_field(
+    def compute_interpolated_vel_field(
         self, f_idx_list: list, dim: int, L: float,
     ):
         """
@@ -824,7 +823,7 @@ class TurbulentFlowApp(Application):
         msg += f"velocity field: {t1 - t0:.2f} s."
         print(msg)
     
-    def save_ek(
+    def compute_ek(
         self, f_idx_list: list, dim: int, L: float, U0: float,
         func_config: str = 'compyle', save_pysph_view_file: bool = False,
         **kwargs
@@ -881,12 +880,12 @@ class TurbulentFlowApp(Application):
             logger.info(msg)
 
             if save_pysph_view_file:
-                self.save_energy_spectrum_as_pysph_view_file(
+                self._save_energy_spectrum_as_pysph_view_file(
                     fname=self.output_files[f_idx], dim=dim, espec_ob=espec_ob
                 )
 
         t1 = time.time()
-        msg = "Time taken to compute and save"
+        msg = "Time taken to compute and save "
         msg += f"energy spectrum: {t1 - t0:.2f} s."
         print(msg)
         logger.info(msg)
@@ -936,7 +935,6 @@ class TurbulentFlowApp(Application):
 
         return espec_initial_ob
 
-        
     # Plotting methods
     def plot_ek(
         self, f_idx: int, plot_type: str = "loglog", exact: bool = True,
