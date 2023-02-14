@@ -1,7 +1,7 @@
 #!/bin/bash
 #PBS -N TriperiodicBeltrami
-#PBS -q small
-#PBS -l select=1:ncpus=8
+#PBS -q regular
+#PBS -l select=1:ncpus=16
 #PBS -j oe
 #PBS -V
 #PBS -o log_script.out
@@ -10,4 +10,4 @@ cd $PBS_O_WORKDIR
 cat $PBS_NODEFILE > ./pbsnodes
 PROCS1=$(cat $PBS_NODEFILE | wc -l)
 
-python code/triperiodic_beltrami.py --openmp --scheme tsph --method sd --scm wcsph --pst-freq 10 --nx 40 --tf 6.0 --re 100000 -d outputs/triperiodic_beltrami_output
+python code/triperiodic_beltrami.py --openmp --scheme tsph --method sd --scm wcsph --pst-freq 10 --nx 41 --tf 6.0 --re 100000 -d outputs/triperiodic_beltrami_output
