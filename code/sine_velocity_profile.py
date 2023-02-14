@@ -415,23 +415,25 @@ class SinVelocityProfile(TurbulentFlowApp):
         # Turbulence specific post-processing
         self.compute_interpolated_vel_field(f_idx_list=[0], dim=dim, L=self.L)
         self.compute_ek(f_idx_list=[0], dim=dim, L=self.L, U0=1.)
+        self.compute_ek_from_initial_vel_field(dim=dim, L=self.L, U0=1.)
 
         if not self.options.make_plots:
             return
 
-        self.plot_ek_fit(
-            f_idx=0, plot_type='loglog', tol=1e-8,
-            exact=True, no_interp=True
-        )
+        # Make plots
         self.plot_ek(
             f_idx=0, plot_type='loglog', exact=True,
             no_interp=True
         )
+        # self.plot_ek_fit(
+        #     f_idx=0, plot_type='loglog', tol=1e-8,
+        #     exact=True, no_interp=True
+        # )
 
         method = self.options.i_method
         if method not in ['sph', 'shepard', 'order1']:
             method = 'order1'
-        espec_ob = EnergySpectrum.from_pysph_file(
+        espec_ob = EnergySpectrum.from_pysph_ofile(
             fname=self.output_files[0],
             dim=dim,
             L=self.L,
@@ -442,26 +444,17 @@ class SinVelocityProfile(TurbulentFlowApp):
             U0=1.
         )
         espec_ob.compute()
+        k_fit, ek_fit, fit_params = espec_ob.get_ek_fit()
         fname = os.path.join(self.output_dir, 'energy_spectrum_log.png')
         espec_ob.plot_scalar_ek(
             savefig=True,
             fname=fname,
             plot_type='log'
         )
-        espec_ob.plot_scalar_ek(
-            savefig=True,
-            fname=fname.replace('_log', '_stem'),
-            plot_type='stem'
-        )
-        fname = os.path.join(self.output_dir, 'EK_spectrum_shiftted.png')
+        fname = os.path.join(self.output_dir, 'EK_spectrum.png')
         espec_ob.plot_vector_ek(
             savefig=True,
             fname=fname,
-            shift_fft=True
-        )
-        espec_ob.plot_vector_ek(
-            savefig=True,
-            fname=fname.replace('_shiftted', ''),
             shift_fft=False
         )
 
