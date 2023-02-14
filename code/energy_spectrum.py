@@ -1,5 +1,5 @@
 r"""
-Energy Spectrum of the 
+Energy Spectrum of the
 Author: K T Prajwal Prathiksh
 ###
 References
@@ -23,7 +23,7 @@ try:
     from numba import njit
 except ImportError:
     # Define a dummy njit decorator
-    njit = lambda x: x
+    def njit(x): return x
     import warnings
     warnings.warn(
         "Numba not installed. Some functions will not be compiled."
@@ -1120,14 +1120,30 @@ class EnergySpectrum(object):
         if figname is None:
             figname = "./energy_spectrum.png"
         plt.savefig(figname, dpi=300, bbox_inches="tight")
-    
+
     @staticmethod
     def calculate_wavenumber_of_dx(L, dx, box_radius):
+        """
+        Calculate the wavenumber of a given dx.
+
+        Parameters
+        ----------
+        L : float
+            Box size.
+        dx : float
+            Distance between two points.
+        box_radius : int
+
+        Returns
+        -------
+        wn : int
+            Wavenumber of the given dx.
+        """
         if dx > L:
             raise ValueError("dx is larger than the box size.")
         tmp_linspace = np.linspace(0., L, box_radius)
         diff = tmp_linspace[1] - tmp_linspace[0]
-        wn = np.ceil(np.abs(dx/diff))
+        wn = np.ceil(np.abs(dx / diff))
         wn = int(box_radius - wn + 1)
         return wn
 
@@ -1289,7 +1305,7 @@ class EnergySpectrum(object):
             self._correct_format_of_list_data(
                 [self.ek_u_sphere, self.ek_v_sphere, self.ek_w_sphere]
             )
-    
+
     def compute_l2_error(self, ek_exact):
         """
         Compute the L2 error of the energy spectrum.
