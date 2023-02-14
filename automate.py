@@ -372,29 +372,72 @@ class TGVBasicSchemeComparison(PySPHProblem):
         """
         self.make_output_dir()
 
-class TGVExternalForcingColagrossi2021(PySPHProblem):
+class TGVExtForceSchemeComparison(PySPHProblem):
     def get_name(self):
         """
         Problem name.
         """
-        return "tgv_external_forcing_colagrossi2021"
+        return "tgv_ext_force_scheme_comparison"
     
     def setup(self):
         """
         Setup the problem.
         """
-        base_cmd = "python code/taylor_green.py " + BACKEND
-        base_cmd += "--scheme=tsph --method sd --scm wcsph --pst-freq 10 "
-        base_cmd += " --ext-forcing "
-
+        base_cmd = "python code/taylor_green.py --ext-forcing " + BACKEND
     
-        # opts = mdict(nx=[100], tf=[6.], re=[10_000, 50_000])
-        opts = mdict(
-            nx=[200], tf=[3.],
-            re=[1_000, 10_000, 50_000, 100_000, 1_000_000]
+        scheme_opts = mdict(scheme=['edac'])
+        scheme_opts += mdict(
+            scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
         )
-        opts += mdict(nx=[400], tf=[2.], re=[1_000, 10_000])
+        scheme_opts += mdict(scheme=['mon2017'])
+        res_opts = mdict(nx=[100], re=[10_000, 100_000], tf=[6.])
+        res_opts += mdict(nx=[200], re=[10_000, 100_000], tf=[4.])
+
+        opts = dprod(scheme_opts, res_opts)
+            
+        # Setup cases
+        self.cases = [
+            Simulation(
+                root=self.input_path(opts2path(kw)),
+                base_command=base_cmd,
+                job_info=dict(n_core=N_CORES, n_thread=N_THREADS),
+                **kw
+            )
+            for kw in opts
+        ]
     
+    def run(self):
+        """
+        Run the problem.
+        """
+        self.make_output_dir()
+
+class TGVExtForceResConvergence(PySPHProblem):
+    def get_name(self):
+        """
+        Problem name.
+        """
+        return "tgv_ext_force_res_convergence"
+    
+    def setup(self):
+        """
+        Setup the problem.
+        """
+        base_cmd = "python code/taylor_green.py --ext-forcing " + BACKEND
+        base_cmd += " --scheme=tsph --method=sd --scm=wcsph --pst-freq=10 "
+
+        res_opts = mdict(nx=[100], re=[10_000, 100_000], tf=[6.])
+    
+        scheme_opts = mdict(scheme=['edac'])
+        scheme_opts += mdict(
+            scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
+        )
+        scheme_opts += mdict(scheme=['mon2017'])
+        res_opts = mdict(nx=[100], re=[10_000, 100_000], tf=[6.])
+        res_opts += mdict(nx=[200], re=[10_000, 100_000], tf=[4.])
+
+        opts = dprod(scheme_opts, res_opts)
+            
         # Setup cases
         self.cases = [
             Simulation(
@@ -453,7 +496,7 @@ if __name__ == "__main__":
     PROBLEMS = [
         SineVelProfile,
         TGVBasicSchemeComparison,
-        TGVExternalForcingColagrossi2021,
+        TGVExtForceSchemeComparison,
         TBExternalForcingColagrossi2021
     ]
     automator = Automator(
