@@ -22,7 +22,7 @@ from automan.utils import filter_cases, filter_by_name
 from code.automate_utils import styles, custom_compare_runs, plot_vline
 
 BACKEND = " --openmp "
-N_CORES, N_THREADS = 4, 8
+N_CORES, N_THREADS = 1, 1 #4, 8
 
 class SineVelProfilePlotters(Simulation):
     """
@@ -33,24 +33,25 @@ class SineVelProfilePlotters(Simulation):
         """
         Plot the energy spectrum in loglog scale.
         """
-        data = np.load(self.input_path('espec_result_00000.npz'))
+        data = np.load(self.input_path('ek_00000.npz'))
         plt.loglog(data['k'], data['ek'], **kw)
 
     def ek_plot(self, **kw):
         """
         Plot the energy spectrum.
         """
-        data = np.load(self.input_path('espec_result_00000.npz'))
+        data = np.load(self.input_path('ek_00000.npz'))
         plt.plot(data['k'], data['ek'], **kw)
     
     def ek_loglog_no_interp(self, **kw):
         """
         Plot the energy spectrum calculated without interpolation in loglog scale.
         """
-        data = np.load(self.input_path('espec_result_00000.npz'))
+        data = np.load(self.input_path('ek_00000.npz'))
+        data_wo_interp = np.load(self.input_path('initial_ek.npz'))
         kw.pop('label', None)
         plt.loglog(
-            data['k'], data['ek_no_interp'],
+            data['k'], data_wo_interp['ek'],
             label=r'$E_k$ (no interpolation)', **kw
         )
 
@@ -63,21 +64,21 @@ class SineVelProfilePlotters(Simulation):
         """
         Plot the exact energy spectrum in loglog scale.
         """
-        data = np.load(self.input_path('espec_result_00000.npz'))
+        data = np.load(self.input_path('ek_00000.npz'))
         plt.loglog(data['k'], data['ek_exact'], **kw)    
     
     def ek_plot_exact(self, **kw):
         """
         Plot the exact energy spectrum.
         """
-        data = np.load(self.input_path('espec_result_00000.npz'))
+        data = np.load(self.input_path('ek_00000.npz'))
         plt.plot(data['k'], data['ek_exact'], **kw)
     
     def l2_error(self, **kw):
         """
         Plot the L_2 error (wrt exact solution) in loglog scale.
         """
-        data = np.load(self.input_path('espec_result_00000.npz'))
+        data = np.load(self.input_path('ek_00000.npz'))
         plt.loglog(data['k'], data['l2_error'], **kw)
 
     def l2_error_no_interp(self, **kw):
@@ -85,8 +86,9 @@ class SineVelProfilePlotters(Simulation):
         Plot the L_2 error of the solution calculated without interpolation vs
         the exact solution in loglog scale.
         """
-        data = np.load(self.input_path('espec_result_00000.npz'))
-        l2_error_expected = data['ek_exact'] - data['ek_no_interp']
+        data = np.load(self.input_path('ek_00000.npz'))
+        data_wo_interp = np.load(self.input_path('initial_ek.npz'))
+        l2_error_expected = data['ek_exact'] - data_wo_interp['ek']
         l2_error_expected = np.sqrt(l2_error_expected**2)
 
         kw.pop('label', None)
@@ -244,12 +246,17 @@ class SineVelProfile(PySPHProblem):
         # Create parameteric cases
         def get_opts():
             perturb_opts = mdict(
-                perturb=[0.01], hdx=[1.2, 3],
-                i_radius_scale=[1.2, 3]
+                perturb=[0.01], hdx=[1.2],
+                i_radius_scale=[3]
             )
             dim_nx_opts = mdict(dim=[1], nx=[701, 1001], n_freq=[350])
-            dim_nx_opts += mdict(dim=[2], nx=[701, 801], n_freq=[350])
-            dim_nx_opts += mdict(dim=[3], nx=[71, 101], n_freq=[35])
+            # perturb_opts = mdict(
+            #     perturb=[0.01], hdx=[1.2, 3],
+            #     i_radius_scale=[1.2, 3]
+            # )
+            # dim_nx_opts = mdict(dim=[1], nx=[701, 1001], n_freq=[350])
+            # dim_nx_opts += mdict(dim=[2], nx=[701, 801], n_freq=[350])
+            # dim_nx_opts += mdict(dim=[3], nx=[71, 101], n_freq=[35])
 
             all_options = dprod(perturb_opts, dim_nx_opts)
             KERNEL_CHOICES = ['WendlandQuinticC4']
