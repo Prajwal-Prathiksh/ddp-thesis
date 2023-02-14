@@ -688,7 +688,7 @@ class TSPHScheme(Scheme):
         nu=0.0, gamma=7.0, kernel_corr=False, pst_freq=0, method='no_sd',
         scm='wcsph', eos='tait', pst='ipst', damp_pre=False,
         periodic=True
-):
+    ):
         """Parameters
         ----------
 
@@ -826,9 +826,15 @@ class TSPHScheme(Scheme):
                 g0.append(EvaluateRhoc(dest=name, sources=None, rho0=self.rho0))
             if self.scm == 'wcsph' or self.scm == 'fatehi':
                 if self.eos == 'tait':
-                    g0.append(TaitEOS(dest=name, sources=None, rho0=self.rho0, gamma=self.gamma))
+                    g0.append(TaitEOS(
+                        dest=name, sources=None, rho0=self.rho0,
+                        gamma=self.gamma
+                    ))
                 elif self.eos == 'linear':
-                    g0.append(LinearEOS(dest=name, sources=None, rho0=self.rho0, gamma=self.gamma))
+                    g0.append(LinearEOS(
+                        dest=name, sources=None, rho0=self.rho0,
+                        gamma=self.gamma
+                    ))
         equations.append(Group(equations=g0))
 
         g1 = []
@@ -865,7 +871,9 @@ class TSPHScheme(Scheme):
             from pysph.sph.wc.kernel_correction import GradientCorrectionPreStep, GradientCorrection
             g1 = []
             for name in all:
-                g1.append(GradientCorrectionPreStepNew(dest=name, sources=all, dim=self.dim))
+                g1.append(GradientCorrectionPreStepNew(
+                    dest=name, sources=all, dim=self.dim
+                ))
             equations.append(Group(equations=g1))
 
         g2 = []
@@ -891,19 +899,33 @@ class TSPHScheme(Scheme):
 
             if self.kernel_corr:
                 for name in all:
-                    g2.append(GradientCorrection(dest=name, sources=all))
+                    g2.append(GradientCorrection(
+                        dest=name, sources=all, dim=self.dim
+                    ))
             for name in self.fluids:
-                g2.append(VelocityGradient(dest=name, sources=self.fluids))
+                g2.append(VelocityGradient(
+                    dest=name, sources=self.fluids, dim=self.dim
+                ))
                 if len(self.solids) > 0:
-                    g2.append(VelocityGradientSoild(dest=name, sources=self.solids))
+                    g2.append(VelocityGradientSoild(
+                        dest=name, sources=self.solids, dim=self.dim
+                    ))
                 if self.damp_pre:
                     if self.scm == 'edac':
-                        g2.append(PressureGradient(dest=name, sources=all))
+                        g2.append(PressureGradient(
+                            dest=name, sources=all, dim=self.dim
+                        ))
                     elif self.scm == 'wcsph':
-                        g2.append(DensityGradient(dest=name, sources=all))
+                        g2.append(DensityGradient(
+                            dest=name, sources=all, dim=self.dim
+                        ))
             for name in self.solids:
-                g2.append(VelocityGradientDestSoild(dest=name, sources=self.fluids))
-                g2.append(VelocityGradientSolidSoild(dest=name, sources=self.solids))
+                g2.append(VelocityGradientDestSoild(
+                    dest=name, sources=self.fluids, dim=self.dim
+                ))
+                g2.append(VelocityGradientSolidSoild(
+                    dest=name, sources=self.solids, dim=self.dim
+                ))
             equations.append(Group(equations=g2))
 
             g1 = []
@@ -914,9 +936,13 @@ class TSPHScheme(Scheme):
 
         elif self.damp_pre:
             for name in all:
-                g2.append(GradientCorrection(dest=name, sources=all))
+                g2.append(GradientCorrection(
+                    dest=name, sources=all, dim=self.dim
+                ))
             for name in self.fluids:
-                g2.append(DensityGradient(dest=name, sources=all))
+                g2.append(DensityGradient(
+                    dest=name, sources=all, dim=self.dim
+                ))
             equations.append(Group(equations=g2))
 
             g1 = []
@@ -930,10 +956,15 @@ class TSPHScheme(Scheme):
             if self.nu > 1e-14:
                 if self.scm == 'fatehi':
                     from scheme_equation import FatehiViscosityCorrected
-                    g3.append(FatehiViscosityCorrected(dest=name, sources=all, nu=self.nu, rho0=self.rho0))
+                    g3.append(FatehiViscosityCorrected(
+                        dest=name, sources=all, nu=self.nu, rho0=self.rho0,
+                        dim=self.dim
+                    ))
         if self.kernel_corr:
             for name in self.fluids:
-                g3.append(GradientCorrection(dest=name, sources=all))
+                g3.append(GradientCorrection(
+                    dest=name, sources=all, dim=self.dim
+                ))
         for name in self.fluids:
             if self.scm == 'wcsph' or self.scm == 'fatehi':
                 g3.append(ContinuityEquation(dest=name, sources=self.fluids))
@@ -944,12 +975,18 @@ class TSPHScheme(Scheme):
             else:
                 g3.append(EDACEquation(dest=name, sources=all, rho0=self.rho0))
                 if self.damp_pre:
-                    g3.append(PressureDamping(dest=name, sources=all, gamma=0.1))
+                    g3.append(PressureDamping(
+                        dest=name, sources=all, gamma=0.1
+                    ))
         for name in self.fluids:
             if self.nu > 1e-14:
                 if not self.scm == 'fatehi':
-                    g3.append(DivGrad(dest=name, sources=all, nu=self.nu, rho0=self.rho0))
-            g3.append(MomentumEquationSecondOrder(dest=name, sources=all, gx=self.gx, gy=self.gy, gz=self.gz))
+                    g3.append(DivGrad(
+                        dest=name, sources=all, nu=self.nu, rho0=self.rho0
+                    ))
+            g3.append(MomentumEquationSecondOrder(
+                dest=name, sources=all, gx=self.gx, gy=self.gy, gz=self.gz
+            ))
 
         equations.append(Group(equations=g3))
 
