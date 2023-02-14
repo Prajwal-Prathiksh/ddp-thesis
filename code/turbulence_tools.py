@@ -4,6 +4,7 @@ Author: K T Prajwal Prathiksh
 ###
 """
 # Library imports
+import glob
 import os
 import logging
 import inspect
@@ -20,7 +21,8 @@ from pysph.base.kernels import (
     Gaussian, SuperGaussian, QuinticSpline
 )
 from pysph.tools.interpolator import (
-    SPHFirstOrderApproximationPreStep, SPHFirstOrderApproximation
+    SPHFirstOrderApproximationPreStep, SPHFirstOrderApproximation,
+    Interpolator
 )
 from pysph.sph.wc.kernel_correction import (
     GradientCorrectionPreStep, GradientCorrection,
@@ -181,161 +183,26 @@ class TurbulentFlowApp(Application):
             order = int(order)
         self.options.ek_norm_order = order
 
-    def _log_interpolator_details(
-        self, fname: str, dim: int, interp_ob: object
-    ):
+    def _get_interp_vel_fname(self, f_idx: int):
         """
-        Log details of the interpolator used.
+        Return the filename for the interpolated velocity field for a given
+        output file index.
 
         Parameters
         ----------
-        fname : str
-            Name of the file from which the PySPH particles are loaded.
-        dim : int
-            Dimension of the problem.
-        interp_ob : object
-            Interpolator object used.
-        """
-        msg = "Using interpolator:\n"
-        msg += "-" * 70 + "\n"
-        msg += f"Reading data from:\n\t{fname}\n"
-        msg += f"Kernel:\n\t{interp_ob.kernel.__class__.__name__}(dim={dim})\n"
-        msg += f"Kernel radius scale:\n\t{interp_ob.kernel.radius_scale}\n"
-        msg += f"Method:\n\t{interp_ob.method}" + "\n"
-        msg += "Equations:\n\t["
-        for eqn in interp_ob.func_eval.equation_groups:
-            msg += f"\n\t\t{eqn}"
-        msg += "\n" + "-" * 70
-        logger.info(msg)
-
-    def _set_initial_vel_field_fname(self, fname: str):
-        """
-        Set the name of the file containing the initial velocity field.
-
-        Parameters
-        ----------
-        fname : str
-            Name of the file containing the initial velocity field.
-        """
-        self.initial_vel_field_fname = fname
-
-    def _get_ek_plot_types_mapper(self, plot_type: str):
-        """
-        Return the plot type corresponding to the given plot type.
-
-        Parameters
-        ----------
-        plot_type : str
-            Plot type.
-            Valid options: loglog, semilogx, semilogy, plot, stem
-
+        f_idx : int
+            Output file index.
+        
         Returns
         -------
-        plot_type : dict
-            Plot type dictionary.
-            Includes: func, xlabel, ylabel
+        fname : str
+            Filename for the interpolated velocity field.
         """
-        PLOT_TYPES_MAPPER = dict(
-            loglog=dict(
-                func=plt.loglog,
-                xlabel=r"$k$",
-                ylabel=r"$E(k)$"
-            ),
-            semilogx=dict(
-                func=plt.semilogx,
-                xlabel=r"$k$",
-                ylabel=r"$E(k)$"
-            ),
-            semilogy=dict(
-                func=plt.semilogy,
-                xlabel=r"$k$",
-                ylabel=r"$E(k)$"
-            ),
-            plot=dict(
-                func=plt.plot,
-                xlabel=r"$k$",
-                ylabel=r"$E(k)$"
-            ),
-            stem=dict(
-                func=plt.stem,
-                xlabel=r"$k$",
-                ylabel=r"$E(k)$"
-            ),
-        )
-        if plot_type not in PLOT_TYPES_MAPPER:
-            raise ValueError(
-                f"Invalid plot_type: {plot_type}. Valid options are: "
-                f"{list(PLOT_TYPES_MAPPER.keys())}"
-            )
-        return PLOT_TYPES_MAPPER[plot_type]
+        idx = self.output_files[f_idx].split("_")[-1].split(".")[0]
+        fname = os.path.join(self.output_dir, f"interp_vel_{idx}.npz")
+        return fname
 
-    # Properties
-    @property
-    def espec_result_files(self):
-        """
-        Return the list of files containing the energy spectrum data.
-        """
-        import glob
-        espec_files = glob.glob(
-            os.path.join(self.output_dir, "espec_result_*")
-        )
-        espec_files.sort()
-        return espec_files
-        
-    
-    # Public methods
-    def save_initial_vel_field(
-        self, dim: int, u: np.ndarray, v: np.ndarray, w: np.ndarray,
-        L: float, dx: float, fname: str = None, **kwargs
-    ):
-        """
-        Save the initial velocity field to a *.npz file in the output
-        directory. The velocity field components should have appropriate
-        dimensions, i.e. len(shape(u)) = len(shape(v)) = len(shape(w)) = dim.
-        If a float is passed for (v or w) component  of velocity, it is
-        converted to a numpy array of the shape of (u).
-
-        Parameters
-        ----------
-        dim : int
-            Dimension of the flow.
-        u : np.ndarray
-            Initial velocity field in x direction.
-        v : np.ndarray
-            Initial velocity field in y direction.
-        w : np.ndarray
-            Initial velocity field in z direction.
-        L : float
-            Length of the domain.
-        dx : float
-            Grid spacing.
-        fname : str, optional
-            Name of the output file. If not specified, it is set to
-            "initial_vel_field.npz".
-        **kwargs : dict, optional
-            Additional keyword arguments to be passed to numpy.savez.
-        """
-        if fname is None:
-            fname = "initial_vel_field.npz"
-
-        # Convert to numpy arrays if necessary
-        if not isinstance(v, np.ndarray):
-            v = np.full_like(u, v)
-        if not isinstance(w, np.ndarray):
-            w = np.full_like(u, w)
-
-        assert len(u.shape) == dim, "u must have dimension dim"
-        assert len(v.shape) == dim, "v must have dimension dim"
-        assert len(w.shape) == dim, "w must have dimension dim"
-
-        fname = os.path.join(self.output_dir, fname)
-        np.savez(
-            fname, dim=dim, u=u, v=v, w=w, L=L, dx=dx, **kwargs
-        )
-        self._set_initial_vel_field_fname(fname)
-
-    # Post-processing methods
-    def get_interpolation_equations(self, method: str, dim: int):
+    def _get_interpolation_equations(self, method: str, dim: int):
         """
         Return the equations for interpolating the velocity field.
 
@@ -425,6 +292,295 @@ class TurbulentFlowApp(Application):
         if equations:
             consistent_method = 'order1'
         return equations, consistent_method
+
+    def _get_interpolated_vel_field_for_one_file(
+        self, f_idx: int, dim: int, L: float,
+        return_interp_obj: bool = False,
+    ):
+        """
+        Return the interpolated velocity field for a given file index of the
+        output files.
+
+        Parameters
+        ----------
+        f_idx : int
+            Index of the output file.
+        dim : int
+            Dimension of the problem.
+        L : float
+            Length of the domain.
+        return_interp_obj : bool, optional
+            If True, return the `Interpolator` object as well.
+
+        Returns
+        -------
+        dx : float
+            Grid spacing.
+        ui, vi, wi : np.ndarray
+            Interpolated velocity field components.
+        interp_obj : Interpolator, optional
+            Interpolator object.
+        """
+        data = load(self.output_files[f_idx])
+        t = data["solver_data"]["t"]
+        u = data["arrays"]["fluid"].get("u")
+
+        i_nx = self.options.i_nx
+        radius_scale=self.options.i_radius_scale
+
+        if i_nx is None:
+            i_nx = int(np.power(len(u), 1 / dim))
+
+        # Create meshgrid based on dimension
+        _x = np.linspace(0, L, i_nx)
+        dx = _x[1] - _x[0]
+        if dim == 1:
+            x = _x
+            y = z = None
+        elif dim == 2:
+            x, y = np.meshgrid(_x, _x)
+            z = None
+        elif dim == 3:
+            x, y, z = np.meshgrid(_x, _x, _x)
+
+        # Setup default interpolator properties
+        if kernel is None:
+            kernel = WendlandQuinticC4(dim=dim)
+
+        # Check if radius_scale is instance of float
+        if isinstance(radius_scale, float):
+            kernel.radius_scale = radius_scale
+
+        # Interpolate velocity
+        interp_ob = Interpolator(
+            list(data['arrays'].values()), x=x, y=y, z=z,
+            kernel=kernel, domain_manager=self.create_domain(),
+        )
+        if dim == 1:
+            _u = interp_ob.interpolate('u')
+            ui = _u
+            vi = wi = None
+        elif dim == 2:
+            _u = interp_ob.interpolate('u')
+            _v = interp_ob.interpolate('v')
+            ui = _u.reshape(i_nx, i_nx)
+            vi = _v.reshape(i_nx, i_nx)
+            wi = None
+        elif dim == 3:
+            _u = interp_ob.interpolate('u')
+            _v = interp_ob.interpolate('v')
+            _w = interp_ob.interpolate('w')
+            ui = _u.reshape(i_nx, i_nx, i_nx)
+            vi = _v.reshape(i_nx, i_nx, i_nx)
+            wi = _w.reshape(i_nx, i_nx, i_nx)
+
+        if return_interp_obj:
+            return dx, ui, vi, wi, interp_ob        
+        return dx, ui, vi, wi
+
+    def _log_interpolator_details(
+        self, dim: int, interp_ob: object
+    ):
+        """
+        Log details of the interpolator used.
+
+        Parameters
+        ----------
+        dim : int
+            Dimension of the problem.
+        interp_ob : object
+            Interpolator object used.
+        """
+        msg = "Using interpolator:\n"
+        msg += "-" * 70 + "\n"
+        msg += f"Kernel:\n\t{interp_ob.kernel.__class__.__name__}(dim={dim})\n"
+        msg += f"Kernel radius scale:\n\t{interp_ob.kernel.radius_scale}\n"
+        msg += f"Method:\n\t{interp_ob.method}" + "\n"
+        msg += "Equations:\n\t["
+        for eqn in interp_ob.func_eval.equation_groups:
+            msg += f"\n\t\t{eqn}"
+        msg += "\n" + "-" * 70
+        logger.info(msg)
+
+    def _set_initial_vel_field_fname(self, fname: str):
+        """
+        Set the name of the file containing the initial velocity field.
+
+        Parameters
+        ----------
+        fname : str
+            Name of the file containing the initial velocity field.
+        """
+        self.initial_vel_field_fname = fname
+
+    def _get_ek_plot_types_mapper(self, plot_type: str):
+        """
+        Return the plot type corresponding to the given plot type.
+
+        Parameters
+        ----------
+        plot_type : str
+            Plot type.
+            Valid options: loglog, semilogx, semilogy, plot, stem
+
+        Returns
+        -------
+        plot_type : dict
+            Plot type dictionary.
+            Includes: func, xlabel, ylabel
+        """
+        PLOT_TYPES_MAPPER = dict(
+            loglog=dict(
+                func=plt.loglog,
+                xlabel=r"$k$",
+                ylabel=r"$E(k)$"
+            ),
+            semilogx=dict(
+                func=plt.semilogx,
+                xlabel=r"$k$",
+                ylabel=r"$E(k)$"
+            ),
+            semilogy=dict(
+                func=plt.semilogy,
+                xlabel=r"$k$",
+                ylabel=r"$E(k)$"
+            ),
+            plot=dict(
+                func=plt.plot,
+                xlabel=r"$k$",
+                ylabel=r"$E(k)$"
+            ),
+            stem=dict(
+                func=plt.stem,
+                xlabel=r"$k$",
+                ylabel=r"$E(k)$"
+            ),
+        )
+        if plot_type not in PLOT_TYPES_MAPPER:
+            raise ValueError(
+                f"Invalid plot_type: {plot_type}. Valid options are: "
+                f"{list(PLOT_TYPES_MAPPER.keys())}"
+            )
+        return PLOT_TYPES_MAPPER[plot_type]
+
+    # Properties
+    @property
+    def interp_vel_files(self):
+        """
+        Return the list of files containing the interpolated velocity
+        field data.
+        """
+        files = glob.glob(
+            os.path.join(self.output_dir, "interp_vel_*")
+        )
+        files.sort()
+        return files
+
+    @property
+    def espec_result_files(self):
+        """
+        Return the list of files containing the energy spectrum data.
+        """
+        files = glob.glob(
+            os.path.join(self.output_dir, "espec_result_*")
+        )
+        files.sort()
+        return files
+        
+    
+    # Public methods
+    def save_initial_vel_field(
+        self, dim: int, u: np.ndarray, v: np.ndarray, w: np.ndarray,
+        L: float, dx: float, fname: str = None, **kwargs
+    ):
+        """
+        Save the initial velocity field to a *.npz file in the output
+        directory. The velocity field components should have appropriate
+        dimensions, i.e. len(shape(u)) = len(shape(v)) = len(shape(w)) = dim.
+        If a float is passed for (v or w) component  of velocity, it is
+        converted to a numpy array of the shape of (u).
+
+        Parameters
+        ----------
+        dim : int
+            Dimension of the flow.
+        u : np.ndarray
+            Initial velocity field in x direction.
+        v : np.ndarray
+            Initial velocity field in y direction.
+        w : np.ndarray
+            Initial velocity field in z direction.
+        L : float
+            Length of the domain.
+        dx : float
+            Grid spacing.
+        fname : str, optional
+            Name of the output file. If not specified, it is set to
+            "initial_vel_field.npz".
+        **kwargs : dict, optional
+            Additional keyword arguments to be passed to numpy.savez.
+        """
+        if fname is None:
+            fname = "initial_vel_field.npz"
+
+        # Convert to numpy arrays if necessary
+        if not isinstance(v, np.ndarray):
+            v = np.full_like(u, v)
+        if not isinstance(w, np.ndarray):
+            w = np.full_like(u, w)
+
+        assert len(u.shape) == dim, "u must have dimension dim"
+        assert len(v.shape) == dim, "v must have dimension dim"
+        assert len(w.shape) == dim, "w must have dimension dim"
+
+        fname = os.path.join(self.output_dir, fname)
+        np.savez(
+            fname, dim=dim, u=u, v=v, w=w, L=L, dx=dx, **kwargs
+        )
+        self._set_initial_vel_field_fname(fname)
+
+    # Post-processing methods
+    def get_interpolated_vel_field(
+        self, dim: int, L: float, f_idx_list: list
+    ):
+        """
+        Interpolate the velocity field at the specified indices of the
+        output files and save the interpolated velocity field to a *.npz
+        file in the output directory.
+
+        Parameters
+        ----------
+        dim : int
+            Dimension of the flow.
+        L : float
+            Length of the domain.
+        f_idx_list : list
+            List of indices of the output files.
+        """
+        print_log = True
+        t0 = time.time()
+        for f_idx in f_idx_list:
+            dx, ui, vi, wi, interp_ob =\
+                self._get_interpolated_vel_field_for_one_file(
+                    f_idx=f_idx, dim=dim, L=L, return_interp_obj=True
+                )
+            
+            if print_log:
+                self._log_interpolator_details(dim, interp_ob)
+                print_log = False
+
+            # Save interpolated velocity field
+            fname = self._get_interp_vel_fname(f_idx)
+            np.savez(
+                fname, dim=dim, L=L, ui=ui, vi=vi, wi=wi,
+                i_nx=self.options.i_nx, dx=dx
+            )
+            msg = f"Interpolated velocity field saved to {fname}."
+            logger.info(msg)
+        t1 = time.time()
+        msg = f"Time taken to interpolate velocity field: {t1 - t0:.2f} s."
+        print(msg)
+        logger.info(msg)            
 
     def get_length_of_ek(self, dim:int):
         """
@@ -621,7 +777,7 @@ class TurbulentFlowApp(Application):
             Energy spectrum object with computed energy spectrum.
         """
         i_kernel_cls = get_kernel_cls(name=self.options.i_kernel, dim=dim)
-        eqs, method = self.get_interpolation_equations(
+        eqs, method = self._get_interpolation_equations(
             method=self.options.i_method, dim=dim
         )
 
