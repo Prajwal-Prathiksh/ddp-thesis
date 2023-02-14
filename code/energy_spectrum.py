@@ -8,9 +8,11 @@ References
     Kinetic Energy Spectrum of Periodic Turbulent Flows. Accessed 7 Nov. 2022.
 """
 # Library imports
+import warnings
 import itertools as IT
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.stats
 from pysph.base.kernels import WendlandQuinticC4
 from pysph.tools.interpolator import Interpolator
 from pysph.solver.utils import load
@@ -24,13 +26,12 @@ try:
 except ImportError:
     # Define a dummy njit decorator
     def njit(x): return x
-    import warnings
     warnings.warn(
         "Numba not installed. Some functions will not be compiled."
     )
 
 # Local imports
-from automate_utils import styles
+from automate_utils import styles, plot_vline
 
 
 def compute_energy_spectrum(
@@ -844,7 +845,9 @@ class EnergySpectrum(object):
     1. From velocity field
         >>> EnergySpectrum(dim, u, v, w....)
     2. From PySPH file (Interpolates the velocity field implicitly)
-        >>> EnergySpectrum.from_pysph_file(fname....)
+        >>> EnergySpectrum.from_pysph_ofile(fname....)
+    3. From interpolated velocity field output file (TurbulentFlowApp)
+        >>> EnergySpectrum.from_interp_vel_ofile(fname....)
     3. From an example
         >>> EnergySpectrum.from_example(dim....)
 
@@ -866,22 +869,6 @@ class EnergySpectrum(object):
         Time of the flow data. Default is 0. Optional, required for plotting.
     U0: float, optional
         Reference velocity. Default is 1.
-
-    Class Methods
-    -------------
-    1. Initialize from PySPH file
-        >>> EnergySpectrum.from_pysph_file(fname....)
-    2. Initialize from an example
-        >>> EnergySpectrum.from_example(dim....)
-
-    Instance Methods
-    ----------------
-    1. Compute energy spectrum
-        >>> EnergySpectrum.compute()
-    2. Plot scalar energy spectrum
-        >>> EnergySpectrum.plot_scalar_ek()
-    3. Plot vector energy spectrum
-        >>> EnergySpectrum.plot_vector_ek()
     """
 
     def __init__(
@@ -911,7 +898,7 @@ class EnergySpectrum(object):
 
     # Class methods
     @classmethod
-    def from_pysph_file(
+    def from_pysph_ofile(
         cls, fname: str, dim: int, L: float, i_nx: int,
         kernel: object = None, radius_scale: float = None,
         domain_manager: object = None, U0=1., debug=False, **kwargs
@@ -1003,6 +990,35 @@ class EnergySpectrum(object):
             return cls_ob, interp_ob
         else:
             return cls_ob
+    
+    @classmethod
+    def from_interp_vel_ofile(cls, fname:str, U0=1.):
+        """
+        Create an EnergySpectrum object from a file containing the interpolated
+        velocity field, generated using the `TurbulentFlowApp` class.
+
+        Parameters
+        ----------
+        fname : str
+            Name of the file containing the interpolated velocity field.
+        U0 : float, optional
+            Reference velocity. Default is 1.
+
+        Returns
+        -------
+        EnergySpectrum object.
+        """        
+        interp_vel_data = np.load(fname, allow_pickle=True)
+        dim = int(interp_vel_data["dim"])
+        dx, L = float(interp_vel_data["dx"]), float(interp_vel_data["L"])
+        t = float(interp_vel_data["t"])
+
+        ui = interp_vel_data["ui"]
+        vi = interp_vel_data["vi"] if dim >= 2 else None
+        wi = interp_vel_data["wi"] if dim == 3 else None    
+
+        cls_ob = cls(dim=dim, L=L, dx=dx, u=ui, v=vi, w=wi, t=t, U0=U0)
+        return cls_ob
 
     @classmethod
     def from_example(
@@ -1087,40 +1103,6 @@ class EnergySpectrum(object):
         )
 
     # Static methods
-    @staticmethod
-    def plot_from_npz_file(
-        fnames: list, figname: str = None, styles: IT.cycle = styles
-    ):
-        """
-        Plot energy spectrum from npz files.
-
-        Parameters
-        ----------
-        fnames : list
-            List of npz files.
-        figname : str, optional
-            Name of the figure file. Default is "./energy_spectrum.png".
-        styles : itertools.cycle, optional
-            Styles to use for plotting. Default is styles.
-        """
-        plt.clf()
-        plt.figure()
-        ls = styles(None)
-        for fname in fnames:
-            data = np.load(fname)
-            k = data["k"]
-            ek = data["ek"]
-            t = data["t"]
-            plt.loglog(k, ek, label=f"t = {t:.2f}", **next(ls))
-
-        plt.xlabel(r"$k$")
-        plt.ylabel(r"$E(k)$")
-        plt.legend()
-        plt.title("Energy spectrum evolution")
-        if figname is None:
-            figname = "./energy_spectrum.png"
-        plt.savefig(figname, dpi=300, bbox_inches="tight")
-
     @staticmethod
     def calculate_wavenumber_of_dx(L, dx, box_radius):
         """
@@ -1320,6 +1302,72 @@ class EnergySpectrum(object):
         L2 error of the energy spectrum.
         """
         self.l2_error = np.sqrt((self.ek - ek_exact)**2)
+    
+    def get_ek_fit(
+        self, k_start: int = 1, k_by_n: int = 4, tol: float = 1e-10,
+    ):
+        """
+        Fits the log10 transformed energy spectrum data with a straight line,
+        using scipy.stats.linregress.
+        The data used for fitting is --> k[k_start:N//k_by_n], where
+        N = len(k).
+        Additionally, data points with |ek| < tol are ignored.
+
+        Parameters
+        ----------
+        k_start : int, optional
+            The data used for fitting is --> k[k_start:N//k_by_n], where
+            N = len(k).
+            Default: 1
+        k_by_n : int, optional
+            The data used for fitting is --> k[1:N//k_by_n], where N = len(k).
+            Default: 4
+        tol : float, optional
+            Tolerance for ignoring data points with |ek| < tol.
+            Default: 1e-10
+
+        Returns
+        -------
+        k_fit : np.ndarray
+            Wavenumbers after fitting.
+        ek_fit : np.ndarray
+            Energy spectrum after fitting.
+        fit_params : dict
+            Fitting parameters.
+            Includes: slope, intercept, r_value, p_value, std_err
+        """
+        k, ek = self.k, self.ek
+        cond_len = np.logical_and(k >= k_start, k < len(k) / k_by_n - 1)
+        cond_tol = np.abs(ek) > tol
+        cond = np.logical_and(cond_len, cond_tol)
+        k_cal, ek_cal = np.log10(k[cond]), np.log10(ek[cond])
+
+        if len(k_cal) < 2:
+            warnings.warn(
+                "Not enough data points for fitting. "
+                "\nFitting parameters are set to None."
+            )
+            return None, None, None
+
+        slope, intercept, r_value, p_value, std_err = \
+            scipy.stats.linregress(k_cal, ek_cal)
+
+        fit_params = dict(
+            slope=slope,
+            intercept=intercept,
+            r_value=r_value,
+            p_value=p_value,
+            std_err=std_err,
+        )
+
+        # Calculate fitted energy spectrum
+        k_fit = np.logspace(
+            start=np.log10(k_start), stop=np.log10(k[len(k) // k_by_n]),
+            num=50
+        )
+        ek_fit = 10**(slope * np.log10(k_fit) + intercept)
+
+        return k_fit, ek_fit, fit_params
 
     # Plotting methods
     def plot_scalar_ek(
@@ -1350,10 +1398,12 @@ class EnergySpectrum(object):
         n = self.n_1d
         plt.clf()
         if plot_type == "log":
-            plt.loglog(self.k[0:n], self.ek[0:n], 'k')
-            plt.loglog(self.k[n:], self.ek[n:], 'k--')
+            plt.loglog(self.k[0:n], self.ek[0:n],)
+            plt.loglog(self.k[n:], self.ek[n:], '--')
         elif plot_type == "stem":
             plt.stem(self.ek)
+        plot_vline(self.k, 2)
+        plot_vline(self.k, 8)
         plt.xlabel(r'$k$')
         plt.ylabel(r'$E(k)$')
         plt.grid()
@@ -1441,8 +1491,7 @@ class EnergySpectrum(object):
                 plt.show()
 
         elif dim == 3:
-            import warnings
-            warnings.warn("The feature is not implemented yet.")
+            warnings.warn("The feature is not implemented for 3D yet.")
 
 
 if __name__ == "__main__":
