@@ -12,7 +12,6 @@ import time
 import warnings
 import numpy as np
 import matplotlib.pyplot as plt
-import scipy.stats
 from pysph.solver.application import Application
 from pysph.sph.equation import Group
 from pysph.sph.basic_equations import SummationDensity
@@ -423,23 +422,60 @@ class TurbulentFlowApp(Application):
             self.compute_interpolated_vel_field(
                 f_idx_list=[f_idx], dim=dim, L=L
             )
-
-        interp_vel_data = np.load(fname, allow_pickle=True)
-        dx, t = float(interp_vel_data["dx"]), float(interp_vel_data["t"])
-        ui = interp_vel_data["ui"]
-        vi = interp_vel_data["vi"] if dim >= 2 else None
-        wi = interp_vel_data["wi"] if dim == 3 else None       
-
-        espec_ob = EnergySpectrum(
-            dim=dim, L=L, dx=dx, u=ui, v=vi, w=wi, t=t, U0=U0
-
-        )
+        
+        espec_ob = EnergySpectrum.from_interp_vel_ofile(fname=fname, U0=U0)
         espec_ob.compute(
             order=self.options.ek_norm_order, func_config=func_config
         )
         if self.get_exact_ek() is not None:
             espec_ob.compute_l2_error(ek_exact=self.get_exact_ek())
         return espec_ob
+
+    def _get_ek_from_initial_vel_field(self, dim: int, U0: float):
+        """
+        Computes the energy spectrum from the initial velocity field saved
+        using `save_initial_vel_field()`.
+
+        Parameters
+        ----------
+        dim : int
+            Dimension of the problem.
+        U0 : float
+            Initial velocity of the flow.
+
+        Returns
+        -------
+        espec_initial_ob : `EnergySpectrum` object
+            Energy spectrum object with computed energy spectrum.
+        """
+        fname = self.initial_vel_field_fname
+        if fname is None:
+            logger.warning(
+                "Could not find initial velocity field file. "
+                "Skipping computation of energy spectrum without "
+                "interpolation! \nForgot to call "
+                "`save_initial_vel_field()`?"
+            )
+            return None
+
+        data = np.load(fname)
+        u = data["u"]
+        v = data["v"]
+        w = data["w"]
+        L = data["L"]
+        dx = data["dx"]
+        if dim == 1:
+            v = w = None
+        elif dim == 2:
+            w = None
+
+        espec_initial_ob = EnergySpectrum(
+            dim=dim, L=L, dx=dx, u=u, v=v, w=w, t=0., U0=U0
+        )
+        espec_initial_ob.compute(order=self.options.ek_norm_order)
+        espec_initial_ob.compute_l2_error(ek_exact=self.get_exact_ek())
+
+        return espec_initial_ob
 
     def _log_interpolator_details(
         self, dim: int, interp_ob: object
@@ -465,16 +501,13 @@ class TurbulentFlowApp(Application):
         msg += "\n" + "-" * 70
         logger.info(msg)
 
-    def _set_initial_vel_field_fname(self, fname: str):
+    def _set_initial_vel_field_fname(self):
         """
-        Set the name of the file containing the initial velocity field.
-
-        Parameters
-        ----------
-        fname : str
-            Name of the file containing the initial velocity field.
+        Set the name of the file containing the initial velocity field,
+        to "initial_vel_field.npz".
         """
-        self.initial_vel_field_fname = fname
+        fname = "initial_vel_field.npz"
+        self.initial_vel_field_fname = os.path.join(self.output_dir, fname)
 
     def _get_ek_plot_types_mapper(self, plot_type: str):
         """
@@ -608,7 +641,7 @@ class TurbulentFlowApp(Application):
     # Public methods
     def save_initial_vel_field(
         self, dim: int, u: np.ndarray, v: np.ndarray, w: np.ndarray,
-        L: float, dx: float, fname: str = None, **kwargs
+        L: float, dx: float, **kwargs
     ):
         """
         Save the initial velocity field to a *.npz file in the output
@@ -631,15 +664,9 @@ class TurbulentFlowApp(Application):
             Length of the domain.
         dx : float
             Grid spacing.
-        fname : str, optional
-            Name of the output file. If not specified, it is set to
-            "initial_vel_field.npz".
         **kwargs : dict, optional
             Additional keyword arguments to be passed to numpy.savez.
         """
-        if fname is None:
-            fname = "initial_vel_field.npz"
-
         # Convert to numpy arrays if necessary
         if not isinstance(v, np.ndarray):
             v = np.full_like(u, v)
@@ -650,11 +677,11 @@ class TurbulentFlowApp(Application):
         assert len(v.shape) == dim, "v must have dimension dim"
         assert len(w.shape) == dim, "w must have dimension dim"
 
-        fname = os.path.join(self.output_dir, fname)
+        self._set_initial_vel_field_fname()
         np.savez(
-            fname, dim=dim, u=u, v=v, w=w, L=L, dx=dx, **kwargs
+            self.initial_vel_field_fname,
+            dim=dim, u=u, v=v, w=w, L=L, dx=dx, **kwargs
         )
-        self._set_initial_vel_field_fname(fname)
 
     def get_length_of_ek(self, dim:int):
         """
@@ -708,76 +735,6 @@ class TurbulentFlowApp(Application):
             f"functionalities will not be available."
         logger.warning(msg)
         return None
-
-    def get_ek_fit(
-        self, k: np.ndarray, ek: np.ndarray, tol: float = 1e-10,
-        k_n: int = 2
-    ):
-        """
-        Fits the log10 transformed energy spectrum data with a straight line,
-        using scipy.stats.linregress.
-        The data used for fitting is --> k[1:N//k_n], where N = len(k).
-        Additionally, data points with |ek| < tol are ignored.
-
-        Parameters
-        ----------
-        k : np.ndarray
-            Wavenumbers.
-        ek : np.ndarray
-            Energy spectrum.
-        tol : float, optional
-            Tolerance for ignoring data points with |ek| < tol.
-            Default: 1e-10
-        k_n : int, optional
-            The data used for fitting is --> k[1:N//k_n], where N = len(k).
-            Default: 2
-
-        Returns
-        -------
-        k_fit : np.ndarray
-            Wavenumbers after fitting.
-        ek_fit : np.ndarray
-            Energy spectrum after fitting.
-        fit_params : dict
-            Fitting parameters.
-            Includes: slope, intercept, r_value, p_value, std_err, slope_error
-        """
-        cond_len = np.logical_and(k > 0, k < len(k) / k_n - 1)
-        cond_tol = np.abs(ek) > tol
-        cond = np.logical_and(cond_len, cond_tol)
-        k_cal, ek_cal = np.log10(k[cond]), np.log10(ek[cond])
-
-        if len(k_cal) < 2:
-            warnings.warn(
-                "Not enough data points for fitting. "
-                "\nFitting parameters are set to None."
-            )
-            return None, None, None
-
-        slope, intercept, r_value, p_value, std_err = \
-            scipy.stats.linregress(k_cal, ek_cal)
-
-        slope_error = None
-        if self.get_expected_ek_slope() is not None:
-            slope_error = np.abs(slope - self.get_expected_ek_slope())
-
-        fit_params = dict(
-            slope=slope,
-            intercept=intercept,
-            r_value=r_value,
-            p_value=p_value,
-            std_err=std_err,
-            exact_slope=self.get_expected_ek_slope(),
-            slope_error=slope_error
-        )
-
-        # Calculate fitted energy spectrum
-        k_fit = np.logspace(
-            start=np.log10(1), stop=np.log10(k[len(k) // k_n]), num=50
-        )
-        ek_fit = 10**(slope * np.log10(k_fit) + intercept)
-
-        return k_fit, ek_fit, fit_params
 
 
     # Post-processing methods
@@ -851,16 +808,21 @@ class TurbulentFlowApp(Application):
             Default is False.
         **kwargs : dict, optional
             Additional keyword arguments to be passed to the
-            `self.get_ek_fit()` method.
+            `espec.get_ek_fit()` method.
         """
         t0 = time.time()
         for f_idx in f_idx_list:
             espec_ob = self._get_ek_for_one_file(
                 f_idx=f_idx, dim=dim, L=L, U0=U0, func_config=func_config
             )
-            k_fit, ek_fit, fit_params = self.get_ek_fit(
-                k=espec_ob.k, ek=espec_ob.ek, **kwargs
-            )
+            k_fit, ek_fit, fit_params = espec_ob.get_ek_fit(**kwargs)
+
+            exact_slope, slope_error = self.get_expected_ek_slope(), None
+            if exact_slope is not None:
+                slope_error = np.abs(exact_slope - fit_params['slope'])
+                fit_params.update(
+                    dict(exact_slope=exact_slope, slope_error=slope_error)
+                )
             
             # Save energy spectrum
             data = load(self.output_files[f_idx])
@@ -890,50 +852,39 @@ class TurbulentFlowApp(Application):
         print(msg)
         logger.info(msg)
 
-    def get_ek_from_initial_vel_field(self, dim: int, U0: float):
+    def compute_ek_from_initial_vel_field(
+        self, dim: int, L: float, U0: float
+    ):
         """
         Computes the energy spectrum from the initial velocity field saved
-        using `save_initial_vel_field()`.
+        using `save_initial_vel_field()` and saves the energy spectrum to a
+        *.npz file in the output directory.
 
         Parameters
         ----------
         dim : int
             Dimension of the problem.
+        L : float
+            Length of the domain.
         U0 : float
-            Initial velocity of the flow.
-
-        Returns
-        -------
-        espec_initial_ob : `EnergySpectrum` object
-            Energy spectrum object with computed energy spectrum.
+            Reference velocity.
         """
-        fname = self.initial_vel_field_fname
-        if fname is None:
-            logger.warning(
-                "Could not find initial velocity field file. "
-                "Skipping computation of energy spectrum without "
-                "interpolation! \nForgot to call "
-                "`save_initial_vel_field()`?"
-            )
-            return None
-
-        data = np.load(fname)
-        u = data["u"]
-        v = data["v"]
-        w = data["w"]
-        L = data["L"]
-        dx = data["dx"]
-        if dim == 1:
-            v = w = None
-        elif dim == 2:
-            w = None
-
-        espec_initial_ob = EnergySpectrum(
-            dim=dim, L=L, dx=dx, u=u, v=v, w=w, t=0., U0=U0
+        espec_ob = self._get_ek_from_initial_vel_field(dim=dim, U0=U0)
+        if espec_ob is None:
+            return
+        
+        # Save energy spectrum
+        fname = "initial_ek.npz"
+        fname = os.path.join(self.output_dir, fname)
+        save_vars = dict(
+            t=0.0, dim=dim, L=L, U0=U0,
+            k=espec_ob.k, ek=espec_ob.ek,
+            ek_u=espec_ob.ek_u, ek_v=espec_ob.ek_v, ek_w=espec_ob.ek_w,
+            ek_exact=self.get_exact_ek(), l2_error=espec_ob.l2_error,
         )
-        espec_initial_ob.compute(order=self.options.ek_norm_order)
-
-        return espec_initial_ob
+        np.savez(fname, **save_vars)
+        msg = f"Energy spectrum of initial velocity field saved to {fname}."
+        logger.info(msg)
 
     # Plotting methods
     def plot_ek(
@@ -988,8 +939,8 @@ class TurbulentFlowApp(Application):
         plt.minorticks_on()
 
         # Plot a vertical line at the middle of the k range.
-        plot_vline(data, 2)
-        plot_vline(data, 8)
+        plot_vline(data['k'], 2)
+        plot_vline(data['k'], 8)
 
         f_idx_str = fname.split("_")[-1].split(".")[0]
         fname = f"espec_{f_idx_str}_{plot_type}.png"
@@ -998,6 +949,12 @@ class TurbulentFlowApp(Application):
         plt.close()
 
         print(f"Energy spectrum plot saved to: {fname}")
+    
+    def plot(
+        self, f_idx: int, plot_type: str = "loglog", exact: bool = True,no_interp: bool = True
+    ):
+        pass
+
 
     def plot_ek_fit(
         self, f_idx: int, plot_type: str = "loglog", tol: float = 1e-10,
@@ -1089,8 +1046,8 @@ class TurbulentFlowApp(Application):
         plt.minorticks_on()
 
         # Plot a vertical line at the middle of the k range.
-        plot_vline(data, 2)
-        plot_vline(data, 8)
+        plot_vline(data['k'], 2)
+        plot_vline(data['k'], 8)
 
         f_idx_str = fname.split("_")[-1].split(".")[0]
         fname = f"espec_{f_idx_str}_{plot_type}_fit.png"
