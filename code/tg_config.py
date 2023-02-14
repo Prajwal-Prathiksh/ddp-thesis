@@ -116,7 +116,10 @@ def configure_scheme(app, p0, gx=0.0):
     elif app.options.scheme == 'ok2022':
         scheme.configure(nu=app.nu, dx=app.dx, h0=h0)
 
-    times = linspace(0, app.options.final_time, 100)
+    tf = app.options.final_time
+    if tf is None:
+        tf = app.tf
+    times = linspace(0, tf, 100)
     scheme.configure_solver(kernel=kernel, tf=app.tf, dt=app.dt,
                             output_at_times=times, pfreq=100000000)
 
