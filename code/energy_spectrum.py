@@ -907,6 +907,7 @@ class EnergySpectrum(object):
         self._check_format_of_list_data([u, v, w])
 
         self.k, self.ek = None, None
+        self.l2_error = None
 
     # Class methods
     @classmethod
@@ -1288,7 +1289,23 @@ class EnergySpectrum(object):
             self._correct_format_of_list_data(
                 [self.ek_u_sphere, self.ek_v_sphere, self.ek_w_sphere]
             )
+    
+    def compute_l2_error(self, ek_exact):
+        """
+        Compute the L2 error of the energy spectrum.
 
+        Parameters
+        ----------
+        ek_exact : array_like
+            Exact energy spectrum.
+
+        Returns
+        -------
+        L2 error of the energy spectrum.
+        """
+        self.l2_error = np.sqrt((self.ek - ek_exact)**2)
+
+    # Plotting methods
     def plot_scalar_ek(
         self, show=False, savefig=False, fname=None, dpi=300, plot_type="log",
     ):
