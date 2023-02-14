@@ -570,7 +570,7 @@ def ext_force_antuono2020(x, y, z, t, nu, L=1., U=1.):
     k = 2*pi/L
     kx, ky, kz = k*x, k*y, k*z
     t_star = t*U/L
-    A = 1.25e-3 * sqrt(32./27.)
+    A = sqrt(32./27.)
     A = A*(-3.*nu*k**2)
 
     if ramp(t_star) > 0.:
