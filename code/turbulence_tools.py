@@ -113,6 +113,7 @@ class TurbulentFlowApp(Application):
         super().__init__(*args, **kw)
         self._add_turbulence_options()
         self.initial_vel_field_fname = None
+        self.initial_ek_fname = None
 
     # Private methods
     def _add_turbulence_options(self):
@@ -628,7 +629,7 @@ class TurbulentFlowApp(Application):
         return files
 
     @property
-    def espec_result_files(self):
+    def ek_files(self):
         """
         Return the list of files containing the energy spectrum data.
         """
@@ -639,6 +640,10 @@ class TurbulentFlowApp(Application):
         return files
         
     # Public methods
+    def set_problem_parameters(self):
+        # TODO
+        pass
+
     def save_initial_vel_field(
         self, dim: int, u: np.ndarray, v: np.ndarray, w: np.ndarray,
         L: float, dx: float, **kwargs
@@ -772,7 +777,7 @@ class TurbulentFlowApp(Application):
             )
             
             np.savez(fname, **save_vars)
-            msg = f"Interpolated velocity field saved to {fname}."
+            msg = f"Interpolated velocity field saved to: {fname}."
             logger.info(msg)
 
         t1 = time.time()
@@ -838,7 +843,7 @@ class TurbulentFlowApp(Application):
             )
 
             np.savez(fname, **save_vars)
-            msg = f"Energy spectrum saved to {fname}."
+            msg = f"Energy spectrum saved to: {fname}."
             logger.info(msg)
 
             if save_pysph_view_file:
@@ -876,6 +881,7 @@ class TurbulentFlowApp(Application):
         # Save energy spectrum
         fname = "initial_ek.npz"
         fname = os.path.join(self.output_dir, fname)
+        self.initial_ek_fname = fname
         save_vars = dict(
             t=0.0, dim=dim, L=L, U0=U0,
             k=espec_ob.k, ek=espec_ob.ek,
@@ -883,13 +889,12 @@ class TurbulentFlowApp(Application):
             ek_exact=self.get_exact_ek(), l2_error=espec_ob.l2_error,
         )
         np.savez(fname, **save_vars)
-        msg = f"Energy spectrum of initial velocity field saved to {fname}."
+        msg = f"Energy spectrum of initial velocity field saved to: {fname}."
         logger.info(msg)
 
-    # Plotting methods
+    # Plotting methods    
     def plot_ek(
-        self, f_idx: int, plot_type: str = "loglog", exact: bool = True,
-        no_interp: bool = True,
+        self, f_idx: int, plot_type: str = "loglog", exact: bool = False,wo_interp_initial: bool = False, ylims: tuple = (1e-10, 1)
     ):
         """
         Plot the computed energy spectrum stored in the *.npz file.
@@ -904,58 +909,72 @@ class TurbulentFlowApp(Application):
             Default is loglog.
             Valid options: loglog, semilogx, semilogy, plot, stem
         exact : bool, optional
-            If True, plots the exact expected energy spectrum. Default is True.
-        no_interp : bool, optional
+            If True, plots the exact expected energy spectrum.
+            Default is False.
+        wo_interp_initial : bool, optional
             If True, plots the energy spectrum computed without interpolating
-            the velocity field. Default is True.
+            the initial velocity field.
+            Default is False.
+        ylims : tuple, optional
+            y-axis limits. If None, the limits are automatically determined.
+            Default is (1e-10, 1).
         """
-        fname = self.espec_result_files[f_idx]
+        fname = self._get_ek_fname(f_idx=f_idx)
+        if fname not in self.ek_files:
+            msg = f"Energy spectrum file: {fname} not found."
+            msg += "\nRunn self.compute_ek() first."
+            raise ValueError(msg)
+        
         data = np.load(fname, allow_pickle=True)
-        k = data['k']
-        t = data['t']
-        ek = data['ek']
+        t = float(data['t'])
+        k, ek = data['k'], data['ek']
+        
         ek_exact = data['ek_exact']
-        ek_no_interp = data['ek_no_interp']
+        if not exact or np.size(ek_exact) == 1:
+            ek_exact = None
+        
+        ek_initial_data = None
+        if wo_interp_initial and self.initial_ek_fname is not None:
+            ek_initial_data = np.load(self.initial_ek_fname, allow_pickle=True)
 
         plotter = self._get_ek_plot_types_mapper(plot_type=plot_type)
         plot_func = plotter['func']
 
         plt.figure()
         plot_func(k, ek, label="Computed")
-        if exact and np.size(ek_exact) > 1:
+        if ek_exact is not None:
             plot_func(k, ek_exact, 'k-', label="Exact")
-        if no_interp and np.size(ek_no_interp) > 1:
-            plot_func(k, ek_no_interp, 'r--', label="No interpolation")
-
+        if ek_initial_data is not None:
+            plot_func(
+                ek_initial_data['k'], ek_initial_data['ek'], 'r--',
+                label="Without interpolation (t=0)"
+            )
+        
         plt.xlabel(plotter['xlabel'])
         plt.ylabel(plotter['ylabel'])
         plt.legend()
+        
+        # TODO: Add Re to the title.
         plt.title(f"Energy spectrum at t = {t:.2f}")
 
-        # Limit y-axis to 1e-10 to y-axis max.
-        # ymin, ymax = plt.ylim()
-        # ymin = max(ymin, 1e-10)
-        # plt.ylim(ymin, ymax)
+        # Limit y-axis
+        ymin, ymax = plt.ylim()
+        ymin = max(ymin, ylims[0])
+        ymax = min(ymax, ylims[1])
+        plt.ylim(ymin, ymax)
         plt.minorticks_on()
 
         # Plot a vertical line at the middle of the k range.
-        plot_vline(data['k'], 2)
-        plot_vline(data['k'], 8)
+        plot_vline(k, 2)
+        plot_vline(k, 8)
 
         f_idx_str = fname.split("_")[-1].split(".")[0]
-        fname = f"espec_{f_idx_str}_{plot_type}.png"
+        fname = f"ek_{f_idx_str}_{plot_type}.png"
         fname = os.path.join(self.output_dir, fname)
         plt.savefig(fname, dpi=300, bbox_inches='tight')
         plt.close()
-
-        print(f"Energy spectrum plot saved to: {fname}")
+        print(f"Energy spectrum plot saved to: {fname}.")
     
-    def plot(
-        self, f_idx: int, plot_type: str = "loglog", exact: bool = True,no_interp: bool = True
-    ):
-        pass
-
-
     def plot_ek_fit(
         self, f_idx: int, plot_type: str = "loglog", tol: float = 1e-10,
         exact: bool = True, no_interp: bool = True, k_n: int = 2
@@ -984,7 +1003,7 @@ class TurbulentFlowApp(Application):
             The data used for fitting is --> k[1:N//k_n], where N = len(k).
             Default: 2
         """
-        fname = self.espec_result_files[f_idx]
+        fname = self.ek_files[f_idx]
         data = np.load(fname, allow_pickle=True)
         k = data['k']
         t = float(data['t'])
