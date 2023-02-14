@@ -872,9 +872,9 @@ class TurbulentFlowApp(Application):
         plt.title(f"Energy spectrum at t = {t:.2f}")
 
         # Limit y-axis to 1e-10 to y-axis max.
-        ymin, ymax = plt.ylim()
-        ymin = max(ymin, 1e-10)
-        plt.ylim(ymin, ymax)
+        # ymin, ymax = plt.ylim()
+        # ymin = max(ymin, 1e-10)
+        # plt.ylim(ymin, ymax)
         plt.minorticks_on()
 
         # Plot a vertical line at the middle of the k range.
@@ -973,9 +973,9 @@ class TurbulentFlowApp(Application):
         plt.title(f"Energy spectrum at t = {t:.2f}")
 
         # Limit y-axis to 1e-10 to y-axis max.
-        ymin, ymax = plt.ylim()
-        ymin = max(ymin, 1e-10)
-        plt.ylim(ymin, ymax)
+        # ymin, ymax = plt.ylim()
+        # ymin = max(ymin, 1e-10)
+        # plt.ylim(ymin, ymax)
         plt.minorticks_on()
 
         # Plot a vertical line at the middle of the k range.

@@ -317,10 +317,11 @@ class TriperiodicBeltrami(TurbulentFlowApp):
 
 if __name__ == '__main__':
     app = TriperiodicBeltrami()
-    app.run()
+    # app.run()
     app.post_process(app.info_filename)
     app.ek_post_processing(
         dim=3, L=app.L, U0=U, f_idx=-1,
         compute_without_interp=True
     )
-    app.plot_ek(f_idx=-1)
+    # app.plot_ek(f_idx=-1)
+    app.plot_ek_fit(f_idx=-1, tol=1e-20, k_n=4)
