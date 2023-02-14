@@ -228,7 +228,7 @@ class FTLyapunovExponent(object):
     
     # Class methods
     @classmethod
-    def from_pysph_files(
+    def from_pysph_ofiles(
         cls, dim:int, fname_i:str, fname_f:str, kernel=None, 
         domain_manager=None
     ):
