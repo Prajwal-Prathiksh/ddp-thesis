@@ -9,6 +9,7 @@ import os
 import logging
 import inspect
 import time
+import warnings
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats
@@ -201,7 +202,26 @@ class TurbulentFlowApp(Application):
         idx = self.output_files[f_idx].split("_")[-1].split(".")[0]
         fname = os.path.join(self.output_dir, f"interp_vel_{idx}.npz")
         return fname
+    
+    def _get_ek_fname(self, f_idx: int):
+        """
+        Return the filename for the energy spectrum for a given output file
+        index.
 
+        Parameters
+        ----------
+        f_idx : int
+            Output file index.
+        
+        Returns
+        -------
+        fname : str
+            Filename for the energy spectrum.
+        """
+        idx = self.output_files[f_idx].split("_")[-1].split(".")[0]
+        fname = os.path.join(self.output_dir, f"ek_{idx}.npz")
+        return fname
+        
     def _get_interpolation_equations(self, method: str, dim: int):
         """
         Return the equations for interpolating the velocity field.
@@ -295,7 +315,6 @@ class TurbulentFlowApp(Application):
 
     def _get_interpolated_vel_field_for_one_file(
         self, f_idx: int, dim: int, L: float,
-        return_interp_obj: bool = False,
     ):
         """
         Return the interpolated velocity field for a given file index of the
@@ -309,8 +328,6 @@ class TurbulentFlowApp(Application):
             Dimension of the problem.
         L : float
             Length of the domain.
-        return_interp_obj : bool, optional
-            If True, return the `Interpolator` object as well.
 
         Returns
         -------
@@ -322,7 +339,6 @@ class TurbulentFlowApp(Application):
             Interpolator object.
         """
         data = load(self.output_files[f_idx])
-        t = data["solver_data"]["t"]
         u = data["arrays"]["fluid"].get("u")
 
         i_nx = self.options.i_nx
@@ -372,11 +388,59 @@ class TurbulentFlowApp(Application):
             _w = interp_ob.interpolate('w')
             ui = _u.reshape(i_nx, i_nx, i_nx)
             vi = _v.reshape(i_nx, i_nx, i_nx)
-            wi = _w.reshape(i_nx, i_nx, i_nx)
-
-        if return_interp_obj:
-            return dx, ui, vi, wi, interp_ob        
+            wi = _w.reshape(i_nx, i_nx, i_nx)   
         return dx, ui, vi, wi
+
+    def _get_ek_for_one_file(
+        self, f_idx: int, dim: int, L: float, U0: float, func_config: str
+    ):
+        """
+        Return the energy spectrum of the flow for a given file index of the
+        output files.
+
+        Parameters
+        ----------
+        f_idx : int
+            Index of the output file.
+        dim : int
+            Dimension of the flow.
+        L : float
+            Length of the domain.
+        U0 : float
+            Reference velocity of the flow.
+        func_config : str, optional
+            Configuration of the function.
+        
+        Returns
+        -------
+        espec_ob : EnergySpectrum
+            EnergySpectrum object.
+        """
+        fname = self._get_interp_vel_fname(f_idx)
+        if os.path.basename(fname) not in self.interp_vel_files:
+            msg = f"Interpolated velocity field file: {fname} not found."
+            msg += "\nRunning self.save_interpolated_vel_field() first."
+            warnings.warn(msg)
+            self.save_interpolated_vel_field(
+                f_idx_list=[f_idx], dim=dim, L=L
+            )
+
+        interp_vel_data = np.load(fname, allow_pickle=True)
+        dx, t = float(interp_vel_data["dx"]), float(interp_vel_data["t"])
+        ui = interp_vel_data["ui"]
+        vi = interp_vel_data["vi"] if dim >= 2 else None
+        wi = interp_vel_data["wi"] if dim == 3 else None       
+
+        espec_ob = EnergySpectrum(
+            dim=dim, L=L, dx=dx, u=ui, v=vi, w=wi, t=t, U0=U0
+
+        )
+        espec_ob.compute(
+            order=self.options.ek_norm_order, func_config=func_config
+        )
+        if self.get_exact_ek() is not None:
+            espec_ob.compute_l2_error(ek_exact=self.get_exact_ek())
+        return espec_ob
 
     def _log_interpolator_details(
         self, dim: int, interp_ob: object
@@ -482,12 +546,11 @@ class TurbulentFlowApp(Application):
         Return the list of files containing the energy spectrum data.
         """
         files = glob.glob(
-            os.path.join(self.output_dir, "espec_result_*")
+            os.path.join(self.output_dir, "ek_*")
         )
         files.sort()
         return files
         
-    
     # Public methods
     def save_initial_vel_field(
         self, dim: int, u: np.ndarray, v: np.ndarray, w: np.ndarray,
@@ -538,49 +601,6 @@ class TurbulentFlowApp(Application):
             fname, dim=dim, u=u, v=v, w=w, L=L, dx=dx, **kwargs
         )
         self._set_initial_vel_field_fname(fname)
-
-    # Post-processing methods
-    def get_interpolated_vel_field(
-        self, dim: int, L: float, f_idx_list: list
-    ):
-        """
-        Interpolate the velocity field at the specified indices of the
-        output files and save the interpolated velocity field to a *.npz
-        file in the output directory.
-
-        Parameters
-        ----------
-        dim : int
-            Dimension of the flow.
-        L : float
-            Length of the domain.
-        f_idx_list : list
-            List of indices of the output files.
-        """
-        print_log = True
-        t0 = time.time()
-        for f_idx in f_idx_list:
-            dx, ui, vi, wi, interp_ob =\
-                self._get_interpolated_vel_field_for_one_file(
-                    f_idx=f_idx, dim=dim, L=L, return_interp_obj=True
-                )
-            
-            if print_log:
-                self._log_interpolator_details(dim, interp_ob)
-                print_log = False
-
-            # Save interpolated velocity field
-            fname = self._get_interp_vel_fname(f_idx)
-            np.savez(
-                fname, dim=dim, L=L, ui=ui, vi=vi, wi=wi,
-                i_nx=self.options.i_nx, dx=dx
-            )
-            msg = f"Interpolated velocity field saved to {fname}."
-            logger.info(msg)
-        t1 = time.time()
-        msg = f"Time taken to interpolate velocity field: {t1 - t0:.2f} s."
-        print(msg)
-        logger.info(msg)            
 
     def get_length_of_ek(self, dim:int):
         """
@@ -674,10 +694,9 @@ class TurbulentFlowApp(Application):
         k_cal, ek_cal = np.log10(k[cond]), np.log10(ek[cond])
 
         if len(k_cal) < 2:
-            import warnings
             warnings.warn(
                 "Not enough data points for fitting. "
-                "Fitting parameters are set to None."
+                "\nFitting parameters are set to None."
             )
             return None, None, None
 
@@ -694,6 +713,7 @@ class TurbulentFlowApp(Application):
             r_value=r_value,
             p_value=p_value,
             std_err=std_err,
+            exact_slope=self.get_expected_ek_slope(),
             slope_error=slope_error
         )
 
@@ -704,122 +724,6 @@ class TurbulentFlowApp(Application):
         ek_fit = 10**(slope * np.log10(k_fit) + intercept)
 
         return k_fit, ek_fit, fit_params
-
-    def get_ek_from_initial_vel_field(self, dim: int, U0: float):
-        """
-        Computes the energy spectrum from the initial velocity field saved
-        using `save_initial_vel_field()`.
-
-        Parameters
-        ----------
-        dim : int
-            Dimension of the problem.
-        U0 : float
-            Initial velocity of the flow.
-
-        Returns
-        -------
-        espec_initial_ob : `EnergySpectrum` object
-            Energy spectrum object with computed energy spectrum.
-        """
-        fname = self.initial_vel_field_fname
-        if fname is None:
-            logger.warning(
-                "Could not find initial velocity field file. "
-                "Skipping computation of energy spectrum without "
-                "interpolation! \nForgot to call "
-                "`save_initial_vel_field()`?"
-            )
-            return None
-
-        data = np.load(fname)
-        u = data["u"]
-        v = data["v"]
-        w = data["w"]
-        L = data["L"]
-        dx = data["dx"]
-        if dim == 1:
-            v = w = None
-        elif dim == 2:
-            w = None
-
-        espec_initial_ob = EnergySpectrum(
-            dim=dim, L=L, dx=dx, u=u, v=v, w=w, t=0., U0=U0
-        )
-        espec_initial_ob.compute(order=self.options.ek_norm_order)
-
-        return espec_initial_ob
-
-    def get_ek(
-        self, fname: str, dim: int, L: float, U0: float = 1,
-        func_config: str = 'compyle'
-    ):
-        """
-        Compute and get the energy spectrum from a given PySPH output file.
-
-        Parameters
-        ----------
-        fname : str
-            Name of the PySPH output file.
-        dim : int
-            Dimension of the problem.
-        L : float
-            Length of the domain.
-        U0 : float, optional
-            Reference velocity of the flow. Default is 1.
-        func_config : str, optional
-            Configuration of the function. Default is 'compyle'.
-            Options: python, numba, 'compyle'
-
-        Returns
-        -------
-        espec_ob : `EnergySpectrum` object
-            Energy spectrum object with computed energy spectrum.
-        """
-        i_kernel_cls = get_kernel_cls(name=self.options.i_kernel, dim=dim)
-        eqs, method = self._get_interpolation_equations(
-            method=self.options.i_method, dim=dim
-        )
-
-        t0 = time.time()
-        espec_ob, interp_ob = EnergySpectrum.from_pysph_file(
-            fname=fname,
-            dim=dim,
-            L=L,
-            i_nx=self.options.i_nx,
-            kernel=i_kernel_cls,
-            radius_scale=self.options.i_radius_scale,
-            domain_manager=self.create_domain(),
-            method=method,
-            equations=eqs,
-            U0=U0,
-            debug=True
-        )
-        t1 = time.time()
-
-        msg = f"Velocity field interpolation took: {t1-t0:.3f} secs"
-        logger.info(msg)
-        print(msg)
-
-        self._log_interpolator_details(
-            fname=fname, dim=dim, interp_ob=interp_ob
-        )
-
-        msg = f'Running Energy spectrum computation using "{func_config}" ' \
-            f'function configuration.'
-        logger.info(msg)
-
-        t0 = time.time()
-        espec_ob.compute(
-            order=self.options.ek_norm_order, func_config=func_config
-        )
-        t1 = time.time()
-
-        msg = f"Energy spectrum computation took: {t1-t0:.3f} secs"
-        logger.info(msg)
-        print(msg)
-
-        return espec_ob
 
     def save_energy_spectrum_as_pysph_view_file(
         self, fname: str, dim: int, espec_ob: object,
@@ -876,112 +780,164 @@ class TurbulentFlowApp(Application):
         msg += f'. Can be viewed by running: \n\t$ pysph view "{fname}"'
         logger.info(msg)
 
-    def ek_post_processing(
-        self, dim: int, L: float, U0: float = 1.0, f_idx: int = 0,
-        compute_without_interp: bool = False, func_config: str = 'compyle',
-        save_pysph_view_file: bool = False
+
+    # Post-processing methods
+    def save_interpolated_vel_field(
+        self, f_idx_list: list, dim: int, L: float,
     ):
         """
-        Post-processing of the energy spectrum, and saves the energy
-        spectrum in a `.npz` file in the output directory.
+        Interpolate the velocity field at the specified indices of the
+        output files and save the interpolated velocity field to a *.npz
+        file in the output directory.
+
+        Parameters
+        ----------
+        f_idx_list : list
+            List of indices of the output files.
+        dim : int
+            Dimension of the flow.
+        L : float
+            Length of the domain.
+        """
+        t0 = time.time()
+        for f_idx in f_idx_list:
+            dx, ui, vi, wi = self._get_interpolated_vel_field_for_one_file(
+                    f_idx=f_idx, dim=dim, L=L
+            )
+
+            # Save interpolated velocity field
+            data = load(self.output_files[f_idx])
+            t = data["solver_data"]["t"]
+            fname = self._get_interp_vel_fname(f_idx)
+            
+            save_vars = dict(
+                t=t, dim=dim, L=L, dx=dx, i_nx=self.options.i_nx, 
+                ui=ui, vi=vi, wi=wi
+            )
+            
+            np.savez(fname, **save_vars)
+            msg = f"Interpolated velocity field saved to {fname}."
+            logger.info(msg)
+
+        t1 = time.time()
+        msg = "Time taken to interpolate and save "
+        msg += f"velocity field: {t1 - t0:.2f} s."
+        print(msg)
+    
+    def save_ek(
+        self, f_idx_list: list, dim: int, L: float, U0: float,
+        func_config: str = 'compyle', save_pysph_view_file: bool = False,
+        **kwargs
+    ):
+        """
+        Compute the energy spectrum of the flow at the specified indices of
+        the output files and save the energy spectrum to a *.npz file in the
+        output directory. It also computes the fit of the energy spectrum using
+        linear regression.
+
+        Parameters
+        ----------
+        f_idx_list : list
+            List of indices of the output files.
+        dim : int
+            Dimension of the flow.
+        L : float
+            Length of the domain.
+        U0 : float
+            Reference velocity.
+        func_config : str, optional
+            Configuration of the function. Default is 'compyle'.
+        save_pysph_view_file : bool, optional
+            If True, saves the energy spectrum as a PySPH viewable file.
+            Default is False.
+        **kwargs : dict, optional
+            Additional keyword arguments to be passed to the
+            `self.get_ek_fit()` method.
+        """
+        t0 = time.time()
+        for f_idx in f_idx_list:
+            espec_ob = self._get_ek_for_one_file(
+                f_idx=f_idx, dim=dim, L=L, U0=U0, func_config=func_config
+            )
+            k_fit, ek_fit, fit_params = self.get_ek_fit(
+                k=espec_ob.k, ek=espec_ob.ek, **kwargs
+            )
+            
+            # Save energy spectrum
+            data = load(self.output_files[f_idx])
+            t = data["solver_data"]["t"]
+            fname = self._get_ek_fname(f_idx)
+            
+            save_vars = dict(
+                t=t, dim=dim, L=L, U0=U0,
+                k=espec_ob.k, ek=espec_ob.ek,
+                ek_u=espec_ob.ek_u, ek_v=espec_ob.ek_v, ek_w=espec_ob.ek_w,
+                ek_exact=self.get_exact_ek(), l2_error=espec_ob.l2_error,
+                k_fit=k_fit, ek_fit=ek_fit, fit_params=fit_params,
+            )
+
+            np.savez(fname, **save_vars)
+            msg = f"Energy spectrum saved to {fname}."
+            logger.info(msg)
+
+            if save_pysph_view_file:
+                self.save_energy_spectrum_as_pysph_view_file(
+                    fname=self.output_files[f_idx], dim=dim, espec_ob=espec_ob
+                )
+
+        t1 = time.time()
+        msg = "Time taken to compute and save"
+        msg += f"energy spectrum: {t1 - t0:.2f} s."
+        print(msg)
+        logger.info(msg)
+
+    def get_ek_from_initial_vel_field(self, dim: int, U0: float):
+        """
+        Computes the energy spectrum from the initial velocity field saved
+        using `save_initial_vel_field()`.
 
         Parameters
         ----------
         dim : int
             Dimension of the problem.
-        L : float
-            Length of the domain.
-        U0 : float, optional
-            Reference velocity of the flow. Default is 1.
-        f_idx : int, optional
-            Index of the output file to be used for computing the energy
-            spectrum. Default is 0.
-        compute_without_interp : bool
-            If True, computes the energy spectrum with and without
-            interpolating the velocity field. This requires the initial
-            velocity field to be saved using `save_initial_vel_field()`.
-            Default is False.
-        func_config : str, optional
-            Configuration of the function. Default is 'compyle'.
-            Options: python, numba, 'compyle'
-        save_pysph_view_file : bool, optional
-            If True, saves the energy spectrum as a PySPH viewable file.
-            Default is False.
+        U0 : float
+            Initial velocity of the flow.
+
+        Returns
+        -------
+        espec_initial_ob : `EnergySpectrum` object
+            Energy spectrum object with computed energy spectrum.
         """
-        if len(self.output_files) == 0:
-            return
-
-        # Get the energy spectrum
-        espec_ob = self.get_ek(
-            fname=self.output_files[f_idx], dim=dim, L=L,
-            func_config=func_config
-        )
-
-        # Calculate the wavenumber corresponding to the interolating radius
-        L = espec_ob.L
-        box_radius = self.get_length_of_ek(dim=dim)
-        dx = espec_ob.dx
-        radius_scale = self.options.i_radius_scale
-        # interp_wn = EnergySpectrum.calculate_wavenumber_of_dx(
-        #     L=L, box_radius=box_radius,
-        #     dx=dx*radius_scale
-        # )
-        # print(f"Interpolating wave number: {interp_wn}")
-
-        # Fit the energy spectrum
-        k_fit, ek_fit, fit_params = self.get_ek_fit(
-            k=espec_ob.k, ek=espec_ob.ek
-        )
-
-        # Get the energy spectrum for data without interpolation
-        ek_no_interp, l2_error_no_interp = None, None
-        if compute_without_interp:
-            espec_initial_ob = self.get_ek_from_initial_vel_field(
-                dim=dim, U0=U0
+        fname = self.initial_vel_field_fname
+        if fname is None:
+            logger.warning(
+                "Could not find initial velocity field file. "
+                "Skipping computation of energy spectrum without "
+                "interpolation! \nForgot to call "
+                "`save_initial_vel_field()`?"
             )
-            if espec_initial_ob is not None:
-                ek_no_interp = espec_initial_ob.ek
-                l2_error_no_interp = np.sqrt((espec_ob.ek - ek_no_interp)**2)
+            return None
 
-        # Get the exact energy spectrum
-        ek_exact = self.get_exact_ek()
-        if ek_exact is not None:
-            l2_error = np.sqrt((espec_ob.ek - ek_exact)**2)
-        else:
-            l2_error = None
+        data = np.load(fname)
+        u = data["u"]
+        v = data["v"]
+        w = data["w"]
+        L = data["L"]
+        dx = data["dx"]
+        if dim == 1:
+            v = w = None
+        elif dim == 2:
+            w = None
 
-        # Save npz file
-        f_idx_str = self.output_files[f_idx].split("_")[-1].split(".")[0]
-        fname = os.path.join(self.output_dir, f"espec_result_{f_idx_str}.npz")
-        np.savez(
-            fname,
-            k=espec_ob.k,
-            t=espec_ob.t,
-            L=L,
-            box_radius=box_radius,
-            dx=dx,
-            radius_scale=radius_scale,
-            # interp_wn=interp_wn,
-            ek=espec_ob.ek,
-            ek_u=espec_ob.ek_u,
-            ek_v=espec_ob.ek_v,
-            ek_w=espec_ob.ek_w,
-            ek_exact=ek_exact,
-            l2_error=l2_error,
-            ek_no_interp=ek_no_interp,
-            l2_error_no_interp=l2_error_no_interp,
-            k_fit=k_fit,
-            ek_fit=ek_fit,
-            fit_params=fit_params
+        espec_initial_ob = EnergySpectrum(
+            dim=dim, L=L, dx=dx, u=u, v=v, w=w, t=0., U0=U0
         )
-        logger.info("Energy spectrum results saved to: %s", fname)
+        espec_initial_ob.compute(order=self.options.ek_norm_order)
 
-        # Save PySPH viewable file
-        if save_pysph_view_file:
-            self.save_energy_spectrum_as_pysph_view_file(
-                fname=self.output_files[f_idx], dim=dim, espec_ob=espec_ob
-            )
+        return espec_initial_ob
 
+        
+    # Plotting methods
     def plot_ek(
         self, f_idx: int, plot_type: str = "loglog", exact: bool = True,
         no_interp: bool = True,
