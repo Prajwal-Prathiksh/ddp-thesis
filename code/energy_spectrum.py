@@ -990,9 +990,9 @@ class EnergySpectrum(object):
             return cls_ob, interp_ob
         else:
             return cls_ob
-    
+
     @classmethod
-    def from_interp_vel_ofile(cls, fname:str, U0=1.):
+    def from_interp_vel_ofile(cls, fname: str, U0=1.):
         """
         Create an EnergySpectrum object from a file containing the interpolated
         velocity field, generated using the `TurbulentFlowApp` class.
@@ -1007,7 +1007,7 @@ class EnergySpectrum(object):
         Returns
         -------
         EnergySpectrum object.
-        """        
+        """
         interp_vel_data = np.load(fname, allow_pickle=True)
         dim = int(interp_vel_data["dim"])
         dx, L = float(interp_vel_data["dx"]), float(interp_vel_data["L"])
@@ -1015,7 +1015,7 @@ class EnergySpectrum(object):
 
         ui = interp_vel_data["ui"]
         vi = interp_vel_data["vi"] if dim >= 2 else None
-        wi = interp_vel_data["wi"] if dim == 3 else None    
+        wi = interp_vel_data["wi"] if dim == 3 else None
 
         cls_ob = cls(dim=dim, L=L, dx=dx, u=ui, v=vi, w=wi, t=t, U0=U0)
         return cls_ob
@@ -1302,7 +1302,7 @@ class EnergySpectrum(object):
         L2 error of the energy spectrum.
         """
         self.l2_error = np.sqrt((self.ek - ek_exact)**2)
-    
+
     def get_ek_fit(
         self, k_start: int = 1, k_by_n: int = 4, tol: float = 1e-10,
     ):
