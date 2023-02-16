@@ -844,7 +844,7 @@ class EnergySpectrum(object):
     --------------
     1. From velocity field
         >>> EnergySpectrum(dim, u, v, w....)
-    2. From PySPH file (Interpolates the velocity field implicitly)
+    2. From PySPH output file (Interpolates the velocity field implicitly)
         >>> EnergySpectrum.from_pysph_ofile(fname....)
     3. From interpolated velocity field output file (TurbulentFlowApp)
         >>> EnergySpectrum.from_interp_vel_ofile(fname....)
