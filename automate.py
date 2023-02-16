@@ -22,7 +22,7 @@ from automan.utils import filter_cases, filter_by_name
 from code.automate_utils import styles, custom_compare_runs, plot_vline
 
 BACKEND = " --openmp "
-N_CORES, N_THREADS = 1, 2 #4, 8
+N_CORES, N_THREADS = 4, 8
 
 class SineVelProfilePlotters(Simulation):
     """
@@ -391,8 +391,8 @@ class TGVExtForceSchemeComparison(PySPHProblem):
             scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
         )
         scheme_opts += mdict(scheme=['mon2017'])
-        res_opts = mdict(nx=[100], re=[10_000, 100_000], tf=[6.])
-        res_opts += mdict(nx=[200], re=[10_000, 100_000], tf=[4.])
+        res_opts = mdict(nx=[100], re=[10_000, 100_000], tf=[3.])
+        res_opts += mdict(nx=[200], re=[10_000, 100_000], tf=[3.])
 
         opts = dprod(scheme_opts, res_opts)
             
@@ -498,6 +498,7 @@ if __name__ == "__main__":
         SineVelProfile,
         TGVBasicSchemeComparison,
         TGVExtForceSchemeComparison,
+        TGVExtForceResConvergence
         TBExternalForcingColagrossi2021
     ]
     automator = Automator(

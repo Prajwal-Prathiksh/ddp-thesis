@@ -406,7 +406,9 @@ class TaylorGreen(TurbulentFlowApp):
 
         # Turbulence specific post-processing
         if self.ext_forcing:
-            f_idx_list = [-1]
+            f_idx_list = self.get_f_idx_list(
+                [5, 25, 50, 75, 100]
+            )
         else:
             f_idx_list = self.get_f_idx_list(
                 [0, 25, 50, 75, 100]
