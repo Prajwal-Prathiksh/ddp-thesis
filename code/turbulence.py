@@ -15,11 +15,6 @@ import matplotlib.pyplot as plt
 from pysph.solver.application import Application
 from pysph.sph.equation import Group
 from pysph.sph.basic_equations import SummationDensity
-from pysph.base.kernels import (
-    CubicSpline, WendlandQuinticC2_1D, WendlandQuintic, WendlandQuinticC4_1D,
-    WendlandQuinticC4, WendlandQuinticC6_1D, WendlandQuinticC6,
-    Gaussian, SuperGaussian, QuinticSpline
-)
 from pysph.tools.interpolator import (
     SPHFirstOrderApproximationPreStep, SPHFirstOrderApproximation,
     Interpolator
@@ -31,75 +26,14 @@ from pysph.sph.wc.kernel_correction import (
 from pysph.solver.utils import dump, load
 
 # Local imports
+from turbulence_utils import *
 from energy_spectrum import EnergySpectrum
 from automate_utils import plot_vline
-
 
 # TODO: Add support for openmp in interpolator and m_mat in interpolator cls
 # TODO Add second order interpolator?
 
 logger = logging.getLogger(__name__)
-
-# Kernel choices
-KERNEL_CHOICES = [
-    'CubicSpline', 'WendlandQuinticC2', 'WendlandQuinticC4',
-    'WendlandQuinticC6', 'Gaussian', 'SuperGaussian', 'QuinticSpline'
-]
-
-# Interpolating method choices
-INTERPOLATING_METHOD_CHOICES = [
-    'sph', 'shepard', 'order1', 'order1BL', 'order1MC'
-]
-
-
-def get_kernel_cls(name: str, dim: int):
-    """
-        Return the kernel class corresponding to the name initialized with the
-        dimension.
-
-        Parameters
-        ----------
-        name : str
-            Name of the kernel class.
-        dim : int
-            Dimension of the kernel.
-
-        Returns
-        -------
-        kernel_cls : class
-            Kernel class (dim).
-    """
-    if dim not in [1, 2, 3]:
-        raise ValueError("Dimension must be 1, 2 or 3.")
-    mapper = {
-        'CubicSpline': CubicSpline,
-        'WendlandQuinticC2': WendlandQuinticC2_1D if dim == 1
-        else WendlandQuintic,
-        'WendlandQuinticC4': WendlandQuinticC4_1D if dim == 1
-        else WendlandQuinticC4,
-        'WendlandQuinticC6': WendlandQuinticC6_1D if dim == 1
-        else WendlandQuinticC6,
-        'Gaussian': Gaussian,
-        'SuperGaussian': SuperGaussian,
-        'QuinticSpline': QuinticSpline
-    }
-
-    name = name.lower().strip()
-    not_found = True
-    for key in mapper.keys():
-        if key.lower() == name:
-            name = key
-            not_found = False
-            break
-
-    if not_found:
-        raise ValueError(
-            f"Kernel {name} not supported. Valid choices are {KERNEL_CHOICES}"
-        )
-
-    return mapper[name](dim=dim)
-
-
 class TurbulentFlowApp(Application):
     """
     Base class for all turbulent flow applications.
@@ -514,7 +448,6 @@ class TurbulentFlowApp(Application):
         for eqn in interp_obj.func_eval.equation_groups:
             msg += f"\n\t\t{eqn}"
         msg += "\n" + "-" * 70
-        print(msg)
         logger.info(msg)
 
     def _set_initial_vel_field_fname(self):
