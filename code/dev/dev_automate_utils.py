@@ -2,7 +2,7 @@ r"""
 Utilary functions and classes for the automate.py script.
 ###
 """
-# Library imports.
+# Library imports
 import os
 import collections
 import itertools as IT

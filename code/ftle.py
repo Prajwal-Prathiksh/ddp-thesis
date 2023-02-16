@@ -9,7 +9,7 @@ References
     Methods Appl. Mech. Eng., vol. 305, pp. 849-868, 2016,
     doi: 10.1016/j.cma.2016.03.027.
 """
-# Library imports.
+# Library imports
 import numpy as np
 from pysph.tools.sph_evaluator import SPHEvaluator
 from pysph.base.kernels import WendlandQuinticC4

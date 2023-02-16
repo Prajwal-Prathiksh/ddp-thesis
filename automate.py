@@ -4,7 +4,7 @@ An automator script to reproduce the results of the thesis
 Author: K T Prajwal Prathiksh
 ###
 """
-# Library imports.
+# Library imports
 import os
 import time
 import itertools as IT

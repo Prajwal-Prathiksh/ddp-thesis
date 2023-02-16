@@ -3,7 +3,7 @@ r"""
 An automator script to reproduce the results of the thesis
 ###
 """
-# Library imports.
+# Library imports
 import os
 import itertools as IT
 import numpy as np

@@ -3,7 +3,7 @@ Test-cases for energy_spectrum.py
 Author: K T Prajwal Prathiksh
 ###
 """
-# Library imports.
+# Library imports
 import unittest
 import numpy as np
 
