@@ -14,7 +14,7 @@ from pysph.base.kernels import QuinticSpline
 from pysph.solver.application import Application
 
 from tg_config import exact_solution
-from turbulence_tools import TurbulentFlowApp
+from turbulence import TurbulentFlowApp
 
 # domain and constants
 U = 1.0

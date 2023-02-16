@@ -27,7 +27,7 @@ from pysph.sph.scheme import SchemeChooser
 
 from tsph_with_pst import TSPHScheme
 from tg_config import ext_force_antuono2020
-from turbulence_tools import TurbulentFlowApp
+from turbulence import TurbulentFlowApp
 
 # domain and constants
 U = 1.0

@@ -14,7 +14,7 @@ from pysph.solver.solver import Solver
 
 # Local imports
 from energy_spectrum import EnergySpectrum
-from turbulence_tools import TurbulentFlowApp, get_kernel_cls
+from turbulence import TurbulentFlowApp, get_kernel_cls
 
 
 def perturb_signal(perturb_fac: float, *args: np.ndarray):

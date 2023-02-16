@@ -31,7 +31,7 @@ from pysph.sph.isph.isph import ISPHScheme
 from tsph_with_pst_scheme import TSPHScheme
 
 # Local imports
-from turbulence_tools import TurbulentFlowApp
+from turbulence import TurbulentFlowApp
 
 # Domain and constants
 L = 1.0
