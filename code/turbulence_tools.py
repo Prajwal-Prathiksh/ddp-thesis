@@ -314,7 +314,7 @@ class TurbulentFlowApp(Application):
         return equations, consistent_method
 
     def _get_interpolated_vel_field_for_one_file(
-        self, f_idx: int, dim: int, L: float,
+        self, f_idx: int, dim: int, L: float, return_interp_obj: bool = False
     ):
         """
         Return the interpolated velocity field for a given file index of the
@@ -328,6 +328,8 @@ class TurbulentFlowApp(Application):
             Dimension of the problem.
         L : float
             Length of the domain.
+        return_interp_obj : bool, optional
+            If True, return the interpolator object.
 
         Returns
         -------
@@ -366,10 +368,19 @@ class TurbulentFlowApp(Application):
         if isinstance(radius_scale, float):
             kernel.radius_scale = radius_scale
 
+        # Get interpolation equations and method
+        eqs, method = self._get_interpolation_equations(
+            method=self.options.i_method, dim=dim
+        )
+
         # Interpolate velocity
         interp_ob = Interpolator(
-            list(data['arrays'].values()), x=x, y=y, z=z,
-            kernel=kernel, domain_manager=self.create_domain(),
+            particle_arrays=list(data['arrays'].values()),
+            kernel=kernel,
+            x=x, y=y, z=z,
+            domain_manager=self.create_domain(),
+            method=method,
+            equations=eqs,
         )
         if dim == 1:
             _u = interp_ob.interpolate('u')
@@ -387,7 +398,10 @@ class TurbulentFlowApp(Application):
             _w = interp_ob.interpolate('w')
             ui = _u.reshape(i_nx, i_nx, i_nx)
             vi = _v.reshape(i_nx, i_nx, i_nx)
-            wi = _w.reshape(i_nx, i_nx, i_nx)   
+            wi = _w.reshape(i_nx, i_nx, i_nx)
+        
+        if return_interp_obj:
+            return dx, ui, vi, wi, interp_ob
         return dx, ui, vi, wi
 
     def _get_ek_for_one_file(
@@ -479,7 +493,7 @@ class TurbulentFlowApp(Application):
         return espec_initial_ob
 
     def _log_interpolator_details(
-        self, dim: int, interp_ob: object
+        self, dim: int, interp_obj: object
     ):
         """
         Log details of the interpolator used.
@@ -488,18 +502,19 @@ class TurbulentFlowApp(Application):
         ----------
         dim : int
             Dimension of the problem.
-        interp_ob : object
+        interp_obj : object
             Interpolator object used.
         """
         msg = "Using interpolator:\n"
         msg += "-" * 70 + "\n"
-        msg += f"Kernel:\n\t{interp_ob.kernel.__class__.__name__}(dim={dim})\n"
-        msg += f"Kernel radius scale:\n\t{interp_ob.kernel.radius_scale}\n"
-        msg += f"Method:\n\t{interp_ob.method}" + "\n"
+        msg += f"Kernel:\n\t{interp_obj.kernel.__class__.__name__}(dim={dim})\n"
+        msg += f"Kernel radius scale:\n\t{interp_obj.kernel.radius_scale}\n"
+        msg += f"Method:\n\t{interp_obj.method}" + "\n"
         msg += "Equations:\n\t["
-        for eqn in interp_ob.func_eval.equation_groups:
+        for eqn in interp_obj.func_eval.equation_groups:
             msg += f"\n\t\t{eqn}"
         msg += "\n" + "-" * 70
+        print(msg)
         logger.info(msg)
 
     def _set_initial_vel_field_fname(self):
@@ -761,10 +776,15 @@ class TurbulentFlowApp(Application):
             Length of the domain.
         """
         t0 = time.time()
+        log_interpolator_details = True
         for f_idx in f_idx_list:
-            dx, ui, vi, wi = self._get_interpolated_vel_field_for_one_file(
-                    f_idx=f_idx, dim=dim, L=L
+            dx, ui, vi, wi, io = self._get_interpolated_vel_field_for_one_file(
+                    f_idx=f_idx, dim=dim, L=L, return_interp_obj=True
             )
+
+            if log_interpolator_details:
+                self._log_interpolator_details(dim=dim, interp_obj=io)
+                log_interpolator_details = False
 
             # Save interpolated velocity field
             data = load(self.output_files[f_idx])
