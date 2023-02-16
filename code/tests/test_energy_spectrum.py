@@ -1,5 +1,6 @@
 r"""
 Test-cases for energy_spectrum.py
+Author: K T Prajwal Prathiksh
 ###
 """
 # Library imports.
