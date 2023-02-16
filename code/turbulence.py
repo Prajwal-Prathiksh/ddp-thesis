@@ -687,6 +687,43 @@ class TurbulentFlowApp(Application):
         return None
 
     # Post-processing methods
+    def get_f_idx_list(self, pct_list: list):
+        """
+        Get the list of indices of the output files, corresponding to the
+        specified percentage of the simulation time.
+
+        Parameters
+        ----------
+        pct_list : list
+            List of percentages of the simulation time.
+            Eg: [0, 25, 50, 75, 100]
+
+        Returns
+        -------
+        f_idx_list : list
+            List of indices of the output files.
+        """
+        pct_list = np.array(sorted(pct_list))
+        
+        # Check if there are values in pct_list that are not in [0, 100]
+        if np.any(pct_list < 0) or np.any(pct_list > 100):
+            raise ValueError(
+                "Values in pct_list must be in the range [0, 100]."
+            )
+
+        n_ofiles = len(self.output_files)
+        f_idx_list = np.round(pct_list * n_ofiles / 100).astype(int)
+
+        # Replace values that are greater than n_ofiles with n_ofiles-1
+        f_idx_list[f_idx_list >= n_ofiles] = n_ofiles - 1
+        
+        # Remove duplicates
+        f_idx_list = np.unique(f_idx_list)
+        f_idx_list = np.sort(f_idx_list)
+
+        f_idx_list = f_idx_list.tolist()
+        return f_idx_list
+
     def compute_interpolated_vel_field(
         self, f_idx_list: list, dim: int, L: float,
     ):
@@ -780,7 +817,7 @@ class TurbulentFlowApp(Application):
                 msg = f"Energy spectrum already exists at: {fname}."
                 print(msg)
                 continue
-            
+
             espec_ob = self._get_ek_for_one_file(
                 f_idx=f_idx, dim=dim, L=L, U0=U0, func_config=func_config
             )

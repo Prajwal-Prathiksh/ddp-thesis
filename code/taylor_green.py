@@ -411,7 +411,9 @@ class TaylorGreen(TurbulentFlowApp):
         if self.ext_forcing:
             f_idx_list = [-1]
         else:
-            f_idx_list = [0, -1]
+            f_idx_list = self.get_f_idx_list(
+                [0, 25, 50, 75]
+            )
 
         self.compute_interpolated_vel_field(
             f_idx_list=f_idx_list, dim=2, L=self.L
