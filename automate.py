@@ -22,7 +22,7 @@ from automan.utils import filter_cases, filter_by_name
 from code.automate_utils import styles, custom_compare_runs, plot_vline
 
 BACKEND = " --openmp "
-N_CORES, N_THREADS = 1, 1 #4, 8
+N_CORES, N_THREADS = 1, 2 #4, 8
 
 class SineVelProfilePlotters(Simulation):
     """
