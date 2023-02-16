@@ -1056,7 +1056,7 @@ class TurbulentFlowApp(Application):
             ax.loglog(k, ek, c=cmap.to_rgba(idx + 1))
 
             if plot_fit and idx == n_files - 1:
-                if np.size(data['k_fit']) < 1:
+                if np.size(data['k_fit']) <= 1:
                     continue
                 k_fit, ek_fit = data['k_fit'], data['ek_fit']
                 fit_params = data['fit_params']

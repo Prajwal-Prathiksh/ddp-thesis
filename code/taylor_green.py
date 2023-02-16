@@ -421,12 +421,15 @@ class TaylorGreen(TurbulentFlowApp):
             f_idx_list=f_idx_list, dim=2, L=self.L, U0=self.U
         )
 
+        ylims = (1e-16, 1)
         for fid in f_idx_list:
-            self.plot_ek(f_idx=fid, plot_type='loglog', plot_fit=True)
+            self.plot_ek(
+                f_idx=fid, plot_type='loglog', plot_fit=True, ylims=ylims
+            )
         
-        self.plot_ek_evolution(plot_fit=True, ylims=(1e-8, 1))
+        self.plot_ek_evolution(plot_fit=True, ylims=ylims)
         self.plot_ek_evolution(
-            f_idx='all', plot_fit=True, ylims=(1e-8, 1), fname_suffix='_all'
+            f_idx='all', plot_fit=True, ylims=ylims, fname_suffix='_all'
         )
 
 
