@@ -170,9 +170,7 @@ class TaylorGreen(TurbulentFlowApp):
         x, y, h = None, None, None
         filename = '%d_tg.npz'%self.options.nx
         dirname = os.path.dirname(os.path.abspath(__file__))
-        # print(dirname)
         datafile = os.path.join(os.path.dirname(dirname), 'data', filename)
-        # print(datafile)
         if os.path.exists(datafile) and (not(self.options.scheme=='ewcsph' or self.options.scheme=='rsph')):
             data = np.load(datafile)
             x = data['x']
@@ -325,7 +323,6 @@ class TaylorGreen(TurbulentFlowApp):
         t, ke, ke_ex, decay, l1, linf, p_l1, lm, am = list(map(
             np.asarray, (t, ke, ke_ex, decay, l1, linf, p_l1, lm, am))
         )
-        print(l1, p_l1)
         decay_ex = U * np.exp(decay_rate * t)
         fname = os.path.join(self.output_dir, 'results.npz')
         np.savez(
@@ -412,7 +409,7 @@ class TaylorGreen(TurbulentFlowApp):
             f_idx_list = [-1]
         else:
             f_idx_list = self.get_f_idx_list(
-                [0, 25, 50, 75]
+                [0, 25, 50, 75, 100]
             )
 
         self.compute_interpolated_vel_field(
@@ -423,7 +420,13 @@ class TaylorGreen(TurbulentFlowApp):
         )
 
         for fid in f_idx_list:
-            self.plot_ek(f_idx=fid, plot_type='loglog', lfit=True)
+            self.plot_ek(f_idx=fid, plot_type='loglog', plot_fit=True)
+        
+        self.plot_ek_evolution(plot_fit=True, ylims=(1e-8, 1))
+        self.plot_ek_evolution(
+            f_idx='all', plot_fit=True, ylims=(1e-8, 1), fname_suffix='_all'
+        )
+
 
 
     def customize_output(self):

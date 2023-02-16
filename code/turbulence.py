@@ -569,9 +569,8 @@ class TurbulentFlowApp(Application):
         Return the list of files containing the interpolated velocity
         field data.
         """
-        files = sorted(glob.glob(
-            os.path.join(self.output_dir, "interp_vel_*")
-        ))
+        all_files = glob.glob(os.path.join(self.output_dir, "interp_vel_*"))
+        files = sorted([f for f in all_files if f.endswith(".npz")])
         return files
 
     @property
@@ -579,9 +578,8 @@ class TurbulentFlowApp(Application):
         """
         Return the list of files containing the energy spectrum data.
         """
-        files = sorted(glob.glob(
-            os.path.join(self.output_dir, "ek_*")
-        ))
+        all_files = glob.glob(os.path.join(self.output_dir, "ek_*"))
+        files = sorted([f for f in all_files if f.endswith(".npz")])
         return files
 
     # Public methods
@@ -895,7 +893,7 @@ class TurbulentFlowApp(Application):
 
     # Plotting methods
     def plot_ek(
-        self, f_idx: int, plot_type: str = "loglog", lfit: bool = True,
+        self, f_idx: int, plot_type: str = "loglog", plot_fit: bool = True,
         exact: bool = False, wo_interp_initial: bool = False,
         ylims: tuple = (1e-10, 1), fname_suffix: str = ""
     ):
@@ -911,7 +909,7 @@ class TurbulentFlowApp(Application):
             Plot type.
             Default is loglog.
             Valid options: loglog, semilogx, semilogy, plot, stem
-        lfit : bool, optional
+        plot_fit : bool, optional
             If True, plots the fit of the energy spectrum.
             Default is True.
         fit : bool, optional
@@ -939,7 +937,7 @@ class TurbulentFlowApp(Application):
         k, ek = data['k'], data['ek']
 
         k_fit, ek_fit, fit_params = None, None, None
-        if lfit and np.size(data['k_fit']) > 1:
+        if plot_fit and np.size(data['k_fit']) > 1:
             k_fit, ek_fit = data['k_fit'], data['ek_fit']
             fit_params = data['fit_params']
             fit_params = dict(enumerate(fit_params.flatten()))[0]
@@ -1000,22 +998,97 @@ class TurbulentFlowApp(Application):
         plt.close()
         print(f"Energy spectrum plot saved to: {fname}.")
 
-    def plot_ek_evolution(self, f_idx: list = None):
+    def plot_ek_evolution(
+        self, f_idx: list = None, plot_fit: bool = True,
+        ylims: tuple = (1e-10, 1), fname_suffix: str = ""
+    ):
         """
-        Plot the evolution of energy spectrum for the given files indices.
+        Plot the evolution of energy spectrum for the given computed files
+        indices.
 
         Parameters
         ----------
         f_idx : list
-            List of file indices to plot. Default is [0, -1] which plots the
-            first and last files.
+            List of output file indices to plot.
+            Default is None which plots the first and last files' energy
+            spectrum.
+            If 'all', plots the evolution of energy spectrum for all the
+            computed files.
+        plot_fit : bool, optional
+            If True, plots the fit of the energy spectrum for the last file.
+            Default is True.
+        ylims : tuple, optional
+            y-axis limits. If None, the limits are automatically determined.
+            Default is (1e-10, 1).
+        fname_suffix : str, optional
+            Suffix to be added to the file name.
         """
+        import matplotlib as mpl
+
+        if len(self.ek_files) < 2:
+            msg = "At least two energy spectrum files are required to plot"
+            msg += " the evolution."
+            raise ValueError(msg)
+
         if f_idx is None:
-            f_idx = [0, -1]
-        fnames = [
-            os.path.join(self.output_dir, f'espec_result_{i}.npz')
-            for i in f_idx
-        ]
-        EnergySpectrum.plot_from_npz_file(
-            fnames=fnames, figname=os.path.join(
-                self.output_dir, 'energy_spectrum_evolution.png'))
+            files = [self.ek_files[0], self.ek_files[-1]]
+        elif f_idx == 'all':
+            files = self.ek_files
+        else:
+            files = [self._get_ek_fname(f_idx=i) for i in f_idx]
+
+        n_files = len(files)
+        # Get first and last time values.
+        t0 = float(np.load(files[0])['t'])
+        tf = float(np.load(files[-1])['t'])
+
+        # Set the color map.
+        c = np.arange(1, n_files + 1)
+        c_ticks = np.linspace(t0, tf, n_files)
+        norm = mpl.colors.Normalize(vmin=c.min(), vmax=c.max())
+        cmap = mpl.cm.ScalarMappable(norm=norm, cmap="viridis")
+        cmap.set_array([])
+
+        fig, ax = plt.subplots()
+        for idx, fname in enumerate(files):
+            data = np.load(fname, allow_pickle=True)
+            k, ek = data['k'], data['ek']
+            ax.loglog(k, ek, c=cmap.to_rgba(idx + 1))
+
+            if plot_fit and idx == n_files - 1:
+                if np.size(data['k_fit']) < 1:
+                    continue
+                k_fit, ek_fit = data['k_fit'], data['ek_fit']
+                fit_params = data['fit_params']
+                fit_params = dict(enumerate(fit_params.flatten()))[0]
+
+                slope, r_value = fit_params['slope'], fit_params['r_value']
+                label = f"Fit (t={data['t']:.2f}): "
+                label += r"$(E(k) \propto k^{" + f"{slope:.2f}" + r"})"\
+                    "(R^2 "
+                label += f"={r_value:.2f}" + r")$"
+                ax.loglog(k_fit, ek_fit, 'r-.', label=label)
+
+        ax.legend(fontsize=8)
+
+        # Limit y-axis
+        ymin, ymax = ax.get_ylim()
+        ymin = max(ymin, ylims[0])
+        ymax = min(ymax, ylims[1])
+        ax.set_ylim(ymin, ymax)
+
+        ax.set_xlabel(r'$k$')
+        ax.set_ylabel(r'$E(k)$')
+        ax.grid(True, which='both', ls='--')
+        cbar = fig.colorbar(cmap, ticks=c, ax=ax)
+        cbar.ax.set_yticklabels([f"{t:.2f}" for t in c_ticks])
+        cbar.set_label(r'$t$', rotation=90, labelpad=5)
+        ax.set_title('Energy spectrum evolution')
+
+        # Save the figure
+        fname = os.path.join(
+            self.output_dir,
+            f'energy_spectrum_evolution{fname_suffix}.png'
+        )
+        plt.savefig(fname, dpi=300, bbox_inches='tight')
+        print(f"Energy spectrum evolution plot saved to: {fname}.")

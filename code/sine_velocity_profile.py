@@ -422,7 +422,7 @@ class SinVelocityProfile(TurbulentFlowApp):
 
         # Make plots
         self.plot_ek(
-            f_idx=0, plot_type='loglog', lfit=True, exact=True,
+            f_idx=0, plot_type='loglog', plot_fit=True, exact=True,
             wo_interp_initial=True, ylims=[1e-6, 1e-1]
         )
 
