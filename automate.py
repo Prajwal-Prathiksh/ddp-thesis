@@ -347,8 +347,8 @@ class TGVBasicSchemeComparison(PySPHProblem):
         opts = dprod(
             opts, 
             mdict(
-                re=[500, 1000, 5000, 10_000, 20_000, 50_000],
-                tf=[1.], perturb=[0.2], nx=[50]
+                re=[1000, 10_000, 50_000],
+                tf=[3.5], nx=[100]
             )
         )
         
