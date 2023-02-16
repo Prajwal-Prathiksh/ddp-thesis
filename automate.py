@@ -498,7 +498,7 @@ if __name__ == "__main__":
         SineVelProfile,
         TGVBasicSchemeComparison,
         TGVExtForceSchemeComparison,
-        TGVExtForceResConvergence
+        TGVExtForceResConvergence,
         TBExternalForcingColagrossi2021
     ]
     automator = Automator(
