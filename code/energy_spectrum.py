@@ -1255,7 +1255,7 @@ class EnergySpectrum(object):
             Order of the norm. Default is np.inf.
         func_config : str, optional
             Configuration of the function. Default is 'compyle'.
-            Options: python, numba, 'compyle'
+            Options: python, numba, compyle
 
         """
         # Compute energy spectrum
@@ -1496,5 +1496,33 @@ class EnergySpectrum(object):
 
 
 if __name__ == "__main__":
-    test_espec_obj = EnergySpectrum.from_example(dim=2, nx=15)
-    test_espec_obj.compute(order=2, func_config='compyle')
+    import argparse
+
+    DIM_CHOICES = [1, 2, 3]
+    FC_CHOICES = ['python', 'numba', 'compyle']
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-d", "--dim", type=int, choices=DIM_CHOICES, default=2,
+        help="Dimension of the example."
+    )
+    parser.add_argument(
+        "-n", "--nx", type=int, default=32,
+        help="Number of grid points in each axis."
+    )
+    parser.add_argument(
+        "-fc", "--func_config", type=str, choices=FC_CHOICES,
+        default='compyle', help="Function configuration to use for the "
+        "energy spectrum computation."
+    )
+
+    args = parser.parse_args()
+
+    test_espec_obj = EnergySpectrum.from_example(dim=args.dim, nx=args.nx)
+    test_espec_obj.compute(order=2, func_config=args.func_config)
+    print("Energy spectrum computed.")
+    test_espec_obj.plot_scalar_ek(
+        show=False, savefig=True, plot_type="stem"
+    )
+    test_espec_obj.plot_vector_ek(show=False, savefig=True)
+    print("Plots saved.")
