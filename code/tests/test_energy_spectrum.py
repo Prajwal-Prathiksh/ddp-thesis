@@ -40,7 +40,7 @@ def check_if_coords_are_in_indices(coords, indices):
 
 class TestComputeEnergySpectrum(unittest.TestCase):
     """
-    Test the function calculate_energy_spectrum.
+    Test the function compute_energy_spectrum.
     """
 
     def test_should_work_for_1d_data(self):
@@ -219,7 +219,7 @@ class TestComputeEnergySpectrum(unittest.TestCase):
 
 class TestComputeScalarEnergySpectrum(unittest.TestCase):
     """
-    Test the function calculate_scalar_energy_spectrum.
+    Test the functions compute_scalar_energy_spectrum*.
     """
 
     def _test_should_work_for_1d_data(self, func, ord, msg):
@@ -466,7 +466,7 @@ class TestComputeScalarEnergySpectrum(unittest.TestCase):
 
     def test_should_work_for_all_dimensions(self):
         """
-        Test that the function works for data of all dimensions.
+        Test if the function works for data of all dimensions.
         """
         # Get every combination of functions and orders
         for func in self._get_funcs():
