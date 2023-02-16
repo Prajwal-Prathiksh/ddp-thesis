@@ -407,6 +407,23 @@ class TaylorGreen(TurbulentFlowApp):
         fig = os.path.join(self.output_dir, "ang_mom.png")
         plt.savefig(fig, dpi=300)
 
+        # Turbulence specific post-processing
+        if self.ext_forcing:
+            f_idx_list = [-1]
+        else:
+            f_idx_list = [0, -1]
+
+        self.compute_interpolated_vel_field(
+            f_idx_list=f_idx_list, dim=2, L=self.L
+        )
+        self.compute_ek(
+            f_idx_list=f_idx_list, dim=2, L=self.L, U0=self.U
+        )
+
+        for fid in f_idx_list:
+            self.plot_ek(f_idx=fid, plot_type='loglog', lfit=True)
+
+
     def customize_output(self):
         self._mayavi_config('''
         b = particle_arrays['fluid']
@@ -418,16 +435,3 @@ if __name__ == '__main__':
     app = TaylorGreen()
     app.run()
     app.post_process(app.info_filename)
-    if not app.ext_forcing:
-        app.ek_post_processing(
-            dim=2, L=app.L, U0=U, f_idx=0,
-            compute_without_interp=True
-        )
-        # app.plot_ek(f_idx=0)
-        app.plot_ek_fit(f_idx=0, k_n=4)
-    app.ek_post_processing(
-        dim=2, L=app.L, U0=U, f_idx=-1,
-        compute_without_interp=True
-    )
-    # app.plot_ek(f_idx=-1)
-    app.plot_ek_fit(f_idx=-1, k_n=4)

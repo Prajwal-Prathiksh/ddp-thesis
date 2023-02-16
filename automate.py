@@ -58,8 +58,7 @@ class SineVelProfilePlotters(Simulation):
         # Plot a vertical line at the middle of the k range.
         plot_vline(data['k'], 2)
         plot_vline(data['k'], 8)
-
-    
+   
     def ek_loglog_exact(self, **kw):
         """
         Plot the exact energy spectrum in loglog scale.
