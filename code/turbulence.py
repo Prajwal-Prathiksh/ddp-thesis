@@ -109,7 +109,7 @@ class TurbulentFlowApp(Application):
         nx = self.options.nx
         i_nx = self.options.i_nx
         self.options.i_nx = i_nx if i_nx is not None else nx
-        self.i_nx = self.options.i_nx
+        self.options.i_nx = self.options.i_nx
 
         order = self.options.ek_norm_order
         if order == '-inf':
@@ -281,9 +281,6 @@ class TurbulentFlowApp(Application):
 
         i_nx = self.options.i_nx
         radius_scale = self.options.i_radius_scale
-
-        if i_nx is None:
-            i_nx = int(np.power(len(u), 1 / dim))
 
         # Create meshgrid based on dimension
         _x = np.linspace(0, L, i_nx)
@@ -652,7 +649,7 @@ class TurbulentFlowApp(Application):
         N : int
             Length of the computed energy spectrum.
         """
-        N = int(1 + np.ceil(np.sqrt(dim * self.i_nx**2) / 2))
+        N = int(1 + np.ceil(np.sqrt(dim * self.options.i_nx**2) / 2))
         return N
 
     def get_exact_ek(self):
