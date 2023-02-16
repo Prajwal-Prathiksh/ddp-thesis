@@ -687,7 +687,6 @@ class TurbulentFlowApp(Application):
         return None
 
     # Post-processing methods
-
     def compute_interpolated_vel_field(
         self, f_idx_list: list, dim: int, L: float,
     ):
@@ -708,6 +707,13 @@ class TurbulentFlowApp(Application):
         t0 = time.time()
         log_interpolator_details = True
         for f_idx in f_idx_list:
+            # Check if the interpolated velocity field already exists
+            fname = self._get_interp_vel_fname(f_idx)
+            if fname in self.interp_vel_files:
+                msg = f"Interpolated velocity field already exists at: {fname}."
+                print(msg)
+                continue
+
             dx, ui, vi, wi, io = self._get_interpolated_vel_field_for_one_file(
                 f_idx=f_idx, dim=dim, L=L, return_interp_obj=True
             )
@@ -768,6 +774,13 @@ class TurbulentFlowApp(Application):
         """
         t0 = time.time()
         for f_idx in f_idx_list:
+            # Check if the energy spectrum file already exists
+            fname = self._get_ek_fname(f_idx)
+            if fname in self.ek_files:
+                msg = f"Energy spectrum already exists at: {fname}."
+                print(msg)
+                continue
+            
             espec_ob = self._get_ek_for_one_file(
                 f_idx=f_idx, dim=dim, L=L, U0=U0, func_config=func_config
             )
@@ -927,7 +940,7 @@ class TurbulentFlowApp(Application):
 
         plt.xlabel(plotter['xlabel'])
         plt.ylabel(plotter['ylabel'])
-        plt.legend()
+        plt.legend(fontsize=8)
 
         # TODO: Add Re to the title.
         plt.title(f"Energy spectrum at t = {t:.2f}")
