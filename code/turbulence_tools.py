@@ -784,6 +784,7 @@ class TurbulentFlowApp(Application):
         msg = "Time taken to interpolate and save "
         msg += f"velocity field: {t1 - t0:.2f} s."
         print(msg)
+        logger.info(msg)
     
     def compute_ek(
         self, f_idx_list: list, dim: int, L: float, U0: float,

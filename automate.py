@@ -22,7 +22,7 @@ from automan.utils import filter_cases, filter_by_name
 from code.automate_utils import styles, custom_compare_runs, plot_vline
 
 BACKEND = " --openmp "
-N_CORES, N_THREADS = 1, 1 #4, 8
+N_CORES, N_THREADS = 1, 2 #4, 8
 
 class SineVelProfilePlotters(Simulation):
     """
@@ -246,17 +246,12 @@ class SineVelProfile(PySPHProblem):
         # Create parameteric cases
         def get_opts():
             perturb_opts = mdict(
-                perturb=[0.01], hdx=[1.2],
-                i_radius_scale=[3]
+                perturb=[0.01], hdx=[1.2, 3],
+                i_radius_scale=[1.2, 3]
             )
             dim_nx_opts = mdict(dim=[1], nx=[701, 1001], n_freq=[350])
-            # perturb_opts = mdict(
-            #     perturb=[0.01], hdx=[1.2, 3],
-            #     i_radius_scale=[1.2, 3]
-            # )
-            # dim_nx_opts = mdict(dim=[1], nx=[701, 1001], n_freq=[350])
-            # dim_nx_opts += mdict(dim=[2], nx=[701, 801], n_freq=[350])
-            # dim_nx_opts += mdict(dim=[3], nx=[71, 101], n_freq=[35])
+            dim_nx_opts += mdict(dim=[2], nx=[701, 801], n_freq=[350])
+            dim_nx_opts += mdict(dim=[3], nx=[21, 31], n_freq=[10])
 
             all_options = dprod(perturb_opts, dim_nx_opts)
             KERNEL_CHOICES = ['WendlandQuinticC4']
