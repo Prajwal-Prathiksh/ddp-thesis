@@ -425,10 +425,6 @@ class SinVelocityProfile(TurbulentFlowApp):
             f_idx=0, plot_type='loglog', lfit=True, exact=True,
             wo_interp_initial=True, ylims=[1e-6, 1e-1]
         )
-        # self.plot_ek_fit(
-        #     f_idx=0, plot_type='loglog', tol=1e-8,
-        #     exact=True, no_interp=True
-        # )
 
         method = self.options.i_method
         if method not in ['sph', 'shepard', 'order1']:
@@ -444,7 +440,6 @@ class SinVelocityProfile(TurbulentFlowApp):
             U0=1.
         )
         espec_ob.compute()
-        k_fit, ek_fit, fit_params = espec_ob.get_ek_fit()
         fname = os.path.join(self.output_dir, 'energy_spectrum_log.png')
         espec_ob.plot_scalar_ek(
             savefig=True,
