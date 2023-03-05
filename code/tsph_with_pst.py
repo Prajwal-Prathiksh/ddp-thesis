@@ -233,8 +233,7 @@ class UpdatePressure(Equation):
         dy = d_y0[d_idx] - d_y[d_idx]
         dz = d_z0[d_idx] - d_z[d_idx]
 
-        d_p[d_idx] -= dx * d_gradp[3*d_idx] + \
-            dy * d_gradp[3*d_idx + 1] + \
+        d_p[d_idx] -= dx * d_gradp[3*d_idx] + dy * d_gradp[3*d_idx + 1] + \
             dz * d_gradp[3*d_idx + 2]
 
 

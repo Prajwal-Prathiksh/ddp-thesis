@@ -171,18 +171,14 @@ class UpdateProperties(Equation):
         elif dz < -0.5:
             dz += 1.0
 
-        d_u[d_idx] -= dx * d_gradv[9*d_idx] + \
-            dy * d_gradv[9*d_idx + 1] + \
+        d_u[d_idx] -= dx * d_gradv[9*d_idx] + dy * d_gradv[9*d_idx + 1] + \
             dz * d_gradv[9*d_idx + 2]
-        d_v[d_idx] -= dx * d_gradv[9*d_idx + 3] + \
-            dy * d_gradv[9*d_idx + 4] + \
+        d_v[d_idx] -= dx * d_gradv[9*d_idx + 3] + dy * d_gradv[9*d_idx + 4] + \
             dz * d_gradv[9*d_idx + 5]
-        d_w[d_idx] -= dx * d_gradv[9*d_idx + 6] + \
-            dy * d_gradv[9*d_idx + 7] + \
+        d_w[d_idx] -= dx * d_gradv[9*d_idx + 6] +  dy * d_gradv[9*d_idx + 7] +\
             dz * d_gradv[9*d_idx + 8]
 
-        d_p[d_idx] -= dx * d_gradp[3*d_idx] + \
-            dy * d_gradp[3*d_idx + 1] + \
+        d_p[d_idx] -= dx * d_gradp[3*d_idx] +  dy * d_gradp[3*d_idx + 1] +\
             dz * d_gradp[3*d_idx + 2]
 
 
