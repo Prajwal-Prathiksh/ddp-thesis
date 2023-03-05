@@ -342,6 +342,7 @@ class TGVBasicSchemeComparison(PySPHProblem):
         base_cmd = "python code/taylor_green.py" + BACKEND
         opts = mdict(scheme=[
             'edac', 'tsph --method sd --scm wcsph --pst-freq 10',
+            'tsph --method no_sd --scm edac --pst-freq 10 --c0-fac 80',
             'mon2017', 'ok2022'
         ])
         opts = dprod(
@@ -354,6 +355,12 @@ class TGVBasicSchemeComparison(PySPHProblem):
         
         def get_path(opt):
             temp = 'tsph' if 'tsph' in opt['scheme'] else opt['scheme']
+            temp = opt['scheme']
+            if 'tsph' in temp:
+                if 'wcsph' in temp:
+                    temp = 'l-ipst-c'
+                elif 'edac' in temp:
+                    temp = 'pe-ipst-c'
             return f'scheme_{temp}_re_{opt["re"]}'
     
         # Setup cases
@@ -390,52 +397,13 @@ class TGVExtForceSchemeComparison(PySPHProblem):
         scheme_opts += mdict(
             scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
         )
+        scheme_opts += mdict(
+            scheme=['tsph'], method=['no_sd'], scm=['edac'], pst_freq=[10],
+            c0_fac=[80]
+        )
         scheme_opts += mdict(scheme=['mon2017'])
         res_opts = mdict(nx=[100], re=[10_000, 100_000], tf=[3.])
         res_opts += mdict(nx=[200], re=[10_000, 100_000], tf=[3.])
-
-        opts = dprod(scheme_opts, res_opts)
-            
-        # Setup cases
-        self.cases = [
-            Simulation(
-                root=self.input_path(opts2path(kw)),
-                base_command=base_cmd,
-                job_info=dict(n_core=N_CORES, n_thread=N_THREADS),
-                **kw
-            )
-            for kw in opts
-        ]
-    
-    def run(self):
-        """
-        Run the problem.
-        """
-        self.make_output_dir()
-
-class TGVExtForceResConvergence(PySPHProblem):
-    def get_name(self):
-        """
-        Problem name.
-        """
-        return "tgv_ext_force_res_convergence"
-    
-    def setup(self):
-        """
-        Setup the problem.
-        """
-        base_cmd = "python code/taylor_green.py --ext-forcing " + BACKEND
-        base_cmd += " --scheme=tsph --method=sd --scm=wcsph --pst-freq=10 "
-
-        res_opts = mdict(nx=[100], re=[10_000, 100_000], tf=[6.])
-    
-        scheme_opts = mdict(scheme=['edac'])
-        scheme_opts += mdict(
-            scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
-        )
-        scheme_opts += mdict(scheme=['mon2017'])
-        res_opts = mdict(nx=[100], re=[10_000, 100_000], tf=[6.])
-        res_opts += mdict(nx=[200], re=[10_000, 100_000], tf=[4.])
 
         opts = dprod(scheme_opts, res_opts)
             
@@ -468,12 +436,20 @@ class TBExternalForcingColagrossi2021(PySPHProblem):
         Setup the problem.
         """
         base_cmd = "python code/triperiodic_beltrami.py " + BACKEND
-        base_cmd += "--scheme=tsph --method sd --scm wcsph --pst-freq 10 "
 
-        opts = mdict(
+        scheme_opts = mdict(
+            scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
+        )
+        scheme_opts += mdict(
+            scheme=['tsph'], method=['no_sd'], scm=['edac'], pst_freq=[10],
+            c0_fac=[80]
+        )
+
+        res_opts = mdict(
             nx=[40], tf=[3.],
             re=[1_000_000]
         )
+        opts = dprod(scheme_opts, res_opts)
 
         # Setup cases
         self.cases = [
@@ -498,7 +474,6 @@ if __name__ == "__main__":
         SineVelProfile,
         TGVBasicSchemeComparison,
         TGVExtForceSchemeComparison,
-        TGVExtForceResConvergence,
         TBExternalForcingColagrossi2021
     ]
     automator = Automator(
