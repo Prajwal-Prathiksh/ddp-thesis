@@ -313,6 +313,33 @@ class TriperiodicBeltrami(TurbulentFlowApp):
         fig = os.path.join(self.output_dir, "mom.png")
         plt.savefig(fig, dpi=300)
 
+        # Turbulence specific post-processing
+        f_idx_list = self.get_f_idx_list([5, 25, 50, 75, 100])
+
+        self.compute_interpolated_vel_field(
+            f_idx_list=f_idx_list, dim=3, L=self.L
+        )
+        self.compute_ek(
+            f_idx_list=f_idx_list, dim=3, L=self.L, U0=self.U
+        )
+
+        ylims = (1e-16, 1)
+        for fid in f_idx_list:
+            self.plot_ek(
+                f_idx=fid, plot_type='loglog', plot_fit=True, ylims=ylims,
+                title_suffix=f'(Re={self.options.re}, U={self.U})'
+            )
+        
+        self.plot_ek_evolution(
+            plot_fit=True, ylims=ylims,
+            title_suffix=f'(Re={self.options.re}, U={self.U})'
+        )
+        self.plot_ek_evolution(
+            f_idx='all', plot_fit=True, ylims=ylims, fname_suffix='_all',
+            title_suffix=f'(Re={self.options.re}, U={self.U})'
+        )
+
+
     def customize_output(self):
         self._mayavi_config('''
         b = particle_arrays['fluid']
@@ -323,9 +350,4 @@ if __name__ == '__main__':
     app = TriperiodicBeltrami()
     app.run()
     app.post_process(app.info_filename)
-    app.ek_post_processing(
-        dim=3, L=app.L, U0=U, f_idx=-1,
-        compute_without_interp=True
-    )
-    # app.plot_ek(f_idx=-1)
-    app.plot_ek_fit(f_idx=-1, tol=1e-20, k_n=4)
+    
