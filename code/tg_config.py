@@ -465,6 +465,7 @@ def create_tools(app):
 
     return tools
 
+
 def ramp(t_star):
     """
     Ramp function for the external forcing term in the
@@ -488,6 +489,7 @@ def ramp(t_star):
         return (1.-t_star)*10.
     else:
         return 0.
+
 
 def ext_force_colagrossi2021(x, y, t, L=1., U=1.):
     """
@@ -530,6 +532,7 @@ def ext_force_colagrossi2021(x, y, t, L=1., U=1.):
         return A*ramp(t_star)*fx, A*ramp(t_star)*fy
     else:
         return 0.*x_star, 0.*y_star
+
 
 def ext_force_antuono2020(x, y, z, t, nu, L=1., U=1.):
     """
@@ -583,6 +586,7 @@ def ext_force_antuono2020(x, y, z, t, nu, L=1., U=1.):
         return A*ramp(t_star)*fx, A*ramp(t_star)*fy, A*ramp(t_star)*fz
     else:
         return 0.*x, 0.*y, 0.*z
+
 
 def prestep(app, solver):
     """
