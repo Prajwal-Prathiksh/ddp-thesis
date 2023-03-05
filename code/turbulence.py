@@ -30,9 +30,6 @@ from turbulence_utils import *
 from energy_spectrum import EnergySpectrum
 from automate_utils import plot_vline
 
-# TODO: Add support for openmp in interpolator and m_mat in interpolator cls
-# TODO Add second order interpolator?
-
 logger = logging.getLogger(__name__)
 
 
@@ -250,7 +247,8 @@ class TurbulentFlowApp(Application):
         return equations, consistent_method
 
     def _get_interpolated_vel_field_for_one_file(
-        self, f_idx: int, dim: int, L: float, return_interp_obj: bool = False
+        self, interp_obj: object, f_idx: int, dim: int, L: float, 
+        return_interp_obj: bool = False
     ):
         """
         Return the interpolated velocity field for a given file index of the
@@ -258,6 +256,8 @@ class TurbulentFlowApp(Application):
 
         Parameters
         ----------
+        interp_obj : object
+            Interpolator object. If None, create a new interpolator object.
         f_idx : int
             Index of the output file.
         dim : int
@@ -277,7 +277,6 @@ class TurbulentFlowApp(Application):
             Interpolator object.
         """
         data = load(self.output_files[f_idx])
-        u = data["arrays"]["fluid"].get("u")
 
         i_nx = self.options.i_nx
         radius_scale = self.options.i_radius_scale
@@ -306,35 +305,39 @@ class TurbulentFlowApp(Application):
             method=self.options.i_method, dim=dim
         )
 
-        # Interpolate velocity
-        interp_ob = Interpolator(
-            particle_arrays=list(data['arrays'].values()),
-            kernel=kernel,
-            x=x, y=y, z=z,
-            domain_manager=self.create_domain(),
-            method=method,
-            equations=eqs,
-        )
+        # Reuse the interpolator object if one is provided
+        if interp_obj is None:
+            interp_obj = Interpolator(
+                particle_arrays=list(data['arrays'].values()),
+                kernel=kernel,
+                x=x, y=y, z=z,
+                domain_manager=self.create_domain(),
+                method=method,
+                equations=eqs,
+            )
+        else:
+            interp_obj.update_particle_arrays(list(data['arrays'].values()))
+
         if dim == 1:
-            _u = interp_ob.interpolate('u')
+            _u = interp_obj.interpolate('u')
             ui = _u
             vi = wi = None
         elif dim == 2:
-            _u = interp_ob.interpolate('u')
-            _v = interp_ob.interpolate('v')
+            _u = interp_obj.interpolate('u')
+            _v = interp_obj.interpolate('v')
             ui = _u.reshape(i_nx, i_nx)
             vi = _v.reshape(i_nx, i_nx)
             wi = None
         elif dim == 3:
-            _u = interp_ob.interpolate('u')
-            _v = interp_ob.interpolate('v')
-            _w = interp_ob.interpolate('w')
+            _u = interp_obj.interpolate('u')
+            _v = interp_obj.interpolate('v')
+            _w = interp_obj.interpolate('w')
             ui = _u.reshape(i_nx, i_nx, i_nx)
             vi = _v.reshape(i_nx, i_nx, i_nx)
             wi = _w.reshape(i_nx, i_nx, i_nx)
 
         if return_interp_obj:
-            return dx, ui, vi, wi, interp_ob
+            return dx, ui, vi, wi, interp_obj
         return dx, ui, vi, wi
 
     def _get_ek_for_one_file(
@@ -741,6 +744,8 @@ class TurbulentFlowApp(Application):
         """
         t0 = time.time()
         log_interpolator_details = True
+
+        interp_obj = None
         for f_idx in f_idx_list:
             # Check if the interpolated velocity field already exists
             fname = self._get_interp_vel_fname(f_idx)
@@ -749,12 +754,14 @@ class TurbulentFlowApp(Application):
                 print(msg)
                 continue
 
-            dx, ui, vi, wi, io = self._get_interpolated_vel_field_for_one_file(
-                f_idx=f_idx, dim=dim, L=L, return_interp_obj=True
-            )
+            dx, ui, vi, wi, interp_obj =\
+                self._get_interpolated_vel_field_for_one_file(
+                    interp_obj=interp_obj, f_idx=f_idx, dim=dim, L=L, 
+                    return_interp_obj=True
+                )
 
             if log_interpolator_details:
-                self._log_interpolator_details(dim=dim, interp_obj=io)
+                self._log_interpolator_details(dim=dim, interp_obj=interp_obj)
                 log_interpolator_details = False
 
             # Save interpolated velocity field
@@ -895,7 +902,8 @@ class TurbulentFlowApp(Application):
     def plot_ek(
         self, f_idx: int, plot_type: str = "loglog", plot_fit: bool = True,
         exact: bool = False, wo_interp_initial: bool = False,
-        ylims: tuple = (1e-10, 1), fname_suffix: str = ""
+        ylims: tuple = (1e-10, 1), fname_suffix: str = "",
+        title_suffix: str = "",
     ):
         """
         Plot the computed energy spectrum stored in the *.npz file.
@@ -925,6 +933,10 @@ class TurbulentFlowApp(Application):
             Default is (1e-10, 1).
         fname_suffix : str, optional
             Suffix to be added to the file name.
+            Default is "".
+        title_suffix : str, optional
+            Suffix to be added to the title.
+            Default is "".
         """
         fname = self._get_ek_fname(f_idx=f_idx)
         if fname not in self.ek_files:
@@ -958,8 +970,9 @@ class TurbulentFlowApp(Application):
 
         if k_fit is not None:
             slope, r_value = fit_params['slope'], fit_params['r_value']
+            r_squared = r_value**2
             label = r"Fit: $(E(k) \propto k^{" + f"{slope:.2f}" + r"}) (R^2 "
-            label += f"={r_value:.2f}" + r")$"
+            label += f"={r_squared:.2f}" + r")$"
             plot_func(k_fit, ek_fit, 'r-.', label=label)
 
         if ek_exact is not None:
@@ -977,8 +990,7 @@ class TurbulentFlowApp(Application):
         plt.ylabel(plotter['ylabel'])
         plt.legend(fontsize=8)
 
-        # TODO: Add Re to the title.
-        plt.title(f"Energy spectrum at t = {t:.2f}")
+        plt.title(f"Energy spectrum at t = {t:.2f} {title_suffix}")
 
         # Limit y-axis
         ymin, ymax = plt.ylim()
@@ -1000,7 +1012,8 @@ class TurbulentFlowApp(Application):
 
     def plot_ek_evolution(
         self, f_idx: list = None, plot_fit: bool = True,
-        ylims: tuple = (1e-10, 1), fname_suffix: str = ""
+        ylims: tuple = (1e-10, 1), fname_suffix: str = "",
+        title_suffix: str = "",
     ):
         """
         Plot the evolution of energy spectrum for the given computed files
@@ -1022,6 +1035,10 @@ class TurbulentFlowApp(Application):
             Default is (1e-10, 1).
         fname_suffix : str, optional
             Suffix to be added to the file name.
+            Default is "".
+        title_suffix : str, optional
+            Suffix to be added to the title.
+            Default is "".
         """
         import matplotlib as mpl
 
@@ -1063,10 +1080,11 @@ class TurbulentFlowApp(Application):
                 fit_params = dict(enumerate(fit_params.flatten()))[0]
 
                 slope, r_value = fit_params['slope'], fit_params['r_value']
+                r_squared = r_value**2
                 label = f"Fit (t={data['t']:.2f}): "
                 label += r"$(E(k) \propto k^{" + f"{slope:.2f}" + r"})"\
                     "(R^2 "
-                label += f"={r_value:.2f}" + r")$"
+                label += f"={r_squared:.2f}" + r")$"
                 ax.loglog(k_fit, ek_fit, 'r-.', label=label)
 
         ax.legend(fontsize=8)
@@ -1083,7 +1101,7 @@ class TurbulentFlowApp(Application):
         cbar = fig.colorbar(cmap, ticks=c, ax=ax)
         cbar.ax.set_yticklabels([f"{t:.2f}" for t in c_ticks])
         cbar.set_label(r'$t$', rotation=90, labelpad=5)
-        ax.set_title('Energy spectrum evolution')
+        ax.set_title(f"Energy spectrum evolution {title_suffix}")
 
         # Save the figure
         fname = os.path.join(
