@@ -328,12 +328,12 @@ class SineVelProfile(PySPHProblem):
             labels = ['i_method', 'i_radius_scale']
             _temp_plotter(fcases, title_suffix, labels)
 
-class TGVBasicSchemeComparison(PySPHProblem):
+class TGV2DSchemeComparison(PySPHProblem):
     def get_name(self):
         """
         Problem name.
         """
-        return "tgv_basic_scheme_comparison"
+        return "tgv_2d_scheme_comparison"
     
     def setup(self):
         """
@@ -380,12 +380,12 @@ class TGVBasicSchemeComparison(PySPHProblem):
         """
         self.make_output_dir()
 
-class TGVExtForceSchemeComparison(PySPHProblem):
+class TGV2DExtForceSchemeComparison(PySPHProblem):
     def get_name(self):
         """
         Problem name.
         """
-        return "tgv_ext_force_scheme_comparison"
+        return "tgv_2d_ext_force_scheme_comparison"
     
     def setup(self):
         """
@@ -424,12 +424,12 @@ class TGVExtForceSchemeComparison(PySPHProblem):
         """
         self.make_output_dir()
 
-class TBExternalForcingColagrossi2021(PySPHProblem):
+class TB3DExtForceSchemeComparison(PySPHProblem):
     def get_name(self):
         """
         Problem name.
         """
-        return "tb_external_forcing_colagrossi2021"
+        return "tb_3d_ext_force_scheme_comparison"
     
     def setup(self):
         """
@@ -472,9 +472,9 @@ class TBExternalForcingColagrossi2021(PySPHProblem):
 if __name__ == "__main__":
     PROBLEMS = [
         SineVelProfile,
-        TGVBasicSchemeComparison,
-        TGVExtForceSchemeComparison,
-        TBExternalForcingColagrossi2021
+        TGV2DSchemeComparison,
+        TGV2DExtForceSchemeComparison,
+        TB3DExtForceSchemeComparison
     ]
     automator = Automator(
         simulation_dir='outputs',
