@@ -7,7 +7,7 @@
 #PBS -o log_automate_TB_3D_Scheme_Comparison.out
 
 cd $PBS_O_WORKDIR
-cat $PBS_NODEFILE > ./pbsnodes
+cat $PBS_NODEFILE > ./pbsnodes_script
 PROCS1=$(cat $PBS_NODEFILE | wc -l)
 
 python automate.py TB3DExtForceSchemeComparison

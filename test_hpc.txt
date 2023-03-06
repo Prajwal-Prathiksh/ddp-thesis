@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -N test_tgv
+#PBS -q small
+#PBS -l select=1:ncpus=2
+#PBS -j oe
+#PBS -V
+#PBS -o log_test.out
+
+cd $PBS_O_WORKDIR
+cat $PBS_NODEFILE > ./pbsnodes
+PROCS1=$(cat $PBS_NODEFILE | wc -l)
+
+python code/taylor_green.py --ext-forcing --openmp --scheme=tsph --method=no_sd --scm=edac --pst-freq=10 --c0-fac=80 --nx=200 --re=10000 --max-steps=500
