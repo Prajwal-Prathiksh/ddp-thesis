@@ -10,4 +10,4 @@ cd $PBS_O_WORKDIR
 cat $PBS_NODEFILE > ./pbsnodes
 PROCS1=$(cat $PBS_NODEFILE | wc -l)
 
-python code/taylor_green.py --ext-forcing --openmp --scheme=tsph --method=no_sd --scm=edac --pst-freq=10 --c0-fac=80 --nx=50 --re=10000 --max-steps=500
+python code/taylor_green.py --ext-forcing --openmp --scheme=tsph --method=no_sd --scm=edac --pst-freq=10 --c0-fac=80 --nx=50 --re=10000 --max-steps=500 --pfreq 10
