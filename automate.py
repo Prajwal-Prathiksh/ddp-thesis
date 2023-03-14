@@ -485,14 +485,14 @@ class RunTimeDomainManager(PySPHProblem):
         """
         base_cmd = "python code/taylor_green.py --no-post-process " +\
             " --scheme tsph --method sd --scm wcsph --pst-freq 10 " +\
-            " --nx 200 --re 500 --max-steps 100 --pfreq 100000 --tf 10000 "
+            " --nx 250 --max-steps 200 --re 500 --pfreq 100000 --tf 10000 "
         
         opts = [
             dict(
                 n_core=1, n_thread=i,
                 backend=" --openmp " if i > 1 else " "
             )
-            for i in range(1, 9)
+            for i in range(1, 5)
         ]
         opts += [
             dict(
@@ -516,7 +516,9 @@ class RunTimeDomainManager(PySPHProblem):
         """
         Create the runtime table.
         """
-        n_cores, n_threads, runtimes, dm_runtimes = [], [], [], []
+        n_cores, n_threads, runtimes = [], [], []
+        dm_runtimes, eval_runtimes = [], []
+
         for case in self.cases:
             n_cores.append(case.job_info['n_core'])
             n_threads.append(case.job_info['n_thread'])
@@ -532,19 +534,26 @@ class RunTimeDomainManager(PySPHProblem):
             df = pd.read_csv(fname)
             cond = df.function.str.contains('update_domain')
             if cond.sum() != 1:
-                raise ValueError(
-                    f"Number of True for condition {cond} is not 1")
+                raise ValueError("Number of update_domain calls != 1")
             dm_runtimes.append(float(df[cond].time))
+
+            cond = df.function.str.contains('eval_0')
+            if cond.sum() != 1:
+                raise ValueError("Number of eval_0 calls != 1")
+            eval_runtimes.append(float(df[cond].time))
 
         # Create table
         df = pd.DataFrame(
             data=dict(
                 n_cores=n_cores, n_threads=n_threads, runtimes=runtimes,
-                domain_manager_runtimes=dm_runtimes
+                domain_manager_runtimes=dm_runtimes,
+                eval_0_runtimes=eval_runtimes
             )
         )
         fname = self.output_path('runtime_table.csv')
         df.to_csv(fname, index=False)
+        print(f"Saved runtime table to {fname}")
+
 
     
     def run(self):
