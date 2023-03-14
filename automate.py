@@ -5,11 +5,13 @@ Author: K T Prajwal Prathiksh
 ###
 """
 # Library imports
+import json
 import os
 import time
 import itertools as IT
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 
 # Automan imports
 from automan.api import Automator, Simulation 
@@ -509,11 +511,37 @@ class RunTimeDomainManager(PySPHProblem):
             for kw in opts
         ]
     
+    def create_rt_table(self):
+        """
+        Create the runtime table.
+        """
+        n_cores, n_threads, runtimes = [], [], []
+        for case in self.cases:
+            n_cores.append(case.job_info['n_core'])
+            n_threads.append(case.job_info['n_thread'])
+            
+            # Read simulation *.info file
+            fname = os.path.join(case.root, 'taylor_green.info')
+            with open(fname, 'r') as f:
+                data = json.load(f)
+            runtimes.append(data['cpu_time'])
+
+        # Create table
+        df = pd.DataFrame(
+            data=dict(
+                n_cores=n_cores, n_threads=n_threads, runtimes=runtimes
+            )
+        )
+        fname = self.output_path('runtime_table.csv')
+        df.to_csv(os.path.join(self.output_dir, 'runtime_table.csv'))
+
+    
     def run(self):
         """
         Run the problem.
         """
         self.make_output_dir()
+        self.create_rt_table()
 
             
 
