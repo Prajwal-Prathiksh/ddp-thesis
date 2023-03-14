@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N TGV_Scheme_Comparison
+#PBS -N RunTimeDomainManager
 #PBS -q regular
 #PBS -l select=1:ncpus=16
 #PBS -j oe
