@@ -342,7 +342,7 @@ class TGV2DSchemeComparison(PySPHProblem):
         base_cmd = "python code/taylor_green.py" + BACKEND
         opts = mdict(scheme=[
             'edac', 'tsph --method sd --scm wcsph --pst-freq 10',
-            'tsph --method no_sd --scm edac --pst-freq 10 --c0-fac 80',
+            'tsph --method no_sd --scm edac --pst-freq 10 --c0-fac 40',
             'mon2017', 'ok2022'
         ])
         opts = dprod(
@@ -399,7 +399,7 @@ class TGV2DExtForceSchemeComparison(PySPHProblem):
         )
         scheme_opts += mdict(
             scheme=['tsph'], method=['no_sd'], scm=['edac'], pst_freq=[10],
-            c0_fac=[80]
+            c0_fac=[40]
         )
         scheme_opts += mdict(scheme=['mon2017'])
         res_opts = mdict(nx=[100], re=[10_000, 100_000], tf=[3.])
@@ -442,7 +442,7 @@ class TB3DExtForceSchemeComparison(PySPHProblem):
         )
         scheme_opts += mdict(
             scheme=['tsph'], method=['no_sd'], scm=['edac'], pst_freq=[10],
-            c0_fac=[80]
+            c0_fac=[40]
         )
 
         res_opts = mdict(
