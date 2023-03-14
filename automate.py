@@ -491,13 +491,13 @@ class RunTimeDomainManager(PySPHProblem):
                 n_core=1, n_thread=i,
                 backend=" --openmp " if i > 1 else " "
             )
-            for i in range(1, 5)
+            for i in range(1, 9)
         ]
         opts += [
             dict(
                 n_core=i, n_thread=2*i, backend=" --openmp "
             )
-            for i in range(2, 5)
+            for i in range(2, 6)
         ]
         
         # Setup cases
