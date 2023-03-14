@@ -487,19 +487,19 @@ class RunTimeDomainManager(PySPHProblem):
             " --scheme tsph --method sd --scm wcsph --pst-freq 10 " +\
             " --nx 250 --max-steps 200 --re 500 --pfreq 100000 --tf 10000 "
         
-        opts = [
+        opts = [ # Single Core - Multi-Thread
             dict(
-                n_core=1, n_thread=i,
+                n_core=-1, n_thread=i,
                 backend=" --openmp " if i > 1 else " "
             )
-            for i in range(1, 5)
+            for i in [1, 2, 4, 8, 16]
         ]
-        opts += [
-            dict(
-                n_core=i, n_thread=2*i, backend=" --openmp "
-            )
-            for i in range(2, 6)
-        ]
+        # opts += [
+        #     dict(
+        #         n_core=-1, n_thread=2*i, backend=" --openmp "
+        #     )
+        #     for i in range(2, 6)
+        # ]
         
         # Setup cases
         self.cases = [
@@ -512,16 +512,16 @@ class RunTimeDomainManager(PySPHProblem):
             )
             for kw in opts
         ]
-        self.cases += [
-            Simulation(
-                root=self.input_path(
-                    f"n_core_{kw['n_core']}_n_thread_{kw['n_thread']}_no_p"
-                ),
-                base_command=base_cmd + kw['backend'] + " --no-periodic ",
-                job_info=dict(n_core=kw['n_core'], n_thread=kw['n_thread']),
-            )
-            for kw in opts
-        ]
+        # self.cases += [
+        #     Simulation(
+        #         root=self.input_path(
+        #             f"n_core_{kw['n_core']}_n_thread_{kw['n_thread']}_no_p"
+        #         ),
+        #         base_command=base_cmd + kw['backend'] + " --no-periodic ",
+        #         job_info=dict(n_core=kw['n_core'], n_thread=kw['n_thread']),
+        #     )
+        #     for kw in opts
+        # ]
         
     def create_rt_table(self):
         """
