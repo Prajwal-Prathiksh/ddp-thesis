@@ -108,6 +108,11 @@ class TaylorGreen(TurbulentFlowApp):
             dest="ext_forcing",
             help="Use external forcing"
         )
+        group.add_argument(
+            "--no-post-process", action="store_true",
+            dest="no_post_process",
+            help="Disable post-processing"
+        )
 
     def consume_user_options(self):
         nx = self.options.nx
@@ -135,6 +140,7 @@ class TaylorGreen(TurbulentFlowApp):
         self.kernel_correction = self.options.kernel_correction
         self.no_periodic = self.options.no_periodic
         self.ext_forcing = self.options.ext_forcing
+        self.no_post_process = self.options.no_post_process
 
     def pre_step(self, solver):
         from tg_config import prestep
@@ -163,6 +169,8 @@ class TaylorGreen(TurbulentFlowApp):
                 xmin=0, xmax=self.L, ymin=0, ymax=self.L, periodic_in_x=True,
                 periodic_in_y=True
             )
+        else:
+            raise NotImplementedError
 
     def create_particles(self):
         # create the particles
@@ -259,6 +267,9 @@ class TaylorGreen(TurbulentFlowApp):
         return self._sph_eval
 
     def post_process(self, info_fname):
+        if self.no_post_process:
+            return
+        
         self.read_info(info_fname)
         if len(self.output_files) == 0:
             return

@@ -38,11 +38,6 @@ p0 = c0**2 * rho0
 class TriperiodicBeltrami(TurbulentFlowApp):
     def add_user_options(self, group):
         group.add_argument(
-            "--perturb", action="store", type=float, dest="perturb", default=0,
-            help="Random perturbation of initial particles as a fraction "
-            "of dx (setting it to zero disables it, the default)."
-        )
-        group.add_argument(
             "--length", action="store", type=float, dest="length", default=1.0,
             help="Length of the domain (default 1.0)."
         )
@@ -79,6 +74,11 @@ class TriperiodicBeltrami(TurbulentFlowApp):
             dest="no_periodic",
             help="Make periodic domain"
         )
+        group.add_argument(
+            "--no-post-process", action="store_true",
+            dest="no_post_process",
+            help="Disable post-processing"
+        )
 
     def consume_user_options(self):
         nx = self.options.nx
@@ -105,6 +105,7 @@ class TriperiodicBeltrami(TurbulentFlowApp):
         self.tf = 2.0
         self.kernel_correction = self.options.kernel_correction
         self.no_periodic = self.options.no_periodic
+        self.no_post_process = self.options.no_post_process
 
     def pre_step(self, solver):
         pa = self.particles[0]
@@ -164,6 +165,8 @@ class TriperiodicBeltrami(TurbulentFlowApp):
                 zmin=0, zmax=self.L,
                 periodic_in_x=True, periodic_in_y=True, periodic_in_z=True
             )
+        else:
+            raise NotImplementedError
     
     def create_particles(self):
         # Create particles
@@ -240,6 +243,9 @@ class TriperiodicBeltrami(TurbulentFlowApp):
         return self._sph_eval
 
     def post_process(self, info_fname):
+        if self.no_post_process:
+            return
+        
         self.read_info(info_fname)
         if len(self.output_files) == 0:
             return
