@@ -482,7 +482,7 @@ class RunTimeDomainManager(PySPHProblem):
         """
         base_cmd = "python code/taylor_green.py --no-post-process " +\
             " --scheme tsph --method sd --scm wcsph --pst-freq 10 " +\
-            " --nx 20 --re 500 --max-steps 100 --pfreq 100000 --tf 10000 "
+            " --nx 200 --re 500 --max-steps 100 --pfreq 100000 --tf 10000 "
         
         opts = [
             dict(

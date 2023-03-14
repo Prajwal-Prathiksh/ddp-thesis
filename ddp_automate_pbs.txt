@@ -1,13 +1,13 @@
 #!/bin/bash
 #PBS -N TGV_Scheme_Comparison
-#PBS -q big
-#PBS -l select=1:ncpus=32
+#PBS -q regular
+#PBS -l select=1:ncpus=16
 #PBS -j oe
 #PBS -V
-#PBS -o log_automate_TGV_Scheme_Comparison.out
+#PBS -o log_automate.out
 
 cd $PBS_O_WORKDIR
 cat $PBS_NODEFILE > ./pbsnodes_automate
 PROCS1=$(cat $PBS_NODEFILE | wc -l)
 
-python automate.py TGV2DSchemeComparison TGV2DExtForceSchemeComparison
+python automate.py RunTimeDomainManager -f
