@@ -533,7 +533,7 @@ class RunTimeDomainManager(PySPHProblem):
             )
         )
         fname = self.output_path('runtime_table.csv')
-        df.to_csv(os.path.join(self.output_dir, 'runtime_table.csv'))
+        df.to_csv(fname, index=False)
 
     
     def run(self):
