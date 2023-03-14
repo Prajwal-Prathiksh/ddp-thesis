@@ -485,7 +485,7 @@ class RunTimeDomainManager(PySPHProblem):
         """
         base_cmd = "python code/taylor_green.py --no-post-process " +\
             " --scheme tsph --method sd --scm wcsph --pst-freq 10 " +\
-            " --nx 20 --max-steps 200 --re 500 --pfreq 100000 --tf 10000 "
+            " --nx 250 --max-steps 200 --re 500 --pfreq 100000 --tf 10000 "
         
         opts = [
             dict(
@@ -494,11 +494,11 @@ class RunTimeDomainManager(PySPHProblem):
             )
             for i in range(1, 5)
         ]
-        opts = [
+        opts += [
             dict(
                 n_core=i, n_thread=2*i, backend=" --openmp "
             )
-            for i in range(2, 4)
+            for i in range(2, 6)
         ]
         
         # Setup cases
@@ -562,10 +562,10 @@ class RunTimeDomainManager(PySPHProblem):
             data=dict(
                 n_cores=n_cores,
                 n_threads=n_threads,
-                periodic=periodic,
                 runtime=runtimes,
                 domain_manager=dm_runtimes,
                 eval_0=eval_runtimes
+                periodic=periodic,
             )
         )
         fname = self.output_path('runtime_table.csv')
