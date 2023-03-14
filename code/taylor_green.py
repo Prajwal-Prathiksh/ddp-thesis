@@ -169,8 +169,6 @@ class TaylorGreen(TurbulentFlowApp):
                 xmin=0, xmax=self.L, ymin=0, ymax=self.L, periodic_in_x=True,
                 periodic_in_y=True
             )
-        else:
-            raise NotImplementedError
 
     def create_particles(self):
         # create the particles

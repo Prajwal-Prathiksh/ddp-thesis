@@ -273,7 +273,7 @@ class NumberDensityMoment(Equation):
     def converged(self):
         debug = self.debug
         diff = abs(self.ki - self.ki0)
-        print(diff, self.ki, self.ki0)
+        # print(diff, self.ki, self.ki0)    
         if diff - 0.001 < 1e-14:
             if debug:
                 print("Converged:", diff)
