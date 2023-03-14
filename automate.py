@@ -22,6 +22,7 @@ from automan.utils import filter_cases, filter_by_name
 
 # Local imports.
 from code.automate_utils import styles, custom_compare_runs, plot_vline
+# from temp_utils import styles, custom_compare_runs, plot_vline
 
 BACKEND = " --openmp "
 N_CORES, N_THREADS = 4, 8
@@ -515,7 +516,7 @@ class RunTimeDomainManager(PySPHProblem):
         """
         Create the runtime table.
         """
-        n_cores, n_threads, runtimes = [], [], []
+        n_cores, n_threads, runtimes, dm_runtimes = [], [], [], []
         for case in self.cases:
             n_cores.append(case.job_info['n_core'])
             n_threads.append(case.job_info['n_thread'])
@@ -526,10 +527,20 @@ class RunTimeDomainManager(PySPHProblem):
                 data = json.load(f)
             runtimes.append(data['cpu_time'])
 
+            # Read profile_info.csv file
+            fname = os.path.join(case.root, 'profile_info.csv')
+            df = pd.read_csv(fname)
+            cond = df.function.str.contains('update_domain')
+            if cond.sum() != 1:
+                raise ValueError(
+                    f"Number of True for condition {cond} is not 1")
+            dm_runtimes.append(float(df[cond].time))
+
         # Create table
         df = pd.DataFrame(
             data=dict(
-                n_cores=n_cores, n_threads=n_threads, runtimes=runtimes
+                n_cores=n_cores, n_threads=n_threads, runtimes=runtimes,
+                domain_manager_runtimes=dm_runtimes
             )
         )
         fname = self.output_path('runtime_table.csv')
