@@ -485,21 +485,23 @@ class RunTimeDomainManager(PySPHProblem):
         """
         base_cmd = "python code/taylor_green.py --no-post-process " +\
             " --scheme tsph --method sd --scm wcsph --pst-freq 10 " +\
-            " --nx 250 --max-steps 200 --re 500 --pfreq 100000 --tf 10000 "
+            " --nx 800 --max-steps 10 --re 500 --pfreq 100000 --tf 10000 " +\
+            " --disable-output "
         
-        opts = [ # Single Core - Multi-Thread
+        opts = [
+            # Single Core - Multi-Thread
             dict(
                 n_core=-1, n_thread=i,
                 backend=" --openmp " if i > 1 else " "
             )
-            for i in [1, 2, 4, 8, 16]
+            for i in [1, 2, 4, 8, 16, 32]
         ]
-        # opts += [
-        #     dict(
-        #         n_core=-1, n_thread=2*i, backend=" --openmp "
-        #     )
-        #     for i in range(2, 6)
-        # ]
+        opts += [
+            dict(
+                n_core=-1, n_thread=2*i, backend=" --openmp "
+            )
+            for i in range(2, 6)
+        ]
         
         # Setup cases
         self.cases = [
