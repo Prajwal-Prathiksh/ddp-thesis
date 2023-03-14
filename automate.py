@@ -564,7 +564,7 @@ class RunTimeDomainManager(PySPHProblem):
                 n_threads=n_threads,
                 runtime=runtimes,
                 domain_manager=dm_runtimes,
-                eval_0=eval_runtimes
+                eval_0=eval_runtimes,
                 periodic=periodic,
             )
         )
