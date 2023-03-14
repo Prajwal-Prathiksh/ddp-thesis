@@ -469,12 +469,62 @@ class TB3DExtForceSchemeComparison(PySPHProblem):
         self.make_output_dir()
 
 
+class RunTimeDomainManager(PySPHProblem):
+    def get_name(self):
+        """
+        Problem name.
+        """
+        return "runtime_domain_manager"
+    
+    def setup(self):
+        """
+        Setup the problem.
+        """
+        base_cmd = "python code/taylor_green.py --no-post-process " +\
+            " --scheme tsph --method sd --scm wcsph --pst-freq 10 " +\
+            " --nx 20 --re 500 --max-steps 100 --pfreq 100000 --tf 10000 "
+        
+        opts = [
+            dict(
+                n_core=1, n_thread=i,
+                backend=" --openmp " if i > 1 else " "
+            )
+            for i in range(1, 5)
+        ]
+        opts += [
+            dict(
+                n_core=i, n_thread=2*i, backend=" --openmp "
+            )
+            for i in range(2, 5)
+        ]
+        
+        # Setup cases
+        self.cases = [
+            Simulation(
+                root=self.input_path(
+                    f"n_core_{kw['n_core']}_n_thread_{kw['n_thread']}"),
+                base_command=base_cmd + kw['backend'],
+                job_info=dict(n_core=kw['n_core'], n_thread=kw['n_thread']),
+            )
+            for kw in opts
+        ]
+    
+    def run(self):
+        """
+        Run the problem.
+        """
+        self.make_output_dir()
+
+            
+
+
 if __name__ == "__main__":
     PROBLEMS = [
         SineVelProfile,
         TGV2DSchemeComparison,
         TGV2DExtForceSchemeComparison,
-        TB3DExtForceSchemeComparison
+        TB3DExtForceSchemeComparison,
+        RunTimeDomainManager
     ]
     automator = Automator(
         simulation_dir='outputs',
