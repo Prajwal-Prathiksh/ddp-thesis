@@ -485,7 +485,7 @@ class RunTimeDomainManager(PySPHProblem):
         """
         base_cmd = "python code/taylor_green.py --no-post-process " +\
             " --scheme tsph --method sd --scm wcsph --pst-freq 10 " +\
-            " --nx 250 --max-steps 200 --re 500 --pfreq 100000 --tf 10000 "
+            " --nx 20 --max-steps 200 --re 500 --pfreq 100000 --tf 10000 "
         
         opts = [
             dict(
@@ -494,34 +494,49 @@ class RunTimeDomainManager(PySPHProblem):
             )
             for i in range(1, 5)
         ]
-        opts += [
+        opts = [
             dict(
                 n_core=i, n_thread=2*i, backend=" --openmp "
             )
-            for i in range(2, 6)
+            for i in range(2, 4)
         ]
         
         # Setup cases
         self.cases = [
             Simulation(
                 root=self.input_path(
-                    f"n_core_{kw['n_core']}_n_thread_{kw['n_thread']}"),
+                    f"n_core_{kw['n_core']}_n_thread_{kw['n_thread']}_p"
+                ),
                 base_command=base_cmd + kw['backend'],
                 job_info=dict(n_core=kw['n_core'], n_thread=kw['n_thread']),
             )
             for kw in opts
         ]
-    
+        self.cases += [
+            Simulation(
+                root=self.input_path(
+                    f"n_core_{kw['n_core']}_n_thread_{kw['n_thread']}_no_p"
+                ),
+                base_command=base_cmd + kw['backend'] + " --no-periodic ",
+                job_info=dict(n_core=kw['n_core'], n_thread=kw['n_thread']),
+            )
+            for kw in opts
+        ]
+        
     def create_rt_table(self):
         """
         Create the runtime table.
         """
         n_cores, n_threads, runtimes = [], [], []
         dm_runtimes, eval_runtimes = [], []
+        periodic = []
 
         for case in self.cases:
             n_cores.append(case.job_info['n_core'])
             n_threads.append(case.job_info['n_thread'])
+            periodic.append(
+                'yes' if 'no-periodic' not in case.base_command else 'no'
+            )
             
             # Read simulation *.info file
             fname = os.path.join(case.root, 'taylor_green.info')
@@ -545,9 +560,12 @@ class RunTimeDomainManager(PySPHProblem):
         # Create table
         df = pd.DataFrame(
             data=dict(
-                n_cores=n_cores, n_threads=n_threads, runtimes=runtimes,
-                domain_manager_runtimes=dm_runtimes,
-                eval_0_runtimes=eval_runtimes
+                n_cores=n_cores,
+                n_threads=n_threads,
+                periodic=periodic,
+                runtime=runtimes,
+                domain_manager=dm_runtimes,
+                eval_0=eval_runtimes
             )
         )
         fname = self.output_path('runtime_table.csv')
