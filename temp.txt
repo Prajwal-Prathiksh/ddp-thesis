@@ -1,0 +1,282 @@
+❯ python .\code\taylor_green.py --scheme=tsph --method sd --scm wcsph --pst-freq 10 --re=1000 --max-steps 100 --pfreq 10 -h -> temp.txt
+D:\IIT Bombay - Miscellaneous\Winter Project\ddp-thesis\code\energy_spectrum.py:29: UserWarning: Numba not installed. Some functions will not be compiled.
+  warnings.warn(
+usage: taylor_green.py [options]
+
+Note that you may run this program via MPI and the run will be automatically parallelized.
+To do this run:: $ mpirun -n 4 /path/to/your/python %prog [options] Replace '4' above with
+the number of processors you have. Below are the options you may pass.
+
+options:
+  -h, --help            show this help message and exit
+  -b {cython,opencl,cuda}, --backend {cython,opencl,cuda}
+                        Choose the backend. (default: cython)
+  --openmp              Use OpenMP. (default: False)
+  --use-double          Use double precision on the GPU. (default: False)
+  --suppress-warnings   Suppress warnings (default: False)
+  --profile             Print profiling info (default: False)
+  -v LOGLEVEL, --loglevel LOGLEVEL
+                        Log-level to use for log messages. Valid values:
+                        dict_keys(['debug', 'info', 'warning', 'error', 'critical',
+                        'none']) (default: info)
+  --logfile LOGFILE     Log file to use for logging, set to empty ('') for no file
+                        logging. (default: None)
+  -l, --print-log       Print log messages to stderr. (default: False)
+  --tf FINAL_TIME       Total time for the simulation. (default: None)
+  --timestep TIME_STEP  Timestep to use for the simulation. (default: None)
+  --max-steps MAX_STEPS
+                        Maximum number of iteration steps to take (defaults to a very
+                        large value). (default: 2147483648)
+  --n-damp N_DAMP       Number of iterations to damp timesteps initially. (default: None)
+  --adaptive-timestep   Use adaptive time stepping. (default: None)
+  --no-adaptive-timestep
+                        Do not use adaptive time stepping. (default: None)
+  --cfl CFL             CFL number for adaptive time steps (default: 0.3)
+  -q, --quiet           Do not print any progress information. (default: False)
+  --disable-output      Do not dump any output files. (default: False)
+  -o FNAME, --fname FNAME
+                        File name to use for output (default: taylor_green)
+  --pfreq FREQ          Printing frequency for the output (default: None)
+  --reorder-freq REORDER_FREQ
+                        Frequency between spatially reordering particles. (default: None)
+  --detailed-output     Dump detailed output. (default: None)
+  -z, --compress-output
+                        Compress generated output files. (default: False)
+  --output-dump-remote  Save Remote particles in parallel (default: False)
+  -d OUTPUT_DIR, --directory OUTPUT_DIR
+                        Dump output in the specified directory. (default: D:\IIT Bombay -
+                        Miscellaneous\Winter Project\ddp-thesis\taylor_green_output)
+  --no-openmp           Do not use OpenMP to run the simulation using multiple cores.
+                        (default: None)
+  --omp-schedule OMP_SCHEDULE
+                        Schedule how loop iterations are divided amongst multiple threads
+                        (default: dynamic,64)
+  --opencl              Use OpenCL to run the simulation. (default: False)
+  --cuda                Use CUDA to run the simulation. (default: False)
+  --use-local-memory    Use local memory with OpenCL (Experimental) (default: False)
+  --kernel {CubicSpline,Gaussian,QuinticSpline,SuperGaussian,WendlandQuintic,WendlandQuinticC2_1D,WendlandQuinticC4,WendlandQuinticC4_1D,WendlandQuinticC6,WendlandQuinticC6_1D}
+                        Use specified kernel from ['CubicSpline', 'Gaussian',
+                        'QuinticSpline', 'SuperGaussian', 'WendlandQuintic',
+                        'WendlandQuinticC2_1D', 'WendlandQuinticC4',
+                        'WendlandQuinticC4_1D', 'WendlandQuinticC6',
+                        'WendlandQuinticC6_1D'] (default: None)
+  --post-process POST_PROCESS
+                        Only perform post-processing and exit. (default: None)
+
+Restart options:
+  Restart options for PySPH
+
+  --restart-file RESTART_FILE
+                        Restart a PySPH simulation using a specified file (default: None)
+  --rescale-dt RESCALE_DT
+                        Scale dt upon restarting by a numerical constant (default: 1.0)
+
+NNPS:
+  Nearest Neighbor searching
+
+  --nnps {box,ll,sh,esh,ci,sfc,comp_tree,strat_hash,strat_sfc,tree,gpu_octree}
+                        Use one of box-sort ('box') or the linked list algorithm ('ll') or
+                        the spatial hash algorithm ('sh') or the extended spatial hash
+                        algorithm ('esh') or the cell indexing algorithm ('ci') or the
+                        z-order space filling curve based algorithm ('sfc') or the
+                        stratified hash algorithm ('strat_hash') or the stratified sfc
+                        algorithm ('strat_sfc') or the octree algorithm ('tree') or the
+                        compressed octree algorithm ('comp_tree') or the gpu octree
+                        algorithm ('gpu_octree') (default: ll)
+  --spatial-hash-sub-factor H
+                        Sub division factor for ExtendedSpatialHashNNPS (default: 3)
+  --approximate-nnps    Use for approximate NNPS (default: False)
+  --spatial-hash-table-size TABLE_SIZE
+                        Table size for SpatialHashNNPS and ExtendedSpatialHashNNPS
+                        (default: 131072)
+  --stratified-grid-num-levels NUM_LEVELS
+                        Number of levels for StratifiedHashNNPS and StratifiedSFCNNPS
+                        (default: 1)
+  --tree-leaf-max-particles LEAF_MAX_PARTICLES
+                        Maximum number of particles in leaf of octree (default: 10)
+  --fixed-h             Option for fixed smoothing lengths (default: False)
+  --cache-nnps          Option to enable the use of neighbor caching. (default: False)
+  --sort-gids           Sort neighbors by the GIDs to get consistent results in serial and
+                        parallel (slows down a bit). (default: False)
+
+PyZoltan:
+  Zoltan load balancing options
+
+  --with-zoltan         Use PyZoltan for dynamic load balancing (default: True)
+  --zoltan-lb-method {RCB,RIB,HSFC}
+                        Choose the Zoltan load balancing method (default: HSFC)
+  --rcb-lock            Lock the directions of the RCB cuts (default: False)
+  --rcb-reuse           Reuse previous RCB cuts (default: False)
+  --rcb-rectilinear     Produce nice rectilinear blocks without projections (default:
+                        False)
+  --rcb-set-direction {0,1,2,3,4,5,6}
+                        Set the order of the RCB cuts (0: no order, 1:'xyz', 2:'xzy',
+                        3:'yzx', 4:'yxz', 5:'zxy', 6:'zyx') (default: 0)
+  --zoltan-weights      Switch between using weights for input to Zoltan. defaults to True
+                        (default: True)
+  --ghost-layers GHOST_LAYERS
+                        Number of ghost cells to share for remote neighbors (default: 1.0)
+  --lb-freq LB_FREQ     The frequency for load balancing (default: 10)
+  --zoltan-debug-level ZOLTAN_DEBUG_LEVEL
+                        Zoltan debugging level (default: 0)
+
+Parallel Options:
+  --update-cell-sizes   Recompute cell sizes for binning in parallel (default: False)
+  --parallel-scale-factor PARALLEL_SCALE_FACTOR
+                        Kernel scale factor for the parallel update (default: 2.0)
+  --parallel-output-mode {collected,distributed}
+                        Use 'collected' to dump one output at root or 'distributed' for
+                        every processor. (default: collected)
+
+Interfaces:
+  Add interfaces to the solver
+
+  --interactive         Add an interactive commandline interface to the solver (default:
+                        False)
+  --xml-rpc [HOST:] PORT
+                        Add an XML-RPC interface to the solver;HOST=0.0.0.0 by default
+                        (default: None)
+  --multiproc [[AUTHKEY@] HOST:] PORT[+]
+                        Add a python multiprocessing interface to the solver;
+                        AUTHKEY=pysph, HOST=0.0.0.0, PORT=8800+ when given 'auto' (8800+
+                        means first available port number 8800 onwards); (default: None)
+  --octree-leaf-size OCTREE_LEAF_SIZE
+                        Specify leaf size of octree. Must be multiples of 32
+                        (Experimental) (default: 32)
+  --octree-elementwise-nnps
+                        Run NNPS for different particles on different threads
+                        (Experimental) (default: False)
+
+SPH Scheme options:
+  Scheme related command line arguments
+
+  --beta BETA           Beta for the artificial viscosity. (default: None)
+  --hg-correction       Use the Hughes Graham correction. (default: None)
+  --no-hg-correction    Do not use the Hughes Graham correction. (default: None)
+  --update-h            Update the smoothing length as per Ferrari et al. (default: None)
+  --no-update-h         Do not update the smoothing length as per Ferrari et al. (default:
+                        None)
+  --delta-sph           Use the delta-SPH correction terms. (default: None)
+  --no-delta-sph        Do not use the delta-SPH correction terms. (default: None)
+  --summation-density   Use summation density instead of continuity. (default: None)
+  --no-summation-density
+                        Do not use summation density instead of continuity. (default:
+                        None)
+  --edac-alpha EDAC_ALPHA
+                        Alpha for the EDAC scheme viscosity. (default: None)
+  --clamp-pressure      Clamp pressure on boundaries to be non-negative. (default: None)
+  --no-clamp-pressure   Do not clamp pressure on boundaries to be non-negative. (default:
+                        None)
+  --use-bql             Use the Basa-Quinlan-Lastiwka correction. (default: None)
+  --no-use-bql          Do not use the Basa-Quinlan-Lastiwka correction. (default: None)
+  --tdamp TDAMP         Time for which the accelerations are damped. (default: None)
+  --tolerance TOLERANCE
+                        Tolerance for convergence of iterations as a fraction (default:
+                        None)
+  --iisph-debug         Produce some debugging output on convergence of iterations.
+                        (default: None)
+  --no-iisph-debug      Do not produce some debugging output on convergence of iterations.
+                        (default: None)
+  --pcisph-tol TOLERANCE
+                        relative error tolerance for convergence as a percentage.
+                        (default: None)
+  --pcisph-debug        Produce some debugging output on convergence of iterations.
+                        (default: None)
+  --no-pcisph-debug     Do not produce some debugging output on convergence of iterations.
+                        (default: None)
+  --pcisph-itercount    Produce some debugging output on convergence of iterations.
+                        (default: False)
+  --no-pcisph-itercount
+                        Do not produce some debugging output on convergence of iterations.
+                        (default: False)
+  --delta DELTA         Delta for the delta-SPH. (default: None)
+  --gamma GAMMA         Gamma for the state equation. (default: None)
+  --tensile-correction  Use tensile instability correction. (default: None)
+  --no-tensile-correction
+                        Do not use tensile instability correction. (default: None)
+  --velocity-correction
+                        Use velocity correction. (default: None)
+  --no-velocity-correction
+                        Do not use velocity correction. (default: None)
+  --variable-umax       Use variable umax. (default: None)
+  --no-variable-umax    Do not use variable umax. (default: None)
+  --pst-freq PST_FREQ   Particle shifting frequency (default: None)
+  --scm SCM             scheme to be used scheme 'wcsph' or 'edac' or 'fatehi' (default:
+                        wcsph)
+  --eos EOS             scheme to be used scheme 'tait' or 'linear' (default: tait)
+  --pst PST             ipst or dppst (default: ipst)
+  --split-cal           use derived calculation for shifting velocity (default: None)
+  --no-split-cal        Do not use derived calculation for shifting velocity (default:
+                        None)
+  --tol TOLERANCE       Tolerance for convergence. (default: None)
+  --omega OMEGA         Omega for convergence. (default: None)
+  --alpha ALPHA         Artificial viscosity. (default: None)
+  --gtvf                Use GTVF. (default: None)
+  --no-gtvf             Do not use GTVF. (default: None)
+  --symmetric           Use symmetric form of pressure gradient. (default: None)
+  --no-symmetric        Do not use symmetric form of pressure gradient. (default: None)
+  --internal            If the simulation is internal or external. (default: None)
+  --no-internal         Do not if the simulation is internal or external. (default: None)
+  --method METHOD       method for pressure eval 'soc' or 'no_soc' (default: None)
+  --kernel-corr         Use this if kernel correction is required (default: None)
+  --no-kernel-corr      Do not use this if kernel correction is required (default: None)
+  --damp-pre            if True then apply pressure damping (default: None)
+  --no-damp-pre         Do not if True then apply pressure damping (default: None)
+  --mon2017-eps EPS     Epsilon for SPH-ϵ scheme (default: 0.5)
+  --mon2017-alpha ALPHA
+                        Alpha for SPH-ϵ scheme (default: 1.0)
+  --turb-visc {SMAG,SIGMA,SMAG_MCG}
+                        Turbulent viscosity model to use for Okra2022 scheme. (default:
+                        SMAG)
+  --scheme {wcsph,tvf,edac,iisph,crksph,gtvf,pcisph,sisph,isph,delta_plus,tsph,tdsph,tisph,ewcsph,rsph,mon2017,ok2022}
+                        Specify scheme to use (one of ['wcsph', 'tvf', 'edac', 'iisph',
+                        'crksph', 'gtvf', 'pcisph', 'sisph', 'isph', 'delta_plus', 'tsph',
+                        'tdsph', 'tisph', 'ewcsph', 'rsph', 'mon2017', 'ok2022']).
+                        (default: tvf)
+
+Turbulence Options:
+  Command line arguments for simulating turbulent flow and its postprocessing
+
+  --i-nx I_NX           Number of interpolation points along x direction. If not
+                        specified, it is set to nx. (default: None)
+  --i-kernel {CubicSpline,WendlandQuinticC2,WendlandQuinticC4,WendlandQuinticC6,Gaussian,SuperGaussian,QuinticSpline}
+                        Interpolation kernel. (default: WendlandQuinticC4)
+  --i-radius-scale I_RADIUS_SCALE
+                        Interpolation kernel radius scale. (default: 3.0)
+  --i-method {sph,shepard,order1,order1BL,order1MC}
+                        Interpolating method. (default: shepard)
+  --ek-norm-order {-inf,1,2,inf}
+                        Order of the norm used to compute the energy spectrum. (default:
+                        inf)
+
+User:
+  User defined command line arguments
+
+  --init INIT           Initialize particle positions from given file. (default: None)
+  --perturb PERTURB     Random perturbation of initial particles as a fraction of dx
+                        (setting it to zero disables it, the default). (default: 0)
+  --length LENGTH       Length of the domain (default 1.0). (default: 1.0)
+  --nx NX               Number of points along x direction. (default 50) (default: 50)
+  --re RE               Reynolds number (defaults to 100). (default: 100)
+  --hdx HDX             Ratio h/dx. (default: 1.0)
+  --pb-factor PB_FACTOR
+                        Use fraction of the background pressure (default: 1.0). (default:
+                        1.0)
+  --c0-fac C0_FAC       default factor is 10 (default: 10.0)
+  --kernel-correction {,mixed,gradient,crksph,kgf,order1}
+                        Type of Kernel Correction (default: )
+  --remesh REMESH       Remeshing frequency (setting it to zero disables it). (default: 0)
+  --remesh-eq {m4,sph}  Remeshing strategy to use. (default: m4)
+  --shift-freq SHIFT_FREQ
+                        Particle position shift frequency.(set zero to disable). (default:
+                        0)
+  --shift-kind {simple,fickian,ipst,mod_fickian,delta_plus}
+                        Use of fickian shift in positions. (default: simple)
+  --shift-parameter SHIFT_PARAMETER
+                        Constant used in shift, range for 'simple' is 0.01-0.1range
+                        'fickian' is 1-10. (default: None)
+  --shift-correct-vel   Correct velocities after shifting (defaults to false). (default:
+                        False)
+  --no-periodic         Make periodic domain (default: True)
+  --ext-forcing         Use external forcing (default: False)
+  --no-post-process     Disable post-processing (default: False)
