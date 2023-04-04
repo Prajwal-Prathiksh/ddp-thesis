@@ -47,7 +47,7 @@ class TaylorGreen(TurbulentFlowApp):
             help="Reynolds number (defaults to 100)."
         )
         group.add_argument(
-            "--hdx", action="store", type=float, dest="hdx", default=1.0,
+            "--hdx", action="store", type=float, dest="hdx", default=2.0,
             help="Ratio h/dx."
         )
         group.add_argument(
@@ -108,10 +108,25 @@ class TaylorGreen(TurbulentFlowApp):
             dest="ext_forcing",
             help="Use external forcing"
         )
+        sph_int_choices = ['auto', 'pec', 'rk2', 'rk3', 'rk4']
+        group.add_argument(
+            "--integrator", action="store", type=str, dest="sph_integrator",
+            default='auto', choices=sph_int_choices, help="Integrator to use."
+        )
+        group.add_argument(
+            "--integrator-dt-mul-fac", action="store", type=float,
+            dest="dt_mul_fac", default=1.0,
+            help="Multiplier factor for dt."
+        )
         group.add_argument(
             "--no-post-process", action="store_true",
             dest="no_post_process",
             help="Disable post-processing"
+        )
+        group.add_argument(
+            "--no-plot", action="store_true",
+            dest="no_plot",
+            help="Disable plotting"
         )
 
     def consume_user_options(self):
@@ -136,11 +151,13 @@ class TaylorGreen(TurbulentFlowApp):
         dt_force = 0.25 * 1.0
 
         self.dt = min(dt_cfl, dt_viscous, dt_force)
+        print("dt (pre multiplier): ", self.dt)
+        self.dt = self.dt * self.options.dt_mul_fac
+        print("dt (post multiplier): ", self.dt)
         self.tf = 2.0
         self.kernel_correction = self.options.kernel_correction
         self.no_periodic = self.options.no_periodic
         self.ext_forcing = self.options.ext_forcing
-        self.no_post_process = self.options.no_post_process
 
     def pre_step(self, solver):
         from tg_config import prestep
@@ -265,7 +282,7 @@ class TaylorGreen(TurbulentFlowApp):
         return self._sph_eval
 
     def post_process(self, info_fname):
-        if self.no_post_process:
+        if self.options.no_post_process:
             return
         
         self.read_info(info_fname)
@@ -338,6 +355,9 @@ class TaylorGreen(TurbulentFlowApp):
             fname, t=t, ke=ke, ke_ex=ke_ex, decay=decay, linf=linf, l1=l1,
             p_l1=p_l1, decay_ex=decay_ex, lm=lm, am=am
         )
+
+        if self.options.no_plot:
+            return
 
         import matplotlib
         matplotlib.use('Agg')

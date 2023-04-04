@@ -4,134 +4,11 @@ from pysph.sph.integrator import Integrator, IntegratorStep
 from pst import IterativePST, ModifiedFickian, DeltaPlusSPHPST, NumberDensityMoment
 from pysph.sph.wc.linalg import gj_solve
 from compyle.api import declare
-from math import sqrt
 
-
-
-class RK2Integrator(Integrator):
-    def one_timestep(self, t, dt):
-        # Initialise `U^{n}`
-        self.initialize()
-
-        # Stage 1 - Compute and store `U^{1}`
-        self.compute_accelerations()
-        self.stage1()
-        self.update_domain()
-        # Call any post-stage functions
-        self.do_post_stage(0.5*dt, 1)
-
-        # Stage 2 - Compute and store `U^{n+1}`
-        self.compute_accelerations()
-        self.stage2()
-        self.update_domain()
-        # Call any post-stage functions
-        self.do_post_stage(dt, 2)
-
-### Runge-Kutta Second-Order Integrator Step-------------------------------
-class RK2Stepper(IntegratorStep):
-    def initialize(
-        self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
-        d_u0, d_v0, d_w0, d_u, d_v, d_w, d_rhoc, d_rhoc0
-    ):
-        # Initialise `U^{n}`
-        d_x0[d_idx] = d_x[d_idx]
-        d_y0[d_idx] = d_y[d_idx]
-        d_z0[d_idx] = d_z[d_idx]
-
-        d_u0[d_idx] = d_u[d_idx]
-        d_v0[d_idx] = d_v[d_idx]
-        d_w0[d_idx] = d_w[d_idx]
-
-        d_rhoc0[d_idx] = d_rhoc[d_idx]
-
-    def stage1(
-        self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
-        d_u0, d_v0, d_w0, d_u, d_v, d_w, d_au, d_av, d_aw,
-        dt, d_rhoc, d_arho, d_rhoc0
-    ):
-        dtb2 = 0.5*dt
-
-        # Compute `U^{1}`
-        d_x[d_idx] = d_x0[d_idx] + dtb2*d_u[d_idx]
-        d_y[d_idx] = d_y0[d_idx] + dtb2*d_v[d_idx]
-        d_z[d_idx] = d_z0[d_idx] + dtb2*d_w[d_idx]
-
-        d_u[d_idx] = d_u0[d_idx] + dtb2*d_au[d_idx]
-        d_v[d_idx] = d_v0[d_idx] + dtb2*d_av[d_idx]
-        d_w[d_idx] = d_w0[d_idx] + dtb2*d_aw[d_idx]
-
-        d_rhoc[d_idx] = d_rhoc0[d_idx] + dtb2*d_arho[d_idx]
-
-    def stage2(
-        self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
-        d_u0, d_v0, d_w0, d_u, d_v, d_w, d_au, d_av, d_aw,
-        dt, d_rhoc, d_arho, d_rhoc0
-    ):
-        # Compute `U^{n+1}`
-        d_x[d_idx] = d_x0[d_idx] + dt*d_u[d_idx]
-        d_y[d_idx] = d_y0[d_idx] + dt*d_v[d_idx]
-        d_z[d_idx] = d_z0[d_idx] + dt*d_w[d_idx]
-
-        d_u[d_idx] = d_u0[d_idx] + dt*d_au[d_idx]
-        d_v[d_idx] = d_v0[d_idx] + dt*d_av[d_idx]
-        d_w[d_idx] = d_w0[d_idx] + dt*d_aw[d_idx]
-
-        d_rhoc[d_idx] = d_rhoc0[d_idx] + dt*d_arho[d_idx]
-
-
-
-class RK2StepperEDAC(IntegratorStep):
-    def initialize(
-        self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
-        d_u0, d_v0, d_w0, d_u, d_v, d_w, d_p, d_p0
-    ):
-        # Initialise `U^{n}`
-        d_x0[d_idx] = d_x[d_idx]
-        d_y0[d_idx] = d_y[d_idx]
-        d_z0[d_idx] = d_z[d_idx]
-
-        d_u0[d_idx] = d_u[d_idx]
-        d_v0[d_idx] = d_v[d_idx]
-        d_w0[d_idx] = d_w[d_idx]
-
-        d_p0[d_idx] = d_p[d_idx]
-
-    def stage1(
-        self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
-        d_u0, d_v0, d_w0, d_u, d_v, d_w, d_au, d_av, d_aw,
-        dt, d_p, d_ap, d_p0
-    ):
-        dtb2 = 0.5*dt
-
-        # Compute `U^{1}`
-        d_x[d_idx] = d_x0[d_idx] + dtb2*d_u[d_idx]
-        d_y[d_idx] = d_y0[d_idx] + dtb2*d_v[d_idx]
-        d_z[d_idx] = d_z0[d_idx] + dtb2*d_w[d_idx]
-
-        d_u[d_idx] = d_u0[d_idx] + dtb2*d_au[d_idx]
-        d_v[d_idx] = d_v0[d_idx] + dtb2*d_av[d_idx]
-        d_w[d_idx] = d_w0[d_idx] + dtb2*d_aw[d_idx]
-
-        d_p[d_idx] = d_p0[d_idx] + dtb2*d_ap[d_idx]
-
-    def stage2(
-        self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
-        d_u0, d_v0, d_w0, d_u, d_v, d_w, d_au, d_av, d_aw,
-        dt, d_p, d_ap, d_p0
-    ):
-        # Compute `U^{n+1}`
-        d_x[d_idx] = d_x0[d_idx] + dt*d_u[d_idx]
-        d_y[d_idx] = d_y0[d_idx] + dt*d_v[d_idx]
-        d_z[d_idx] = d_z0[d_idx] + dt*d_w[d_idx]
-
-        d_u[d_idx] = d_u0[d_idx] + dt*d_au[d_idx]
-        d_v[d_idx] = d_v0[d_idx] + dt*d_av[d_idx]
-        d_w[d_idx] = d_w0[d_idx] + dt*d_aw[d_idx]
-
-        d_p[d_idx] = d_p0[d_idx] + dt*d_ap[d_idx]
-
-
-
+from solid_bc import AdamiSlipWallVelocity
+from sph_integrators import (
+    PECIntegrator, RK2Integrator, RK2Stepper, RK2StepperEDAC
+)
 
 class TaitEOS(Equation):
     def __init__(self, dest, sources, rho0, gamma, p0=0.0):
@@ -790,7 +667,6 @@ class TSPHScheme(Scheme):
             steppers.update(extra_steppers)
 
         cls = integrator_cls if integrator_cls is not None else RK2Integrator
-        # cls = integrator_cls if integrator_cls is not None else RK3Integrator
         step_cls = RK2Stepper
         if self.scm == 'edac':
             step_cls = RK2StepperEDAC
@@ -801,7 +677,8 @@ class TSPHScheme(Scheme):
                 steppers[name] = step_cls()
 
         integrator = cls(**steppers)
-
+        print(integrator)
+        
         from pysph.solver.solver import Solver
         self.solver = Solver(
             dim=self.dim, integrator=integrator, kernel=kernel, **kw
@@ -813,7 +690,7 @@ class TSPHScheme(Scheme):
             (SummationDensity)
         # from pysph.sph.wc.basic import TaitEOS
         from pysph.sph.wc.transport_velocity import MomentumEquationArtificialViscosity
-
+        from solid_bc import SourceNumberDensity, AdamiPressureBC, AdamiWallVelocity
 
         equations = []
         g1 = []
@@ -838,10 +715,6 @@ class TSPHScheme(Scheme):
 
         g1 = []
         for name in self.solids:
-            from solid_bc import (
-                SourceNumberDensity, AdamiPressureBC,
-                AdamiWallVelocity, AdamiSlipWallVelocity
-            )
             g1.append(SourceNumberDensity(dest=name, sources=self.fluids))
             g1.append(
                 AdamiPressureBC(dest=name,
@@ -1009,7 +882,6 @@ class TSPHScheme(Scheme):
                 'stride': 3
             }, 'ki', 'ki0', 'rhoc', 'rhoc0', 'ap', 'p0'
         ]
-        props += ['xi', 'yi', 'zi', 'ui', 'vi', 'wi', 'rhoi']
         if len(self.solids) > 0:
             props += ['wf', 'wg', 'ug', 'vf', 'uf', 'vg', 'wij', 'vg_star', 'wg_star', 'ug_star']
         output_props = ['x', 'y', 'z', 'u', 'v', 'w', 'rho', 'm', 'h',
@@ -1029,6 +901,13 @@ class TSPHScheme(Scheme):
                 {'name': 'L3', 'stride': 27},
             ]
             props += fatehi_props
+
+        integrator_name = self.solver.integrator.__class__.__name__
+        if 'RK' in integrator_name:
+            stepper_props = [
+                'xi', 'yi', 'zi', 'ui', 'vi', 'wi', 'rhoi', 'rhoci'
+            ]
+            props += stepper_props
 
         for pa in particles:
             self._ensure_properties(pa, props, clean)

@@ -74,6 +74,11 @@ def exact_solution(U, b, t, x, y):
 
 
 def configure_scheme(app, p0, gx=0.0):
+    integrator_cls = None
+    extra_steppers = None
+    if app.options.sph_integrator != 'auto':
+        integrator_cls = app.options.sph_integrator
+
     from pysph.base.kernels import QuinticSpline
     scheme = app.scheme
     h0 = app.hdx * app.dx
@@ -83,6 +88,19 @@ def configure_scheme(app, p0, gx=0.0):
         scheme.configure(pb=app.options.pb_factor * p0, nu=app.nu, h0=h0, gx=gx)
     elif app.options.scheme == 'tsph':
         scheme.configure(hdx=app.hdx, nu=app.nu, h0=h0, gx=gx, periodic=app.no_periodic)
+        if integrator_cls == 'pec':
+            from sph_integrators import PECIntegrator
+            integrator_cls = PECIntegrator
+        elif integrator_cls == 'rk2':
+            integrator_cls = None
+        elif integrator_cls == 'rk3':
+            from sph_integrators import RK3Integrator, RK3Stepper
+            integrator_cls = RK3Integrator
+            extra_steppers = dict(fluid=RK3Stepper())
+        elif integrator_cls == 'rk4':
+            from sph_integrators import RK4Integrator, RK4Stepper
+            integrator_cls = RK4Integrator
+            extra_steppers = dict(fluid=RK4Stepper())
     elif app.options.scheme == 'rsph':
         scheme.configure(hdx=app.hdx, nu=app.nu, h0=h0)
     elif app.options.scheme == 'ewcsph':
@@ -116,12 +134,19 @@ def configure_scheme(app, p0, gx=0.0):
     elif app.options.scheme == 'ok2022':
         scheme.configure(nu=app.nu, dx=app.dx, h0=h0)
 
+    if type(integrator_cls) == str:
+        raise NotImplementedError(f"{integrator_cls} not implemented")
+    
     tf = app.options.final_time
     if tf is None:
         tf = app.tf
     times = linspace(0, tf, 40)
-    scheme.configure_solver(kernel=kernel, tf=app.tf, dt=app.dt,
-                            output_at_times=times, pfreq=100000000)
+    
+    scheme.configure_solver(
+        kernel=kernel, tf=app.tf, dt=app.dt, output_at_times=times, pfreq=100000000,
+        integrator_cls=integrator_cls,
+        extra_steppers=extra_steppers
+    )
 
 
 def create_scheme(rho0, c0, p0, solids=[]):
