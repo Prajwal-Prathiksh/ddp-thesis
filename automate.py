@@ -346,39 +346,55 @@ class TGV2DSchemeComparison(PySPHProblem):
         Setup the problem.
         """
         base_cmd = "python code/taylor_green.py" + BACKEND
-        opts = mdict(scheme=[
-            'edac', 'tsph --method sd --scm wcsph --pst-freq 10',
-            'tsph --method no_sd --scm edac --pst-freq 10 --c0-fac 40',
-            'mon2017', 'ok2022'
-        ])
-        opts = dprod(
-            opts, 
-            mdict(
-                re=[1000, 10_000, 50_000],
-                tf=[3.5], nx=[100]
-            )
+        # scheme_opts = mdict(scheme=['edac', 'mon2017', 'ok2022'])
+        scheme_opts = mdict(
+            scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
         )
+        integrator_opts = mdict(
+            integrator=['pec'], integrator_dt_mul_fac=[1, 2]
+        )
+        integrator_opts += mdict(
+            integrator=['rk2'], integrator_dt_mul_fac=[4]
+        )
+        integrator_opts += mdict(
+            integrator=['rk3'], integrator_dt_mul_fac=[6]
+        )
+        integrator_opts += mdict(
+            integrator=['rk4'], integrator_dt_mul_fac=[8]
+        )
+        res_opts = mdict(
+            re=[1000, 10_000, 50_000], tf=[4], n_o_files=[50], nx=[200],
+            c0_fac=[40]
+        )
+        self.sim_opts = sim_opts = dprod(
+            scheme_opts,
+            dprod(integrator_opts, res_opts)
+        )
+        self.case_info = {}
+        for i in range(len(sim_opts)):
+            sim_name = opts2path(
+                sim_opts[i],
+                keys=[
+                    'scheme', 'integrator', 'integrator_dt_mul_fac', 're',
+                    'c0_fac', 'nx',
+                ],
+                kmap=dict(integrator_dt_mul_fac='dtmul', c0_fac='c0')
+            )
+            self.case_info[sim_name] = sim_opts[i]
         
-        def get_path(opt):
-            temp = 'tsph' if 'tsph' in opt['scheme'] else opt['scheme']
-            temp = opt['scheme']
-            if 'tsph' in temp:
-                if 'wcsph' in temp:
-                    temp = 'l-ipst-c'
-                elif 'edac' in temp:
-                    temp = 'pe-ipst-c'
-            return f'scheme_{temp}_re_{opt["re"]}'
-    
         # Setup cases
         self.cases = [
             Simulation(
-                root=self.input_path(get_path(kw)),
+                root=self.input_path(name),
                 base_command=base_cmd,
-                job_info=dict(n_core=N_CORES, n_thread=N_THREADS),
+                job_info=dict(n_core=4, n_thread=8),
+                cache_nnps=None,
                 **kw
-            )
-            for kw in opts
+            ) for name, kw in self.case_info.items()
         ]
+        print(len(self.cases), 'cases created')
+        for case in self.cases:
+            self.case_info[case.name]['case'] = case
     
     def run(self):
         """
@@ -620,8 +636,6 @@ class TGV2DIntegratorComparison(PySPHProblem):
         )
         self.c0s = get_all_unique_values(sim_opts, 'c0_fac')
 
-        cmd = 'python ' + self._get_file()
-        get_path = self.input_path
         self.case_info = {}
         for i in range(len(sim_opts)):
             sim_name = opts2path(
@@ -630,11 +644,15 @@ class TGV2DIntegratorComparison(PySPHProblem):
             )
             self.case_info[sim_name] = sim_opts[i]
 
+        cmd = 'python ' + self._get_file()
         self.cases = [
             Simulation(
-                get_path(name), cmd, job_info=dict(n_core=4, n_thread=8),
-                cache_nnps=None, **Kwargs
-            ) for name, Kwargs in self.case_info.items()
+                root=self.input_path(name),
+                base_command=cmd,
+                job_info=dict(n_core=4, n_thread=8),
+                cache_nnps=None,
+                **kw
+            ) for name, kw in self.case_info.items()
         ]
         print(len(self.cases), 'cases created')
         for case in self.cases:
