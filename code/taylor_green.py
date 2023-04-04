@@ -30,6 +30,10 @@ class TaylorGreen(TurbulentFlowApp):
             help="Initialize particle positions from given file."
         )
         group.add_argument(
+            "--n-o-files", action="store", type=int, dest="n_o_files",
+            default=40, help="Number of output files to generate."
+        )
+        group.add_argument(
             "--perturb", action="store", type=float, dest="perturb", default=0,
             help="Random perturbation of initial particles as a fraction "
             "of dx (setting it to zero disables it, the default)."
