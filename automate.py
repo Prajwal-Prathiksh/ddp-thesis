@@ -8,7 +8,7 @@ Author: K T Prajwal Prathiksh
 import json
 import os
 import time
-import itertools as IT
+from itertools import cycle, product
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -21,7 +21,10 @@ from automan.api import mdict, dprod, opts2path
 from automan.utils import filter_cases, filter_by_name
 
 # Local imports.
-from code.automate_utils import styles, custom_compare_runs, plot_vline
+from code.automate_utils import (
+    styles, custom_compare_runs, plot_vline, get_all_unique_values,
+    get_cpu_time, get_label_from_scheme, LINESTYLE, MARKER
+)
 # from temp_utils import styles, custom_compare_runs, plot_vline
 
 BACKEND = " --openmp "
@@ -573,8 +576,6 @@ class RunTimeDomainManager(PySPHProblem):
         fname = self.output_path('runtime_table.csv')
         df.to_csv(fname, index=False)
         print(f"Saved runtime table to {fname}")
-
-
     
     def run(self):
         """
@@ -582,9 +583,212 @@ class RunTimeDomainManager(PySPHProblem):
         """
         self.make_output_dir()
         self.create_rt_table()
+        
 
-            
+class TGV2DIntegratorComparison(PySPHProblem):
+    def get_name(self):
+        return 'tgv_2d_integrator_comparison'
 
+    def _get_file(self):
+        return 'code/taylor_green.py --no-plot --openmp --tf 0.2 --pst-freq 10 --n-o-files 8 '
+
+    def setup(self):
+        scheme_opts = mdict(scheme=['tsph'], re=[100, 1000, 5000])
+        integrator_opts = mdict(
+            integrator=['pec'], integrator_dt_mul_fac=[1, 2]
+        )
+        integrator_opts += mdict(
+            integrator=['rk2'], integrator_dt_mul_fac=[2, 4]
+        )
+        integrator_opts += mdict(
+            integrator=['rk3'], integrator_dt_mul_fac=[4, 6]
+        )
+        integrator_opts += mdict(
+            integrator=['rk4'], integrator_dt_mul_fac=[6, 8]
+        )
+        res_opts = mdict(nx=[25, 50, 100, 200, 400, 800], c0_fac=[20, 80])
+        sim_opts = dprod(scheme_opts, dprod(integrator_opts, res_opts))
+        self.sim_opts = sim_opts
+
+        # Unpack the simulation options
+        self.schemes = get_all_unique_values(sim_opts, 'scheme')
+        self.re_s = get_all_unique_values(sim_opts, 're')
+        self.integrators = get_all_unique_values(sim_opts, 'integrator')
+        self.nx = get_all_unique_values(sim_opts, 'nx')
+        self.dt_mul_facs = get_all_unique_values(
+            sim_opts, 'integrator_dt_mul_fac'
+        )
+        self.c0s = get_all_unique_values(sim_opts, 'c0_fac')
+
+        cmd = 'python ' + self._get_file()
+        get_path = self.input_path
+        self.case_info = {}
+        for i in range(len(sim_opts)):
+            sim_name = opts2path(
+                sim_opts[i],
+                kmap=dict(integrator_dt_mul_fac='dtmul', c0_fac='c0')
+            )
+            self.case_info[sim_name] = sim_opts[i]
+
+        self.cases = [
+            Simulation(
+                get_path(name), cmd, job_info=dict(n_core=4, n_thread=8),
+                cache_nnps=None, **Kwargs
+            ) for name, Kwargs in self.case_info.items()
+        ]
+        print(len(self.cases), 'cases created')
+        for case in self.cases:
+            self.case_info[case.name]['case'] = case
+
+    def run(self):
+        self.make_output_dir()
+        for c0 in self.c0s:
+            for re in self.re_s:
+                self._plot_convergence(c0=c0, re=re)
+        for intg in self.integrators:
+            for re in self.re_s:
+                if intg == 'auto':
+                    continue
+                self._plot_convergence_c0(intg=intg, re=re)
+        for re in self.re_s:
+            self._plot_rt_speedup(re=re, largest_dtmf_only=True)
+            self._plot_rt_speedup(re=re, largest_dtmf_only=False)
+
+    def calculate_l1(self, cases):
+        data = {}
+        for case in cases:
+            l1 = case.data['l1']
+            l1 = sum(l1)/len(l1)
+            data[case.params['nx']] = l1
+        nx_arr = np.asarray(sorted(data.keys()), dtype=float)
+        l1 = np.asarray([data[x] for x in nx_arr])
+        return nx_arr, l1
+
+    def _plot_rt_speedup(self, c0=None, re=None, largest_dtmf_only=True):
+        if c0 is None:
+            c0 = max(self.c0s)
+        if re is None:
+            re = max(self.re_s)
+
+        plt.figure()
+        dx = None
+        marker = cycle(MARKER)
+        scheme = 'tsph'
+        for intg in self.integrators:
+            if intg == 'auto':
+                continue
+            if largest_dtmf_only:
+                temp = get_all_unique_values(
+                    self.sim_opts, 'integrator_dt_mul_fac',
+                    option=dict(integrator=intg)
+                )
+                if intg == 'pec':
+                    r_list = [1, max(temp)]
+                else:
+                    r_list = [max(temp)]
+            else:
+                r_list = self.dt_mul_facs
+            for dtmf in r_list:
+                rts = []
+                dts = []
+                for dt in self.nx:
+                    cases = filter_cases(
+                        self.cases, scheme=scheme, integrator=intg, nx=dt,
+                        c0_fac=c0, integrator_dt_mul_fac=dtmf, re=re
+                    )
+                    if len(cases) < 1:
+                        continue
+                    case = cases[0]
+                    rts.append(get_cpu_time(case))
+                    dts.append(case.params['nx'])
+                if len(rts) < 1:
+                    continue
+                label = fr'{intg} ({dtmf}$\Delta t$)'
+                plt.plot(dts, rts, label=label, marker=next(marker))
+
+
+        plt.grid()
+        plt.legend(loc='best')
+        plt.xlabel(r'$N_x$')
+        plt.ylabel(r'$RT$')
+        plt.title(f'CPU time - L-IPST-C Scheme (c0={c0}) (Re={re})')
+        if largest_dtmf_only:
+            fname = f'pois_rt_re_{re}_largest_dtmf.png'
+        else:
+            fname = f'pois_rt_re_{re}.png'
+        plt.savefig(self.output_path(fname), dpi=300)
+
+    def _plot_convergence(self, c0=None, re=None):
+        if c0 is None:
+            c0 = min(self.c0s)
+        if re is None:
+            re = max(self.re_s)
+        plt.figure()
+        marker = cycle(MARKER)
+        for scheme in self.schemes:
+            for intg in self.integrators:
+                for dtmf in self.dt_mul_facs:
+                    cases = filter_cases(
+                        self.cases, scheme=scheme, integrator=intg, c0_fac=c0,
+                        integrator_dt_mul_fac=dtmf, re=re
+                    )
+                    if len(cases) < 1:
+                        continue
+                    dts, l1 = self.calculate_l1(cases)
+                    dts = 1./dts
+                    label = get_label_from_scheme(scheme) +\
+                         fr' ({intg}) ({dtmf}$\Delta t$)'
+                    plt.loglog(dts, l1, label=label, marker=next(marker))
+
+        plt.loglog(dts, l1[0]*(dts/dts[0])**2, 'k--', linewidth=2,
+                label=r'$O(h^2)$')
+        plt.loglog(dts, l1[0]*(dts/dts[0]), 'k:', linewidth=2,
+                label=r'$O(h)$')
+        plt.grid()
+        plt.legend(loc='best')
+        plt.xlabel(r'$h$')
+        plt.ylabel(r'$L_1$ error')
+        plt.title(fr'Scheme convergence - $L_1$ error $(c_0={c0})$ (Re={re})')
+        plt.savefig(
+            self.output_path(f'dt_pois_conv_c0_{c0}_re_{re}.png'), dpi=300
+        )
+        plt.close()
+
+    def _plot_convergence_c0(self, intg, re=None):
+        if re is None:
+            re = max(self.re_s)
+        plt.figure()
+        marker = cycle(MARKER)
+        scheme = 'tsph'
+        if intg not in self.integrators:
+            return
+        for c0 in self.c0s:
+            for dtmf in self.dt_mul_facs:
+                cases = filter_cases(
+                    self.cases, scheme=scheme, integrator=intg, c0_fac=c0,
+                    integrator_dt_mul_fac=dtmf, re=re
+                )
+                if len(cases) < 1:
+                    continue
+                dts, l1 = self.calculate_l1(cases)
+                dts = 1./dts
+                label = get_label_from_scheme(scheme) +\
+                    fr' ({intg}) ({dtmf}$\Delta t$)'
+                label += f' (c0={c0})'
+                plt.loglog(dts, l1, label=label, marker=next(marker))
+        
+        plt.loglog(dts, l1[0]*(dts/dts[0])**2, 'k--', linewidth=2,
+                label=r'$O(h^2)$')
+        plt.loglog(dts, l1[0]*(dts/dts[0]), 'k:', linewidth=2,
+                label=r'$O(h)$')
+        plt.grid()
+        plt.legend(loc='best')
+        plt.xlabel(r'$h$')
+        plt.ylabel(r'$L_1$ error')
+        plt.title(fr'Scheme convergence - $L_1$ error (Re={re})')
+        fname = self.output_path(f'dt_pois_conv_c0_{intg}_re_{re}.png')
+        plt.savefig(fname, dpi=300)
+        plt.close()
 
 if __name__ == "__main__":
     PROBLEMS = [
@@ -592,7 +796,8 @@ if __name__ == "__main__":
         TGV2DSchemeComparison,
         TGV2DExtForceSchemeComparison,
         TB3DExtForceSchemeComparison,
-        RunTimeDomainManager
+        RunTimeDomainManager,
+        TGV2DIntegratorComparison
     ]
     automator = Automator(
         simulation_dir='outputs',
@@ -604,3 +809,4 @@ if __name__ == "__main__":
     automator.run()
     toc = time.perf_counter()
     print(f"Total time taken = {toc-tic:.2f} seconds")
+
