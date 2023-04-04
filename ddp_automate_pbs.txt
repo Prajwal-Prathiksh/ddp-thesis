@@ -1,13 +1,13 @@
 #!/bin/bash
-#PBS -N RunTimeDomainManager
+#PBS -N TGV2DIntegratorComparison
 #PBS -q big
 #PBS -l select=1:ncpus=32
 #PBS -j oe
 #PBS -V
-#PBS -o log_automate.out
+#PBS -o log_TGV2DIntegratorComparison.out
 
 cd $PBS_O_WORKDIR
-cat $PBS_NODEFILE > ./pbsnodes_automate
+cat $PBS_NODEFILE > ./pbsnodes_script
 PROCS1=$(cat $PBS_NODEFILE | wc -l)
 
-python automate.py RunTimeDomainManager -f
+python automate.py TGV2DIntegratorComparison -f
