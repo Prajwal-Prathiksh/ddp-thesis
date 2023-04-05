@@ -9,6 +9,7 @@ import sys
 import shutil
 import json
 import yaml
+import datetime
 import warnings
 import argparse
 
@@ -322,6 +323,38 @@ def print_categories(dir, size, categories, colors, compare_yaml, verbose):
     verbose : bool
         Whether to print the directories in each category.
     """
+    def _update_running_msg(dir, msg):
+        """
+        Update the message for a running job.
+
+        Parameters
+        ----------
+        dir : str
+            The directory of the running job.
+        msg : str
+            The message to update.
+
+        Returns
+        -------
+        msg : str
+            The updated message.
+        """
+
+        job_info = read_job_info(dir=dir)
+        pid = job_info['pid']
+        start = datetime.datetime.strptime(
+            job_info['start'], "%a %b %d %H:%M:%S %Y"
+        )
+        # Calculate time since job started
+        now = datetime.datetime.now()
+        diff = now - start
+        hours, mins = divmod(diff.seconds, 3600)
+        diff = "{}h {}m".format(hours, mins // 60)
+
+        # Update message
+        msg = "{} (RT={}) (PID={})".format(msg, diff, pid)
+        return msg
+    
     o_dir = dir
     if not compare_yaml:
         print("Directory: {}".format(dir))
@@ -331,7 +364,11 @@ def print_categories(dir, size, categories, colors, compare_yaml, verbose):
                                         len(categories[key]), "\033[00m"))
             if verbose:
                 for d in categories[key]:
-                    print("{}\t{}{}".format(colors[key], basename(d),
+                    msg = basename(d)
+                    if key == 'running':
+                        msg = _update_running_msg(dir=d, msg=msg)
+
+                    print("{}\t{}{}".format(colors[key], msg,
                                             "\033[00m"))
     else:
         dir = basename(abspath(dir))
@@ -363,13 +400,17 @@ def print_categories(dir, size, categories, colors, compare_yaml, verbose):
                     colors[key], key.title(), new[key]["count"], "\033[00m"))
             if verbose:
                 for d in categories[key]:
+                    msg = basename(d)
+                    if key == 'running':
+                        msg = _update_running_msg(dir=d, msg=msg)
+
                     if basename(d) in old[key]["dirs"]:
                         print("{}\t{}{}".format(
-                            colors[key], basename(d), "\033[00m"))
+                            colors[key], msg, "\033[00m"))
                     else:
                         new_str = '\033[1;37m (new!) \033[00m'
                         print("{}\t{}{}{}".format(
-                            colors[key], basename(d), "\033[00m", new_str))
+                            colors[key], msg, "\033[00m", new_str))
 
 
 def main(dirs, delete=None, save_yaml=True, compare_yaml=False, verbose=False):
