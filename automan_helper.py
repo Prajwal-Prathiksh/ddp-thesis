@@ -4,6 +4,7 @@ An `automan` assistant.
 """
 # Libray imports
 import os
+from os.path import basename, abspath, join, isdir
 import sys
 import shutil
 import json
@@ -12,7 +13,8 @@ import warnings
 import argparse
 
 # Define global variables
-YAML_FNAME = os.path.join(os.getcwd(), ".automan", "summary.yaml")
+YAML_FNAME = join(os.getcwd(), ".automan", "summary.yaml")
+
 
 def cli_args():
     """
@@ -77,11 +79,8 @@ def get_immediate_subdirectories(dir):
     subdirs : list
         A list of all subdirectories in the directory.
     """
-    dir = os.path.abspath(dir)
-    subdirs = []
-    for name in os.listdir(dir):
-        if os.path.isdir(os.path.join(dir, name)):
-            subdirs.append(os.path.join(dir, name))
+    dir = abspath(dir)
+    subdirs = [join(dir, d) for d in os.listdir(dir) if isdir(join(dir, d))]
     return subdirs
 
 
@@ -126,11 +125,11 @@ def calculate_dir_size(dir, human_readable=True):
     size : str/float
         The size of the directory.
     """
-    dir = os.path.abspath(dir)
+    dir = abspath(dir)
     size = 0
     for root, _, files in os.walk(dir):
         for f in files:
-            f = os.path.join(root, f)
+            f = join(root, f)
             size += os.path.getsize(f)
     if human_readable:
         size = human_readable_size(size)
@@ -151,8 +150,8 @@ def read_job_info(dir):
     job_info : dict
         The job_info.json file as a dictionary.
     """
-    dir = os.path.abspath(dir)
-    fname = os.path.join(dir, "job_info.json")
+    dir = abspath(dir)
+    fname = join(dir, "job_info.json")
     if not os.path.isfile(fname):
         # Raise warning in yellow
         warnings.warn("\033[93m{}\033[00m" .format(
@@ -209,15 +208,15 @@ def create_yaml_file(dir=None):
     global YAML_FNAME
     if dir is None:
         dir = os.getcwd()
-    dir = os.path.abspath(dir)
-    fname = os.path.join(dir, ".automan", "summary.yaml")
+    dir = abspath(dir)
+    fname = join(dir, ".automan", "summary.yaml")
     if os.path.isfile(fname):
         YAML_FNAME = fname
         return
 
     # Check if .automan directory exists
-    if not os.path.isdir(os.path.join(dir, ".automan")):
-        os.mkdir(os.path.join(dir, ".automan"))
+    if not isdir(join(dir, ".automan")):
+        os.mkdir(join(dir, ".automan"))
     with open(fname, "w") as f:
         f.write("")
     print("Created summary.yaml file in {}.".format(dir))
@@ -243,11 +242,11 @@ def read_yaml_file():
 
 
 def create_dir_data_dict(dir, size, categories):
-    dir = os.path.basename(os.path.abspath(dir))
+    dir = basename(abspath(dir))
     dir_data_dict = {dir: dict(size=size)}
     for key, value in categories.items():
         dir_data_dict[dir][key] = dict(
-            count=len(value), dirs=[os.path.basename(d) for d in value]
+            count=len(value), dirs=[basename(d) for d in value]
         )
     return dir_data_dict
 
@@ -296,10 +295,10 @@ def print_categories(dir, size, categories, colors, compare_yaml, verbose):
                 len(categories[key]), "\033[00m"))
             if verbose:
                 for d in categories[key]:
-                    print("{}\t{}{}".format(colors[key], os.path.basename(d),
+                    print("{}\t{}{}".format(colors[key], basename(d),
                         "\033[00m"))
     else:
-        dir = os.path.basename(os.path.abspath(dir))
+        dir = basename(abspath(dir))
         summary = read_yaml_file()
         dir_data_dict = create_dir_data_dict(
             dir=dir, size=size, categories=categories
@@ -328,13 +327,13 @@ def print_categories(dir, size, categories, colors, compare_yaml, verbose):
                     colors[key], key.title(), new[key]["count"], "\033[00m"))
             if verbose:
                 for d in categories[key]:
-                    if os.path.basename(d) in old[key]["dirs"]:
+                    if basename(d) in old[key]["dirs"]:
                         print("{}\t{}{}".format(colors[key],
-                            os.path.basename(d), "\033[00m"))
+                            basename(d), "\033[00m"))
                     else:
                         new_str = '\033[1;37m (new!) \033[00m'
                         print("{}\t{}{}{}".format(colors[key],
-                            os.path.basename(d), "\033[00m", new_str))
+                            basename(d), "\033[00m", new_str))
 
 def main(dirs, delete=None, save_yaml=True, compare_yaml=False, verbose=False):
     """
@@ -359,8 +358,8 @@ def main(dirs, delete=None, save_yaml=True, compare_yaml=False, verbose=False):
             write_dir_summary(dir=dir, size=size, categories=categories)
 
         print_categories(
-            dir=dir, size=size, categories=categories, colors=colors, verbose=verbose,
-            compare_yaml=compare_yaml
+            dir=dir, size=size, categories=categories, colors=colors, 
+            compare_yaml=compare_yaml, verbose=verbose,
         )
 
         if delete is not None:
