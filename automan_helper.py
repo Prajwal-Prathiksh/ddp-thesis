@@ -602,8 +602,8 @@ def main(
                     colors[delete], delete.title(), "\033[00m"
                 )
             )
-            confirm = input("Are you sure? (y/n): ")
-            if confirm.lower() == "n":
+            confirm = input("Are you sure? (y/N): ")
+            if confirm.lower() != "y":
                 print("Not deleting.")
             else:
                 print("Deleting...")
