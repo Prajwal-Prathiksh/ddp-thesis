@@ -12,7 +12,55 @@ import warnings
 import argparse
 
 # Define global variables
-YAML_FNAME = None
+YAML_FNAME = os.path.join(os.getcwd(), ".automan", "summary.yaml")
+
+def cli_args():
+    """
+    Returns the command line arguments.
+    """
+    parser = argparse.ArgumentParser(
+        description='An assistant to help with output dirs created through '
+        ' `automan`.',
+        epilog="Example: "
+        "\n\t>>> python automan_helper.py [options] dir1 dir2 dir3"
+        "\n\t>>> python automan_helper.py -od outpts -d done",
+        formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+
+    parser.add_argument(
+        "dirs", nargs="*", help="The directories to clean out.",
+    )
+    parser.add_argument(
+        "-o", "--output-dir", type=str, dest="output_dir",
+        help="The output directory containing all of `automan`'s output "
+        "directories. If specified, the script will search for all "
+        "subdirectories in this directory and use them as input directories."
+    )
+    parser.add_argument(
+        "-d", "--delete", type=str, dest="delete", default="none",
+        choices=["none", "done", "running", "error"],
+        help="Delete directories in the specified category."
+    )
+    parser.add_argument(
+        "-s", "--save-yaml", action="store_true", dest="save_yaml",
+        help="Save a .yaml file containing the summary of `automan` output "
+        "directories."
+    )
+    parser.add_argument(
+        "-c", "--compare-yaml", action="store_true", dest="compare_yaml",
+        help="Compare the new summary of `automan` output directories to the "
+        "previous summary.yaml file and print the differences."
+    )
+    parser.add_argument(
+        "-w", "--warnings", action="store_true", dest="warnings",
+        help="Print warnings."
+    )
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", dest="verbose",
+        help="Print more information."
+    )
+
+    return parser.parse_args()
 
 
 def get_immediate_subdirectories(dir):
@@ -194,6 +242,16 @@ def read_yaml_file():
     return summary
 
 
+def create_dir_data_dict(dir, size, categories):
+    dir = os.path.basename(os.path.abspath(dir))
+    dir_data_dict = {dir: dict(size=size)}
+    for key, value in categories.items():
+        dir_data_dict[dir][key] = dict(
+            count=len(value), dirs=[os.path.basename(d) for d in value]
+        )
+    return dir_data_dict
+
+
 def write_dir_summary(dir, size, categories):
     """
     Write the summary of a directory to the summary.yaml file.
@@ -209,13 +267,11 @@ def write_dir_summary(dir, size, categories):
     """
     if YAML_FNAME is None:
         return
-    dir = os.path.basename(os.path.abspath(dir))
-    dir_data_dict = {dir:dict(size=size)}
-    for key, value in categories.items():
-        dir_data_dict[dir][key] = dict(
-            count=len(value), dirs=[os.path.basename(d) for d in value]
-        )
-    
+
+    dir_data_dict = create_dir_data_dict(
+        dir=dir, size=size, categories=categories
+    )
+
     # Read summary.yaml
     summary = read_yaml_file()
 
@@ -229,47 +285,58 @@ def write_dir_summary(dir, size, categories):
     with open(YAML_FNAME, "w") as f:
         yaml.dump(summary, f, default_flow_style=False)
 
-def cli_args():
-    """
-    Returns the command line arguments.
-    """
-    parser = argparse.ArgumentParser(
-        description='An assistant to help with output dirs created through '
-        ' `automan`.',        
-        epilog="Example: "
-        "\n\t>>> python automan_helper.py [options] dir1 dir2 dir3"
-        "\n\t>>> python automan_helper.py -od outpts -d done",
-        formatter_class=argparse.RawDescriptionHelpFormatter
-    )
-    
-    parser.add_argument(
-        "dirs", nargs="*", help="The directories to clean out.",
-    )
-    parser.add_argument(
-        "-o", "--output-dir", type=str, dest="output_dir",
-        help="The output directory containing all of `automan`'s output "
-        "directories. If specified, the script will search for all "
-        "subdirectories in this directory and use them as input directories."
-    )
-    parser.add_argument(
-        "-d", "--delete", type=str, dest="delete", default="none",
-        choices=["none", "done", "running", "error"],
-        help="Delete directories in the specified category."
-    )
-    parser.add_argument(
-        "-s", "--save-yaml", action="store_true", dest="save_yaml",
-        help="Save a .yaml file containing the summary of `automan` output "
-        "directories."
-    )
-    parser.add_argument(
-        "-v", "--verbose", action="store_true", dest="verbose",
-        help="Print more information."
-    )
 
-    return parser.parse_args()
+def print_categories(dir, size, categories, colors, compare_yaml, verbose):
+    o_dir = dir
+    if not compare_yaml:
+        print("Directory: {}".format(dir))
+        print("Size: {}".format(size))
+        for key in categories:
+            print("{}  {}: {}{}".format(colors[key], key.title(),
+                len(categories[key]), "\033[00m"))
+            if verbose:
+                for d in categories[key]:
+                    print("{}\t{}{}".format(colors[key], os.path.basename(d),
+                        "\033[00m"))
+    else:
+        dir = os.path.basename(os.path.abspath(dir))
+        summary = read_yaml_file()
+        dir_data_dict = create_dir_data_dict(
+            dir=dir, size=size, categories=categories
+        )
+        # Create blank dir_data_dict if dir not in summary.yaml
+        if dir not in summary:
+            blank_dir_data_dict = {dir: dict(size=0)}
+            for key in categories:
+                blank_dir_data_dict[dir][key] = dict(count=0, dirs=[])
+            summary.update(blank_dir_data_dict)
 
+        # Compare summary.yaml and current categories
+        old, new = summary[dir], dir_data_dict[dir]
+        print("Directory: {}".format(o_dir))
+        if old["size"] != new["size"]:
+            print("Size: {} -> {}".format(old["size"], new["size"]))
+        else:
+            print("Size: {}".format(new["size"]))
+        for key in categories:
+            if old[key]["count"] != new[key]["count"]:
+                print("{}  {}: {} -> {}{}".format(
+                    colors[key], key.title(), old[key]["count"],
+                    new[key]["count"],"\033[00m"))
+            else:
+                print("{}  {}: {}{}".format(
+                    colors[key], key.title(), new[key]["count"], "\033[00m"))
+            if verbose:
+                for d in categories[key]:
+                    if os.path.basename(d) in old[key]["dirs"]:
+                        print("{}\t{}{}".format(colors[key],
+                            os.path.basename(d), "\033[00m"))
+                    else:
+                        new_str = '\033[1;37m (new!) \033[00m'
+                        print("{}\t{}{}{}".format(colors[key],
+                            os.path.basename(d), "\033[00m", new_str))
 
-def main(dirs, delete=None, save_yaml=True, verbose=False):
+def main(dirs, delete=None, save_yaml=True, compare_yaml=False, verbose=False):
     """
     Main function.
     """
@@ -285,28 +352,16 @@ def main(dirs, delete=None, save_yaml=True, verbose=False):
 
     for dir in dirs:
         subdirs = get_immediate_subdirectories(dir)
-        dir_size = calculate_dir_size(dir, human_readable=True)
+        size = calculate_dir_size(dir, human_readable=True)
         categories = categorise_jobs(subdirs)
-        print("Directory: {}".format(dir))
-        print("Size: {}".format(dir_size))
 
         if save_yaml:
-            write_dir_summary(dir=dir, size=dir_size, categories=categories)
-        
-        for key in categories:
-            print(
-                "{}  {}: {}{}".format(
-                    colors[key], key.title(),
-                    len(categories[key]), "\033[00m"
-                )
-            )
-            if verbose:
-                for d in categories[key]:
-                    print(
-                        "{}    {}{}".format(
-                            colors[key], os.path.basename(d), "\033[00m"
-                        )
-                    )
+            write_dir_summary(dir=dir, size=size, categories=categories)
+
+        print_categories(
+            dir=dir, size=size, categories=categories, colors=colors, verbose=verbose,
+            compare_yaml=compare_yaml
+        )
 
         if delete is not None:
             print(
@@ -338,6 +393,13 @@ if __name__ == "__main__":
     if args.delete != "none":
         delete = args.delete
 
+    if not args.warnings:
+        warnings.filterwarnings("ignore")
+
     main(
-        dirs=args.dirs, delete=delete, save_yaml=args.save_yaml, verbose=args.verbose
+        dirs=args.dirs,
+        delete=delete,
+        save_yaml=args.save_yaml,
+        compare_yaml=args.compare_yaml,
+        verbose=args.verbose
     )
