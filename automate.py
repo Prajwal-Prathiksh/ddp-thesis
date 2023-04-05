@@ -353,13 +353,13 @@ class TGV2DSchemeComparison(PySPHProblem):
             integrator=['pec'], integrator_dt_mul_fac=[1, 2]
         )
         integrator_opts += mdict(
-            integrator=['rk2'], integrator_dt_mul_fac=[4]
+            integrator=['rk2'], integrator_dt_mul_fac=[2]
         )
         integrator_opts += mdict(
-            integrator=['rk3'], integrator_dt_mul_fac=[6]
+            integrator=['rk3'], integrator_dt_mul_fac=[3, 6]
         )
         integrator_opts += mdict(
-            integrator=['rk4'], integrator_dt_mul_fac=[8]
+            integrator=['rk4'], integrator_dt_mul_fac=[4, 8]
         )
         res_opts = mdict(
             re=[1000, 10_000, 50_000], tf=[4], n_o_files=[50], nx=[200],
