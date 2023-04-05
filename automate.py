@@ -613,13 +613,13 @@ class TGV2DIntegratorComparison(PySPHProblem):
             integrator=['pec'], integrator_dt_mul_fac=[1, 2]
         )
         integrator_opts += mdict(
-            integrator=['rk2'], integrator_dt_mul_fac=[2, 4]
+            integrator=['rk2'], integrator_dt_mul_fac=[2]
         )
         integrator_opts += mdict(
-            integrator=['rk3'], integrator_dt_mul_fac=[4, 6]
+            integrator=['rk3'], integrator_dt_mul_fac=[3, 6]
         )
         integrator_opts += mdict(
-            integrator=['rk4'], integrator_dt_mul_fac=[6, 8]
+            integrator=['rk4'], integrator_dt_mul_fac=[4, 8]
         )
         res_opts = mdict(nx=[25, 50, 100, 200, 400], c0_fac=[20, 80])
         sim_opts = dprod(scheme_opts, dprod(integrator_opts, res_opts))
@@ -654,6 +654,7 @@ class TGV2DIntegratorComparison(PySPHProblem):
             ) for name, kw in self.case_info.items()
         ]
         print(len(self.cases), 'cases created')
+        raise SystemExit
         for case in self.cases:
             self.case_info[case.name]['case'] = case
 
