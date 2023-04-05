@@ -40,6 +40,11 @@ def cli_args():
         "subdirectories in this directory and use them as input directories."
     )
     parser.add_argument(
+        "-l", "--list", type=str, dest="list_cat", default=None,
+        help="List directories in the specified category. Options are: "
+        "[e, d, r] or any combinations of these letters (e.g.: re or de)."
+    )
+    parser.add_argument(
         "-d", "--delete", type=str, dest="delete", default="none",
         choices=["none", "done", "running", "error"],
         help="Delete directories in the specified category."
@@ -348,7 +353,8 @@ def write_dir_summary(dir, size, categories):
 
 
 def print_categories(
-    dir, size, categories, colors, compare_yaml, print_full_error, verbose
+    dir, size, categories, colors, compare_yaml, print_full_error, verbose,
+    list_cat
 ):
     """
     Print the categories of a directory.
@@ -370,6 +376,8 @@ def print_categories(
         Whether to print the error message of the directory.
     verbose : bool
         Whether to print the directories in each category.
+    list_cat : list
+        The categories to print.
     """
     def _update_running_msg(dir, msg):
         """
@@ -408,6 +416,9 @@ def print_categories(
         print("Directory: {}".format(dir))
         print("Size: {}".format(size))
         for key in categories:
+            if key not in list_cat:
+                continue
+
             print("{}  {}: {}{}".format(colors[key], key.title(),
                                         len(categories[key]), "\033[00m"))
             if verbose:
@@ -442,6 +453,9 @@ def print_categories(
         else:
             print("Size: {}".format(new["size"]))
         for key in categories:
+            if key not in list_cat:
+                continue
+
             if old[key]["count"] != new[key]["count"]:
                 print("{}  {}: {} -> {}{}".format(
                     colors[key], key.title(), old[key]["count"],
@@ -465,10 +479,38 @@ def print_categories(
                         new_str = '\033[1;37m (new!) \033[00m'
                         print("{}    {}{}{}".format(
                             colors[key], msg, "\033[00m", new_str))
+                        
+def get_list_cat(cli_list_cat):
+    """
+    Get the list of categories to print from user provided CLI option.
+    
+    Parameters
+    ----------
+    cli_list_cat : str
+        The user provided CLI option.
+
+    Returns
+    -------
+    list_cat : list
+        The list of categories to print.
+    """
+    if cli_list_cat is None:
+        list_cat = ['done', 'running', 'error']
+    else:
+        valid_opts = dict(d='done', r='running', e='error')
+        temp_list = [*cli_list_cat.lower()]
+        list_cat = []
+        for opt in temp_list:
+            if opt not in valid_opts.keys():
+                raise ValueError(
+                    "Invalid option for --list_cat: {}".format(opt)
+                )
+            list_cat.append(valid_opts[opt])        
+    return list_cat
 
 
 def main(
-    dirs, delete=None, save_yaml=True, compare_yaml=False,
+    dirs, list_cat, delete=None, save_yaml=True, compare_yaml=False,
     print_full_error=False, verbose=False
 ):
     """
@@ -495,7 +537,7 @@ def main(
         print_categories(
             dir=dir, size=size, categories=categories, colors=colors,
             compare_yaml=compare_yaml, print_full_error=print_full_error,
-            verbose=verbose,
+            verbose=verbose, list_cat=list_cat
         )
         print('-' * 80)
 
@@ -532,11 +574,14 @@ if __name__ == "__main__":
     if not args.warnings:
         warnings.filterwarnings("ignore")
 
+    list_cat = get_list_cat(args.list_cat)
     main(
         dirs=args.dirs,
+        list_cat=list_cat,
         delete=delete,
         save_yaml=args.save_yaml,
         compare_yaml=args.compare_yaml,
         print_full_error=args.print_full_error,
+
         verbose=args.verbose
     )
