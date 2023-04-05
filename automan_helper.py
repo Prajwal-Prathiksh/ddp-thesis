@@ -439,6 +439,7 @@ def main(dirs, delete=None, save_yaml=True, compare_yaml=False, verbose=False):
             dir=dir, size=size, categories=categories, colors=colors,
             compare_yaml=compare_yaml, verbose=verbose,
         )
+        print('-' * 80)
 
         if delete is not None:
             print(
