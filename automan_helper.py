@@ -22,11 +22,11 @@ def cli_args():
     Returns the command line arguments.
     """
     parser = argparse.ArgumentParser(
-        description='An assistant to help with output dirs created through '
+        description='An assistant to help with the output files created by '
         ' `automan`.',
         epilog="Example: "
         "\n\t>>> python automan_helper.py [options] dir1 dir2 dir3"
-        "\n\t>>> python automan_helper.py -od outpts -d done",
+        "\n\t>>> python automan_helper.py -o outpts -d error",
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
 
@@ -53,6 +53,11 @@ def cli_args():
         "-c", "--compare-yaml", action="store_true", dest="compare_yaml",
         help="Compare the new summary of `automan` output directories to the "
         "previous summary.yaml file and print the differences."
+    )
+    parser.add_argument(
+        "-e", "--print-error-file", action="store_true", 
+        dest="print_full_error", help="Print the full contents of the stderr "
+        "file for the jobs that errored."
     )
     parser.add_argument(
         "-w", "--warnings", action="store_true", dest="warnings",
@@ -161,6 +166,45 @@ def read_job_info(dir):
     with open(fname, "r") as f:
         job_info = json.load(f)
     return job_info
+
+
+def read_stderr_file(dir, full_file=False):
+    """
+    Read the stderr file in a directory.
+
+    Parameters
+    ----------
+    dir : str
+        The directory to read the stderr file from.
+    full_file : bool, optional
+        If True, the full contents of the stderr file are returned, otherwise
+        only the last non-empty line is returned.
+
+    Returns
+    -------
+    stderr : str
+        The contents of the stderr file.
+    """
+    dir = abspath(dir)
+    fname = join(dir, "stderr.txt")
+    if not os.path.isfile(fname):
+        # Raise warning in yellow
+        warnings.warn("\033[93m{}\033[00m" .format(
+            "stderr file not found in {}. Skipping directory.".format(dir)))
+        return None
+    
+    if full_file:
+        with open(fname, "r") as f:
+            stderr = f.read()
+    else:
+        # Read only the last non-empty line
+        with open(fname, "r") as f:
+            lines = f.readlines()
+            for line in reversed(lines):
+                if line.strip() != "":
+                    stderr = line.strip()
+                    break
+    return stderr
 
 
 def categorise_jobs(subdirs):
@@ -303,7 +347,9 @@ def write_dir_summary(dir, size, categories):
         yaml.dump(summary, f, default_flow_style=False)
 
 
-def print_categories(dir, size, categories, colors, compare_yaml, verbose):
+def print_categories(
+    dir, size, categories, colors, compare_yaml, print_full_error, verbose
+):
     """
     Print the categories of a directory.
 
@@ -320,6 +366,8 @@ def print_categories(dir, size, categories, colors, compare_yaml, verbose):
     compare_yaml : bool
         Whether to compare the summary of the directory to the summary.yaml
         file.
+    print_full_error : bool
+        Whether to print the error message of the directory.
     verbose : bool
         Whether to print the directories in each category.
     """
@@ -367,8 +415,11 @@ def print_categories(dir, size, categories, colors, compare_yaml, verbose):
                     msg = basename(d)
                     if key == 'running':
                         msg = _update_running_msg(dir=d, msg=msg)
+                    elif key == 'error':
+                        stderr = read_stderr_file(dir=d, full_file=print_full_error)
+                        msg = "{}\n\t\033[1;37m{}\033[00m".format(msg, stderr)
 
-                    print("{}\t{}{}".format(colors[key], msg,
+                    print("{}    {}{}".format(colors[key], msg,
                                             "\033[00m"))
     else:
         dir = basename(abspath(dir))
@@ -403,17 +454,23 @@ def print_categories(dir, size, categories, colors, compare_yaml, verbose):
                     msg = basename(d)
                     if key == 'running':
                         msg = _update_running_msg(dir=d, msg=msg)
+                    elif key == 'error':
+                        stderr = read_stderr_file(dir=d, full_file=print_full_error)
+                        msg = "{}\n\t\033[1;37m{}\033[00m".format(msg, stderr)
 
                     if basename(d) in old[key]["dirs"]:
-                        print("{}\t{}{}".format(
+                        print("{}    {}{}".format(
                             colors[key], msg, "\033[00m"))
                     else:
                         new_str = '\033[1;37m (new!) \033[00m'
-                        print("{}\t{}{}{}".format(
+                        print("{}    {}{}{}".format(
                             colors[key], msg, "\033[00m", new_str))
 
 
-def main(dirs, delete=None, save_yaml=True, compare_yaml=False, verbose=False):
+def main(
+    dirs, delete=None, save_yaml=True, compare_yaml=False,
+    print_full_error=False, verbose=False
+):
     """
     Main function.
     """
@@ -437,7 +494,8 @@ def main(dirs, delete=None, save_yaml=True, compare_yaml=False, verbose=False):
 
         print_categories(
             dir=dir, size=size, categories=categories, colors=colors,
-            compare_yaml=compare_yaml, verbose=verbose,
+            compare_yaml=compare_yaml, print_full_error=print_full_error,
+            verbose=verbose,
         )
         print('-' * 80)
 
@@ -479,5 +537,6 @@ if __name__ == "__main__":
         delete=delete,
         save_yaml=args.save_yaml,
         compare_yaml=args.compare_yaml,
+        print_full_error=args.print_full_error,
         verbose=args.verbose
     )
