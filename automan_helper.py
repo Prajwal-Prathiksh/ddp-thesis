@@ -242,6 +242,23 @@ def read_yaml_file():
 
 
 def create_dir_data_dict(dir, size, categories):
+    """
+    Create a dictionary containing the summary of a directory.
+
+    Parameters
+    ----------
+    dir : str
+        The directory to create the summary of.
+    size : str
+        The size of the directory.
+    categories : dict
+        The categories of the directory.
+
+    Returns
+    -------
+    dir_data_dict : dict
+        A dictionary containing the summary of the directory.
+    """
     dir = basename(abspath(dir))
     dir_data_dict = {dir: dict(size=size)}
     for key, value in categories.items():
@@ -286,17 +303,36 @@ def write_dir_summary(dir, size, categories):
 
 
 def print_categories(dir, size, categories, colors, compare_yaml, verbose):
+    """
+    Print the categories of a directory.
+
+    Parameters
+    ----------
+    dir : str
+        The directory to print the categories of.
+    size : str
+        The size of the directory.
+    categories : dict
+        The categories of the directory.
+    colors : dict
+        The colors to use for each category.
+    compare_yaml : bool
+        Whether to compare the summary of the directory to the summary.yaml
+        file.
+    verbose : bool
+        Whether to print the directories in each category.
+    """
     o_dir = dir
     if not compare_yaml:
         print("Directory: {}".format(dir))
         print("Size: {}".format(size))
         for key in categories:
             print("{}  {}: {}{}".format(colors[key], key.title(),
-                len(categories[key]), "\033[00m"))
+                                        len(categories[key]), "\033[00m"))
             if verbose:
                 for d in categories[key]:
                     print("{}\t{}{}".format(colors[key], basename(d),
-                        "\033[00m"))
+                                            "\033[00m"))
     else:
         dir = basename(abspath(dir))
         summary = read_yaml_file()
@@ -321,19 +357,20 @@ def print_categories(dir, size, categories, colors, compare_yaml, verbose):
             if old[key]["count"] != new[key]["count"]:
                 print("{}  {}: {} -> {}{}".format(
                     colors[key], key.title(), old[key]["count"],
-                    new[key]["count"],"\033[00m"))
+                    new[key]["count"], "\033[00m"))
             else:
                 print("{}  {}: {}{}".format(
                     colors[key], key.title(), new[key]["count"], "\033[00m"))
             if verbose:
                 for d in categories[key]:
                     if basename(d) in old[key]["dirs"]:
-                        print("{}\t{}{}".format(colors[key],
-                            basename(d), "\033[00m"))
+                        print("{}\t{}{}".format(
+                            colors[key], basename(d), "\033[00m"))
                     else:
                         new_str = '\033[1;37m (new!) \033[00m'
-                        print("{}\t{}{}{}".format(colors[key],
-                            basename(d), "\033[00m", new_str))
+                        print("{}\t{}{}{}".format(
+                            colors[key], basename(d), "\033[00m", new_str))
+
 
 def main(dirs, delete=None, save_yaml=True, compare_yaml=False, verbose=False):
     """
@@ -358,7 +395,7 @@ def main(dirs, delete=None, save_yaml=True, compare_yaml=False, verbose=False):
             write_dir_summary(dir=dir, size=size, categories=categories)
 
         print_categories(
-            dir=dir, size=size, categories=categories, colors=colors, 
+            dir=dir, size=size, categories=categories, colors=colors,
             compare_yaml=compare_yaml, verbose=verbose,
         )
 
