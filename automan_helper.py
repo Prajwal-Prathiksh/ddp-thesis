@@ -354,7 +354,7 @@ def print_categories(dir, size, categories, colors, compare_yaml, verbose):
         # Update message
         msg = "{} (RT={}) (PID={})".format(msg, diff, pid)
         return msg
-    
+
     o_dir = dir
     if not compare_yaml:
         print("Directory: {}".format(dir))
