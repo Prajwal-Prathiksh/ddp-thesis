@@ -605,7 +605,7 @@ class TGV2DIntegratorComparison(PySPHProblem):
         return 'tgv_2d_integrator_comparison'
 
     def _get_file(self):
-        return 'code/taylor_green.py --no-plot --openmp --tf 0.2 --pst-freq 10 --n-o-files 8 '
+        return 'code/taylor_green.py --no-plot --openmp --tf 0.1 --pst-freq 10 --n-o-files 8 '
 
     def setup(self):
         scheme_opts = mdict(scheme=['tsph'], re=[100, 1000, 5000])
