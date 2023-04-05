@@ -173,6 +173,43 @@ def read_job_info(dir):
     return job_info
 
 
+def get_job_run_time(dir):
+    """
+    Get the run time of a job.
+
+    Parameters
+    ----------
+    dir : str
+        The directory to read the job_info.json file from.
+
+    Returns
+    -------
+    diff : str
+        The run time of the job in the format "hh:mm:ss".
+    """
+    job_info = read_job_info(dir)
+    if job_info is None:
+        return 0
+
+    start = datetime.datetime.strptime(
+        job_info['start'], "%a %b %d %H:%M:%S %Y"
+    )
+
+    if job_info['status'] == 'running':
+        # Calculate time since job started
+        end = datetime.datetime.now()
+    else:
+        end = datetime.datetime.strptime(
+            job_info['end'], "%a %b %d %H:%M:%S %Y"
+        )
+
+    diff = end - start
+    hours, mins = divmod(diff.seconds, 3600)
+    mins, secs = divmod(mins, 60)
+    diff = "{}h {}m {}s".format(hours, mins, secs)
+    return diff
+
+
 def read_stderr_file(dir, full_file=False):
     """
     Read the stderr file in a directory.
@@ -241,6 +278,10 @@ def categorise_jobs(subdirs):
             if job_info['status'] == id:
                 categories[id].append(d)
                 break
+
+    # Sort the directories in each category based on run time
+    for id in ids:
+        categories[id].sort(key=get_job_run_time, reverse=True)
     return categories
 
 
@@ -398,22 +439,7 @@ def print_categories(
 
         job_info = read_job_info(dir=dir)
         pid = job_info['pid']
-        start = datetime.datetime.strptime(
-            job_info['start'], "%a %b %d %H:%M:%S %Y"
-        )
-
-        if job_info['status'] == 'running':
-            # Calculate time since job started
-            end = datetime.datetime.now()
-        else:
-            end = datetime.datetime.strptime(
-                job_info['end'], "%a %b %d %H:%M:%S %Y"
-            )
-
-        diff = end - start
-        hours, mins = divmod(diff.seconds, 3600)
-        mins, secs = divmod(mins, 60)
-        diff = "{}h {}m {}s".format(hours, mins, secs)
+        diff = get_job_run_time(dir=dir)
 
         # Update message
         if PID:
