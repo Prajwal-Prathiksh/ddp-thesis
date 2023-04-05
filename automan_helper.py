@@ -60,7 +60,7 @@ def cli_args():
         "previous summary.yaml file and print the differences."
     )
     parser.add_argument(
-        "-e", "--print-error-file", action="store_true", 
+        "-e", "--print-error-file", action="store_true",
         dest="print_full_error", help="Print the full contents of the stderr "
         "file for the jobs that errored."
     )
@@ -197,7 +197,7 @@ def read_stderr_file(dir, full_file=False):
         warnings.warn("\033[93m{}\033[00m" .format(
             "stderr file not found in {}. Skipping directory.".format(dir)))
         return None
-    
+
     if full_file:
         with open(fname, "r") as f:
             stderr = f.read()
@@ -427,11 +427,13 @@ def print_categories(
                     if key == 'running':
                         msg = _update_running_msg(dir=d, msg=msg)
                     elif key == 'error':
-                        stderr = read_stderr_file(dir=d, full_file=print_full_error)
+                        stderr = read_stderr_file(
+                            dir=d, full_file=print_full_error
+                        )
                         msg = "{}\n\t\033[1;37m{}\033[00m".format(msg, stderr)
 
                     print("{}    {}{}".format(colors[key], msg,
-                                            "\033[00m"))
+                                              "\033[00m"))
     else:
         dir = basename(abspath(dir))
         summary = read_yaml_file()
@@ -469,7 +471,9 @@ def print_categories(
                     if key == 'running':
                         msg = _update_running_msg(dir=d, msg=msg)
                     elif key == 'error':
-                        stderr = read_stderr_file(dir=d, full_file=print_full_error)
+                        stderr = read_stderr_file(
+                            dir=d, full_file=print_full_error
+                        )
                         msg = "{}\n\t\033[1;37m{}\033[00m".format(msg, stderr)
 
                     if basename(d) in old[key]["dirs"]:
@@ -479,11 +483,12 @@ def print_categories(
                         new_str = '\033[1;37m (new!) \033[00m'
                         print("{}    {}{}{}".format(
                             colors[key], msg, "\033[00m", new_str))
-                        
+
+
 def get_list_cat(cli_list_cat):
     """
     Get the list of categories to print from user provided CLI option.
-    
+
     Parameters
     ----------
     cli_list_cat : str
@@ -505,7 +510,7 @@ def get_list_cat(cli_list_cat):
                 raise ValueError(
                     "Invalid option for --list_cat: {}".format(opt)
                 )
-            list_cat.append(valid_opts[opt])        
+            list_cat.append(valid_opts[opt])
     return list_cat
 
 
