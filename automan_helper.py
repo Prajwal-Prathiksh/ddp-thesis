@@ -173,7 +173,7 @@ def read_job_info(dir):
     return job_info
 
 
-def get_job_run_time(dir):
+def get_job_run_time(dir, return_seconds=True):
     """
     Get the run time of a job.
 
@@ -181,10 +181,13 @@ def get_job_run_time(dir):
     ----------
     dir : str
         The directory to read the job_info.json file from.
+    return_seconds : bool, optional
+        If True, the run time is returned in seconds, otherwise it is returned
+        in the format "hh:mm:ss".
 
     Returns
     -------
-    diff : str
+    diff : float/str
         The run time of the job in the format "hh:mm:ss".
     """
     job_info = read_job_info(dir)
@@ -204,6 +207,9 @@ def get_job_run_time(dir):
         )
 
     diff = end - start
+    if return_seconds:
+        return diff.total_seconds()
+
     hours, mins = divmod(diff.seconds, 3600)
     mins, secs = divmod(mins, 60)
     diff = "{}h {}m {}s".format(hours, mins, secs)
@@ -439,7 +445,7 @@ def print_categories(
 
         job_info = read_job_info(dir=dir)
         pid = job_info['pid']
-        diff = get_job_run_time(dir=dir)
+        diff = get_job_run_time(dir=dir, return_seconds=False)
 
         # Update message
         if PID:
