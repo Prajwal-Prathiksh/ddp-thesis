@@ -25,7 +25,6 @@ from code.automate_utils import (
     styles, custom_compare_runs, plot_vline, get_all_unique_values,
     get_cpu_time, get_label_from_scheme, LINESTYLE, MARKER
 )
-# from temp_utils import styles, custom_compare_runs, plot_vline
 
 BACKEND = " --openmp "
 N_CORES, N_THREADS = 4, 8
