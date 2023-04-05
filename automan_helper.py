@@ -431,7 +431,7 @@ def print_categories(
                         msg = _update_msg(dir=d, msg=msg, PID=True)
                     else:
                         msg = _update_msg(dir=d, msg=msg, PID=False)
-                    
+
                     if key == 'error':
                         stderr = read_stderr_file(
                             dir=d, full_file=print_full_error
@@ -471,7 +471,7 @@ def print_categories(
             else:
                 print("{}  {}: {}{}".format(
                     colors[key], key.title(), new[key]["count"], "\033[00m"))
-                
+
             if verbose:
                 for d in categories[key]:
                     msg = basename(d)
@@ -479,7 +479,7 @@ def print_categories(
                         msg = _update_msg(dir=d, msg=msg, PID=True)
                     else:
                         msg = _update_msg(dir=d, msg=msg, PID=False)
-                        
+
                     if key == 'error':
                         stderr = read_stderr_file(
                             dir=d, full_file=print_full_error
