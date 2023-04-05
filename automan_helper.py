@@ -7,8 +7,12 @@ import os
 import sys
 import shutil
 import json
+import yaml
 import warnings
 import argparse
+
+# Define global variables
+YAML_FNAME = None
 
 
 def get_immediate_subdirectories(dir):
@@ -143,6 +147,88 @@ def categorise_jobs(subdirs):
     return categories
 
 
+def create_yaml_file(dir=None):
+    """
+    Create the summary.yaml file containing the summary of `automan` output
+    directories.
+
+    Parameters
+    ----------
+    dir : str, optional
+        The directory to create the summary.yaml file in. If None, the current
+        working directory is used.
+    """
+    global YAML_FNAME
+    if dir is None:
+        dir = os.getcwd()
+    dir = os.path.abspath(dir)
+    fname = os.path.join(dir, ".automan", "summary.yaml")
+    if os.path.isfile(fname):
+        YAML_FNAME = fname
+        return
+
+    # Check if .automan directory exists
+    if not os.path.isdir(os.path.join(dir, ".automan")):
+        os.mkdir(os.path.join(dir, ".automan"))
+    with open(fname, "w") as f:
+        f.write("")
+    print("Created summary.yaml file in {}.".format(dir))
+    YAML_FNAME = fname
+
+
+def read_yaml_file():
+    """
+    Read the summary.yaml file.
+
+    Returns
+    -------
+    summary : dict
+        The summary.yaml file as a dictionary.
+    """
+    if YAML_FNAME is None:
+        return None
+    with open(YAML_FNAME, "r") as f:
+        summary = yaml.safe_load(f)
+    if summary is None:
+        summary = {}
+    return summary
+
+
+def write_dir_summary(dir, size, categories):
+    """
+    Write the summary of a directory to the summary.yaml file.
+
+    Parameters
+    ----------
+    dir : str
+        The directory to write the summary of.
+    size : str
+        The size of the directory.
+    categories : dict
+        The categories of the directory.
+    """
+    if YAML_FNAME is None:
+        return
+    dir = os.path.basename(os.path.abspath(dir))
+    dir_data_dict = {dir:dict(size=size)}
+    for key, value in categories.items():
+        dir_data_dict[dir][key] = dict(
+            count=len(value), dirs=[os.path.basename(d) for d in value]
+        )
+    
+    # Read summary.yaml
+    summary = read_yaml_file()
+
+    # Check if dir already exists in summary.yaml and update if it does
+    if dir in summary:
+        summary[dir].update(dir_data_dict[dir])
+    else:
+        summary.update(dir_data_dict)
+
+    # Dump dir_data_dict into summary.yaml
+    with open(YAML_FNAME, "w") as f:
+        yaml.dump(summary, f, default_flow_style=False)
+
 def cli_args():
     """
     Returns the command line arguments.
@@ -160,7 +246,7 @@ def cli_args():
         "dirs", nargs="*", help="The directories to clean out.",
     )
     parser.add_argument(
-        "-od", "--output-dir", type=str, dest="output_dir",
+        "-o", "--output-dir", type=str, dest="output_dir",
         help="The output directory containing all of `automan`'s output "
         "directories. If specified, the script will search for all "
         "subdirectories in this directory and use them as input directories."
@@ -171,6 +257,11 @@ def cli_args():
         help="Delete directories in the specified category."
     )
     parser.add_argument(
+        "-s", "--save-yaml", action="store_true", dest="save_yaml",
+        help="Save a .yaml file containing the summary of `automan` output "
+        "directories."
+    )
+    parser.add_argument(
         "-v", "--verbose", action="store_true", dest="verbose",
         help="Print more information."
     )
@@ -178,23 +269,10 @@ def cli_args():
     return parser.parse_args()
 
 
-def main():
+def main(dirs, delete=None, save_yaml=True, verbose=False):
     """
     Main function.
     """
-    args = cli_args()
-    if args.dirs == [] and args.output_dir is None:
-        # Print in red
-        print("\033[91m{}\033[00m" .format("No directories provided."))
-        sys.exit(1)
-
-    if args.output_dir is not None:
-        args.dirs = []
-        args.dirs.extend(get_immediate_subdirectories(args.output_dir))
-    delete = None
-    if args.delete != "none":
-        delete = args.delete
-
     # Colors for printing
     colors = dict(
         done="\033[92m",
@@ -202,12 +280,19 @@ def main():
         error="\033[91m",
     )
 
-    for dir in args.dirs:
+    if save_yaml:
+        create_yaml_file(dir=os.getcwd())
+
+    for dir in dirs:
         subdirs = get_immediate_subdirectories(dir)
         dir_size = calculate_dir_size(dir, human_readable=True)
         categories = categorise_jobs(subdirs)
         print("Directory: {}".format(dir))
         print("Size: {}".format(dir_size))
+
+        if save_yaml:
+            write_dir_summary(dir=dir, size=dir_size, categories=categories)
+        
         for key in categories:
             print(
                 "{}  {}: {}{}".format(
@@ -215,7 +300,7 @@ def main():
                     len(categories[key]), "\033[00m"
                 )
             )
-            if args.verbose:
+            if verbose:
                 for d in categories[key]:
                     print(
                         "{}    {}{}".format(
@@ -232,15 +317,27 @@ def main():
             confirm = input("Are you sure? (y/n): ")
             if confirm.lower() == "n":
                 print("Not deleting.")
-                continue
-            print("Deleting...")
-            for d in categories[delete]:
-                # Remove the directory and all files and subdirectories
-                # inside it.
-                shutil.rmtree(d)
-
-            print("Done deleting.")
+            else:
+                print("Deleting...")
+                for d in categories[delete]:
+                    shutil.rmtree(d)
+                print("Done deleting.")
 
 
 if __name__ == "__main__":
-    main()
+    args = cli_args()
+    if args.dirs == [] and args.output_dir is None:
+        # Print in red
+        print("\033[91m{}\033[00m" .format("No directories provided."))
+        sys.exit(1)
+
+    if args.output_dir is not None:
+        args.dirs = []
+        args.dirs.extend(get_immediate_subdirectories(args.output_dir))
+    delete = None
+    if args.delete != "none":
+        delete = args.delete
+
+    main(
+        dirs=args.dirs, delete=delete, save_yaml=args.save_yaml, verbose=args.verbose
+    )
