@@ -11,9 +11,9 @@ import warnings
 import argparse
 
 
-def get_all_subdirs(dir):
+def get_immediate_subdirectories(dir):
     """
-    Get all subdirectories in a directory
+    Get all immediate subdirectories in a directory.
 
     Parameters
     ----------
@@ -27,9 +27,9 @@ def get_all_subdirs(dir):
     """
     dir = os.path.abspath(dir)
     subdirs = []
-    for root, dirs, _ in os.walk(dir):
-        for d in dirs:
-            subdirs.append(os.path.join(root, d))
+    for name in os.listdir(dir):
+        if os.path.isdir(os.path.join(dir, name)):
+            subdirs.append(os.path.join(dir, name))
     return subdirs
 
 
@@ -148,23 +148,31 @@ def cli_args():
     Returns the command line arguments.
     """
     parser = argparse.ArgumentParser(
-        description='An assistant to help with cleaning out running '
-        'directories created by automan.',
-        epilog='Example: python automan_helper.py [options] dir1 dir2 dir3',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description='An assistant to help with output dirs created through '
+        ' `automan`.',        
+        epilog="Example: "
+        "\n\t>>> python automan_helper.py [options] dir1 dir2 dir3"
+        "\n\t>>> python automan_helper.py -od outpts -d done",
+        formatter_class=argparse.RawDescriptionHelpFormatter
     )
-
+    
     parser.add_argument(
         "dirs", nargs="*", help="The directories to clean out.",
     )
     parser.add_argument(
-        "-v", "--verbose", action="store_true", dest="verbose",
-        help="Print more information."
+        "-od", "--output-dir", type=str, dest="output_dir",
+        help="The output directory containing all of `automan`'s output "
+        "directories. If specified, the script will search for all "
+        "subdirectories in this directory and use them as input directories."
     )
     parser.add_argument(
         "-d", "--delete", type=str, dest="delete", default="none",
         choices=["none", "done", "running", "error"],
         help="Delete directories in the specified category."
+    )
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", dest="verbose",
+        help="Print more information."
     )
 
     return parser.parse_args()
@@ -175,11 +183,14 @@ def main():
     Main function.
     """
     args = cli_args()
-    if args.dirs == []:
+    if args.dirs == [] and args.output_dir is None:
         # Print in red
         print("\033[91m{}\033[00m" .format("No directories provided."))
         sys.exit(1)
 
+    if args.output_dir is not None:
+        args.dirs = []
+        args.dirs.extend(get_immediate_subdirectories(args.output_dir))
     delete = None
     if args.delete != "none":
         delete = args.delete
@@ -192,7 +203,7 @@ def main():
     )
 
     for dir in args.dirs:
-        subdirs = get_all_subdirs(dir)
+        subdirs = get_immediate_subdirectories(dir)
         dir_size = calculate_dir_size(dir, human_readable=True)
         categories = categorise_jobs(subdirs)
         print("Directory: {}".format(dir))
