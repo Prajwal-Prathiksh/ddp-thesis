@@ -401,11 +401,19 @@ def print_categories(
         start = datetime.datetime.strptime(
             job_info['start'], "%a %b %d %H:%M:%S %Y"
         )
-        # Calculate time since job started
-        now = datetime.datetime.now()
-        diff = now - start
+
+        if job_info['status'] == 'running':
+            # Calculate time since job started
+            end = datetime.datetime.now()
+        else:
+            end = datetime.datetime.strptime(
+                job_info['end'], "%a %b %d %H:%M:%S %Y"
+            )
+
+        diff = end - start
         hours, mins = divmod(diff.seconds, 3600)
-        diff = "{}h {}m".format(hours, mins // 60)
+        mins, secs = divmod(mins, 60)
+        diff = "{}h {}m {}s".format(hours, mins, secs)
 
         # Update message
         if PID:
