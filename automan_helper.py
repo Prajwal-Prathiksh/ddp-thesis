@@ -379,9 +379,9 @@ def print_categories(
     list_cat : list
         The categories to print.
     """
-    def _update_running_msg(dir, msg):
+    def _update_msg(dir, msg, PID=False):
         """
-        Update the message for a running job.
+        Update the message for a job with the runtime and PID.
 
         Parameters
         ----------
@@ -408,7 +408,10 @@ def print_categories(
         diff = "{}h {}m".format(hours, mins // 60)
 
         # Update message
-        msg = "{} (RT={}) (PID={})".format(msg, diff, pid)
+        if PID:
+            msg = "{} (RT={}) (PID={})".format(msg, diff, pid)
+        else:
+            msg = "{} (RT={})".format(msg, diff)
         return msg
 
     o_dir = dir
@@ -425,8 +428,11 @@ def print_categories(
                 for d in categories[key]:
                     msg = basename(d)
                     if key == 'running':
-                        msg = _update_running_msg(dir=d, msg=msg)
-                    elif key == 'error':
+                        msg = _update_msg(dir=d, msg=msg, PID=True)
+                    else:
+                        msg = _update_msg(dir=d, msg=msg, PID=False)
+                    
+                    if key == 'error':
                         stderr = read_stderr_file(
                             dir=d, full_file=print_full_error
                         )
@@ -465,12 +471,16 @@ def print_categories(
             else:
                 print("{}  {}: {}{}".format(
                     colors[key], key.title(), new[key]["count"], "\033[00m"))
+                
             if verbose:
                 for d in categories[key]:
                     msg = basename(d)
                     if key == 'running':
-                        msg = _update_running_msg(dir=d, msg=msg)
-                    elif key == 'error':
+                        msg = _update_msg(dir=d, msg=msg, PID=True)
+                    else:
+                        msg = _update_msg(dir=d, msg=msg, PID=False)
+                        
+                    if key == 'error':
                         stderr = read_stderr_file(
                             dir=d, full_file=print_full_error
                         )
