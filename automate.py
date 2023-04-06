@@ -350,11 +350,11 @@ class TGV2DSchemeComparison(PySPHProblem):
             scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
         )
         integrator_opts = mdict(
-            integrator=['pec'], integrator_dt_mul_fac=[1, 2]
+            integrator=['pec'], integrator_dt_mul_fac=[1]
         )
-        integrator_opts += mdict(
-            integrator=['rk2'], integrator_dt_mul_fac=[2]
-        )
+        # integrator_opts += mdict(
+        #     integrator=['rk2'], integrator_dt_mul_fac=[2]
+        # )
         integrator_opts += mdict(
             integrator=['rk3'], integrator_dt_mul_fac=[3, 6]
         )
@@ -392,6 +392,7 @@ class TGV2DSchemeComparison(PySPHProblem):
             ) for name, kw in self.case_info.items()
         ]
         print(len(self.cases), 'cases created')
+
         for case in self.cases:
             self.case_info[case.name]['case'] = case
     
