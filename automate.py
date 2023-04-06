@@ -399,7 +399,132 @@ class TGV2DSchemeComparison(PySPHProblem):
         """
         Run the problem.
         """
-        self.make_output_dir()
+        # self.make_output_dir()
+
+        # Unpack simulation opts
+        sim_opts = self.sim_opts
+        res = get_all_unique_values(sim_opts, 're')
+        integrators = get_all_unique_values(sim_opts, 'integrator')
+        integrator_dt_mul_facs = get_all_unique_values(
+            sim_opts, 'integrator_dt_mul_fac'
+        )
+        print(res, integrators, integrator_dt_mul_facs)
+
+        # Make plots
+        KIND_CHOICES = ['ke', 'decay', 'linf', 'l1', 'p_l1', 'lm', 'am']
+
+        # min_dtmf = 1
+        # if min_dtmf:
+        #     integrator_dt_mul_facs.sort()
+        # else:
+        #     integrator_dt_mul_facs.sort(reverse=True)
+        # for re in res:
+        #     for k in KIND_CHOICES:
+        #         filtered_cases = []
+        #         for intg in integrators:
+        #             for dtmf in integrator_dt_mul_facs:
+        #                 fcases = filter_cases(
+        #                     self.cases, re=re, integrator=intg,
+        #                     integrator_dt_mul_fac=dtmf
+        #                 )
+        #                 if len(fcases) >= 1:
+        #                     filtered_cases.extend(fcases)
+        #                     break
+        #         if len(filtered_cases) == 0:
+        #             continue
+        #         fname = f"{k}_re_{re}.png"
+        #         self.plot_sim_prop_history(
+        #             cases=filtered_cases, kind=k, fname=fname
+        #         )
+
+
+        # for re in res:
+        #     for intg in integrators:
+        #             for k in KIND_CHOICES:
+        #                 fcases = filter_cases(
+        #                     self.cases, re=re, integrator=intg,
+        #                 )
+        #                 if len(fcases) == 0:
+        #                     continue
+        #                 fname = f"{k}_re_{re}_{intg}.png"
+        #                 self.plot_sim_prop_history(
+        #                     cases=fcases, kind=k, fname=fname
+        #                 )
+
+        for re in res:
+            for k in KIND_CHOICES:
+                fcases = filter_cases(self.cases, re=re)
+                if len(fcases)  == 0:
+                    continue
+                fname = f"{k}_re_{re}.png"
+                self.plot_sim_prop_history(
+                    cases=fcases, kind=k, fname=fname
+                )
+    
+    def get_sim_prop_history(self, case, kind):
+        """
+        Get the simulation property history.
+        """
+        KIND_CHOICES = ['ke', 'decay', 'linf', 'l1', 'p_l1', 'lm', 'am']
+        if kind not in KIND_CHOICES:
+            raise ValueError(f"kind must be one of {KIND_CHOICES}")
+        t = case.data['t']
+        prop = case.data[kind]
+        return t, prop
+    
+    def get_expected_sim_prop_history(self, cases, kind):
+        """
+        Get the expected simulation property history.
+        """
+        KIND_CHOICES = dict(ke='ke_ex', decay='decay_ex')
+        if kind not in KIND_CHOICES.keys():
+            raise ValueError(f"kind must be one of {KIND_CHOICES.keys()}")
+        
+        t, prop = [], []
+        for case in cases:
+            _t, _prop = case.data['t'], case.data[KIND_CHOICES[kind]]
+            t.append(_t)
+            prop.append(_prop)
+        
+        # Get index of max time
+        idx = np.argmax([_t[-1] for _t in t])
+
+        # Return the expected property history
+        return t[idx], prop[idx]
+    
+    def plot_sim_prop_history(self, cases, kind, fname, title_suffix=''):
+        """
+        Plot the simulation property history.
+        """
+        plot_exact = False
+        if kind in ['ke', 'decay']:       
+            # Get the expected simulation property history
+            t_exp, prop_exp = self.get_expected_sim_prop_history(cases, kind)
+            plot_exact = True
+
+        # Set plotter method
+        if kind in ['ke', 'decay']:
+            plt_method = plt.semilogy
+        else:
+            plt_method = plt.plot
+        
+        plt.figure()
+        # Plot the simulation property history
+        if plot_exact:
+            plt_method(t_exp, prop_exp, 'k--', label='exact')
+
+        for case in cases:
+            t, prop = self.get_sim_prop_history(case, kind)
+            plt_method(t, prop, label=case.name)
+        
+        plt.xlabel('t')
+        plt.ylabel(kind)
+        plt.title(f"{kind} history {title_suffix}")
+        plt.legend()
+        plt.grid()
+        plt.savefig(self.output_path(fname), dpi=300, bbox_inches='tight')
+        plt.close()
+        
 
 class TGV2DExtForceSchemeComparison(PySPHProblem):
     def get_name(self):
@@ -488,7 +613,6 @@ class TB3DExtForceSchemeComparison(PySPHProblem):
         Run the problem.
         """
         self.make_output_dir()
-
 
 class RunTimeDomainManager(PySPHProblem):
     def get_name(self):
@@ -599,7 +723,6 @@ class RunTimeDomainManager(PySPHProblem):
         self.make_output_dir()
         self.create_rt_table()
         
-
 class TGV2DIntegratorComparison(PySPHProblem):
     def get_name(self):
         return 'tgv_2d_integrator_comparison'
@@ -654,7 +777,6 @@ class TGV2DIntegratorComparison(PySPHProblem):
             ) for name, kw in self.case_info.items()
         ]
         print(len(self.cases), 'cases created')
-        raise SystemExit
         for case in self.cases:
             self.case_info[case.name]['case'] = case
 
@@ -668,9 +790,11 @@ class TGV2DIntegratorComparison(PySPHProblem):
                 if intg == 'auto':
                     continue
                 self._plot_convergence_c0(intg=intg, re=re)
+        
         for re in self.re_s:
-            self._plot_rt_speedup(re=re, largest_dtmf_only=True)
-            self._plot_rt_speedup(re=re, largest_dtmf_only=False)
+            for c0 in self.c0s:
+                self._plot_rt_speedup(re=re, c0=c0, largest_dtmf_only=True)
+                self._plot_rt_speedup(re=re, c0=c0, largest_dtmf_only=False)
 
     def calculate_l1(self, cases):
         data = {}
@@ -729,11 +853,13 @@ class TGV2DIntegratorComparison(PySPHProblem):
         plt.legend(loc='best')
         plt.xlabel(r'$N_x$')
         plt.ylabel(r'$RT$')
-        plt.title(f'CPU time - L-IPST-C Scheme (c0={c0}) (Re={re})')
+        plt.title(
+            fr'CPU time - L-IPST-C Scheme (c0={c0}) (Re={re}) ($t_f=0.1$)'
+        )
         if largest_dtmf_only:
-            fname = f'pois_rt_re_{re}_largest_dtmf.png'
+            fname = f'pois_rt_c0_{c0}_re_{re}_largest_dtmf.png'
         else:
-            fname = f'pois_rt_re_{re}.png'
+            fname = f'pois_rt_c0_{c0}_re_{re}.png'
         plt.savefig(self.output_path(fname), dpi=300)
 
     def _plot_convergence(self, c0=None, re=None):
@@ -766,7 +892,9 @@ class TGV2DIntegratorComparison(PySPHProblem):
         plt.legend(loc='best')
         plt.xlabel(r'$h$')
         plt.ylabel(r'$L_1$ error')
-        plt.title(fr'Scheme convergence - $L_1$ error $(c_0={c0})$ (Re={re})')
+        plt.title(
+            fr'Scheme convergence - $L_1$ error $(c_0={c0})$ (Re={re}) ($t_f=0.1$)'
+        )
         plt.savefig(
             self.output_path(f'dt_pois_conv_c0_{c0}_re_{re}.png'), dpi=300
         )
@@ -803,7 +931,9 @@ class TGV2DIntegratorComparison(PySPHProblem):
         plt.legend(loc='best')
         plt.xlabel(r'$h$')
         plt.ylabel(r'$L_1$ error')
-        plt.title(fr'Scheme convergence - $L_1$ error (Re={re})')
+        plt.title(
+            fr'Scheme convergence - $L_1$ error (Re={re}) ($t_f=0.1$)'
+        )
         fname = self.output_path(f'dt_pois_conv_c0_{intg}_re_{re}.png')
         plt.savefig(fname, dpi=300)
         plt.close()
