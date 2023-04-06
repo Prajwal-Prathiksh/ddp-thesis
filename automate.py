@@ -733,21 +733,21 @@ class TGV2DIntegratorComparison(PySPHProblem):
 
     def setup(self):
         scheme_opts = mdict(
-            scheme=['tsph'], re=[100, 1000, 5000], pst_freq=[5, 10],
+            scheme=['tsph'], re=[100, 1000, 5000]
         )
         integrator_opts = mdict(
-            integrator=['pec'], integrator_dt_mul_fac=[1, 2]
+            integrator=['pec'], integrator_dt_mul_fac=[1, 2], pst_freq=[10],
         )
         integrator_opts += mdict(
-            integrator=['rk2'], integrator_dt_mul_fac=[2]
+            integrator=['rk2'], integrator_dt_mul_fac=[2], pst_freq=[10],
         )
         integrator_opts += mdict(
-            integrator=['rk3'], integrator_dt_mul_fac=[3, 6]
+            integrator=['rk3'], integrator_dt_mul_fac=[3, 6], pst_freq=[10],
         )
-        integrator_opts += mdict(
-            integrator=['rk4'], integrator_dt_mul_fac=[4, 8]
+        integrator_opts = mdict(
+            integrator=['rk4'], integrator_dt_mul_fac=[4, 8], pst_freq=[5, 10],
         )
-        res_opts = mdict(nx=[25, 50,], c0_fac=[20, 40, 80])
+        res_opts = mdict(nx=[25, 50, 100,], c0_fac=[20, 80])
         sim_opts = dprod(scheme_opts, dprod(integrator_opts, res_opts))
         self.sim_opts = sim_opts
 
@@ -799,8 +799,13 @@ class TGV2DIntegratorComparison(PySPHProblem):
         
         for re in self.re_s:
             for c0 in self.c0s:
-                self._plot_rt_speedup(re=re, c0=c0, largest_dtmf_only=True)
-                self._plot_rt_speedup(re=re, c0=c0, largest_dtmf_only=False)
+                for pst in self.pst_freqs:
+                    self._plot_rt_speedup(
+                        re=re, c0=c0, pst=pst, largest_dtmf_only=True
+                    )
+                    self._plot_rt_speedup(
+                        re=re, c0=c0, pst=pst, largest_dtmf_only=False
+                    )
 
     def calculate_l1(self, cases):
         data = {}
@@ -812,11 +817,15 @@ class TGV2DIntegratorComparison(PySPHProblem):
         l1 = np.asarray([data[x] for x in nx_arr])
         return nx_arr, l1
 
-    def _plot_rt_speedup(self, c0=None, re=None, largest_dtmf_only=True):
+    def _plot_rt_speedup(
+        self, c0=None, re=None, pst=None, largest_dtmf_only=True
+    ):
         if c0 is None:
             c0 = max(self.c0s)
         if re is None:
             re = max(self.re_s)
+        if pst is None:
+            pst = max(self.pst_freqs)
 
         plt.figure()
         dx = None
@@ -842,7 +851,7 @@ class TGV2DIntegratorComparison(PySPHProblem):
                 for dt in self.nx:
                     cases = filter_cases(
                         self.cases, scheme=scheme, integrator=intg, nx=dt,
-                        c0_fac=c0, integrator_dt_mul_fac=dtmf, re=re
+                        c0_fac=c0, integrator_dt_mul_fac=dtmf, re=re, pst_freq=pst
                     )
                     if len(cases) < 1:
                         continue
@@ -860,12 +869,12 @@ class TGV2DIntegratorComparison(PySPHProblem):
         plt.xlabel(r'$N_x$')
         plt.ylabel(r'$RT$')
         plt.title(
-            fr'CPU time - L-IPST-C Scheme (c0={c0}) (Re={re}) ($t_f=0.1$)'
+            fr'CPU time - L-IPST-C Scheme (pst={pst}, c0={c0}, Re={re}) ($t_f=0.1$)'
         )
         if largest_dtmf_only:
-            fname = f'pois_rt_c0_{c0}_re_{re}_largest_dtmf.png'
+            fname = f'pois_rt_pst_{pst}_c0_{c0}_re_{re}_largest_dtmf.png'
         else:
-            fname = f'pois_rt_c0_{c0}_re_{re}.png'
+            fname = f'pois_rt_pst_{pst}_c0_{c0}_re_{re}.png'
         plt.savefig(self.output_path(fname), dpi=300)
 
     def _plot_convergence(self, c0=None, re=None):
@@ -878,17 +887,19 @@ class TGV2DIntegratorComparison(PySPHProblem):
         for scheme in self.schemes:
             for intg in self.integrators:
                 for dtmf in self.dt_mul_facs:
-                    cases = filter_cases(
-                        self.cases, scheme=scheme, integrator=intg, c0_fac=c0,
-                        integrator_dt_mul_fac=dtmf, re=re
-                    )
-                    if len(cases) < 1:
-                        continue
-                    dts, l1 = self.calculate_l1(cases)
-                    dts = 1./dts
-                    label = get_label_from_scheme(scheme) +\
-                         fr' ({intg}) ({dtmf}$\Delta t$)'
-                    plt.loglog(dts, l1, label=label, marker=next(marker))
+                    for pst in self.pst_freqs:
+                        cases = filter_cases(
+                            self.cases, scheme=scheme, integrator=intg,
+                            c0_fac=c0, integrator_dt_mul_fac=dtmf, re=re,
+                            pst_freq=pst
+                        )
+                        if len(cases) < 1:
+                            continue
+                        dts, l1 = self.calculate_l1(cases)
+                        dts = 1./dts
+                        label = get_label_from_scheme(scheme) +\
+                            fr' ({intg}) ({dtmf}$\Delta t$) (pst={pst})'
+                        plt.loglog(dts, l1, label=label, marker=next(marker))
 
         plt.loglog(dts, l1[0]*(dts/dts[0])**2, 'k--', linewidth=2,
                 label=r'$O(h^2)$')
@@ -916,18 +927,19 @@ class TGV2DIntegratorComparison(PySPHProblem):
             return
         for c0 in self.c0s:
             for dtmf in self.dt_mul_facs:
-                cases = filter_cases(
-                    self.cases, scheme=scheme, integrator=intg, c0_fac=c0,
-                    integrator_dt_mul_fac=dtmf, re=re
-                )
-                if len(cases) < 1:
-                    continue
-                dts, l1 = self.calculate_l1(cases)
-                dts = 1./dts
-                label = get_label_from_scheme(scheme) +\
-                    fr' ({intg}) ({dtmf}$\Delta t$)'
-                label += f' (c0={c0})'
-                plt.loglog(dts, l1, label=label, marker=next(marker))
+                for pst in self.pst_freqs:
+                    cases = filter_cases(
+                        self.cases, scheme=scheme, integrator=intg, c0_fac=c0,
+                        integrator_dt_mul_fac=dtmf, re=re, pst_freq=pst
+                    )
+                    if len(cases) < 1:
+                        continue
+                    dts, l1 = self.calculate_l1(cases)
+                    dts = 1./dts
+                    label = get_label_from_scheme(scheme) +\
+                        fr' ({intg}) ({dtmf}$\Delta t$) (pst={pst})'
+                    label += f' (c0={c0})'
+                    plt.loglog(dts, l1, label=label, marker=next(marker))
         
         plt.loglog(dts, l1[0]*(dts/dts[0])**2, 'k--', linewidth=2,
                 label=r'$O(h^2)$')
