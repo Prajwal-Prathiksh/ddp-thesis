@@ -60,6 +60,12 @@ def cli_args():
         "previous summary.yaml file and print the differences."
     )
     parser.add_argument(
+        "-n", "--new-files-only", action="store_true", dest="new_files_only",
+        help="Only print the new files that have been added since the last "
+        "time the script was run. Has to be used with the -c/--compare-yaml "
+        "option."
+    )
+    parser.add_argument(
         "-e", "--print-error-file", action="store_true",
         dest="print_full_error", help="Print the full contents of the stderr "
         "file for the jobs that errored."
@@ -400,8 +406,8 @@ def write_dir_summary(dir, size, categories):
 
 
 def print_categories(
-    dir, size, categories, colors, compare_yaml, print_full_error, verbose,
-    list_cat
+    dir, size, categories, colors, compare_yaml, new_files_only,
+    print_full_error, verbose, list_cat
 ):
     """
     Print the categories of a directory.
@@ -419,6 +425,8 @@ def print_categories(
     compare_yaml : bool
         Whether to compare the summary of the directory to the summary.yaml
         file.
+    new_files_only : bool
+        Whether to only print the new files in the directory.
     print_full_error : bool
         Whether to print the error message of the directory.
     verbose : bool
@@ -512,7 +520,7 @@ def print_categories(
                 print("{}  {}: {}{}".format(
                     colors[key], key.title(), new[key]["count"], "\033[00m"))
 
-            if verbose:
+            if verbose or new_files_only:
                 for d in categories[key]:
                     msg = basename(d)
                     if key == 'running':
@@ -527,6 +535,8 @@ def print_categories(
                         msg = "{}\n\t\033[1;37m{}\033[00m".format(msg, stderr)
 
                     if basename(d) in old[key]["dirs"]:
+                        if new_files_only:
+                            continue
                         print("{}    {}{}".format(
                             colors[key], msg, "\033[00m"))
                     else:
@@ -566,7 +576,7 @@ def get_list_cat(cli_list_cat):
 
 def main(
     dirs, list_cat, delete=None, save_yaml=True, compare_yaml=False,
-    print_full_error=False, verbose=False
+    new_files_only=False, print_full_error=False, verbose=False
 ):
     """
     Main function.
@@ -591,8 +601,9 @@ def main(
 
         print_categories(
             dir=dir, size=size, categories=categories, colors=colors,
-            compare_yaml=compare_yaml, print_full_error=print_full_error,
-            verbose=verbose, list_cat=list_cat
+            compare_yaml=compare_yaml, new_files_only=new_files_only,
+            print_full_error=print_full_error, verbose=verbose, 
+            list_cat=list_cat
         )
         print('-' * 80)
 
@@ -636,7 +647,7 @@ if __name__ == "__main__":
         delete=delete,
         save_yaml=args.save_yaml,
         compare_yaml=args.compare_yaml,
+        new_files_only=args.new_files_only,
         print_full_error=args.print_full_error,
-
         verbose=args.verbose
     )
