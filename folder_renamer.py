@@ -5,6 +5,7 @@ from pprint import pprint
 from automan_helper import get_immediate_subdirectories
 
 def main():
+    raise NotImplementedError("This script is not meant to be run.")
     parent_dir = os.path.join(
         os.getcwd(), 'outputs', 'tgv_2d_integrator_comparison'
     )
