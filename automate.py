@@ -733,7 +733,7 @@ class TGV2DIntegratorComparison(PySPHProblem):
 
     def setup(self):
         scheme_opts = mdict(
-            scheme=['tsph'], re=[100, 1000, 5000], pst_freq=[10],
+            scheme=['tsph'], re=[100, 1000, 5000], pst_freq=[5, 10],
         )
         integrator_opts = mdict(
             integrator=['pec'], integrator_dt_mul_fac=[1, 2]
@@ -747,7 +747,7 @@ class TGV2DIntegratorComparison(PySPHProblem):
         integrator_opts += mdict(
             integrator=['rk4'], integrator_dt_mul_fac=[4, 8]
         )
-        res_opts = mdict(nx=[25, 50, 100, 200], c0_fac=[20, 40, 80])
+        res_opts = mdict(nx=[25, 50,], c0_fac=[20, 40, 80])
         sim_opts = dprod(scheme_opts, dprod(integrator_opts, res_opts))
         self.sim_opts = sim_opts
 
