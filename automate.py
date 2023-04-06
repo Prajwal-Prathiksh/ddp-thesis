@@ -12,6 +12,7 @@ from itertools import cycle, product
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from pprint import pprint
 
 # Automan imports
 from automan.api import Automator, Simulation 
@@ -365,10 +366,12 @@ class TGV2DSchemeComparison(PySPHProblem):
             re=[1000, 10_000, 50_000], tf=[4], n_o_files=[50], nx=[200],
             c0_fac=[40]
         )
+
         self.sim_opts = sim_opts = dprod(
             scheme_opts,
             dprod(integrator_opts, res_opts)
         )
+
         self.case_info = {}
         for i in range(len(sim_opts)):
             sim_name = opts2path(
@@ -540,30 +543,59 @@ class TGV2DExtForceSchemeComparison(PySPHProblem):
         """
         base_cmd = "python code/taylor_green.py --ext-forcing " + BACKEND
     
-        scheme_opts = mdict(scheme=['edac'])
-        scheme_opts += mdict(
-            scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
+        # scheme_opts = mdict(scheme=['edac'])
+        # scheme_opts += mdict(
+        #     scheme=['tsph'], method=['no_sd'], scm=['edac'], pst_freq=[10],
+        # )
+        # scheme_opts += mdict(scheme=['mon2017'])
+        scheme_opts = mdict(
+            scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10],
         )
-        scheme_opts += mdict(
-            scheme=['tsph'], method=['no_sd'], scm=['edac'], pst_freq=[10],
-            c0_fac=[40]
+        integrator_opts = mdict(
+            integrator=['pec'], integrator_dt_mul_fac=[1],
         )
-        scheme_opts += mdict(scheme=['mon2017'])
-        res_opts = mdict(nx=[100], re=[10_000, 100_000], tf=[3.])
-        res_opts += mdict(nx=[200], re=[10_000, 100_000], tf=[3.])
+        integrator_opts += mdict(
+            integrator=['rk3'], integrator_dt_mul_fac=[3],
+        )
+        integrator_opts += mdict(
+            integrator=['rk4'], integrator_dt_mul_fac=[4],
+        )
+        res_opts = mdict(
+            re=[10_000, 100_000, 1_000_000],
+            nx=[200], tf=[4.], c0_fac=[40]
+        )
 
-        opts = dprod(scheme_opts, res_opts)
-            
+        self.sim_opts = sim_opts = dprod(
+            scheme_opts,
+            dprod(integrator_opts, res_opts)
+        )
+
+        self.case_info = {}
+        for i in range(len(sim_opts)):
+            sim_name = opts2path(
+                sim_opts[i],
+                keys=[
+                    'scheme', 'integrator', 'integrator_dt_mul_fac', 're',
+                    'c0_fac', 'nx', 'tf'
+                ],
+                kmap=dict(integrator_dt_mul_fac='dtmul', c0_fac='c0')
+            )
+            self.case_info[sim_name] = sim_opts[i]
+
         # Setup cases
         self.cases = [
             Simulation(
-                root=self.input_path(opts2path(kw)),
+                root=self.input_path(name),
                 base_command=base_cmd,
-                job_info=dict(n_core=N_CORES, n_thread=N_THREADS),
+                job_info=dict(n_core=4, n_thread=8),
+                cache_nnps=None,
                 **kw
-            )
-            for kw in opts
+            ) for name, kw in self.case_info.items()
         ]
+        print(len(self.cases), 'cases created')
+
+        for case in self.cases:
+            self.case_info[case.name]['case'] = case
     
     def run(self):
         """
@@ -747,9 +779,12 @@ class TGV2DIntegratorComparison(PySPHProblem):
         integrator_opts = mdict(
             integrator=['rk4'], integrator_dt_mul_fac=[4, 8], pst_freq=[5, 10],
         )
-        res_opts = mdict(nx=[25, 50, 100,], c0_fac=[20, 80])
-        sim_opts = dprod(scheme_opts, dprod(integrator_opts, res_opts))
-        self.sim_opts = sim_opts
+        res_opts = mdict(nx=[25, 50, 100, 200], c0_fac=[20, 80])
+        
+        self.sim_opts = sim_opts = dprod(
+            scheme_opts,
+            dprod(integrator_opts, res_opts)
+        )
 
         # Unpack the simulation options
         self.schemes = get_all_unique_values(sim_opts, 'scheme')
