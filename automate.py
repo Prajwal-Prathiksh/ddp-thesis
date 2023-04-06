@@ -729,10 +729,12 @@ class TGV2DIntegratorComparison(PySPHProblem):
         return 'tgv_2d_integrator_comparison'
 
     def _get_file(self):
-        return 'code/taylor_green.py --no-plot --openmp --tf 0.1 --pst-freq 10 --n-o-files 8 '
+        return 'code/taylor_green.py --no-plot --openmp --tf 0.1 --n-o-files 8 '
 
     def setup(self):
-        scheme_opts = mdict(scheme=['tsph'], re=[100, 1000, 5000])
+        scheme_opts = mdict(
+            scheme=['tsph'], re=[100, 1000, 5000], pst_freq=[10],
+        )
         integrator_opts = mdict(
             integrator=['pec'], integrator_dt_mul_fac=[1, 2]
         )
@@ -745,7 +747,7 @@ class TGV2DIntegratorComparison(PySPHProblem):
         integrator_opts += mdict(
             integrator=['rk4'], integrator_dt_mul_fac=[4, 8]
         )
-        res_opts = mdict(nx=[25, 50, 100, 200, 400], c0_fac=[20, 80])
+        res_opts = mdict(nx=[25, 50, 100, 200], c0_fac=[20, 40, 80])
         sim_opts = dprod(scheme_opts, dprod(integrator_opts, res_opts))
         self.sim_opts = sim_opts
 
@@ -758,12 +760,15 @@ class TGV2DIntegratorComparison(PySPHProblem):
             sim_opts, 'integrator_dt_mul_fac'
         )
         self.c0s = get_all_unique_values(sim_opts, 'c0_fac')
+        self.pst_freqs = get_all_unique_values(sim_opts, 'pst_freq')
 
         self.case_info = {}
         for i in range(len(sim_opts)):
             sim_name = opts2path(
                 sim_opts[i],
-                kmap=dict(integrator_dt_mul_fac='dtmul', c0_fac='c0')
+                kmap=dict(
+                    integrator_dt_mul_fac='dtmul', c0_fac='c0', pst_freq='pst'
+                )
             )
             self.case_info[sim_name] = sim_opts[i]
 
