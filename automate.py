@@ -351,16 +351,16 @@ class TGV2DSchemeComparison(PySPHProblem):
             scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
         )
         integrator_opts = mdict(
-            integrator=['pec'], integrator_dt_mul_fac=[1]
+            integrator=['pec'], integrator_dt_mul_fac=[1, 2]
         )
         # integrator_opts += mdict(
         #     integrator=['rk2'], integrator_dt_mul_fac=[2]
         # )
         integrator_opts += mdict(
-            integrator=['rk3'], integrator_dt_mul_fac=[3, 6]
+            integrator=['rk3'], integrator_dt_mul_fac=[3]
         )
         integrator_opts += mdict(
-            integrator=['rk4'], integrator_dt_mul_fac=[4, 8]
+            integrator=['rk4'], integrator_dt_mul_fac=[4]
         )
         res_opts = mdict(
             re=[1000, 10_000, 50_000], tf=[4], n_o_files=[50], nx=[200],
@@ -390,7 +390,6 @@ class TGV2DSchemeComparison(PySPHProblem):
                 root=self.input_path(name),
                 base_command=base_cmd,
                 job_info=dict(n_core=4, n_thread=8),
-                cache_nnps=None,
                 **kw
             ) for name, kw in self.case_info.items()
         ]
@@ -550,6 +549,7 @@ class TGV2DExtForceSchemeComparison(PySPHProblem):
         # scheme_opts += mdict(scheme=['mon2017'])
         scheme_opts = mdict(
             scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10],
+            n_o_files=[50]
         )
         integrator_opts = mdict(
             integrator=['pec'], integrator_dt_mul_fac=[1],
@@ -562,7 +562,7 @@ class TGV2DExtForceSchemeComparison(PySPHProblem):
         )
         res_opts = mdict(
             re=[10_000, 100_000, 1_000_000],
-            nx=[200], tf=[4.], c0_fac=[40]
+            nx=[200], tf=[6.], c0_fac=[80]
         )
 
         self.sim_opts = sim_opts = dprod(
@@ -588,7 +588,6 @@ class TGV2DExtForceSchemeComparison(PySPHProblem):
                 root=self.input_path(name),
                 base_command=base_cmd,
                 job_info=dict(n_core=4, n_thread=8),
-                cache_nnps=None,
                 **kw
             ) for name, kw in self.case_info.items()
         ]
@@ -776,8 +775,8 @@ class TGV2DIntegratorComparison(PySPHProblem):
         integrator_opts += mdict(
             integrator=['rk3'], integrator_dt_mul_fac=[3, 6], pst_freq=[10],
         )
-        integrator_opts = mdict(
-            integrator=['rk4'], integrator_dt_mul_fac=[4, 8], pst_freq=[5, 10],
+        integrator_opts += mdict(
+            integrator=['rk4'], integrator_dt_mul_fac=[2, 4, 8], pst_freq=[10],
         )
         res_opts = mdict(nx=[25, 50, 100, 200], c0_fac=[20, 80])
         

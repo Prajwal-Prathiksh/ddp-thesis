@@ -7,7 +7,7 @@
 #PBS -o log_TGV2DExtForceSchemeComparison.out
 
 cd $PBS_O_WORKDIR
-cat $PBS_NODEFILE > ./pbsnodes_automate
+cat $PBS_NODEFILE > ./pbsnodes_big
 PROCS1=$(cat $PBS_NODEFILE | wc -l)
 
 python automate.py TGV2DExtForceSchemeComparison -f
