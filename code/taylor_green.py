@@ -299,9 +299,14 @@ class TaylorGreen(TurbulentFlowApp):
         decay_rate = -8.0 * np.pi**2 / self.options.re
 
         files = self.output_files
+        files_len = len(files)
         t, ke, ke_ex, decay, linf, l1, p_l1, lm, am = [], [], [], [], [], [], [], [], []
 
+        file_idx = 1
         for sd, array in iter_output(files[0:], 'fluid'):
+            # Print progress.
+            print("Post-processing: %d/%d" % (file_idx, files_len), end='\r')
+            file_idx += 1
             _t = sd['t']
             t.append(_t)
             x, y, m, u, v, p, au, av, T, rhoc, rho = self._get_post_process_props(array)
