@@ -1,7 +1,6 @@
 import os
 import shutil
 from pprint import pprint
-
 from automan_helper import get_immediate_subdirectories
 
 def main():
