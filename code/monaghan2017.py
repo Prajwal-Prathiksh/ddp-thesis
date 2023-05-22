@@ -10,12 +10,9 @@ References
 ###########################################################################
 # Import
 ###########################################################################
-from compyle.api import declare
-from math import sqrt
 from pysph.sph.equation import Equation
-from pysph.base.utils import get_particle_array
-from pysph.sph.integrator_step import IntegratorStep
 from pysph.sph.scheme import Scheme
+
 
 ###########################################################################
 # Equations

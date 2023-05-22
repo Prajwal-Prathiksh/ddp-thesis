@@ -28,6 +28,7 @@ from remesh import RemeshScheme
 
 from monaghan2017 import Monaghan2017Scheme
 from okra2022 import Okra2022Scheme
+from k_eps import KEpsilonScheme
 
 from compyle.api import declare
 
@@ -133,6 +134,10 @@ def configure_scheme(app, p0, gx=0.0):
         scheme.configure(h0=h0)
     elif app.options.scheme == 'ok2022':
         scheme.configure(nu=app.nu, dx=app.dx, h0=h0)
+    elif app.options.scheme == 'k_eps':
+        scheme.configure(
+            hdx=app.hdx, nu=app.nu, h0=h0, gx=gx, periodic=app.no_periodic
+        )
 
     if type(integrator_cls) == str:
         raise NotImplementedError(f"{integrator_cls} not implemented")
@@ -220,10 +225,15 @@ def create_scheme(rho0, c0, p0, solids=[]):
         fluids=['fluid'], solids=[], dim=2, rho0=rho0, p0=p0, c0=c0,
         nu=None, dx=None, h0=h0
     )
+    k_eps = KEpsilonScheme(
+        fluids=['fluid'], solids=[], dim=2, rho0=rho0, c0=c0, h0=h0,
+        hdx=hdx, nu=None, gamma=7.0, kernel_corr=True
+    )
     s = SchemeChooser(
         default='tvf', wcsph=wcsph, tvf=tvf, edac=edac, iisph=iisph,
         crksph=crksph, gtvf=gtvf, pcisph=pcisph, sisph=sisph, isph=isph,
-        delta_plus=delta_plus, tsph=tsph, tdsph=tdsph, tisph=tisph, ewcsph=ewcsph, rsph=rsph, mon2017=mon2017, ok2022=ok2022
+        delta_plus=delta_plus, tsph=tsph, tdsph=tdsph, tisph=tisph, ewcsph=ewcsph, rsph=rsph, mon2017=mon2017, ok2022=ok2022,
+        k_eps=k_eps
     )
     return s
 

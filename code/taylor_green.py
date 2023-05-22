@@ -247,6 +247,13 @@ class TaylorGreen(TurbulentFlowApp):
         fluid.add_constant('c0', self.c0)
         fluid.add_property('rhoc')
 
+        if self.options.scheme == 'k_eps':
+            fluid.add_property('k')
+            fluid.add_property('eps')
+            _k = 1.5*U*U
+            _eps = pow(0.09, 0.75)*pow(_k, 1.5)/self.L
+            fluid.k[:], fluid.eps[:] = _k, _eps
+            print(f"Initial k = {_k}, eps = {_eps}")
         return [fluid]
 
     def create_tools(self):
