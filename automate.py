@@ -528,7 +528,6 @@ class TGV2DSchemeComparison(PySPHProblem):
         plt.savefig(self.output_path(fname), dpi=300, bbox_inches='tight')
         plt.close()
         
-
 class TGV2DExtForceSchemeComparison(PySPHProblem):
     def get_name(self):
         """
@@ -771,14 +770,22 @@ class TGV2DIntegratorComparison(PySPHProblem):
         )
         integrator_opts += mdict(
             integrator=['rk2'], integrator_dt_mul_fac=[2], pst_freq=[10],
+            # NOTE: dt_mul cannot be 1 for rk2. This has been hardcoded for
+            # now. Refer below for more details.
+        )
+        integrator_opts += mdict(
+            integrator=['rk2'], integrator_dt_mul_fac=[1], pst_freq=[10],
+            adaptive_timestep=[None]
+            # NOTE: dt_mul = 1 and integ = 'rk2' for appropriate plotting and
+            # labelling. This has been hardcoded for now.
         )
         integrator_opts += mdict(
             integrator=['rk3'], integrator_dt_mul_fac=[3, 6], pst_freq=[10],
         )
-        integrator_opts += mdict(
-            integrator=['rk4'], integrator_dt_mul_fac=[2, 4, 8], pst_freq=[10],
-        )
-        res_opts = mdict(nx=[25, 50, 100, 200], c0_fac=[20, 80])
+        # integrator_opts += mdict(
+        #     integrator=['rk4'], integrator_dt_mul_fac=[2, 4, 8], pst_freq=[10],
+        # )
+        res_opts = mdict(nx=[25, 50, 100], c0_fac=[20])
         
         self.sim_opts = sim_opts = dprod(
             scheme_opts,
@@ -801,7 +808,8 @@ class TGV2DIntegratorComparison(PySPHProblem):
             sim_name = opts2path(
                 sim_opts[i],
                 kmap=dict(
-                    integrator_dt_mul_fac='dtmul', c0_fac='c0', pst_freq='pst'
+                    integrator_dt_mul_fac='dtmul', c0_fac='c0', pst_freq='pst',
+                    adaptive_timestep='adapt'
                 )
             )
             self.case_info[sim_name] = sim_opts[i]
@@ -845,7 +853,7 @@ class TGV2DIntegratorComparison(PySPHProblem):
         data = {}
         for case in cases:
             l1 = case.data['l1']
-            l1 = sum(l1)/len(l1)
+            l1 = np.mean(l1)
             data[case.params['nx']] = l1
         nx_arr = np.asarray(sorted(data.keys()), dtype=float)
         l1 = np.asarray([data[x] for x in nx_arr])
@@ -895,6 +903,8 @@ class TGV2DIntegratorComparison(PySPHProblem):
                 if len(rts) < 1:
                     continue
                 label = fr'{intg} ({dtmf}$\Delta t$)'
+                if intg == 'rk2' and dtmf == 1:
+                    label += f' (Adaptive)'
                 plt.plot(dts, rts, label=label, marker=next(marker))
 
 
@@ -933,6 +943,8 @@ class TGV2DIntegratorComparison(PySPHProblem):
                         dts = 1./dts
                         label = get_label_from_scheme(scheme) +\
                             fr' ({intg}) ({dtmf}$\Delta t$) (pst={pst})'
+                        if intg == 'rk2' and dtmf == 1:
+                            label += f' (Adaptive)'
                         plt.loglog(dts, l1, label=label, marker=next(marker))
 
         plt.loglog(dts, l1[0]*(dts/dts[0])**2, 'k--', linewidth=2,
@@ -973,6 +985,8 @@ class TGV2DIntegratorComparison(PySPHProblem):
                     label = get_label_from_scheme(scheme) +\
                         fr' ({intg}) ({dtmf}$\Delta t$) (pst={pst})'
                     label += f' (c0={c0})'
+                    if intg == 'rk2' and dtmf == 1:
+                        label += f' (Adaptive)'
                     plt.loglog(dts, l1, label=label, marker=next(marker))
         
         plt.loglog(dts, l1[0]*(dts/dts[0])**2, 'k--', linewidth=2,
