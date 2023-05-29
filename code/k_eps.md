@@ -67,7 +67,7 @@ $$ \implies \frac{D\epsilon}{Dt} = \frac{C_d}{\sigma_\epsilon} \nabla . \bigg( \
 
 $$ = \frac{C_d}{\sigma_\epsilon} \bigg( \frac{k^2}{\epsilon} \nabla^2 \epsilon + \nabla \epsilon . \nabla \bigg( \frac{k^2}{\epsilon} \bigg) \bigg) + C_{1\epsilon} \frac{\epsilon}{k} P_k - C_{2\epsilon} \frac{\epsilon^2}{k} $$
 
-$$ \boxed{ \frac{D\epsilon}{Dt} = \frac{C_d}{\sigma_\epsilon} \bigg( \frac{k^2}{\epsilon} \nabla^2 \epsilon + \frac{2k}{\epsilon} \nabla k \nabla \epsilon - \frac{k^2}{\epsilon^2} (\nabla \epsilon)^2 \bigg) + C_{1\epsilon} \frac{\epsilon}{k} P_k - C_{2\epsilon} \frac{\epsilon^2}{k}} $$
+$$ \boxed{ \frac{D\epsilon}{Dt} = \frac{C_d}{\sigma_\epsilon} \bigg( \frac{k^2}{\epsilon} \nabla^2 \epsilon + \frac{2k}{\epsilon} \nabla k \cdot \nabla \epsilon - \frac{k^2}{\epsilon^2} (\nabla \epsilon)^2 \bigg) + C_{1\epsilon} \frac{\epsilon}{k} P_k - C_{2\epsilon} \frac{\epsilon^2}{k}} $$
 
   
 
