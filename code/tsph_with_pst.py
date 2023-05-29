@@ -669,7 +669,6 @@ class TSPHScheme(Scheme):
         step_cls = RK2Stepper
         if self.scm == 'edac':
             step_cls = RK2StepperEDAC
-        print(self.scm, step_cls)
         # step_cls = RK3Stepper
         for name in self.fluids + self.solids:
             if name not in steppers:
@@ -968,7 +967,7 @@ class TSPHScheme(Scheme):
             equations.append(Group(equations=g3))
 
 
-            print(equations, pa_arr)
+            # print(equations, pa_arr)
 
             self.shifter = SPHEvaluator(
                 arrays=pa_arr, equations=equations, dim=self.dim,
