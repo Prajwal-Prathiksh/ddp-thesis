@@ -162,6 +162,7 @@ class TaylorGreen(TurbulentFlowApp):
         self.kernel_correction = self.options.kernel_correction
         self.no_periodic = self.options.no_periodic
         self.ext_forcing = self.options.ext_forcing
+        self.adaptive_timestep = self.options.adaptive_timestep
 
     def pre_step(self, solver):
         from tg_config import prestep
@@ -231,8 +232,10 @@ class TaylorGreen(TurbulentFlowApp):
             rhoc = (p0 / self.c0**2 + 1)
             rho = (p0 * 7.0 / self.c0**2 + 1)**(1./7.0)
         # create the arrays
-        fluid = get_particle_array(name='fluid', x=x, y=y, m=m, h=h, u=u0,
-                                   v=v0, rho=rho, rhoc=rhoc, p=p0, color=color0, V0=V0)
+        fluid = get_particle_array(
+            name='fluid', x=x, y=y, m=m, h=h, u=u0, v=v0, rho=rho, rhoc=rhoc,
+            p=p0, color=color0, V0=V0, cs=self.c0
+        )
 
         self.scheme.setup_properties([fluid])
 
@@ -307,15 +310,18 @@ class TaylorGreen(TurbulentFlowApp):
 
         files = self.output_files
         files_len = len(files)
-        t, ke, ke_ex, decay, linf, l1, p_l1, lm, am = [], [], [], [], [], [], [], [], []
+        t, ke, ke_ex = [], [], []
+        decay, linf, l1, p_l1, lm, am = [], [], [], [], [], []
+        adapt_dts = []
 
         file_idx = 1
         for sd, array in iter_output(files[0:], 'fluid'):
-            # Print progress.
+            # Print progress
             print("Post-processing: %d/%d" % (file_idx, files_len), end='\r')
             file_idx += 1
             _t = sd['t']
             t.append(_t)
+            adapt_dts.append(sd['dt'])
             x, y, m, u, v, p, au, av, T, rhoc, rho = self._get_post_process_props(array)
             if self.options.scheme == 'tsph' or self.options.scheme == 'tdsph':
                 if self.options.scm == 'wcsph' or self.options.scm == 'fatehi':
@@ -369,16 +375,34 @@ class TaylorGreen(TurbulentFlowApp):
         fname = os.path.join(self.output_dir, 'results.npz')
         np.savez(
             fname, t=t, ke=ke, ke_ex=ke_ex, decay=decay, linf=linf, l1=l1,
-            p_l1=p_l1, decay_ex=decay_ex, lm=lm, am=am
+            p_l1=p_l1, decay_ex=decay_ex, lm=lm, am=am, adapt_dts=adapt_dts
         )
-
-        if self.options.no_plot:
-            return
 
         import matplotlib
         matplotlib.use('Agg')
-
         from matplotlib import pyplot as plt
+        if self.adaptive_timestep:
+            plt.clf()
+            plt.grid()
+            plt.semilogy(t, adapt_dts)
+            plt.ylabel(r'$\Delta t$')
+            plt.xlabel(r'$t$')
+            plt.title(f'Re={self.options.re}, U={self.U}')
+            fig = os.path.join(self.output_dir, "adapt_dt_semilogy.png")
+            plt.savefig(fig, dpi=300)
+
+            plt.clf()
+            plt.grid()
+            plt.plot(t, adapt_dts)
+            plt.ylabel(r'$\Delta t$')
+            plt.xlabel(r'$t$')
+            plt.title(f'Re={self.options.re}, U={self.U}')
+            fig = os.path.join(self.output_dir, "adapt_dt.png")
+            plt.savefig(fig, dpi=300)
+
+        if self.options.no_plot:
+            return
+        
         plt.clf()
         plt.grid()
         if not self.ext_forcing:
@@ -477,8 +501,6 @@ class TaylorGreen(TurbulentFlowApp):
             f_idx='all', plot_fit=True, ylims=ylims, fname_suffix='_all',
             title_suffix=f'(Re={self.options.re}, U={self.U})'
         )
-
-
 
     def customize_output(self):
         self._mayavi_config('''
