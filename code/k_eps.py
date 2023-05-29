@@ -6,66 +6,15 @@ References
 -----------
     .. [Shao2006] S. Shao, “Incompressible SPH simulation of wave breaking and overtopping with turbulence modelling,” no. May 2005, pp. 597–621, 2006.
 """
+# TODO: Reduce the number of CopyToGhost equations
 ###########################################################################
 # Import
 ###########################################################################
 from pysph.sph.equation import Equation
-from pysph.base.utils import get_particle_array
 from pysph.sph.integrator_step import IntegratorStep
 from pysph.sph.scheme import Scheme
 from compyle.api import declare
 from math import sqrt
-
-###########################################################################
-# Particle Array
-###########################################################################
-def get_particle_array_k_eps_fluid(constants=None, **props):
-    """Returns a fluid particle array for the k-epsilon model.
-
-        This sets the default properties to be::
-
-            [
-                # PySPH Default Properties
-                'x', 'y', 'z', 'u', 'v', 'w', 'm', 'h', 'rho', 'p', 'au', 'av',
-                'aw', 'gid', 'pid', 'tag',
-
-                # k-epsilon Properties
-                'ax', 'ay', 'az', 'V', 'tau', 'J', 'nu_t'
-            ]
-
-        Parameters:
-        -----------
-        constants : dict
-            Dictionary of constants
-
-        Other Parameters
-        ----------------
-        props : dict
-            Additional keywords passed are set as the property arrays.
-
-        See Also
-        --------
-        get_particle_array
-    """
-    # Properties required for the k-epsilon model
-    k_eps_props = [
-        'ax', 'ay', 'az', 'V', 'nu_t',
-        'x0', 'y0', 'z0', 'u0', 'v0', 'w0',
-    ]
-
-    pa = get_particle_array(
-        constants=constants, additional_props=k_eps_props, **props
-    )
-
-    pa.add_property('tau', stride=9)
-    pa.add_property('J', stride=9)
-
-    # default property arrays to save out
-    pa.set_output_arrays([
-        'x', 'y', 'z', 'u', 'v', 'w', 'rho', 'p', 'h', 'm', 'V', 'nu_t',
-        'pid', 'gid', 'tag',
-    ])
-    return pa
 
 
 ###########################################################################
@@ -87,12 +36,12 @@ class ReynoldsStressTensor(Equation):
         self.Cd = Cd
         super().__init__(dest, sources)
 
-    def initialize(self, d_idx, d_rhoc, d_S, d_tau, d_k, d_eps, EPS):
+    def initialize(self, d_idx, d_rhoc, d_S, d_tau, d_k, d_eps):
         didx9 = declare('int')
         didx9 = 9*d_idx
 
         rho, k, eps = d_rhoc[d_idx], d_k[d_idx], d_eps[d_idx]
-        fac_1 = 2.0*self.Cd*rho*k**2/(eps + EPS)
+        fac_1 = 2.0*self.Cd*rho*k**2/eps
         fac_2 = 2.0*rho*k/3.0
 
         i = declare('int')
@@ -101,6 +50,16 @@ class ReynoldsStressTensor(Equation):
             
         for i in range(0, 9, 4):
             d_tau[didx9+i] -= fac_2
+
+class CopyTensorsToGhost(Equation):
+    def initialize(self, d_idx, d_tag, d_gid, d_S, d_tau):
+        idx, idx9, i = declare('int', 3)
+        if d_tag[d_idx] == 2:
+            idx = d_gid[d_idx] * 9
+            idx9 = d_idx * 9
+            for i in range(9):
+                d_S[idx9 + i] = d_S[idx + i]
+                d_tau[idx9 + i] = d_tau[idx + i]
 
 class GradKEpsilon(Equation):
     def initialize(self, d_idx, d_gradk, d_gradeps):
@@ -124,6 +83,16 @@ class GradKEpsilon(Equation):
             d_gradk[didx3+i] += tmp_k*DWIJ[i]
             d_gradeps[didx3+i] += tmp_eps*DWIJ[i]
 
+class CopyGradKEpsilonToGhost(Equation):
+    def initialize(self, d_idx, d_tag, d_gid, d_gradk, d_gradeps):
+        idx, idx3, i = declare('int', 3)
+        if d_tag[d_idx] == 2:
+            idx = d_gid[d_idx] * 3
+            idx3 = d_idx * 3
+            for i in range(3):
+                d_gradk[idx3 + i] = d_gradk[idx + i]
+                d_gradeps[idx3 + i] = d_gradeps[idx + i]
+
 class LaplacianKEpsilon(Equation):
     def initialize(self, d_idx, d_lapk, d_lapeps):
         d_lapk[d_idx] = 0.0
@@ -145,6 +114,14 @@ class LaplacianKEpsilon(Equation):
         
         d_lapk[d_idx] += omega_j*gradkdotdw
         d_lapeps[d_idx] += omega_j*gradepsdotdw
+
+class CopyLaplacianKEpsilonToGhost(Equation):
+    def initialize(self, d_idx, d_tag, d_gid, d_lapk, d_lapeps):
+        idx = declare('int')
+        if d_tag[d_idx] == 2:
+            idx = d_gid[d_idx]
+            d_lapk[d_idx] = d_lapk[idx]
+            d_lapeps[d_idx] = d_lapeps[idx]
     
 class KTransportEquation(Equation):
     def __init__(self, dest, sources, Cd=0.09, sigma_k=1.0):
@@ -156,13 +133,14 @@ class KTransportEquation(Equation):
         d_ak[d_idx] = 0.0
     
     def loop(
-        self, d_idx, d_ak, d_k, d_eps, d_gradk, d_gradeps, d_lapk, d_S, EPS
+        self, d_idx, d_ak, d_k, d_eps, d_gradk, d_gradeps, d_lapk, d_S
     ):
         didx3, didx9 = declare('int', 2)
         didx3 = 3*d_idx
         didx9 = 9*d_idx
 
-        k, eps = d_k[d_idx], d_eps[d_idx]
+        k = d_k[d_idx]
+        eps = d_eps[d_idx]
         gradkdotgradeps = 0.0
         gradksq = 0.0
         for i in range(3):
@@ -176,8 +154,8 @@ class KTransportEquation(Equation):
             Ssq += d_S[didx9+i]*d_S[didx9+i]
         Pk = self.Cd*sqrt(2.0*Ssq)
 
-        div_term = (k**2*lapk + 2*k*gradksq)/(eps+EPS)
-        div_term -= k**2*gradkdotgradeps/(eps**2+EPS)
+        div_term = (k**2*lapk + 2*k*gradksq)/eps
+        div_term -= k**2*gradkdotgradeps/eps**2
         d_ak[d_idx] += (self.Cd/self.sigma_k)*div_term + Pk - eps
 
 class EpsilonTransportEquation(Equation):
@@ -194,13 +172,14 @@ class EpsilonTransportEquation(Equation):
         d_aeps[d_idx] = 0.0
     
     def loop(
-        self, d_idx, d_aeps, d_k, d_eps, d_gradk, d_gradeps, d_lapeps, d_S, EPS
+        self, d_idx, d_aeps, d_k, d_eps, d_gradk, d_gradeps, d_lapeps, d_S
     ):
         didx3, didx9 = declare('int', 2)
         didx3 = 3*d_idx
         didx9 = 9*d_idx
 
-        k, eps = d_k[d_idx], d_eps[d_idx]
+        k = d_k[d_idx]
+        eps = d_eps[d_idx]
         gradkdotgradeps = 0.0
         gradepssq = 0.0
         for i in range(3):
@@ -214,8 +193,8 @@ class EpsilonTransportEquation(Equation):
             Ssq += d_S[didx9+i]*d_S[didx9+i]
         Pk = self.Cd*sqrt(2.0*Ssq)
     
-        div_term = (k**2*lapeps + 2*k*gradkdotgradeps)/(eps+EPS)
-        div_term -= k**2*gradepssq/(eps**2+EPS)
+        div_term = (k**2*lapeps + 2*k*gradkdotgradeps)/eps
+        div_term -= k**2*gradepssq/eps**2
         d_aeps[d_idx] += (self.Cd/self.sigma_eps)*div_term
         d_aeps[d_idx] += self.C1eps*eps*Pk/k - self.C2eps*eps**2/k
 
@@ -235,7 +214,7 @@ class KEpsilonMomentumEquation(Equation):
         d_aw[d_idx] = 0.0
 
     def loop(
-        self, d_idx, s_idx, d_rhoc, d_p, d_au, d_av, d_aw, s_m, s_rho, s_p, d_tau, s_tau, DWIJ, EPS
+        self, d_idx, s_idx, d_rhoc, d_p, d_au, d_av, d_aw, s_m, s_rho, s_p, d_tau, s_tau, DWIJ
     ):
 
         didx9, sidx9 = declare('int', 2)
@@ -255,11 +234,11 @@ class KEpsilonMomentumEquation(Equation):
             for j in range(3):
                 ij = i*3 + j
                 div_tau[i] += (s_tau[sidx9+ij] - d_tau[didx9+ij])*DWIJ[j]
-            div_tau[i] *= omega_j/(rho_i + EPS)
+            div_tau[i] *= omega_j/rho_i
         
-        d_au[d_idx] += -gradp_term * DWIJ[0] + div_tau[0]
-        d_av[d_idx] += -gradp_term * DWIJ[1] + div_tau[1]
-        d_aw[d_idx] += -gradp_term * DWIJ[2] + div_tau[2]
+        d_au[d_idx] += -gradp_term * DWIJ[0] #+ div_tau[0]
+        d_av[d_idx] += -gradp_term * DWIJ[1] #+ div_tau[1]
+        d_aw[d_idx] += -gradp_term * DWIJ[2] #+ div_tau[2]
 
     def post_loop(self, d_idx, d_au, d_av, d_aw):
         d_au[d_idx] += self.gx
@@ -402,15 +381,11 @@ class KEpsilonScheme(Scheme):
             g1.append(SummationDensity(dest=name, sources=all))
         equations.append(Group(equations=g1))
 
-        from tsph_with_pst import (
-            CopyPropsToGhost, CopyPropsToGhostWithSolid
-        )
+        from tsph_with_pst import CopyPropsToGhost
         g1 = []
         if self.periodic:
             for name in self.fluids:
                 g1.append(CopyPropsToGhost(dest=name, sources=None))
-            for name in self.solids:
-                g1.append(CopyPropsToGhostWithSolid(dest=name, sources=None))
             equations.append(Group(equations=g1, real=False))
 
         from tsph_with_pst import GradientCorrectionPreStepNew
@@ -423,10 +398,7 @@ class KEpsilonScheme(Scheme):
             equations.append(Group(equations=g1))
 
         from pysph.sph.wc.kernel_correction import GradientCorrection
-        from tsph_with_pst import (
-            VelocityGradient, VelocityGradientSoild, VelocityGradientDestSoild,
-            VelocityGradientSolidSoild
-        )
+        from tsph_with_pst import VelocityGradient
         g2 = []
         if self.nu > 1e-14:
             if self.kernel_corr:
@@ -438,17 +410,6 @@ class KEpsilonScheme(Scheme):
                 g2.append(VelocityGradient(
                     dest=name, sources=self.fluids, dim=self.dim
                 ))
-                if len(self.solids) > 0:
-                    g2.append(VelocityGradientSoild(
-                        dest=name, sources=self.solids, dim=self.dim
-                    ))
-            for name in self.solids:
-                g2.append(VelocityGradientDestSoild(
-                    dest=name, sources=self.fluids, dim=self.dim
-                ))
-                g2.append(VelocityGradientSolidSoild(
-                    dest=name, sources=self.solids, dim=self.dim
-                ))
             equations.append(Group(equations=g2))
 
             from tsph_with_pst import CopyGradVToGhost
@@ -458,7 +419,37 @@ class KEpsilonScheme(Scheme):
                     g1.append(CopyGradVToGhost(dest=name, sources=None))
                 equations.append(Group(equations=g1, real=False))
 
-        from tsph_with_pst import ContinuityEquation, ContinuityEquationSolid
+        g2 = []
+        for name in self.fluids:
+            g2.extend([
+                StrainRateTensor(dest=name, sources=[name]),
+                ReynoldsStressTensor(dest=name, sources=[name]),
+            ])
+        equations.append(Group(equations=g2))
+        g2 = []
+        for name in self.fluids:
+            g2.append(CopyTensorsToGhost(dest=name, sources=None))
+        equations.append(Group(equations=g2, real=False))
+
+        g2 = []
+        for name in self.fluids:
+            g2.append(GradKEpsilon(dest=name, sources=[name]))
+        equations.append(Group(equations=g2))
+        g2 = []
+        for name in self.fluids:
+            g2.append(CopyGradKEpsilonToGhost(dest=name, sources=None))
+        equations.append(Group(equations=g2, real=False))
+
+        g2 = []
+        for name in self.fluids:
+            g2.append(LaplacianKEpsilon(dest=name, sources=[name]))
+        equations.append(Group(equations=g2))
+        g2 = []
+        for name in self.fluids:
+            g2.append(CopyLaplacianKEpsilonToGhost(dest=name, sources=None))
+        equations.append(Group(equations=g2, real=False))
+
+        from tsph_with_pst import ContinuityEquation
         g3 = []
         if self.kernel_corr:
             for name in self.fluids:
@@ -467,8 +458,6 @@ class KEpsilonScheme(Scheme):
                 ))
         for name in self.fluids:
             g3.append(ContinuityEquation(dest=name, sources=self.fluids))
-            if len(self.solids) > 0:
-                g3.append(ContinuityEquationSolid(dest=name, sources=self.solids))
 
         from tsph_with_pst import DivGrad
         for name in self.fluids:
@@ -476,17 +465,14 @@ class KEpsilonScheme(Scheme):
                 g3.append(DivGrad(
                     dest=name, sources=all, nu=self.nu, rho0=self.rho0
                 ))
-            k_eps_eqns = [
-                StrainRateTensor(dest=name, sources=[name]),
-                ReynoldsStressTensor(dest=name, sources=[name]),
-                GradKEpsilon(dest=name, sources=[name]),
-                LaplacianKEpsilon(dest=name, sources=[name]),
-                KTransportEquation(dest=name, sources=[name]),
-                EpsilonTransportEquation(dest=name, sources=[name]),
-            ]
-            g3.extend(k_eps_eqns)
             g3.append(KEpsilonMomentumEquation(
                 dest=name, sources=all, gx=self.gx, gy=self.gy, gz=self.gz
+            ))
+            g3.append(KTransportEquation(
+                dest=name, sources=[name]
+            ))
+            g3.append(EpsilonTransportEquation(
+                dest=name, sources=[name]
             ))
 
         equations.append(Group(equations=g3))
@@ -497,7 +483,8 @@ class KEpsilonScheme(Scheme):
         dummy = get_particle_array_wcsph(name='junk')
         output_props = [
             'x', 'y', 'z', 'u', 'v', 'w', 'rho', 'm', 'h', 'pid', 'gid', 'tag',
-            'p', 'rhoc', 'gradv', 'k', 'eps'
+            'p', 'rhoc', 'gradv', 'k', 'eps', 'lapk', 'lapeps', 'gradk', 
+            'gradeps',
         ]
 
         props = list(dummy.properties.keys()) + [
