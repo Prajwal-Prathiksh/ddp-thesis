@@ -75,7 +75,7 @@ class CopyTensorsToGhost(Equation):
 
 class GradKEpsilon(Equation):
     def initialize(self, d_idx, d_gradk, d_gradeps):
-        didx3 = declare('int')
+        i, didx3 = declare('int', 2)
         didx3 = 3*d_idx
         for i in range(3):
             d_gradk[didx3+i] = 0.0
@@ -85,9 +85,10 @@ class GradKEpsilon(Equation):
         self, d_idx, s_idx, d_gradk, d_gradeps, 
         d_k, d_eps, s_k, s_eps, s_m, s_rho, DWIJ
     ):
-        didx3 = declare('int')
+        i, didx3 = declare('int', 2)
         didx3 = 3*d_idx
 
+        omega_j, tmp_k, tmp_eps = declare('double', 3)
         omega_j = s_m[s_idx]/s_rho[s_idx]
         tmp_k = (s_k[s_idx] - d_k[d_idx])*omega_j
         tmp_eps = (s_eps[s_idx] - d_eps[d_idx])*omega_j
@@ -114,12 +115,14 @@ class LaplacianKEpsilon(Equation):
         self, d_idx, s_idx, d_lapk, d_lapeps, d_gradk, d_gradeps,
         s_gradk, s_gradeps, s_m, s_rho, DWIJ
     ):
-        didx3 = declare('int')
+        i, didx3 = declare('int', 2)
         didx3 = 3*d_idx
+        
+        omega_j, gradkdotdw, gradepsdotdw = declare('double', 3)
         omega_j = s_m[s_idx]/s_rho[s_idx]
-
         gradkdotdw = 0.0
         gradepsdotdw = 0.0
+
         for i in range(3):
             gradkdotdw += (s_gradk[3*s_idx+i] - d_gradk[didx3+i])*DWIJ[i]
             gradepsdotdw += (s_gradeps[3*s_idx+i] - d_gradeps[didx3+i])*DWIJ[i]
@@ -136,12 +139,14 @@ class ModifiedLaplacianKEpsilon(Equation):
         self, d_idx, s_idx, d_k, d_eps, d_lapk, d_lapeps, d_gradk, d_gradeps,
         s_k, s_eps, s_gradk, s_gradeps, s_m, s_rho, DWIJ
     ):
-        didx3 = declare('int')
+        i, didx3 = declare('int')
         didx3 = 3*d_idx
-        omega_j = s_m[s_idx]/s_rho[s_idx]
 
+        omega_j, modgradkdotdw, modgradepsdotdw = declare('double', 3)
+        omega_j = s_m[s_idx]/s_rho[s_idx]
         modgradkdotdw = 0.0
         modgradepsdotdw = 0.0
+
         for i in range(3):
             s_fac = s_k[s_idx]**2/s_eps[s_idx]
             d_fac = d_k[d_idx]**2/d_eps[d_idx]
@@ -173,14 +178,17 @@ class KTransportEquation(Equation):
         d_ak[d_idx] = 0.0
 
     def loop(self, d_idx, d_ak, d_eps, d_lapk, d_S):
-        didx9 = declare('int')
+        i, didx9 = declare('int', 2)
         didx9 = 9*d_idx
 
+        eps, modlapk = declare('double', 2)
         eps = d_eps[d_idx]
         modlapk = d_lapk[d_idx]
 
         # Calculate Frobenius norm of strain rate tensor
+        Ssq, Pk = declare('double', 2)
         Ssq = 0.0
+
         for i in range(9):
             Ssq += d_S[didx9+i]*d_S[didx9+i]
         Pk = self.fac_Pk*sqrt(Ssq)
@@ -199,21 +207,25 @@ class KTransportEquationExpanded(Equation):
     def loop(
         self, d_idx, d_ak, d_k, d_eps, d_gradk, d_gradeps, d_lapk, d_S
     ):
-        didx3, didx9 = declare('int', 2)
+        i, didx3, didx9 = declare('int', 3)
         didx3 = 3*d_idx
         didx9 = 9*d_idx
 
+        k, eps, gradkdotgradeps, gradksq, lapk = declare('double', 5)
         k = d_k[d_idx]
         eps = d_eps[d_idx]
         gradkdotgradeps = 0.0
         gradksq = 0.0
+        lapk = d_lapk[d_idx]
+
         for i in range(3):
             gradkdotgradeps += d_gradk[didx3+i]*d_gradeps[didx3+i]
             gradksq += d_gradk[didx3+i]*d_gradk[didx3+i]
-        lapk = d_lapk[d_idx]
         
         # Calculate Frobenius norm of strain rate tensor
+        Ssq, Pk, div_term = declare('double', 3)
         Ssq = 0.0
+
         for i in range(9):
             Ssq += d_S[didx9+i]*d_S[didx9+i]
         Pk = self.Cd*sqrt(2.0*Ssq)
@@ -238,15 +250,18 @@ class EpsilonTransportEquation(Equation):
         d_aeps[d_idx] = 0.0
     
     def loop(self, d_idx, d_aeps, d_k, d_eps, d_lapeps, d_S):
-        didx9 = declare('int')
+        i, didx9 = declare('int', 2)
         didx9 = 9*d_idx
 
+        k, eps, modlapeps = declare('double', 3)
         k = d_k[d_idx]
         eps = d_eps[d_idx]
         modlapeps = d_lapeps[d_idx]
         
         # Calculate Frobenius norm of strain rate tensor
+        Ssq, Pk, prod_term, decay_term = declare('double', 4)
         Ssq = 0.0
+
         for i in range(9):
             Ssq += d_S[didx9+i]*d_S[didx9+i]
         Pk = self.fac_Pk*sqrt(Ssq)
@@ -271,21 +286,25 @@ class EpsilonTransportEquationExpanded(Equation):
     def loop(
         self, d_idx, d_aeps, d_k, d_eps, d_gradk, d_gradeps, d_lapeps, d_S
     ):
-        didx3, didx9 = declare('int', 2)
+        i, didx3, didx9 = declare('int', 3)
         didx3 = 3*d_idx
         didx9 = 9*d_idx
 
+        k, eps, gradkdotgradeps, gradepssq, lapeps = declare('double', 5)
         k = d_k[d_idx]
         eps = d_eps[d_idx]
         gradkdotgradeps = 0.0
         gradepssq = 0.0
+        lapeps = d_lapeps[d_idx]
+
         for i in range(3):
             gradkdotgradeps += d_gradk[didx3+i]*d_gradeps[didx3+i]
             gradepssq += d_gradeps[didx3+i]*d_gradeps[didx3+i]
-        lapeps = d_lapeps[d_idx]
         
         # Calculate Frobenius norm of strain rate tensor
+        Ssq, Pk, div_term = declare('double', 3)
         Ssq = 0.0
+
         for i in range(9):
             Ssq += d_S[didx9+i]*d_S[didx9+i]
         Pk = self.Cd*sqrt(2.0*Ssq)
@@ -313,7 +332,7 @@ class KEpsilonMomentumEquation(Equation):
     def loop(
         self, d_idx, s_idx, d_rhoc, d_p, d_au, d_av, d_aw, s_m, s_rho, s_p, d_tau, s_tau, DWIJ
     ):
-
+        omega_j, rho_i, gradp_term = declare('double', 3)
         didx9, sidx9 = declare('int', 2)
         didx9 = 9*d_idx
         sidx9 = 9*s_idx
@@ -325,7 +344,7 @@ class KEpsilonMomentumEquation(Equation):
 
         # Divergence of Reynolds stress tensor
         div_tau = declare('matrix(3)')
-        ij = declare('int')
+        i, j, ij = declare('int', 3)
         for i in range(3):
             div_tau[i] = 0.0
             for j in range(3):
@@ -333,9 +352,9 @@ class KEpsilonMomentumEquation(Equation):
                 div_tau[i] += (s_tau[sidx9+ij] - d_tau[didx9+ij])*DWIJ[j]
             div_tau[i] *= omega_j/rho_i
         
-        d_au[d_idx] += -gradp_term * DWIJ[0] #+ div_tau[0]
-        d_av[d_idx] += -gradp_term * DWIJ[1] #+ div_tau[1]
-        d_aw[d_idx] += -gradp_term * DWIJ[2] #+ div_tau[2]
+        d_au[d_idx] += -gradp_term * DWIJ[0] + div_tau[0]
+        d_av[d_idx] += -gradp_term * DWIJ[1] + div_tau[1]
+        d_aw[d_idx] += -gradp_term * DWIJ[2] + div_tau[2]
 
     def post_loop(self, d_idx, d_au, d_av, d_aw):
         d_au[d_idx] += self.gx
