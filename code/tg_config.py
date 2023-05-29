@@ -146,13 +146,8 @@ def configure_scheme(app, p0, gx=0.0):
     if tf is None:
         tf = app.tf
 
-    if app.adaptive_timestep:
-        times = []
-        pfreq = 2
-    else:
-        times = linspace(0, tf, app.options.n_o_files)
-        pfreq = 100000000
-    
+    times = linspace(0, tf, app.options.n_o_files)
+    pfreq = 100000000    
     scheme.configure_solver(
         kernel=kernel, tf=app.tf, dt=app.dt, output_at_times=times,
         pfreq=pfreq, integrator_cls=integrator_cls, 
