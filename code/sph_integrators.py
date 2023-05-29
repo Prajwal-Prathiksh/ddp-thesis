@@ -33,7 +33,6 @@ class PECIntegrator(Integrator):
 ### Runge-Kutta Second-Order Integrator------------------------------------
 class RK2Integrator(Integrator):
     def one_timestep(self, t, dt):
-        # print('\ndt = ', dt)
         # Initialise `U^{n}`
         self.initialize()
 
