@@ -33,6 +33,7 @@ class PECIntegrator(Integrator):
 ### Runge-Kutta Second-Order Integrator------------------------------------
 class RK2Integrator(Integrator):
     def one_timestep(self, t, dt):
+        # print('\ndt = ', dt)
         # Initialise `U^{n}`
         self.initialize()
 
@@ -89,7 +90,9 @@ class RK2Stepper(IntegratorStep):
     def stage2(
         self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
         d_u0, d_v0, d_w0, d_u, d_v, d_w, d_au, d_av, d_aw,
-        dt, d_rhoc, d_arho, d_rhoc0
+        d_rhoc, d_arho, d_rhoc0,
+        d_cs,
+        d_dt_cfl, d_dt_force, dt
     ):
         # Compute `U^{n+1}`
         d_x[d_idx] = d_x0[d_idx] + dt*d_u[d_idx]
@@ -102,6 +105,18 @@ class RK2Stepper(IntegratorStep):
 
         d_rhoc[d_idx] = d_rhoc0[d_idx] + dt*d_arho[d_idx]
 
+        vmag = sqrt(
+            d_u[d_idx]*d_u[d_idx] + d_v[d_idx]*d_v[d_idx] +\
+            d_w[d_idx]*d_w[d_idx]
+        )
+        d_dt_cfl[d_idx] = 2.0*(vmag + d_cs[d_idx])
+        
+        au = (d_u[d_idx] - d_u0[d_idx])/dt
+        av = (d_v[d_idx] - d_v0[d_idx])/dt
+        aw = (d_w[d_idx] - d_w0[d_idx])/dt
+
+        d_dt_force[d_idx] = 4.0*(au*au + av*av + aw*aw)
+        
 class RK2StepperEDAC(IntegratorStep):
     def initialize(
         self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
