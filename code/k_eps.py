@@ -10,11 +10,23 @@ References
 ###########################################################################
 # Import
 ###########################################################################
+import inspect
 from pysph.sph.equation import Equation
 from pysph.sph.integrator_step import IntegratorStep
 from pysph.sph.scheme import Scheme
 from compyle.api import declare
 from math import sqrt
+
+def get_grp_name(grp_var):
+    """
+    Gets the name of group. Does it from the out most frame inner-wards.
+    """
+    callers_local_vars = inspect.currentframe().f_back.f_locals.items()
+    name = [
+        var_name for var_name, var_val in callers_local_vars if var_val is grp_var
+    ]
+    grp_name = name[0].replace('g', 'Group_')
+    return grp_name
 
 
 ###########################################################################
@@ -115,6 +127,34 @@ class LaplacianKEpsilon(Equation):
         d_lapk[d_idx] += omega_j*gradkdotdw
         d_lapeps[d_idx] += omega_j*gradepsdotdw
 
+class ModifiedLaplacianKEpsilon(Equation):
+    def initialize(self, d_idx, d_lapk, d_lapeps):
+        d_lapk[d_idx] = 0.0
+        d_lapeps[d_idx] = 0.0
+
+    def loop(
+        self, d_idx, s_idx, d_k, d_eps, d_lapk, d_lapeps, d_gradk, d_gradeps,
+        s_k, s_eps, s_gradk, s_gradeps, s_m, s_rho, DWIJ
+    ):
+        didx3 = declare('int')
+        didx3 = 3*d_idx
+        omega_j = s_m[s_idx]/s_rho[s_idx]
+
+        modgradkdotdw = 0.0
+        modgradepsdotdw = 0.0
+        for i in range(3):
+            s_fac = s_k[s_idx]**2/s_eps[s_idx]
+            d_fac = d_k[d_idx]**2/d_eps[d_idx]
+            modgradkdotdw += (
+                s_fac*s_gradk[3*s_idx+i] - d_fac*d_gradk[didx3+i]*DWIJ[i]
+            )
+            modgradepsdotdw += (
+                s_fac*s_gradeps[3*s_idx+i] - d_fac*d_gradeps[didx3+i]*DWIJ[i]
+            )
+        
+        d_lapk[d_idx] += omega_j*modgradkdotdw
+        d_lapeps[d_idx] += omega_j*modgradepsdotdw
+
 class CopyLaplacianKEpsilonToGhost(Equation):
     def initialize(self, d_idx, d_tag, d_gid, d_lapk, d_lapeps):
         idx = declare('int')
@@ -124,6 +164,30 @@ class CopyLaplacianKEpsilonToGhost(Equation):
             d_lapeps[d_idx] = d_lapeps[idx]
     
 class KTransportEquation(Equation):
+    def __init__(self, dest, sources, Cd=0.09, sigma_k=1.0):
+        self.fac_mod_lap = Cd/sigma_k
+        self.fac_Pk = Cd * sqrt(2.0)
+        super().__init__(dest, sources)
+    
+    def initialize(self, d_idx, d_ak):
+        d_ak[d_idx] = 0.0
+
+    def loop(self, d_idx, d_ak, d_eps, d_lapk, d_S):
+        didx9 = declare('int')
+        didx9 = 9*d_idx
+
+        eps = d_eps[d_idx]
+        modlapk = d_lapk[d_idx]
+
+        # Calculate Frobenius norm of strain rate tensor
+        Ssq = 0.0
+        for i in range(9):
+            Ssq += d_S[didx9+i]*d_S[didx9+i]
+        Pk = self.fac_Pk*sqrt(Ssq)
+
+        d_ak[d_idx] += (self.fac_mod_lap*modlapk) + Pk - eps
+
+class KTransportEquationExpanded(Equation):
     def __init__(self, dest, sources, Cd=0.09, sigma_k=1.0):
         self.Cd = Cd
         self.sigma_k = sigma_k
@@ -159,6 +223,39 @@ class KTransportEquation(Equation):
         d_ak[d_idx] += (self.Cd/self.sigma_k)*div_term + Pk - eps
 
 class EpsilonTransportEquation(Equation):
+    def __init__(
+        self, dest, sources, Cd=0.09, sigma_eps=1.3, C1eps=1.44, C2eps=1.92
+    ):
+        self.Cd = Cd
+        self.sigma_eps = sigma_eps
+        self.C1eps = C1eps
+        self.C2eps = C2eps
+        self.fac_mod_lap = Cd/sigma_eps
+        self.fac_Pk = Cd * sqrt(2.0)
+        super().__init__(dest, sources)
+    
+    def initialize(self, d_idx, d_aeps):
+        d_aeps[d_idx] = 0.0
+    
+    def loop(self, d_idx, d_aeps, d_k, d_eps, d_lapeps, d_S):
+        didx9 = declare('int')
+        didx9 = 9*d_idx
+
+        k = d_k[d_idx]
+        eps = d_eps[d_idx]
+        modlapeps = d_lapeps[d_idx]
+        
+        # Calculate Frobenius norm of strain rate tensor
+        Ssq = 0.0
+        for i in range(9):
+            Ssq += d_S[didx9+i]*d_S[didx9+i]
+        Pk = self.fac_Pk*sqrt(Ssq)
+    
+        prod_term = self.C1eps*eps*Pk/k
+        decay_term = self.C2eps*eps*eps/k
+        d_aeps[d_idx] += self.fac_mod_lap*modlapeps + prod_term - decay_term
+
+class EpsilonTransportEquationExpanded(Equation):
     def __init__(
         self, dest, sources, Cd=0.09, sigma_eps=1.3, C1eps=1.44, C2eps=1.92
     ):
@@ -321,7 +418,7 @@ class KEpsilonRK2Step(IntegratorStep):
 class KEpsilonScheme(Scheme):
     def __init__(
         self, fluids, solids, dim, rho0, c0, h0, hdx, gx=0.0, gy=0.0, gz=0.0,
-        nu=0.0, gamma=7.0, kernel_corr=False, periodic=True
+        nu=0.0, gamma=7.0, kernel_corr=False, periodic=True, k_eps_expand=False
     ):
         self.fluids = fluids
         self.solids = solids
@@ -337,6 +434,20 @@ class KEpsilonScheme(Scheme):
         self.gamma = gamma
         self.kernel_corr = kernel_corr
         self.periodic = periodic
+        self.k_eps_expand = k_eps_expand
+
+    def add_user_options(self, group):
+        group.add_argument(
+            "--k-eps-expand", action="store_true", dest="k_eps_expand",
+            help="Use the expanded form of k-epsilon transport equations."
+        )
+    
+    def consume_user_options(self, options):
+        vars = ["k_eps_expand"]
+
+        data = dict((var, self._smart_getattr(options, var))
+                    for var in vars)
+        self.configure(**data)
 
     def get_timestep(self, cfl=0.5):
         return cfl*self.h0/self.c0
@@ -367,115 +478,153 @@ class KEpsilonScheme(Scheme):
 
         equations = []
         all = self.fluids + self.solids
-        g1 = []
 
+        # Add equation of state
         g0 = []
         for name in self.fluids:
             g0.append(TaitEOS(
                 dest=name, sources=None, rho0=self.rho0, c0=self.c0, gamma=self.gamma
             ))
-        equations.append(Group(equations=g0))
+        equations.append(Group(equations=g0, name=get_grp_name(g0)))
 
-        g1 = []
+        
+        # Add summation density equation
+        g1_1 = []
         for name in all:
-            g1.append(SummationDensity(dest=name, sources=all))
-        equations.append(Group(equations=g1))
+            g1_1.append(SummationDensity(dest=name, sources=all))
+        equations.append(Group(equations=g1_1, name=get_grp_name(g1_1)))
 
+
+        # Add equation to copy properties to ghost particles
         from tsph_with_pst import CopyPropsToGhost
-        g1 = []
+        g1_2 = []
         if self.periodic:
             for name in self.fluids:
-                g1.append(CopyPropsToGhost(dest=name, sources=None))
-            equations.append(Group(equations=g1, real=False))
+                g1_2.append(CopyPropsToGhost(dest=name, sources=None))
+            equations.append(Group(
+                equations=g1_2, real=False, name=get_grp_name(g1_2)))
 
+        
+        # Add equation to compute pre-step of Bonet-Lok correction
         from tsph_with_pst import GradientCorrectionPreStepNew
         if self.kernel_corr:
-            g1 = []
+            g2 = []
             for name in all:
-                g1.append(GradientCorrectionPreStepNew(
+                g2.append(GradientCorrectionPreStepNew(
                     dest=name, sources=all, dim=self.dim
                 ))
-            equations.append(Group(equations=g1))
+            equations.append(Group(equations=g2, name=get_grp_name(g2)))
 
+        
+        # Add equation to compute Bonet-Lok correction and subsequently
+        # compute the velocity gradient, and copy it to ghost particles
         from pysph.sph.wc.kernel_correction import GradientCorrection
         from tsph_with_pst import VelocityGradient
-        g2 = []
+        g3_1 = []
         if self.nu > 1e-14:
             if self.kernel_corr:
                 for name in all:
-                    g2.append(GradientCorrection(
+                    g3_1.append(GradientCorrection(
                         dest=name, sources=all, dim=self.dim
                     ))
             for name in self.fluids:
-                g2.append(VelocityGradient(
+                g3_1.append(VelocityGradient(
                     dest=name, sources=self.fluids, dim=self.dim
                 ))
-            equations.append(Group(equations=g2))
+            equations.append(Group(equations=g3_1, name=get_grp_name(g3_1)))
 
             from tsph_with_pst import CopyGradVToGhost
-            g1 = []
+            g3_2 = []
             if self.periodic:
                 for name in all:
-                    g1.append(CopyGradVToGhost(dest=name, sources=None))
-                equations.append(Group(equations=g1, real=False))
+                    g3_2.append(CopyGradVToGhost(dest=name, sources=None))
+                equations.append(Group(
+                    equations=g3_2, real=False, name=get_grp_name(g3_2)))
 
-        g2 = []
+        
+        # Add equation to compute the strain rate tensor and Reynolds stress
+        # tensor, and subsequently copy them to ghost particles
+        g4_1 = []
         for name in self.fluids:
-            g2.extend([
+            g4_1.extend([
                 StrainRateTensor(dest=name, sources=[name]),
                 ReynoldsStressTensor(dest=name, sources=[name]),
             ])
-        equations.append(Group(equations=g2))
-        g2 = []
+        equations.append(Group(equations=g4_1, name=get_grp_name(g4_1)))
+        g4_2 = []
         for name in self.fluids:
-            g2.append(CopyTensorsToGhost(dest=name, sources=None))
-        equations.append(Group(equations=g2, real=False))
+            g4_2.append(CopyTensorsToGhost(dest=name, sources=None))
+        equations.append(Group(
+            equations=g4_2, real=False, name=get_grp_name(g4_2)))
 
-        g2 = []
+        
+        # Add equation to compute the gradient of k and epsilon, and
+        # subsequently copy them to ghost particles
+        g5_1 = []
         for name in self.fluids:
-            g2.append(GradKEpsilon(dest=name, sources=[name]))
-        equations.append(Group(equations=g2))
-        g2 = []
+            g5_1.append(GradKEpsilon(dest=name, sources=[name]))
+        equations.append(Group(equations=g5_1, name=get_grp_name(g5_1)))
+        g5_2 = []
         for name in self.fluids:
-            g2.append(CopyGradKEpsilonToGhost(dest=name, sources=None))
-        equations.append(Group(equations=g2, real=False))
+            g5_2.append(CopyGradKEpsilonToGhost(dest=name, sources=None))
+        equations.append(Group(
+            equations=g5_2, real=False, name=get_grp_name(g5_2)))
 
-        g2 = []
+        
+        # Add equation to compute the Laplacian of k and epsilon, and
+        # subsequently copy them to ghost particles
+        g6_1 = []
         for name in self.fluids:
-            g2.append(LaplacianKEpsilon(dest=name, sources=[name]))
-        equations.append(Group(equations=g2))
-        g2 = []
+            if self.k_eps_expand:
+                _eq = LaplacianKEpsilon(dest=name, sources=[name])
+            else:
+                _eq = ModifiedLaplacianKEpsilon(dest=name, sources=[name])
+            g6_1.append(_eq)
+        equations.append(Group(equations=g6_1, name=get_grp_name(g6_1)))
+        g6_2 = []
         for name in self.fluids:
-            g2.append(CopyLaplacianKEpsilonToGhost(dest=name, sources=None))
-        equations.append(Group(equations=g2, real=False))
+            g6_2.append(CopyLaplacianKEpsilonToGhost(dest=name, sources=None))
+        equations.append(Group(
+            equations=g6_2, real=False, name=get_grp_name(g6_2)))
 
+        
+        # Add equations to compute the continuity equation, velocity laplacian,
+        # and transport equations for momentum, k and epsilon
         from tsph_with_pst import ContinuityEquation
-        g3 = []
+        g7 = []
         if self.kernel_corr:
             for name in self.fluids:
-                g3.append(GradientCorrection(
+                g7.append(GradientCorrection(
                     dest=name, sources=all, dim=self.dim
                 ))
         for name in self.fluids:
-            g3.append(ContinuityEquation(dest=name, sources=self.fluids))
+            g7.append(ContinuityEquation(dest=name, sources=self.fluids))
 
         from tsph_with_pst import DivGrad
         for name in self.fluids:
             if self.nu > 1e-14:
-                g3.append(DivGrad(
+                g7.append(DivGrad(
                     dest=name, sources=all, nu=self.nu, rho0=self.rho0
                 ))
-            g3.append(KEpsilonMomentumEquation(
+            g7.append(KEpsilonMomentumEquation(
                 dest=name, sources=all, gx=self.gx, gy=self.gy, gz=self.gz
             ))
-            g3.append(KTransportEquation(
-                dest=name, sources=[name]
-            ))
-            g3.append(EpsilonTransportEquation(
-                dest=name, sources=[name]
-            ))
 
-        equations.append(Group(equations=g3))
+            if self.k_eps_expand:
+                _eqs = [
+                    KTransportEquationExpanded(dest=name, sources=[name]),
+                    EpsilonTransportEquationExpanded(
+                        dest=name, sources=[name]
+                    ),
+                ]
+            else:
+                _eqs = [
+                    KTransportEquation(dest=name, sources=[name]),
+                    EpsilonTransportEquation(dest=name, sources=[name]),
+                ]
+            g7.extend(_eqs)
+        equations.append(Group(equations=g7, name=get_grp_name(g7)))
+        
         return equations
 
     def setup_properties(self, particles, clean=False):
