@@ -3,10 +3,10 @@ Taylor-Green Vortex Problem
 Author: K T Prajwal Prathiksh
 ###
 """
-
 import os
 import numpy as np
 from numpy import pi, cos
+from pprint import pprint
 
 from pysph.base.nnps import DomainManager
 from pysph.base.utils import get_particle_array
@@ -61,7 +61,7 @@ class TaylorGreen(TurbulentFlowApp):
         )
         group.add_argument(
             "--c0-fac", action="store", type=float, dest="c0_fac",
-            default=10.0,
+            default=20.0,
             help="default factor is 10"
         )
         corrections = ['', 'mixed', 'gradient', 'crksph', 'kgf', 'order1']
@@ -153,6 +153,8 @@ class TaylorGreen(TurbulentFlowApp):
             dt_cfl = 0.25 * dx / (self.c0 + U)
         dt_viscous = 0.125 * dx**2 / nu
         dt_force = 0.25 * 1.0
+        _d = dict(cfl=dt_cfl, viscous=dt_viscous, force=dt_force)
+        pprint(_d)
 
         self.dt = min(dt_cfl, dt_viscous, dt_force)
         print("dt (pre multiplier): ", self.dt)
@@ -169,9 +171,11 @@ class TaylorGreen(TurbulentFlowApp):
         prestep(self, solver)
 
     def post_step(self, solver):
-        if self.options.scheme == 'tsph' or self.options.scheme == 'tisph':
-            if self.options.remesh == 0:
-                self.scheme.scheme.post_step(self.particles, self.domain)
+        sch = self.options.scheme
+        cond1 = (sch == 'tsph' or sch == 'tisph' or sch == 'k_eps')
+        cond2 = (self.options.remesh == 0)
+        if cond1 and cond2:
+            self.scheme.scheme.post_step(self.particles, self.domain)
 
     def configure_scheme(self):
         from tg_config import configure_scheme

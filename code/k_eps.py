@@ -11,11 +11,28 @@ References
 # Import
 ###########################################################################
 import inspect
-from pysph.sph.equation import Equation
+from math import sqrt
+
+from compyle.api import declare
+from pst import NumberDensityMoment
+from pysph.base.kernels import WendlandQuinticC4
+from pysph.base.utils import get_particle_array_wcsph
+from pysph.solver.solver import Solver
+from pysph.sph.basic_equations import SummationDensity
+from pysph.sph.equation import Equation, Group
+from pysph.sph.integrator import PECIntegrator
 from pysph.sph.integrator_step import IntegratorStep
 from pysph.sph.scheme import Scheme
-from compyle.api import declare
-from math import sqrt
+from pysph.sph.wc.basic import TaitEOS
+from pysph.sph.wc.kernel_correction import (GradientCorrection,
+                                            GradientCorrectionPreStep)
+from pysph.tools.sph_evaluator import SPHEvaluator
+from tsph_with_pst import (ContinuityEquation, CopyGradVToGhost,
+                           CopyPropsToGhost, CopyRhoToGhost, DensityGradient,
+                           DivGrad, GradientCorrectionPreStepNew,
+                           IterativePSTNew, SaveInitialdistances,
+                           UpdateDensity, UpdateVelocity, VelocityGradient)
+
 
 def get_grp_name(grp_var):
     """
@@ -316,12 +333,14 @@ class EpsilonTransportEquationExpanded(Equation):
 
 class KEpsilonMomentumEquation(Equation):
     def __init__(
-        self, dest, sources, gx=0.0, gy=0.0, gz=0.0, rho0=1.0
+        self, dest, sources, gx=0.0, gy=0.0, gz=0.0, rho0=1.0,
+        decouple_keps=False
     ):
         self.gx = gx
         self.gy = gy
         self.gz = gz
         self.rho0 = rho0
+        self.decouple_keps = decouple_keps
         super().__init__(dest, sources)
 
     def initialize(self, d_idx, d_au, d_av, d_aw):
@@ -352,9 +371,15 @@ class KEpsilonMomentumEquation(Equation):
                 div_tau[i] += (s_tau[sidx9+ij] - d_tau[didx9+ij])*DWIJ[j]
             div_tau[i] *= omega_j/rho_i
         
-        d_au[d_idx] += -gradp_term * DWIJ[0] + div_tau[0]
-        d_av[d_idx] += -gradp_term * DWIJ[1] + div_tau[1]
-        d_aw[d_idx] += -gradp_term * DWIJ[2] + div_tau[2]
+        d_au[d_idx] += -gradp_term * DWIJ[0]
+        d_av[d_idx] += -gradp_term * DWIJ[1]
+        d_aw[d_idx] += -gradp_term * DWIJ[2]
+
+        if not self.decouple_keps:
+            d_au[d_idx] += div_tau[0]
+            d_av[d_idx] += div_tau[1]
+            d_aw[d_idx] += div_tau[2]
+
 
     def post_loop(self, d_idx, d_au, d_av, d_aw):
         d_au[d_idx] += self.gx
@@ -437,7 +462,8 @@ class KEpsilonRK2Step(IntegratorStep):
 class KEpsilonScheme(Scheme):
     def __init__(
         self, fluids, solids, dim, rho0, c0, h0, hdx, gx=0.0, gy=0.0, gz=0.0,
-        nu=0.0, gamma=7.0, kernel_corr=False, periodic=True, k_eps_expand=False
+        nu=0.0, gamma=7.0, kernel_corr=False, periodic=True,
+        k_eps_expand=False, decouple_keps=False, pst_freq=10
     ):
         self.fluids = fluids
         self.solids = solids
@@ -453,16 +479,24 @@ class KEpsilonScheme(Scheme):
         self.gamma = gamma
         self.kernel_corr = kernel_corr
         self.periodic = periodic
+        self.decouple_keps = decouple_keps
         self.k_eps_expand = k_eps_expand
+        self.pst_freq = pst_freq
+        self.shifter = None
+        self.solver = None
 
     def add_user_options(self, group):
         group.add_argument(
             "--k-eps-expand", action="store_true", dest="k_eps_expand",
             help="Use the expanded form of k-epsilon transport equations."
         )
+        group.add_argument(
+            "--decouple-keps", action="store_true", dest="decouple_keps",
+            help="Decouple the effect of k-epsilon on the momentum equation."
+        )
     
     def consume_user_options(self, options):
-        vars = ["k_eps_expand"]
+        vars = ["k_eps_expand", "decouple_keps"]
 
         data = dict((var, self._smart_getattr(options, var))
                     for var in vars)
@@ -474,15 +508,12 @@ class KEpsilonScheme(Scheme):
     def configure_solver(
         self, kernel=None, integrator_cls=None, extra_steppers=None, **kw
     ):
-        from pysph.base.kernels import WendlandQuinticC4
+        
         if kernel is None:
             kernel = WendlandQuinticC4(dim=self.dim)
 
-        from pysph.sph.integrator import PECIntegrator
-
         integrator = PECIntegrator(fluid=KEpsilonRK2Step())
 
-        from pysph.solver.solver import Solver
         if 'dt' not in kw:
             kw['dt'] = self.get_timestep()
 
@@ -491,10 +522,6 @@ class KEpsilonScheme(Scheme):
         )
 
     def get_equations(self):
-        from pysph.sph.equation import Group
-        from pysph.sph.wc.basic import TaitEOS
-        from pysph.sph.basic_equations import SummationDensity
-
         equations = []
         all = self.fluids + self.solids
 
@@ -515,7 +542,6 @@ class KEpsilonScheme(Scheme):
 
 
         # Add equation to copy properties to ghost particles
-        from tsph_with_pst import CopyPropsToGhost
         g1_2 = []
         if self.periodic:
             for name in self.fluids:
@@ -525,7 +551,6 @@ class KEpsilonScheme(Scheme):
 
         
         # Add equation to compute pre-step of Bonet-Lok correction
-        from tsph_with_pst import GradientCorrectionPreStepNew
         if self.kernel_corr:
             g2 = []
             for name in all:
@@ -537,8 +562,6 @@ class KEpsilonScheme(Scheme):
         
         # Add equation to compute Bonet-Lok correction and subsequently
         # compute the velocity gradient, and copy it to ghost particles
-        from pysph.sph.wc.kernel_correction import GradientCorrection
-        from tsph_with_pst import VelocityGradient
         g3_1 = []
         if self.nu > 1e-14:
             if self.kernel_corr:
@@ -552,7 +575,6 @@ class KEpsilonScheme(Scheme):
                 ))
             equations.append(Group(equations=g3_1, name=get_grp_name(g3_1)))
 
-            from tsph_with_pst import CopyGradVToGhost
             g3_2 = []
             if self.periodic:
                 for name in all:
@@ -573,8 +595,8 @@ class KEpsilonScheme(Scheme):
         g4_2 = []
         for name in self.fluids:
             g4_2.append(CopyTensorsToGhost(dest=name, sources=None))
-        equations.append(Group(
-            equations=g4_2, real=False, name=get_grp_name(g4_2)))
+        # equations.append(Group(
+        #     equations=g4_2, real=False, name=get_grp_name(g4_2)))
 
         
         # Add equation to compute the gradient of k and epsilon, and
@@ -609,7 +631,6 @@ class KEpsilonScheme(Scheme):
         
         # Add equations to compute the continuity equation, velocity laplacian,
         # and transport equations for momentum, k and epsilon
-        from tsph_with_pst import ContinuityEquation
         g7 = []
         if self.kernel_corr:
             for name in self.fluids:
@@ -619,14 +640,14 @@ class KEpsilonScheme(Scheme):
         for name in self.fluids:
             g7.append(ContinuityEquation(dest=name, sources=self.fluids))
 
-        from tsph_with_pst import DivGrad
         for name in self.fluids:
             if self.nu > 1e-14:
                 g7.append(DivGrad(
                     dest=name, sources=all, nu=self.nu, rho0=self.rho0
                 ))
             g7.append(KEpsilonMomentumEquation(
-                dest=name, sources=all, gx=self.gx, gy=self.gy, gz=self.gz
+                dest=name, sources=all, gx=self.gx, gy=self.gy, gz=self.gz,
+                decouple_keps=self.decouple_keps
             ))
 
             if self.k_eps_expand:
@@ -646,8 +667,61 @@ class KEpsilonScheme(Scheme):
         
         return equations
 
+    def post_step(self, pa_arr, domain):
+        if self.shifter is None:
+            equations = []
+            all = self.fluids + self.solids
+
+            g0 = []
+            for name in all:
+                g0.append(SummationDensity(dest=name, sources=all))
+            equations.append(Group(equations=g0))
+
+
+            g0 = []
+            if self.periodic:
+                for name in all:
+                    g0.append(CopyRhoToGhost(dest=name, sources=all))
+                equations.append(Group(equations=g0, real=False))
+
+            g1 = []
+            for name in self.fluids:
+                g1.append(GradientCorrectionPreStep(dest=name, sources=all, dim=self.dim))
+                g1.append(SaveInitialdistances(dest=name, sources=None))
+            equations.append(Group(equations=g1))
+
+
+            g2 = []
+            for name in self.fluids:
+                g2.append(GradientCorrection(dest=name, sources=all, dim=self.dim))
+                g2.append(VelocityGradient(dest=name, sources=all, dim=self.dim))
+                g2.append(DensityGradient(dest=name, sources=all, dim=self.dim))
+            equations.append(Group(equations=g2))
+
+            g3 = []
+            for name in self.fluids:
+                g3.append(IterativePSTNew(dest=name, sources=all))
+                g3.append(NumberDensityMoment(dest=name, sources=all, debug=False))
+            equations.append(Group(equations=g3, iterate=True, min_iterations=1, max_iterations=10, real=False))
+
+            g4 = []
+            for name in self.fluids:
+                g4.append(UpdateVelocity(dest=name, sources=None))
+                g4.append(UpdateDensity(dest=name, sources=None))
+            equations.append(Group(equations=g4))
+            print(equations, pa_arr)
+
+            self.shifter = SPHEvaluator(
+                arrays=pa_arr, equations=equations, dim=self.dim,
+                kernel=self.solver.kernel, backend='cython'
+            )
+
+        if self.pst_freq > 0 and self.solver.count % self.pst_freq == 0:
+            self.shifter.update()
+            self.shifter.evaluate(t=self.solver.t, dt=self.solver.dt)
+
+
     def setup_properties(self, particles, clean=False):
-        from pysph.base.utils import get_particle_array_wcsph
         dummy = get_particle_array_wcsph(name='junk')
         output_props = [
             'x', 'y', 'z', 'u', 'v', 'w', 'rho', 'm', 'h', 'pid', 'gid', 'tag',
