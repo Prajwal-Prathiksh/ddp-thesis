@@ -220,7 +220,7 @@ class TaylorGreen(TurbulentFlowApp):
         b = -8.0*pi*pi / re
         u0, v0, p0 = exact_solution(U=U, b=b, t=0, x=x, y=y)
         if self.ext_forcing:
-            u0, v0, p0 = 0.0, 0.0, 1.
+            u0, v0, p0 = 0.0, 0.0, 0.0
         color0 = cos(2*pi*x) * cos(4*pi*y)
         rhoc = 0.0
         rho = rho0
