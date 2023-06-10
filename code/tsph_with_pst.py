@@ -6,7 +6,8 @@ from pysph.sph.wc.linalg import gj_solve
 from compyle.api import declare
 
 from sph_integrators import (
-    PECIntegrator, RK2Integrator, RK2Stepper, RK2StepperEDAC
+    PECIntegrator, RK2Integrator, RK2Stepper, RK2StepperAdaptive,
+    RK2StepperEDAC
 )
 
 class TaitEOS(Equation):
@@ -669,7 +670,6 @@ class TSPHScheme(Scheme):
         step_cls = RK2Stepper
         if self.scm == 'edac':
             step_cls = RK2StepperEDAC
-        # step_cls = RK3Stepper
         for name in self.fluids + self.solids:
             if name not in steppers:
                 steppers[name] = step_cls()

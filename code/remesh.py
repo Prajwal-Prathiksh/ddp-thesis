@@ -469,7 +469,7 @@ class RemeshScheme(Scheme):
     def configure_solver(self, kernel=None, integrator_cls=None,
                          extra_steppers=None, **kw):
         from pysph.base.kernels import CubicSpline
-        from tsph_with_pst import RK2Stepper, RK2Integrator
+        from tsph_with_pst import RK2Integrator, RK2Stepper
         if kernel is None:
             kernel = CubicSpline(dim=self.dim)
 
