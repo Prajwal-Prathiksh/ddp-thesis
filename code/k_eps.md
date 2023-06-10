@@ -25,12 +25,12 @@ $$ \boxed{\frac{D\rho}{Dt} = -\rho \nabla \cdot \vec{u}}$$
 
   
 
-$$ \boxed{\frac{D\vec{u}}{Dt} = - \frac{\nabla P}{\rho} + \nu \nabla^2 \vec{u} + \nabla \cdot \frac{\underline{\tau}}{\rho} }$$
-$$ \bigg(\nabla \cdot \frac{\underline{\tau}}{\rho} \bigg )_{i} = \sum_{j} \bigg(\frac{\underline{\tau}_j}{\rho_j} - \frac{\underline{\tau}_i}{\rho_i} \bigg) \cdot \nabla W_{ij} \omega_{j} $$
+$$ \boxed{\frac{D\vec{u}}{Dt} = - \frac{\nabla P}{\rho} + \nu \nabla^2 \vec{u} + \frac{1}{\rho} \nabla \cdot \underline{\tau}  }$$
+$$ \nabla \cdot \underline{\tau}_{i} = \sum_{j} \Big(\underline{\tau}_j - \underline{\tau}_i \Big) \cdot \nabla W_{ij} \omega_{j} $$
 
   
 
-$$ \boxed{\frac{\underline{\tau}}{\rho} = 2C_d \frac{k^2}{\epsilon} \underline{S} - \frac{2}{3}k\underline{I}} = 2\nu_t\underline{S} - \frac{2}{3}k\underline{I} $$
+$$ \boxed{\frac{1}{\rho}\underline{\tau} = 2C_d \frac{k^2}{\epsilon} \underline{S} - \frac{2}{3}k\underline{I}} = 2\nu_t\underline{S} - \frac{2}{3}k\underline{I} $$
 
   
 
