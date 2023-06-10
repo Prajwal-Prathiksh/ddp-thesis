@@ -79,6 +79,11 @@ def configure_scheme(app, p0, gx=0.0):
     extra_steppers = None
     if app.options.sph_integrator != 'auto':
         integrator_cls = app.options.sph_integrator
+    if app.adaptive_timestep and integrator_cls is None:
+        raise RuntimeError(
+            "Adaptive timestep requires an integrator, please specify "
+            "one using --integrator"
+        )
 
     from pysph.base.kernels import QuinticSpline
     scheme = app.scheme
@@ -93,7 +98,14 @@ def configure_scheme(app, p0, gx=0.0):
             from sph_integrators import PECIntegrator
             integrator_cls = PECIntegrator
         elif integrator_cls == 'rk2':
-            integrator_cls = None
+            from sph_integrators import (
+                RK2Integrator, RK2Stepper, RK2StepperAdaptive
+            )
+            integrator_cls = RK2Integrator
+            if app.adaptive_timestep:
+                extra_steppers = dict(fluid=RK2StepperAdaptive())
+            else:
+                extra_steppers = dict(fluid=RK2Stepper())
         elif integrator_cls == 'rk3':
             from sph_integrators import RK3Integrator, RK3Stepper
             integrator_cls = RK3Integrator
@@ -383,6 +395,16 @@ def create_equation(app, solids=[]):
                 eq1 = VelocityGradient(dest='fluid', sources=all)
                 g2 = eqns[1].equations
                 g2.insert(0, eq1)
+    
+    if app.ext_forcing:
+        eqns.append(
+            Group(
+                equations=[ExtForceColagrossi2021(
+                    dest='fluid', sources=None, L=app.L, U=app.U
+                )],
+                real=True
+            )
+        )
 
     print(eqns)
     return eqns
@@ -628,16 +650,50 @@ def prestep(app, solver):
     """
     Pre-step function for the Taylor-Green vortex problem.
     """
-    if app.options.ext_forcing:
-        pa = app.particles[0]
-        x, y = pa.x, pa.y
-        L, U = app.L, app.U
-        dt, t = solver.dt, solver.t
-        fx, fy = ext_force_colagrossi2021(x, y, t, L, U)
-        pa.u[:] += fx*dt
-        pa.v[:] += fy*dt
-        
     if app.options.scheme == 'wcsph':
         if app.scheme.scheme.delta_sph:
             p = app.particles[0].p
             app.particles[0].p -= min(p)
+
+
+class ExtForceColagrossi2021(Equation):
+    def __init__(self, dest, sources, L, U):
+        self.L = L
+        self.U = U
+        self.A = 1.3*U*U/L
+        self.UbyL = U/L
+        super().__init__(dest, sources)
+    
+    def initialize(self, d_idx, d_m, d_au, d_av, d_x, d_y, t):
+        x_star, y_star, t_star = declare('double', 3)
+        x_star = d_x[d_idx]/self.L
+        y_star = d_y[d_idx]/self.L
+        t_star = t*self.UbyL
+
+        t_fac, eightpi = declare('double', 2)
+        eightpi = 8.*pi
+
+        if t_star >= 0.0 and t_star < 0.1:
+            t_fac = t_star*10.
+        elif t_star >= 0.1 and t_star < 0.9:
+            t_fac = 1.
+        elif t_star >= 0.9 and t_star <= 1.:
+            t_fac = (1. - t_star)*10.
+        else:
+            t_fac = 0.
+
+        fx, fy = declare('double', 2)        
+        if t_fac > 0.:
+            fx = sin(eightpi*x_star)*cos(eightpi*y_star)
+            fy = -cos(eightpi*x_star)*sin(eightpi*y_star)
+        else:
+            fx = 0.
+            fy = 0.
+        
+        d_au[d_idx] = self.A*t_fac*fx
+        d_av[d_idx] = self.A*t_fac*fy
+
+
+# TODO: Missing term from the NS equation correspodning to compressiblitly
+# TODO: Try PEIPST, check with HO interators and C0
+# TODO: MMS of RHS wirh k-eps model
