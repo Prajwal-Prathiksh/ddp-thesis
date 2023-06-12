@@ -32,7 +32,7 @@ from pysph.tools.sph_evaluator import SPHEvaluator
 from sph_integrators import RK2Integrator
 from tsph_with_pst import (CopyRhoToGhost, DensityGradient,
                            GradientCorrectionPreStepNew, IterativePSTNew,
-                           SaveInitialdistances, UpdateDensity, UpdateVelocity)
+                           SaveInitialdistances, UpdateDensity, UpdateVelocity, CopyPropsToGhost)
 
 
 ###########################################################################
@@ -98,17 +98,11 @@ class CalculateShiftVelocity(Equation):
         d_dv[d_idx] = fac * dv
         d_dw[d_idx] = fac * dw
 
-class CopyPropsToGhost(Equation):
-    def initialize(
-        self, d_idx, d_tag, d_gid,
-        d_p, d_rhoc, d_rho, d_du, d_dv, d_dw
-    ):
+class CopydUsToGhost(Equation):
+    def initialize(self, d_idx, d_tag, d_gid, d_du, d_dv, d_dw):
         idx = declare('int')
         if d_tag[d_idx] == 2:
             idx = d_gid[d_idx]
-            d_p[d_idx] = d_p[idx]
-            d_rhoc[d_idx] = d_rhoc[idx]
-            d_rho[d_idx] = d_rho[idx]
             d_du[d_idx] = d_du[idx]
             d_dv[d_idx] = d_dv[idx]
             d_dw[d_idx] = d_dw[idx]
@@ -439,7 +433,7 @@ class DeltaLESScheme(Scheme):
         self, fluids, solids,
         dim, rho0, c0, h0, hdx, prob_l, Ma, Umax, nu,
         xhi=0.2, shiftvel_exp=4., C_delta=6., C_S=0.12,
-        tensile_correction=True
+        tensile_correction=True, pst_freq=10
     ):
         self.fluids = fluids
         self.solids = solids
@@ -458,6 +452,7 @@ class DeltaLESScheme(Scheme):
         self.C_delta = C_delta
         self.C_S = C_S
         self.tensile_correction = tensile_correction
+        self.pst_freq = pst_freq
         self.shifter = None
 
     def add_user_options(self, group):
@@ -534,25 +529,36 @@ class DeltaLESScheme(Scheme):
         equations.append(Group(equations=g0, name=get_grp_name(g0)))
 
 
-        # Add summation density equation and shift velocity equation
+        # Add summation density equation and copy properties to ghost particles
         g1_1 = []
         for name in all:
             g1_1.append(SummationDensity(dest=name, sources=all))
-            g1_1.append(
-                CalculateShiftVelocity(
-                    dest=name, sources=self.fluids, hdx=self.hdx,
-                    prob_l=self.prob_l, Ma=self.Ma, c0=self.c0, Umax=self.Umax, xhi=self.xhi, shiftvel_exp=self.shiftvel_exp
-                )
-            )
         equations.append(Group(equations=g1_1, name=get_grp_name(g1_1)))
 
-
-        # Add equation to copy properties to ghost particles
         g1_2 = []
         for name in self.fluids:
             g1_2.append(CopyPropsToGhost(dest=name, sources=None))
         equations.append(Group(
             equations=g1_2, real=False, name=get_grp_name(g1_2)))
+
+
+        # Add equation to compute the shifted velocities and copy them to ghost
+        # particles
+        g2_1 = []
+        for name in self.fluids:
+            g2_1.append(
+                CalculateShiftVelocity(
+                    dest=name, sources=self.fluids, hdx=self.hdx,
+                    prob_l=self.prob_l, Ma=self.Ma, c0=self.c0, Umax=self.Umax, xhi=self.xhi, shiftvel_exp=self.shiftvel_exp
+                )
+            )
+        equations.append(Group(equations=g2_1, name=get_grp_name(g2_1)))
+
+        g2_2 = []
+        for name in self.fluids:
+            g2_2.append(CopydUsToGhost(dest=name, sources=None))
+        equations.append(Group(
+            equations=g2_2, real=False, name=get_grp_name(g2_2)))
 
         
         # Add equation to compute pre-step of Bonet-Lok correction
@@ -587,7 +593,8 @@ class DeltaLESScheme(Scheme):
             equations=g3_2, real=False, name=get_grp_name(g3_2)))
 
 
-        # Add equation to compute the strain rate tensor and subsequently copy them to ghost particles
+        # Add equation to compute the strain rate tensor and subsequently copy 
+        # them to ghost particles
         g4_1 = []
         for name in self.fluids:
             g4_1.extend([
@@ -650,7 +657,7 @@ class DeltaLESScheme(Scheme):
             g2 = []
             for name in self.fluids:
                 g2.append(GradientCorrection(dest=name, sources=all, dim=self.dim))
-                g2.append(VelocityGradient(dest=name, sources=all, dim=self.dim))
+                g2.append(VelocityGradient(dest=name, sources=all))
                 g2.append(DensityGradient(dest=name, sources=all, dim=self.dim))
             equations.append(Group(equations=g2))
 
@@ -689,10 +696,17 @@ class DeltaLESScheme(Scheme):
         props = list(dummy.properties.keys()) + [
             'V0',
             'du', 'dv', 'dw',
-            {'name': 'gradv', 'stride': 9},
-            {'name': 'm_mat', 'stride': 9},
-            {'name': 'gradp', 'stride': 3},
-            'S', 'rhoc', 'rhoc0'
+            'rhoc', 'rhoc0', 'ap', 'p0',
+            dict(name='gradv', stride=9),
+            dict(name='m_mat', stride=9),
+            dict(name='gradp', stride=3),
+            dict(name='gradrc', stride=3),
+            dict(name='S', stride=9),
+        ]
+        props += [
+            'vmax', 
+            'ki', 'ki0', 
+            dict(name='dpos', stride=3),
         ]
 
         for pa in particles:

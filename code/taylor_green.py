@@ -172,7 +172,7 @@ class TaylorGreen(TurbulentFlowApp):
 
     def post_step(self, solver):
         sch = self.options.scheme
-        cond1 = (sch == 'tsph' or sch == 'tisph' or sch == 'k_eps')
+        cond1 = (sch == 'tsph' or sch == 'tisph' or sch == 'k_eps' or sch == 'deltales')
         cond2 = (self.options.remesh == 0)
         if cond1 and cond2:
             self.scheme.scheme.post_step(self.particles, self.domain)
@@ -404,9 +404,6 @@ class TaylorGreen(TurbulentFlowApp):
             plt.title(f'Re={self.options.re}, U={self.U}')
             fig = os.path.join(self.output_dir, "adapt_dt.png")
             plt.savefig(fig, dpi=300)
-
-        if self.options.no_plot:
-            return
         
         plt.clf()
         plt.grid()
@@ -479,6 +476,9 @@ class TaylorGreen(TurbulentFlowApp):
         plt.savefig(fig, dpi=300)
 
         # Turbulence specific post-processing
+        if self.options.no_plot:
+            return
+        
         if self.ext_forcing:
             f_idx_list = self.get_f_idx_list([5, 25, 50, 75, 100])
         else:
