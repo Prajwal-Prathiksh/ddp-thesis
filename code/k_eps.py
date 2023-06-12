@@ -156,7 +156,7 @@ class ModifiedLaplacianKEpsilon(Equation):
         self, d_idx, s_idx, d_k, d_eps, d_lapk, d_lapeps, d_gradk, d_gradeps,
         s_k, s_eps, s_gradk, s_gradeps, s_m, s_rho, DWIJ
     ):
-        i, didx3 = declare('int')
+        i, didx3 = declare('int', 2)
         didx3 = 3*d_idx
 
         omega_j, modgradkdotdw, modgradepsdotdw = declare('double', 3)
@@ -164,15 +164,15 @@ class ModifiedLaplacianKEpsilon(Equation):
         modgradkdotdw = 0.0
         modgradepsdotdw = 0.0
 
+        s_fac = s_k[s_idx]**2/s_eps[s_idx]
+        d_fac = d_k[d_idx]**2/d_eps[d_idx]
         for i in range(3):
-            s_fac = s_k[s_idx]**2/s_eps[s_idx]
-            d_fac = d_k[d_idx]**2/d_eps[d_idx]
             modgradkdotdw += (
-                s_fac*s_gradk[3*s_idx+i] - d_fac*d_gradk[didx3+i]*DWIJ[i]
-            )
+                s_fac*s_gradk[3*s_idx+i] - d_fac*d_gradk[didx3+i]
+            )*DWIJ[i]
             modgradepsdotdw += (
-                s_fac*s_gradeps[3*s_idx+i] - d_fac*d_gradeps[didx3+i]*DWIJ[i]
-            )
+                s_fac*s_gradeps[3*s_idx+i] - d_fac*d_gradeps[didx3+i]
+            )*DWIJ[i]
         
         d_lapk[d_idx] += omega_j*modgradkdotdw
         d_lapeps[d_idx] += omega_j*modgradepsdotdw
