@@ -187,7 +187,8 @@ class TaylorGreen(TurbulentFlowApp):
 
     def create_equations(self):
         from tg_config import create_equation
-        return create_equation(self)
+        eqs = create_equation(self)
+        return eqs
 
     def create_domain(self):
         if self.options.no_periodic:

@@ -1,36 +1,31 @@
 # configurations for taylor green problem
 ###
-from numpy import linspace, pi, sin, cos, exp, sqrt
-
-from pysph.sph.equation import Group, Equation
-from pysph.sph.scheme import TVFScheme, WCSPHScheme, SchemeChooser
-from pysph.sph.wc.edac import EDACScheme
-from pysph.sph.iisph import IISPHScheme
-
-from pysph.sph.wc.kernel_correction import (
-    GradientCorrectionPreStep, GradientCorrection,
-    MixedKernelCorrectionPreStep, MixedGradientCorrection
-)
-from pysph.sph.wc.crksph import CRKSPHPreStep, CRKSPH, CRKSPHScheme
-from pysph.sph.wc.gtvf import GTVFScheme
-from pysph.sph.wc.pcisph import PCISPHScheme
-from pysph.sph.isph.sisph import SISPHScheme
-from pysph.sph.isph.isph import ISPHScheme
-
-from pst import ShiftPositions
-from delta_plus import DeltaPlusSPHScheme
-
-from tsph_with_pst import TSPHScheme
-from tsph_dsph import TSPHWithDSPHScheme
-from tisph import SummationDensity, TISPHScheme
-from ewcsph import EWCSPHScheme
-from remesh import RemeshScheme
-
-from monaghan2017 import Monaghan2017Scheme
-from okra2022 import Okra2022Scheme
-from k_eps import KEpsilonScheme
-
 from compyle.api import declare
+from delta_plus import DeltaPlusSPHScheme
+from deltaLES import DeltaLESScheme
+from ewcsph import EWCSPHScheme
+from k_eps import KEpsilonScheme
+from monaghan2017 import Monaghan2017Scheme
+from numpy import cos, exp, linspace, pi, sin, sqrt
+from okra2022 import Okra2022Scheme
+from pst import ShiftPositions
+from pysph.sph.equation import Equation, Group
+from pysph.sph.iisph import IISPHScheme
+from pysph.sph.isph.isph import ISPHScheme
+from pysph.sph.isph.sisph import SISPHScheme
+from pysph.sph.scheme import SchemeChooser, TVFScheme, WCSPHScheme
+from pysph.sph.wc.crksph import CRKSPH, CRKSPHPreStep, CRKSPHScheme
+from pysph.sph.wc.edac import EDACScheme
+from pysph.sph.wc.gtvf import GTVFScheme
+from pysph.sph.wc.kernel_correction import (GradientCorrection,
+                                            GradientCorrectionPreStep,
+                                            MixedGradientCorrection,
+                                            MixedKernelCorrectionPreStep)
+from pysph.sph.wc.pcisph import PCISPHScheme
+from remesh import RemeshScheme
+from tisph import SummationDensity, TISPHScheme
+from tsph_dsph import TSPHWithDSPHScheme
+from tsph_with_pst import TSPHScheme
 
 
 class EvaluateTorque(Equation):
@@ -85,11 +80,11 @@ def configure_scheme(app, p0, gx=0.0):
             "one using --integrator"
         )
 
-    from pysph.base.kernels import QuinticSpline
+    from pysph.base.kernels import WendlandQuinticC4
     scheme = app.scheme
     h0 = app.hdx * app.dx
     pfreq = 100
-    kernel = QuinticSpline(dim=2)
+    kernel = WendlandQuinticC4(dim=2)
     if app.options.scheme == 'tvf':
         scheme.configure(pb=app.options.pb_factor * p0, nu=app.nu, h0=h0, gx=gx)
     elif app.options.scheme == 'tsph':
@@ -98,9 +93,8 @@ def configure_scheme(app, p0, gx=0.0):
             from sph_integrators import PECIntegrator
             integrator_cls = PECIntegrator
         elif integrator_cls == 'rk2':
-            from sph_integrators import (
-                RK2Integrator, RK2Stepper, RK2StepperAdaptive
-            )
+            from sph_integrators import (RK2Integrator, RK2Stepper,
+                                         RK2StepperAdaptive)
             integrator_cls = RK2Integrator
             if app.adaptive_timestep:
                 extra_steppers = dict(fluid=RK2StepperAdaptive())
@@ -122,8 +116,8 @@ def configure_scheme(app, p0, gx=0.0):
         scheme.configure(hdx=app.hdx, nu=app.nu, h0=h0)
     elif app.options.scheme == 'wcsph':
         if scheme.scheme.summation_density:
-            from pysph.sph.integrator_step import WCSPHStep
             from patch import initialize, stage1, stage2
+            from pysph.sph.integrator_step import WCSPHStep
             WCSPHStep.initialize = initialize
             WCSPHStep.stage1 = stage1
             WCSPHStep.stage2 = stage2
@@ -149,6 +143,10 @@ def configure_scheme(app, p0, gx=0.0):
     elif app.options.scheme == 'k_eps':
         scheme.configure(
             hdx=app.hdx, nu=app.nu, h0=h0, gx=gx, periodic=app.no_periodic
+        )
+    elif app.options.scheme == 'deltales':
+        scheme.configure(
+            hdx=app.hdx, nu=app.nu, h0=h0, prob_l=app.dx
         )
 
     if type(integrator_cls) == str:
@@ -242,11 +240,15 @@ def create_scheme(rho0, c0, p0, solids=[]):
         fluids=['fluid'], solids=[], dim=2, rho0=rho0, c0=c0, h0=h0,
         hdx=hdx, nu=None, gamma=7.0, kernel_corr=True
     )
+    delta_les = DeltaLESScheme(
+        fluids=['fluid'], solids=[], dim=2, rho0=rho0, c0=c0, h0=h0,
+        hdx=hdx, prob_l=None, Ma=1./c0, Umax=1, nu=None
+    )
     s = SchemeChooser(
         default='tvf', wcsph=wcsph, tvf=tvf, edac=edac, iisph=iisph,
         crksph=crksph, gtvf=gtvf, pcisph=pcisph, sisph=sisph, isph=isph,
         delta_plus=delta_plus, tsph=tsph, tdsph=tdsph, tisph=tisph, ewcsph=ewcsph, rsph=rsph, mon2017=mon2017, ok2022=ok2022,
-        k_eps=k_eps
+        k_eps=k_eps, deltales=delta_les
     )
     return s
 
@@ -265,7 +267,7 @@ def create_equation(app, solids=[]):
         cls1 = CRKSPHPreStep
         cls2 = CRKSPH
     elif app.kernel_correction == 'kgf':
-        from kgf_sph import KGFPreStep, KGFCorrection
+        from kgf_sph import KGFCorrection, KGFPreStep
         cls1 = KGFPreStep
         cls2 = KGFCorrection
     elif app.kernel_correction == 'order1':
@@ -412,6 +414,7 @@ def create_equation(app, solids=[]):
 
 def configure_particles(app, fluid):
     import numpy as np
+
     # volume is set as dx^2
     if app.options.scheme == 'sisph':
         nfp = fluid.get_number_of_particles()
@@ -547,49 +550,6 @@ def ramp(t_star):
         return (1.-t_star)*10.
     else:
         return 0.
-
-
-def ext_force_colagrossi2021(x, y, t, L=1., U=1.):
-    """
-    External forcing term for the Taylor-Green vortex problem.
-
-    References
-    ----------
-        .. [Colagrossi2021] A. Colagrossi, “Smoothed particle hydrodynamics 
-        method from a large eddy simulation perspective . Generalization to a 
-        quasi-Lagrangian model Smoothed particle hydrodynamics method from a 
-        large eddy simulation perspective . Generalization to a 
-        quasi-Lagrangian model,” vol. 015102, no. December 2020, 2021,
-        doi: 10.1063/5.0034568.
-
-    Parameters
-    ----------
-    x, y : array_like
-        Coordinates.
-    t : float
-        Time.
-    L : float, optional
-        Length of the domain. Default is 1.
-    U : float, optional
-        Maximum velocity of the flow. Default is 1.
-    
-    Returns
-    -------
-    fx, fy : array_like
-        External forcing term in the x- and y-directions.
-    """
-    A = 1.3*U*U/L
-    x_star = x/L
-    y_star = y/L
-    t_star = t*U/L
-    eightpi = 8.*pi
-    
-    if ramp(t_star) > 0.:
-        fx = sin(eightpi*x_star)*cos(eightpi*y_star)
-        fy = -cos(eightpi*x_star)*sin(eightpi*y_star)
-        return A*ramp(t_star)*fx, A*ramp(t_star)*fy
-    else:
-        return 0.*x_star, 0.*y_star
 
 
 def ext_force_antuono2020(x, y, z, t, nu, L=1., U=1.):
