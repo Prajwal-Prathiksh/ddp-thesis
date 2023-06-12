@@ -720,7 +720,6 @@ class KEpsilonScheme(Scheme):
             self.shifter.update()
             self.shifter.evaluate(t=self.solver.t, dt=self.solver.dt)
 
-
     def setup_properties(self, particles, clean=False):
         dummy = get_particle_array_wcsph(name='junk')
         output_props = [
@@ -769,3 +768,4 @@ class KEpsilonScheme(Scheme):
             pa.set_output_arrays(output_props)
             pa.add_constant('maxki0', 0.0)
             pa.add_constant('maxki', 0.0)
+            
