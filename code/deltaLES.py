@@ -483,7 +483,7 @@ class DeltaLESScheme(Scheme):
             help='Disable PST'
         )
         group.add_argument(
-            '--les-pst-freq', action='store', type=int, dest='pst_freq',
+            '--pst-freq', action='store', type=int, dest='pst_freq',
             default=10, help='PST frequency'
         )
     
@@ -685,7 +685,9 @@ class DeltaLESScheme(Scheme):
                 g4.append(UpdateVelocity(dest=name, sources=None))
                 g4.append(UpdateDensity(dest=name, sources=None))
             equations.append(Group(equations=g4))
+            print('PST Equations:')
             print(equations, pa_arr)
+            print(f"PST Frequency: {self.pst_freq}")
 
             self.shifter = SPHEvaluator(
                 arrays=pa_arr, equations=equations, dim=self.dim,
