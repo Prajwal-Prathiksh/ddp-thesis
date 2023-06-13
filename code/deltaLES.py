@@ -433,7 +433,7 @@ class DeltaLESScheme(Scheme):
         self, fluids, solids,
         dim, rho0, c0, h0, hdx, prob_l, Ma, Umax, nu,
         xhi=0.2, shiftvel_exp=4., C_delta=6., C_S=0.12,
-        tensile_correction=True, pst_freq=10
+        tensile_correction=True, pst=True, pst_freq=10
     ):
         self.fluids = fluids
         self.solids = solids
@@ -452,6 +452,7 @@ class DeltaLESScheme(Scheme):
         self.C_delta = C_delta
         self.C_S = C_S
         self.tensile_correction = tensile_correction
+        self.pst = pst
         self.pst_freq = pst_freq
         self.shifter = None
 
@@ -474,13 +475,22 @@ class DeltaLESScheme(Scheme):
             default=0.12, help='LES parameter C_S'
         )
         group.add_argument(
-            '--les-no-tensile-correction', action='store_false',
+            '--les-no-tc', action='store_false',
             dest='tensile_correction', help='Disable tensile correction'
+        )
+        group.add_argument(
+            '--les-no-pst', action='store_false', dest='pst',
+            help='Disable PST'
+        )
+        group.add_argument(
+            '--les-pst-freq', action='store', type=int, dest='pst_freq',
+            default=10, help='PST frequency'
         )
     
     def consume_user_options(self, options):
         vars = [
-            'xhi', 'shiftvel_exp', 'C_delta', 'C_S', 'tensile_correction'
+            'xhi', 'shiftvel_exp', 'C_delta', 'C_S', 'tensile_correction',
+            'pst', 'pst_freq'
         ]
         data = dict(
             (var, self._smart_getattr(options, var)) for var in vars
@@ -632,6 +642,9 @@ class DeltaLESScheme(Scheme):
         return equations
 
     def post_step(self, pa_arr, domain):
+        if not self.pst:
+            return
+        
         if self.shifter is None:
             equations = []
             all = self.fluids + self.solids
