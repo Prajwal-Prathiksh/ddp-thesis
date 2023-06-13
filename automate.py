@@ -385,8 +385,11 @@ class TGV2DSchemeComparison(PySPHProblem):
                     'scheme', 'integrator', 'integrator_dt_mul_fac', 're',
                     'c0_fac', 'nx', 'les_no_pst', 'les_no_tc'
                 ],
-                kmap=dict(integrator_dt_mul_fac='dtmul', c0_fac='c0')
-            )
+                kmap=dict(
+                    integrator_dt_mul_fac='dtmul', c0_fac='c0',
+                    les_no_pst='no_pst', les_no_tc='no_tic'
+                )
+            ).replace('None_', '')
             self.case_info[sim_name] = sim_opts[i]
         
         # Setup cases
@@ -407,7 +410,7 @@ class TGV2DSchemeComparison(PySPHProblem):
         """
         Run the problem.
         """
-        # self.make_output_dir()
+        self.make_output_dir()
 
         # Unpack simulation opts
         sim_opts = self.sim_opts
