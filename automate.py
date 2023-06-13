@@ -350,11 +350,13 @@ class TGV2DSchemeComparison(PySPHProblem):
         scheme_opts = mdict(
             scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
         )
-        scheme_opts += mdict(scheme=['deltales'])
-        scheme_opts += mdict(scheme=['deltales'], les_no_pst=[None])
-        scheme_opts += mdict(
-            scheme=['deltales'], les_no_pst=[None], les_no_tc=[None]
-        )
+        # scheme_opts += mdict(scheme=['deltales'], les_no_pst=[None])
+        # scheme_opts += mdict(
+        #     scheme=['deltales'], les_no_pst=[None], les_no_tc=[None]
+        # )
+        scheme_opts += mdict(scheme=['deltales'], pst_freq=[10, 50])
+        scheme_opts += mdict(scheme=['deltales_sd'], pst_freq=[10, 50])
+
         integrator_opts = mdict(
             integrator=['pec'], integrator_dt_mul_fac=[1]
         )
@@ -368,8 +370,9 @@ class TGV2DSchemeComparison(PySPHProblem):
         #     integrator=['rk4'], integrator_dt_mul_fac=[4]
         # )
         res_opts = mdict(
-            re=[1000, 10_000, 50_000], tf=[4], n_o_files=[50], nx=[200],
-            c0_fac=[40], hdx=[2], max_steps=[2]
+            re=[1000, 10_000, 50_000, 100_000], 
+            tf=[4], n_o_files=[50], nx=[50],
+            c0_fac=[20], hdx=[2]
         )
 
         self.sim_opts = sim_opts = dprod(
@@ -383,11 +386,12 @@ class TGV2DSchemeComparison(PySPHProblem):
                 sim_opts[i],
                 keys=[
                     'scheme', 'integrator', 'integrator_dt_mul_fac', 're',
-                    'c0_fac', 'nx', 'les_no_pst', 'les_no_tc'
+                    'c0_fac', 'nx', 'les_no_pst', 'les_no_tc', 'pst_freq'
                 ],
                 kmap=dict(
                     integrator_dt_mul_fac='dtmul', c0_fac='c0',
-                    les_no_pst='no_pst', les_no_tc='no_tic'
+                    les_no_pst='no_pst', les_no_tc='no_tic',
+                    pst_freq='pst'
                 )
             ).replace('None_', '')
             self.case_info[sim_name] = sim_opts[i]
