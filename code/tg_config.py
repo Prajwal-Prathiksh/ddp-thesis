@@ -2,7 +2,8 @@
 ###
 from compyle.api import declare
 from delta_plus import DeltaPlusSPHScheme
-from deltaLES import DeltaLESRK2Step, DeltaLESScheme
+from deltaLES import DeltaLESRK2Step, DeltaLESRK4Step, DeltaLESScheme
+from deltaLES_sd import DeltaLES_SD_RK2Step, DeltaLES_SD_Scheme
 from ewcsph import EWCSPHScheme
 from k_eps import KEpsilonScheme
 from monaghan2017 import Monaghan2017Scheme
@@ -152,6 +153,19 @@ def configure_scheme(app, p0, gx=0.0):
         elif integrator_cls == 'rk2':
             integrator_cls = RK2Integrator
             extra_steppers = dict(fluid=DeltaLESRK2Step())
+        elif integrator_cls == 'rk4':
+            integrator_cls = RK4Integrator
+            extra_steppers = dict(fluid=DeltaLESRK4Step())
+    elif app.options.scheme == 'deltales_sd':
+        scheme.configure(
+            hdx=app.hdx, nu=app.nu, h0=h0, prob_l=app.dx
+        )
+        if integrator_cls == 'pec':
+            integrator_cls = PECIntegrator
+            extra_steppers = dict(fluid=DeltaLES_SD_RK2Step())
+        elif integrator_cls == 'rk2':
+            integrator_cls = RK2Integrator
+            extra_steppers = dict(fluid=DeltaLES_SD_RK2Step())
 
     if type(integrator_cls) == str:
         raise NotImplementedError(f"{integrator_cls} not implemented")
@@ -244,7 +258,11 @@ def create_scheme(rho0, c0, p0, solids=[]):
         fluids=['fluid'], solids=[], dim=2, rho0=rho0, c0=c0, h0=h0,
         hdx=hdx, nu=None, gamma=7.0, kernel_corr=True
     )
-    delta_les = DeltaLESScheme(
+    deltales = DeltaLESScheme(
+        fluids=['fluid'], solids=[], dim=2, rho0=rho0, c0=c0, h0=h0,
+        hdx=hdx, prob_l=None, Ma=1./c0, Umax=1, nu=None
+    )
+    deltales_sd = DeltaLES_SD_Scheme(
         fluids=['fluid'], solids=[], dim=2, rho0=rho0, c0=c0, h0=h0,
         hdx=hdx, prob_l=None, Ma=1./c0, Umax=1, nu=None
     )
@@ -252,7 +270,7 @@ def create_scheme(rho0, c0, p0, solids=[]):
         default='tvf', wcsph=wcsph, tvf=tvf, edac=edac, iisph=iisph,
         crksph=crksph, gtvf=gtvf, pcisph=pcisph, sisph=sisph, isph=isph,
         delta_plus=delta_plus, tsph=tsph, tdsph=tdsph, tisph=tisph, ewcsph=ewcsph, rsph=rsph, mon2017=mon2017, ok2022=ok2022,
-        k_eps=k_eps, deltales=delta_les
+        k_eps=k_eps, deltales=deltales, deltales_sd=deltales_sd
     )
     return s
 

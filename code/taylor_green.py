@@ -171,8 +171,8 @@ class TaylorGreen(TurbulentFlowApp):
         prestep(self, solver)
 
     def post_step(self, solver):
-        sch = self.options.scheme
-        cond1 = (sch == 'tsph' or sch == 'tisph' or sch == 'k_eps' or sch == 'deltales')
+        S = self.options.scheme
+        cond1 = (S == 'tsph' or S == 'tisph' or S == 'k_eps' or S == 'deltales' or S == 'deltales_sd')
         cond2 = (self.options.remesh == 0)
         if cond1 and cond2:
             self.scheme.scheme.post_step(self.particles, self.domain)
@@ -473,6 +473,13 @@ class TaylorGreen(TurbulentFlowApp):
         plt.ylabel(r'Total angular mom')
         plt.title(f'Re={self.options.re}, U={self.U}')
         fig = os.path.join(self.output_dir, "ang_mom.png")
+        plt.savefig(fig, dpi=300)
+
+        plt.clf()
+        plt.scatter(x, y, c=vmag)
+        plt.colorbar()
+        plt.title(f'Re={self.options.re}, U={self.U} (t={_t})')
+        fig = os.path.join(self.output_dir, "final_vmag.png")
         plt.savefig(fig, dpi=300)
 
         # Turbulence specific post-processing

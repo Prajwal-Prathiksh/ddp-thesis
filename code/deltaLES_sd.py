@@ -148,9 +148,9 @@ class CalculatePressureGradient(Equation):
         for i in range(3):
             d_gradp[didx3 + i] = 0.0
     
-    def loop(self, d_idx, s_idx, d_rhoc, d_gradp, s_m, s_rho, DWIJ):
+    def loop(self, d_idx, s_idx, d_rho, d_gradp, s_m, s_rho, DWIJ):
         Vj = s_m[s_idx] / s_rho[s_idx]
-        fac = Vj * (s_rho[s_idx] - d_rhoc[d_idx])
+        fac = Vj * (s_rho[s_idx] - d_rho[d_idx])
 
         i = declare('int')
         for i in range(3):
@@ -183,8 +183,8 @@ class ContinuityEquationLES(Equation):
     
     def loop(
         self, d_idx, s_idx,
-        d_u, d_v, d_w, d_du, d_dv, d_dw, d_rhoc, d_S, d_gradp, d_arho,
-        s_u, s_v, s_w, s_du, s_dv, s_dw, s_rhoc, s_S, s_gradp, s_m, s_rho,  
+        d_u, d_v, d_w, d_du, d_dv, d_dw, d_rho, d_S, d_gradp, d_arho,
+        s_u, s_v, s_w, s_du, s_dv, s_dw, s_rho, s_S, s_gradp, s_m,  
         DWIJ, R2IJ, XIJ, EPS
     ):
         uhati = d_u[d_idx] + d_du[d_idx]
@@ -207,8 +207,8 @@ class ContinuityEquationLES(Equation):
         dvj = s_dv[s_idx]
         dwj = s_dw[s_idx]
 
-        rhoi = d_rhoc[d_idx]
-        rhoj = s_rhoc[s_idx]
+        rhoi = d_rho[d_idx]
+        rhoj = s_rho[s_idx]
         rhoji = rhoj - rhoi
         Vj = s_m[s_idx] / s_rho[s_idx]
 
@@ -275,8 +275,8 @@ class MomentumEquationLES(Equation):
     
     def loop(
         self, d_idx, s_idx,
-        d_u, d_v, d_w, d_du, d_dv, d_dw, d_rhoc, d_S, d_p, d_au, d_av, d_aw,
-        s_u, s_v, s_w, s_du, s_dv, s_dw, s_rhoc, s_S, s_p, s_m, s_rho, 
+        d_u, d_v, d_w, d_du, d_dv, d_dw, d_rho, d_S, d_p, d_au, d_av, d_aw,
+        s_u, s_v, s_w, s_du, s_dv, s_dw, s_rho, s_S, s_p, s_m, 
         DWIJ, R2IJ, XIJ, VIJ, EPS
     ):  
         ui = d_u[d_idx]
@@ -295,8 +295,8 @@ class MomentumEquationLES(Equation):
         dvj = s_dv[s_idx]
         dwj = s_dw[s_idx]
 
-        rhoi = d_rhoc[d_idx]
-        rhoj = s_rhoc[s_idx]
+        rhoi = d_rho[d_idx]
+        rhoj = s_rho[s_idx]
         rhoji = rhoj - rhoi
         Vj = s_m[s_idx] / s_rho[s_idx]
 
@@ -371,11 +371,11 @@ class MomentumEquationLES(Equation):
 ###########################################################################
 # Integrator Step
 ###########################################################################
-class DeltaLESRK2Step(IntegratorStep):
+class DeltaLES_SD_RK2Step(IntegratorStep):
     def initialize(
         self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
         d_u0, d_v0, d_w0, d_u, d_v, d_w,
-        d_rhoc, d_rhoc0
+        d_rho, d_rho0
     ):
         # Initialise `U^{n}`
         d_x0[d_idx] = d_x[d_idx]
@@ -386,12 +386,12 @@ class DeltaLESRK2Step(IntegratorStep):
         d_v0[d_idx] = d_v[d_idx]
         d_w0[d_idx] = d_w[d_idx]
 
-        d_rhoc0[d_idx] = d_rhoc[d_idx]
+        d_rho0[d_idx] = d_rho[d_idx]
 
     def stage1(
         self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
         d_u0, d_v0, d_w0, d_u, d_v, d_w, d_du, d_dv, d_dw, d_au, d_av, d_aw, 
-        d_rhoc, d_arho, d_rhoc0,
+        d_rho, d_arho, d_rho0,
         dt
     ):
         dtb2 = 0.5*dt
@@ -405,12 +405,12 @@ class DeltaLESRK2Step(IntegratorStep):
         d_v[d_idx] = d_v0[d_idx] + dtb2*d_av[d_idx]
         d_w[d_idx] = d_w0[d_idx] + dtb2*d_aw[d_idx]
 
-        d_rhoc[d_idx] = d_rhoc0[d_idx] + dtb2*d_arho[d_idx]
+        d_rho[d_idx] = d_rho0[d_idx] + dtb2*d_arho[d_idx]
 
     def stage2(
         self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
         d_u0, d_v0, d_w0, d_u, d_v, d_w, d_du, d_dv, d_dw, d_au, d_av, d_aw,
-        d_rhoc, d_arho, d_rhoc0,
+        d_rho, d_arho, d_rho0,
         dt
     ):
         # Compute `U^{n+1}`
@@ -422,152 +422,13 @@ class DeltaLESRK2Step(IntegratorStep):
         d_v[d_idx] = d_v0[d_idx] + dt*d_av[d_idx]
         d_w[d_idx] = d_w0[d_idx] + dt*d_aw[d_idx]
 
-        d_rhoc[d_idx] = d_rhoc0[d_idx] + dt*d_arho[d_idx]
+        d_rho[d_idx] = d_rho0[d_idx] + dt*d_arho[d_idx]
 
-
-class DeltaLESRK4Step(IntegratorStep):
-    def initialize(
-        self, d_idx, d_x0, d_y0, d_z0, d_xi, d_yi, d_zi, d_x, d_y, d_z, 
-        d_u0, d_v0, d_w0, d_ui, d_vi, d_wi, d_u, d_v, d_w, 
-        d_rhoc, d_rhoc0, d_rhoci,
-    ):
-        # Initialise `U^{n}`
-        d_x0[d_idx] = d_x[d_idx]
-        d_y0[d_idx] = d_y[d_idx]
-        d_z0[d_idx] = d_z[d_idx]
-
-        d_u0[d_idx] = d_u[d_idx]
-        d_v0[d_idx] = d_v[d_idx]
-        d_w0[d_idx] = d_w[d_idx]
-
-        d_rhoc0[d_idx] = d_rhoc[d_idx]
-
-        # Initialise `U^{i}`
-        d_xi[d_idx] = 0.0
-        d_yi[d_idx] = 0.0
-        d_zi[d_idx] = 0.0
-
-        d_ui[d_idx] = 0.0
-        d_vi[d_idx] = 0.0
-        d_wi[d_idx] = 0.0
-        
-        d_rhoci[d_idx] = 0.0
-
-    def stage1(
-        self, d_idx, d_x0, d_y0, d_z0, d_xi, d_yi, d_zi, d_x, d_y, d_z,
-        d_u0, d_v0, d_w0, d_ui, d_vi, d_wi, d_u, d_v, d_w, d_au, d_av, d_aw,
-        d_du, d_dv, d_dw,
-        d_rhoc, d_arho, d_rhoc0, d_rhoci,
-        dt
-    ):
-        dtb2 = 0.5*dt
-
-        # Store `f(U^{n})`
-        d_xi[d_idx] = d_u[d_idx] + d_du[d_idx]
-        d_yi[d_idx] = d_v[d_idx] + d_dv[d_idx]
-        d_zi[d_idx] = d_w[d_idx] + d_dw[d_idx]
-
-        d_ui[d_idx] = d_au[d_idx]
-        d_vi[d_idx] = d_av[d_idx]
-        d_wi[d_idx] = d_aw[d_idx]
-
-        d_rhoci[d_idx] = d_arho[d_idx]
-
-        # Compute `U^{1}`
-        d_x[d_idx] = d_x0[d_idx] + dtb2*(d_u[d_idx] + d_du[d_idx])
-        d_y[d_idx] = d_y0[d_idx] + dtb2*(d_v[d_idx] + d_dv[d_idx])
-        d_z[d_idx] = d_z0[d_idx] + dtb2*(d_w[d_idx] + d_dw[d_idx])
-
-        d_u[d_idx] = d_u0[d_idx] + dtb2*d_au[d_idx]
-        d_v[d_idx] = d_v0[d_idx] + dtb2*d_av[d_idx]
-        d_w[d_idx] = d_w0[d_idx] + dtb2*d_aw[d_idx]
-
-        d_rhoc[d_idx] = d_rhoc0[d_idx] + dtb2*d_arho[d_idx]
-    
-    def stage2(
-        self, d_idx, d_x0, d_y0, d_z0, d_xi, d_yi, d_zi, d_x, d_y, d_z,
-        d_u0, d_v0, d_w0, d_ui, d_vi, d_wi, d_u, d_v, d_w, d_au, d_av, d_aw,
-        d_du, d_dv, d_dw,
-        d_rhoc, d_arho, d_rhoc0, d_rhoci,
-        dt
-    ):
-        dtb2 = 0.5*dt
-
-        # Store `f(U^{n}) + 2f(U^{1})`
-        d_xi[d_idx] += 2.*(d_u[d_idx] + d_du[d_idx])
-        d_yi[d_idx] += 2.*(d_v[d_idx] + d_dv[d_idx])
-        d_zi[d_idx] += 2.*(d_w[d_idx] + d_dw[d_idx])
-
-        d_ui[d_idx] += 2.*d_au[d_idx]
-        d_vi[d_idx] += 2.*d_av[d_idx]
-        d_wi[d_idx] += 2.*d_aw[d_idx]
-
-        d_rhoci[d_idx] += 2.*d_arho[d_idx]
-
-        # Compute `U^{2}`
-        d_x[d_idx] = d_x0[d_idx] + dtb2*(d_u[d_idx] + d_du[d_idx])
-        d_y[d_idx] = d_y0[d_idx] + dtb2*(d_v[d_idx] + d_dv[d_idx])
-        d_z[d_idx] = d_z0[d_idx] + dtb2*(d_w[d_idx] + d_dw[d_idx])
-
-        d_u[d_idx] = d_u0[d_idx] + dtb2*d_au[d_idx]
-        d_v[d_idx] = d_v0[d_idx] + dtb2*d_av[d_idx]
-        d_w[d_idx] = d_w0[d_idx] + dtb2*d_aw[d_idx]
-
-        d_rhoc[d_idx] = d_rhoc0[d_idx] + dtb2*d_arho[d_idx]
-
-    def stage3(
-        self, d_idx, d_x0, d_y0, d_z0, d_xi, d_yi, d_zi, d_x, d_y, d_z,
-        d_u0, d_v0, d_w0, d_ui, d_vi, d_wi, d_u, d_v, d_w, d_au, d_av, d_aw,
-        d_du, d_dv, d_dw,
-        d_rhoc, d_arho, d_rhoc0, d_rhoci,
-        dt
-    ):
-        # Store `f(U^{n}) + 2f(U^{1}) + 2f(U^{2})`
-        d_xi[d_idx] += 2.*(d_u[d_idx] + d_du[d_idx])
-        d_yi[d_idx] += 2.*(d_v[d_idx] + d_dv[d_idx])
-        d_zi[d_idx] += 2.*(d_w[d_idx] + d_dw[d_idx])
-
-        d_ui[d_idx] += 2.*d_au[d_idx]
-        d_vi[d_idx] += 2.*d_av[d_idx]
-        d_wi[d_idx] += 2.*d_aw[d_idx]
-
-        d_rhoci[d_idx] += 2.*d_arho[d_idx]
-
-        # Compute `U^{3}`
-        d_x[d_idx] = d_x0[d_idx] + dt*(d_u[d_idx] + d_du[d_idx])
-        d_y[d_idx] = d_y0[d_idx] + dt*(d_v[d_idx] + d_dv[d_idx])
-        d_z[d_idx] = d_z0[d_idx] + dt*(d_w[d_idx] + d_dw[d_idx])
-
-        d_u[d_idx] = d_u0[d_idx] + dt*d_au[d_idx]
-        d_v[d_idx] = d_v0[d_idx] + dt*d_av[d_idx]
-        d_w[d_idx] = d_w0[d_idx] + dt*d_aw[d_idx]
-
-        d_rhoc[d_idx] = d_rhoc0[d_idx] + dt*d_arho[d_idx]
-
-    def stage4(
-        self, d_idx, d_x0, d_y0, d_z0, d_xi, d_yi, d_zi, d_x, d_y, d_z,
-        d_u0, d_v0, d_w0, d_ui, d_vi, d_wi, d_u, d_v, d_w, d_au, d_av, d_aw,
-        d_du, d_dv, d_dw,
-        d_rhoc, d_arho, d_rhoc0, d_rhoci,
-        dt,
-    ):
-        dtb6 = dt/6.
-        
-        # Compute `U^{n+1}`
-        d_x[d_idx] = d_x0[d_idx] + dtb6*(d_xi[d_idx] + d_u[d_idx] + d_du[d_idx])
-        d_y[d_idx] = d_y0[d_idx] + dtb6*(d_yi[d_idx] + d_v[d_idx] + d_dv[d_idx])
-        d_z[d_idx] = d_z0[d_idx] + dtb6*(d_zi[d_idx] + d_w[d_idx] + d_dw[d_idx])
-
-        d_u[d_idx] = d_u0[d_idx] + dtb6*(d_ui[d_idx] + d_au[d_idx])
-        d_v[d_idx] = d_v0[d_idx] + dtb6*(d_vi[d_idx] + d_av[d_idx])
-        d_w[d_idx] = d_w0[d_idx] + dtb6*(d_wi[d_idx] + d_aw[d_idx])
-
-        d_rhoc[d_idx] = d_rhoc0[d_idx] + dtb6*(d_rhoci[d_idx] + d_arho[d_idx])
 
 ###########################################################################
 # Scheme
 ###########################################################################
-class DeltaLESScheme(Scheme):
+class DeltaLES_SD_Scheme(Scheme):
     def __init__(
         self, fluids, solids,
         dim, rho0, c0, h0, hdx, prob_l, Ma, Umax, nu,
@@ -650,7 +511,7 @@ class DeltaLESScheme(Scheme):
             steppers.update(extra_steppers)
 
         cls = integrator_cls if integrator_cls is not None else RK2Integrator
-        step_cls = DeltaLESRK2Step
+        step_cls = DeltaLES_SD_RK2Step
         for name in self.fluids + self.solids:
             if name not in steppers:
                 steppers[name] = step_cls()
@@ -758,25 +619,19 @@ class DeltaLESScheme(Scheme):
             equations=g4_2, real=False, name=get_grp_name(g4_2)))
 
         
-        # Add equation to compute the continuity equation
+        # Add equation to compute the continuity and momentum equations
         g5 = []
         for name in self.fluids:
             g5.append(ContinuityEquationLES(
                 dest=name, sources=all, prob_l=self.prob_l,
                 C_delta=self.C_delta
             ))
-        equations.append(Group(equations=g5, name=get_grp_name(g5)))
-
-        
-        # Add equation to compute the momentum equation
-        g6 = []
-        for name in self.fluids:
-            g6.append(MomentumEquationLES(
+            g5.append(MomentumEquationLES(
                 dest=name, sources=all, dim=self.dim, rho0=self.rho0,
                 mu=self.mu, prob_l=self.prob_l, C_S=self.C_S,
                 tensile_correction=self.tensile_correction
             ))
-        equations.append(Group(equations=g6, name=get_grp_name(g6)))
+        equations.append(Group(equations=g5, name=get_grp_name(g5)))
 
         return equations
 
@@ -842,7 +697,7 @@ class DeltaLESScheme(Scheme):
         output_props = [
             'x', 'y', 'z',
             'u', 'v', 'w', 'du', 'dv', 'dw',
-            'rho', 'm', 'h', 'p', 'rhoc',
+            'rho', 'm', 'h', 'p',
             'gradv', 'gradp', 'S',
             'pid', 'gid', 'tag',
         ]
@@ -850,7 +705,7 @@ class DeltaLESScheme(Scheme):
         props = list(dummy.properties.keys()) + [
             'V0',
             'du', 'dv', 'dw',
-            'rhoc', 'rhoc0', 'ap', 'p0',
+            'rho0', 'ap', 'p0',
             dict(name='gradv', stride=9),
             dict(name='m_mat', stride=9),
             dict(name='gradp', stride=3),
@@ -861,11 +716,6 @@ class DeltaLESScheme(Scheme):
             'vmax', 
             'ki', 'ki0', 
             dict(name='dpos', stride=3),
-        ]
-        props += [
-            'xi', 'yi', 'zi',
-            'ui', 'vi', 'wi',
-            'rhoci'
         ]
 
         for pa in particles:
