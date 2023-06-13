@@ -355,12 +355,12 @@ class TGV2DSchemeComparison(PySPHProblem):
         scheme_opts += mdict(
             scheme=['deltales'], les_no_pst=[None], les_no_tc=[None]
         )
-        # integrator_opts = mdict(
-        #     integrator=['pec'], integrator_dt_mul_fac=[1, 2]
-        # )
-        integrator_opts += mdict(
-            integrator=['rk2'], integrator_dt_mul_fac=[2]
+        integrator_opts = mdict(
+            integrator=['pec'], integrator_dt_mul_fac=[1]
         )
+        # integrator_opts += mdict(
+            # integrator=['rk2'], integrator_dt_mul_fac=[2]
+        # )
         # integrator_opts += mdict(
         #     integrator=['rk3'], integrator_dt_mul_fac=[3]
         # )

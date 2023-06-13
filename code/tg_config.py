@@ -2,15 +2,17 @@
 ###
 from compyle.api import declare
 from delta_plus import DeltaPlusSPHScheme
-from deltaLES import DeltaLESScheme
+from deltaLES import DeltaLESRK2Step, DeltaLESScheme
 from ewcsph import EWCSPHScheme
 from k_eps import KEpsilonScheme
 from monaghan2017 import Monaghan2017Scheme
 from numpy import cos, exp, linspace, pi, sin, sqrt
 from okra2022 import Okra2022Scheme
+from patch import initialize, stage1, stage2
 from pst import ShiftPositions
 from pysph.sph.equation import Equation, Group
 from pysph.sph.iisph import IISPHScheme
+from pysph.sph.integrator_step import WCSPHStep
 from pysph.sph.isph.isph import ISPHScheme
 from pysph.sph.isph.sisph import SISPHScheme
 from pysph.sph.scheme import SchemeChooser, TVFScheme, WCSPHScheme
@@ -23,6 +25,9 @@ from pysph.sph.wc.kernel_correction import (GradientCorrection,
                                             MixedKernelCorrectionPreStep)
 from pysph.sph.wc.pcisph import PCISPHScheme
 from remesh import RemeshScheme
+from sph_integrators import (PECIntegrator, RK2Integrator, RK2Stepper,
+                             RK2StepperAdaptive, RK3Integrator, RK3Stepper,
+                             RK4Integrator, RK4Stepper)
 from tisph import SummationDensity, TISPHScheme
 from tsph_dsph import TSPHWithDSPHScheme
 from tsph_with_pst import TSPHScheme
@@ -90,22 +95,17 @@ def configure_scheme(app, p0, gx=0.0):
     elif app.options.scheme == 'tsph':
         scheme.configure(hdx=app.hdx, nu=app.nu, h0=h0, gx=gx, periodic=app.no_periodic)
         if integrator_cls == 'pec':
-            from sph_integrators import PECIntegrator
             integrator_cls = PECIntegrator
         elif integrator_cls == 'rk2':
-            from sph_integrators import (RK2Integrator, RK2Stepper,
-                                         RK2StepperAdaptive)
             integrator_cls = RK2Integrator
             if app.adaptive_timestep:
                 extra_steppers = dict(fluid=RK2StepperAdaptive())
             else:
                 extra_steppers = dict(fluid=RK2Stepper())
         elif integrator_cls == 'rk3':
-            from sph_integrators import RK3Integrator, RK3Stepper
             integrator_cls = RK3Integrator
             extra_steppers = dict(fluid=RK3Stepper())
         elif integrator_cls == 'rk4':
-            from sph_integrators import RK4Integrator, RK4Stepper
             integrator_cls = RK4Integrator
             extra_steppers = dict(fluid=RK4Stepper())
     elif app.options.scheme == 'rsph':
@@ -116,8 +116,6 @@ def configure_scheme(app, p0, gx=0.0):
         scheme.configure(hdx=app.hdx, nu=app.nu, h0=h0)
     elif app.options.scheme == 'wcsph':
         if scheme.scheme.summation_density:
-            from patch import initialize, stage1, stage2
-            from pysph.sph.integrator_step import WCSPHStep
             WCSPHStep.initialize = initialize
             WCSPHStep.stage1 = stage1
             WCSPHStep.stage2 = stage2
@@ -148,6 +146,12 @@ def configure_scheme(app, p0, gx=0.0):
         scheme.configure(
             hdx=app.hdx, nu=app.nu, h0=h0, prob_l=app.dx
         )
+        if integrator_cls == 'pec':
+            integrator_cls = PECIntegrator
+            extra_steppers = dict(fluid=DeltaLESRK2Step())
+        elif integrator_cls == 'rk2':
+            integrator_cls = RK2Integrator
+            extra_steppers = dict(fluid=DeltaLESRK2Step())
 
     if type(integrator_cls) == str:
         raise NotImplementedError(f"{integrator_cls} not implemented")
