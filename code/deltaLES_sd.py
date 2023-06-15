@@ -227,7 +227,7 @@ class ContinuityEquationLES(Equation):
 
         nui = self.nu_fac * Smagi
         nuj = self.nu_fac * Smagj
-        deltaij = 2.0 * nui * nuj / (nui + nuj)
+        deltaij = 2.0 * nui * nuj / (nui + nuj + EPS)
 
         gradpdotxij = 0.0
         for i in range(3):
@@ -324,7 +324,7 @@ class MomentumEquationLES(Equation):
 
         nui = self.nu_fac * Smagi
         nuj = self.nu_fac * Smagj
-        alphaij = self.alpha_term + (2 * nui * nuj / (nui + nuj))
+        alphaij = self.alpha_term + (2 * nui * nuj / (nui + nuj + EPS))
         vjidotxji = VIJ[0]*XIJ[0] + VIJ[1]*XIJ[1] + VIJ[2]*XIJ[2]
         piij = vjidotxji / (R2IJ + EPS)
 
@@ -347,7 +347,7 @@ class MomentumEquationLES(Equation):
         
         rho0i = self.rho0 / rhoi
 
-        term_1_fac = -(1/rhoi) * Pij * Vj
+        term_1_fac = -(Pij * Vj) / (rhoi + EPS)
         for i in range(3):
             term_1[i] = term_1_fac * DWIJ[i]
         
