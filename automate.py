@@ -775,29 +775,32 @@ class TGV2DIntegratorComparison(PySPHProblem):
 
     def setup(self):
         scheme_opts = mdict(
-            scheme=['tsph'], re=[100, 1000, 5000]
+            scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
         )
+        scheme_opts += mdict(scheme=['deltales'], pst_freq=[10])
+        scheme_opts += mdict(scheme=['deltales_sd'], pst_freq=[10])
+
         integrator_opts = mdict(
-            integrator=['pec'], integrator_dt_mul_fac=[1, 2], pst_freq=[10],
+            integrator=['pec'], integrator_dt_mul_fac=[1], pst_freq=[10],
         )
-        integrator_opts += mdict(
-            integrator=['rk2'], integrator_dt_mul_fac=[2], pst_freq=[10],
-            # NOTE: dt_mul cannot be 1 for rk2. This has been hardcoded for
-            # now. Refer below for more details.
-        )
-        integrator_opts += mdict(
-            integrator=['rk2'], integrator_dt_mul_fac=[1], pst_freq=[10],
-            adaptive_timestep=[None]
-            # NOTE: dt_mul = 1 and integ = 'rk2' for appropriate plotting and
-            # labelling. This has been hardcoded for now.
-        )
-        integrator_opts += mdict(
-            integrator=['rk3'], integrator_dt_mul_fac=[3, 6], pst_freq=[10],
-        )
+        # integrator_opts += mdict(
+        #     integrator=['rk2'], integrator_dt_mul_fac=[2], pst_freq=[10],
+        #     # NOTE: dt_mul cannot be 1 for rk2. This has been hardcoded for
+        #     # now. Refer below for more details.
+        # )
+        # integrator_opts += mdict(
+        #     integrator=['rk2'], integrator_dt_mul_fac=[1], pst_freq=[10],
+        #     adaptive_timestep=[None]
+        #     # NOTE: dt_mul = 1 and integ = 'rk2' for appropriate plotting and
+        #     # labelling. This has been hardcoded for now.
+        # )
+        # integrator_opts += mdict(
+        #     integrator=['rk3'], integrator_dt_mul_fac=[3, 6], pst_freq=[10],
+        # )
         # integrator_opts += mdict(
         #     integrator=['rk4'], integrator_dt_mul_fac=[2, 4, 8], pst_freq=[10],
         # )
-        res_opts = mdict(nx=[25, 50, 100], c0_fac=[20])
+        res_opts = mdict(nx=[25, 50, 100], c0_fac=[20], re=[100, 1000, 5000])
         
         self.sim_opts = sim_opts = dprod(
             scheme_opts,

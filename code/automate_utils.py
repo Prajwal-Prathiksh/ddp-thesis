@@ -168,13 +168,17 @@ def get_label_from_scheme(scheme):
     label : str
         The label for the given scheme.
     """
-    if "tvf"==scheme:
+    if scheme == "tvf":
         return 'TVF'
-    elif 'ewcsph' ==scheme:
+    elif scheme == 'ewcsph':
         return 'EWCSPH'
-    elif 'delta_plus' ==scheme:
+    elif scheme == 'delta_plus':
         return r'$\delta^{+}SPH$'
-    elif 'tsph'==scheme:
+    elif scheme == 'tsph':
         return 'L-IPST-C'
-    elif 'edac' ==scheme:
+    elif scheme == 'edac':
         return 'EDAC'
+    elif scheme == 'deltales':
+        return 'Delta-LES (rhoc)'
+    elif scheme == 'deltales_sd':
+        return 'Delta-LES (rho)'
