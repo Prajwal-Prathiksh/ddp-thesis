@@ -856,6 +856,11 @@ class DeltaLES_SD_Scheme(Scheme):
             'ki', 'ki0', 
             dict(name='dpos', stride=3),
         ]
+        props += [
+            'xi', 'yi', 'zi',
+            'ui', 'vi', 'wi',
+            'rhoi'
+        ]
 
         for pa in particles:
             self._ensure_properties(pa, props, clean)
