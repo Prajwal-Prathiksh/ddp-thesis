@@ -3,7 +3,8 @@
 from compyle.api import declare
 from delta_plus import DeltaPlusSPHScheme
 from deltaLES import DeltaLESRK2Step, DeltaLESRK4Step, DeltaLESScheme
-from deltaLES_sd import DeltaLES_SD_RK2Step, DeltaLES_SD_Scheme
+from deltaLES_sd import (DeltaLES_SD_RK2Step, DeltaLES_SD_RK4Step,
+                         DeltaLES_SD_Scheme)
 from ewcsph import EWCSPHScheme
 from k_eps import KEpsilonScheme
 from monaghan2017 import Monaghan2017Scheme
@@ -166,6 +167,9 @@ def configure_scheme(app, p0, gx=0.0):
         elif integrator_cls == 'rk2':
             integrator_cls = RK2Integrator
             extra_steppers = dict(fluid=DeltaLES_SD_RK2Step())
+        elif integrator_cls == 'rk4':
+            integrator_cls = RK4Integrator
+            extra_steppers = dict(fluid=DeltaLES_SD_RK4Step())
 
     if type(integrator_cls) == str:
         raise NotImplementedError(f"{integrator_cls} not implemented")

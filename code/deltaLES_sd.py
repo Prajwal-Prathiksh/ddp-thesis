@@ -424,6 +424,145 @@ class DeltaLES_SD_RK2Step(IntegratorStep):
 
         d_rho[d_idx] = d_rho0[d_idx] + dt*d_arho[d_idx]
 
+class DeltaLES_SD_RK4Step(IntegratorStep):
+    def initialize(
+        self, d_idx, d_x0, d_y0, d_z0, d_xi, d_yi, d_zi, d_x, d_y, d_z, 
+        d_u0, d_v0, d_w0, d_ui, d_vi, d_wi, d_u, d_v, d_w, 
+        d_rho, d_rho0, d_rhoi,
+    ):
+        # Initialise `U^{n}`
+        d_x0[d_idx] = d_x[d_idx]
+        d_y0[d_idx] = d_y[d_idx]
+        d_z0[d_idx] = d_z[d_idx]
+
+        d_u0[d_idx] = d_u[d_idx]
+        d_v0[d_idx] = d_v[d_idx]
+        d_w0[d_idx] = d_w[d_idx]
+
+        d_rho0[d_idx] = d_rho[d_idx]
+
+        # Initialise `U^{i}`
+        d_xi[d_idx] = 0.0
+        d_yi[d_idx] = 0.0
+        d_zi[d_idx] = 0.0
+
+        d_ui[d_idx] = 0.0
+        d_vi[d_idx] = 0.0
+        d_wi[d_idx] = 0.0
+        
+        d_rhoi[d_idx] = 0.0
+
+    def stage1(
+        self, d_idx, d_x0, d_y0, d_z0, d_xi, d_yi, d_zi, d_x, d_y, d_z,
+        d_u0, d_v0, d_w0, d_ui, d_vi, d_wi, d_u, d_v, d_w, d_au, d_av, d_aw,
+        d_du, d_dv, d_dw,
+        d_rho, d_arho, d_rho0, d_rhoi,
+        dt
+    ):
+        dtb2 = 0.5*dt
+
+        # Store `f(U^{n})`
+        d_xi[d_idx] = d_u[d_idx] + d_du[d_idx]
+        d_yi[d_idx] = d_v[d_idx] + d_dv[d_idx]
+        d_zi[d_idx] = d_w[d_idx] + d_dw[d_idx]
+
+        d_ui[d_idx] = d_au[d_idx]
+        d_vi[d_idx] = d_av[d_idx]
+        d_wi[d_idx] = d_aw[d_idx]
+
+        d_rhoi[d_idx] = d_arho[d_idx]
+
+        # Compute `U^{1}`
+        d_x[d_idx] = d_x0[d_idx] + dtb2*(d_u[d_idx] + d_du[d_idx])
+        d_y[d_idx] = d_y0[d_idx] + dtb2*(d_v[d_idx] + d_dv[d_idx])
+        d_z[d_idx] = d_z0[d_idx] + dtb2*(d_w[d_idx] + d_dw[d_idx])
+
+        d_u[d_idx] = d_u0[d_idx] + dtb2*d_au[d_idx]
+        d_v[d_idx] = d_v0[d_idx] + dtb2*d_av[d_idx]
+        d_w[d_idx] = d_w0[d_idx] + dtb2*d_aw[d_idx]
+
+        d_rho[d_idx] = d_rho0[d_idx] + dtb2*d_arho[d_idx]
+    
+    def stage2(
+        self, d_idx, d_x0, d_y0, d_z0, d_xi, d_yi, d_zi, d_x, d_y, d_z,
+        d_u0, d_v0, d_w0, d_ui, d_vi, d_wi, d_u, d_v, d_w, d_au, d_av, d_aw,
+        d_du, d_dv, d_dw,
+        d_rho, d_arho, d_rho0, d_rhoi,
+        dt
+    ):
+        dtb2 = 0.5*dt
+
+        # Store `f(U^{n}) + 2f(U^{1})`
+        d_xi[d_idx] += 2.*(d_u[d_idx] + d_du[d_idx])
+        d_yi[d_idx] += 2.*(d_v[d_idx] + d_dv[d_idx])
+        d_zi[d_idx] += 2.*(d_w[d_idx] + d_dw[d_idx])
+
+        d_ui[d_idx] += 2.*d_au[d_idx]
+        d_vi[d_idx] += 2.*d_av[d_idx]
+        d_wi[d_idx] += 2.*d_aw[d_idx]
+
+        d_rhoi[d_idx] += 2.*d_arho[d_idx]
+
+        # Compute `U^{2}`
+        d_x[d_idx] = d_x0[d_idx] + dtb2*(d_u[d_idx] + d_du[d_idx])
+        d_y[d_idx] = d_y0[d_idx] + dtb2*(d_v[d_idx] + d_dv[d_idx])
+        d_z[d_idx] = d_z0[d_idx] + dtb2*(d_w[d_idx] + d_dw[d_idx])
+
+        d_u[d_idx] = d_u0[d_idx] + dtb2*d_au[d_idx]
+        d_v[d_idx] = d_v0[d_idx] + dtb2*d_av[d_idx]
+        d_w[d_idx] = d_w0[d_idx] + dtb2*d_aw[d_idx]
+
+        d_rho[d_idx] = d_rho0[d_idx] + dtb2*d_arho[d_idx]
+
+    def stage3(
+        self, d_idx, d_x0, d_y0, d_z0, d_xi, d_yi, d_zi, d_x, d_y, d_z,
+        d_u0, d_v0, d_w0, d_ui, d_vi, d_wi, d_u, d_v, d_w, d_au, d_av, d_aw,
+        d_du, d_dv, d_dw,
+        d_rho, d_arho, d_rho0, d_rhoi,
+        dt
+    ):
+        # Store `f(U^{n}) + 2f(U^{1}) + 2f(U^{2})`
+        d_xi[d_idx] += 2.*(d_u[d_idx] + d_du[d_idx])
+        d_yi[d_idx] += 2.*(d_v[d_idx] + d_dv[d_idx])
+        d_zi[d_idx] += 2.*(d_w[d_idx] + d_dw[d_idx])
+
+        d_ui[d_idx] += 2.*d_au[d_idx]
+        d_vi[d_idx] += 2.*d_av[d_idx]
+        d_wi[d_idx] += 2.*d_aw[d_idx]
+
+        d_rhoi[d_idx] += 2.*d_arho[d_idx]
+
+        # Compute `U^{3}`
+        d_x[d_idx] = d_x0[d_idx] + dt*(d_u[d_idx] + d_du[d_idx])
+        d_y[d_idx] = d_y0[d_idx] + dt*(d_v[d_idx] + d_dv[d_idx])
+        d_z[d_idx] = d_z0[d_idx] + dt*(d_w[d_idx] + d_dw[d_idx])
+
+        d_u[d_idx] = d_u0[d_idx] + dt*d_au[d_idx]
+        d_v[d_idx] = d_v0[d_idx] + dt*d_av[d_idx]
+        d_w[d_idx] = d_w0[d_idx] + dt*d_aw[d_idx]
+
+        d_rho[d_idx] = d_rho0[d_idx] + dt*d_arho[d_idx]
+
+    def stage4(
+        self, d_idx, d_x0, d_y0, d_z0, d_xi, d_yi, d_zi, d_x, d_y, d_z,
+        d_u0, d_v0, d_w0, d_ui, d_vi, d_wi, d_u, d_v, d_w, d_au, d_av, d_aw,
+        d_du, d_dv, d_dw,
+        d_rho, d_arho, d_rho0, d_rhoi,
+        dt,
+    ):
+        dtb6 = dt/6.
+        
+        # Compute `U^{n+1}`
+        d_x[d_idx] = d_x0[d_idx] + dtb6*(d_xi[d_idx] + d_u[d_idx] + d_du[d_idx])
+        d_y[d_idx] = d_y0[d_idx] + dtb6*(d_yi[d_idx] + d_v[d_idx] + d_dv[d_idx])
+        d_z[d_idx] = d_z0[d_idx] + dtb6*(d_zi[d_idx] + d_w[d_idx] + d_dw[d_idx])
+
+        d_u[d_idx] = d_u0[d_idx] + dtb6*(d_ui[d_idx] + d_au[d_idx])
+        d_v[d_idx] = d_v0[d_idx] + dtb6*(d_vi[d_idx] + d_av[d_idx])
+        d_w[d_idx] = d_w0[d_idx] + dtb6*(d_wi[d_idx] + d_aw[d_idx])
+
+        d_rho[d_idx] = d_rho0[d_idx] + dtb6*(d_rhoi[d_idx] + d_arho[d_idx])
+
 
 ###########################################################################
 # Scheme
