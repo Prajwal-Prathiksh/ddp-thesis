@@ -203,7 +203,7 @@ class KTransportEquation(Equation):
     def initialize(self, d_idx, d_ak):
         d_ak[d_idx] = 0.0
 
-    def loop(self, d_idx, d_ak, d_eps, d_lapk, d_S):
+    def post_loop(self, d_idx, d_ak, d_eps, d_lapk, d_S):
         i, didx9 = declare('int', 2)
         didx9 = 9*d_idx
 
@@ -230,7 +230,7 @@ class KTransportEquationExpanded(Equation):
     def initialize(self, d_idx, d_ak):
         d_ak[d_idx] = 0.0
     
-    def loop(
+    def post_loop(
         self, d_idx, d_ak, d_k, d_eps, d_gradk, d_gradeps, d_lapk, d_S
     ):
         i, didx3, didx9 = declare('int', 3)
@@ -275,7 +275,7 @@ class EpsilonTransportEquation(Equation):
     def initialize(self, d_idx, d_aeps):
         d_aeps[d_idx] = 0.0
     
-    def loop(self, d_idx, d_aeps, d_k, d_eps, d_lapeps, d_S):
+    def post_loop(self, d_idx, d_aeps, d_k, d_eps, d_lapeps, d_S):
         i, didx9 = declare('int', 2)
         didx9 = 9*d_idx
 
@@ -309,7 +309,7 @@ class EpsilonTransportEquationExpanded(Equation):
     def initialize(self, d_idx, d_aeps):
         d_aeps[d_idx] = 0.0
     
-    def loop(
+    def post_loop(
         self, d_idx, d_aeps, d_k, d_eps, d_gradk, d_gradeps, d_lapeps, d_S
     ):
         i, didx3, didx9 = declare('int', 3)
