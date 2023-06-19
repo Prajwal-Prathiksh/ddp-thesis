@@ -62,16 +62,16 @@ def get_test_solution(_x, _y, c0=10., test_case=0):
     rho = (p*7/c0**2 + 1)**(1/7)
 
     # Initialize k and eps
-    CHOICES = [0, 1, 2]
+    CHOICES = [1, 2, 3]
     if test_case not in CHOICES:
         raise ValueError("Invalid test case. Choose from %s" % CHOICES)
-    if test_case == 0:
+    if test_case == 1:
         k = 1.5*U*U
         eps = pow(0.09, 0.75)*pow(k, 1.5)/L
-    elif test_case == 1:
+    elif test_case == 2:
         k = vmag**2
         eps = k
-    elif test_case == 2:
+    elif test_case == 3:
         k = 0.5*vmag**2
         eps = 0.09*k**(3/2)/L
         
@@ -139,7 +139,7 @@ class TestKEpsModel(TurbulentFlowApp):
         )
         group.add_argument(
             "-ketc", "--k-eps-test-case", action="store", type=int,
-            dest="k_eps_test_case", default=0, help="Run the k-eps test case."
+            dest="k_eps_test_case", default=1, help="Run the k-eps test case."
         )
 
     def consume_user_options(self):
@@ -264,33 +264,73 @@ class TestKEpsModel(TurbulentFlowApp):
 
             x.append(array.get('x'))
             y.append(array.get('y'))
+        
+        x, y = x[-1], y[-1]
+        k_rhs, eps_rhs = k_rhs[-1], eps_rhs[-1]
+        k_rhs_ex, eps_rhs_ex = k_rhs_ex[-1], eps_rhs_ex[-1]
+
+        def get_limits(arr):
+            return np.min(arr), np.max(arr)
+        
+        def scaling_coeffs(old_arr, new_arr):
+            a = (old_arr[1] - old_arr[0]) / (new_arr[1] - new_arr[0])
+            b = old_arr[0] - a * new_arr[0]
+            return a, b
+        
+        a, b = scaling_coeffs(get_limits(k_rhs_ex), get_limits(k_rhs))
+        k_rhs_scld = a * k_rhs + b
+
+        a, b = scaling_coeffs(get_limits(eps_rhs_ex), get_limits(eps_rhs))
+        eps_rhs_scld = a * eps_rhs + b
+
+        k_err = np.abs(k_rhs_scld - k_rhs_ex)
+        eps_err = np.abs(eps_rhs_scld - eps_rhs_ex)
+
+        kl1, epsl1 = np.mean(k_err), np.mean(eps_err)
+
 
         fname = os.path.join(self.output_dir, "results.npz")
         np.savez(
             fname, t=t[-1],
-            x=x[-1], y=y[-1],
-            k_rhs=k_rhs[-1], eps_rhs=eps_rhs[-1],
-            k_rhs_ex=k_rhs_ex[-1], eps_rhs_ex=eps_rhs_ex[-1]
+            x=x, y=y,
+            k_rhs=k_rhs, eps_rhs=eps_rhs,
+            k_rhs_ex=k_rhs_ex, eps_rhs_ex=eps_rhs_ex,
+            kl1=kl1, epsl1=epsl1
         )
 
-        def _common_plt_macro():
-            plt.xlabel('x')
+        def _common_plt_macro(no_x=False):
+            if no_x:
+                plt.xticks([])
+            else:
+                plt.xlabel('x')
             plt.ylabel('y')
             plt.colorbar()
             plt.axis('equal')
             plt.xlim(0, L)
             plt.ylim(0, L)
         
-        plt.figure(figsize=(12, 6))
+        plt.figure(figsize=(12, 9))
         plt.clf()
-        plt.subplot(1, 2, 1)
-        plt.scatter(x[-1], y[-1], c=k_rhs[-1], s=10)
+        plt.subplot(221)
+        plt.scatter(x, y, c=k_rhs, s=10)
         plt.title(r'$k$ (RHS)')
+        _common_plt_macro(no_x=True)
+
+        plt.subplot(222)
+        plt.scatter(x, y, c=k_rhs_ex, s=10)
+        plt.title(r'$k$ (RHS) Exact')
+        _common_plt_macro(no_x=True)
+
+        plt.subplot(223)
+        plt.scatter(x, y, c=k_err, s=10)
+        msg = r'$k$ (RHS) Error '
+        msg += f'(mean = {np.mean(k_err):.2e})'
+        plt.title(msg)
         _common_plt_macro()
 
-        plt.subplot(1, 2, 2)
-        plt.scatter(x[-1], y[-1], c=k_rhs_ex[-1], s=10)
-        plt.title(r'$k$ (RHS) Exact')
+        plt.subplot(224)
+        plt.scatter(x, y, c=k_rhs_scld, s=10)
+        plt.title(r'$k$ (RHS) Scaled')
         _common_plt_macro()
 
         plt.suptitle(
@@ -301,15 +341,28 @@ class TestKEpsModel(TurbulentFlowApp):
         plt.savefig(fname, dpi=300)
 
         plt.clf()
-        plt.subplot(1, 2, 1)
-        plt.scatter(x[-1], y[-1], c=eps_rhs[-1], s=10)
+        plt.subplot(221)
+        plt.scatter(x, y, c=eps_rhs, s=10)
         plt.title(r'$\epsilon$ (RHS)')
+        _common_plt_macro(no_x=True)
+
+        plt.subplot(222)
+        plt.scatter(x, y, c=eps_rhs_ex, s=10)
+        plt.title(r'$\epsilon$ (RHS) Exact')
+        _common_plt_macro(no_x=True)
+
+        plt.subplot(223)
+        plt.scatter(x, y, c=eps_err, s=10)
+        msg = r'$\epsilon$ (RHS) Error '
+        msg += f'(mean = {np.mean(eps_err):.2e})'
+        plt.title(msg)
         _common_plt_macro()
 
-        plt.subplot(1, 2, 2)
-        plt.scatter(x[-1], y[-1], c=eps_rhs_ex[-1], s=10)
-        plt.title(r'$\epsilon$ (RHS) Exact')
+        plt.subplot(224)
+        plt.scatter(x, y, c=eps_rhs_scld, s=10)
+        plt.title(r'$\epsilon$ (RHS) Scaled')
         _common_plt_macro()
+
         plt.suptitle(
             fr'$\epsilon$ at t = {t[-1]:.2f} (Re = {self.re}, c0 = {self.c0}) '
             f'(TC = {self.k_eps_test_case})'
