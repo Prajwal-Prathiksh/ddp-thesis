@@ -1028,9 +1028,9 @@ class KEpsModelTesting(PySPHProblem):
 
     def setup(self):
         scheme_opts = mdict(k_eps_expand=['yes', 'no'])
-        tc_opts = mdict(k_eps_test_case=[0, 1, 2])
+        tc_opts = mdict(k_eps_test_case=[1, 2, 3])
         res_opts = mdict(
-            nx=[200], re=[100], c0_fac=[10, 20, 40]
+            nx=[50, 100, 200, 400], re=[100], c0_fac=[10, 20, 40]
         )
 
         self.sim_opts = sim_opts = dprod(
@@ -1064,6 +1064,68 @@ class KEpsModelTesting(PySPHProblem):
     
     def run(self):
         self.make_output_dir()
+
+        # Unpack the simulation options
+        sim_opts = self.sim_opts
+        self.res = get_all_unique_values(sim_opts, 're')
+        self.nxs = get_all_unique_values(sim_opts, 'nx')
+        self.c0s = get_all_unique_values(sim_opts, 'c0_fac')
+        self.ketcs = get_all_unique_values(sim_opts, 'k_eps_test_case')
+        self.ke_expds = get_all_unique_values(sim_opts, 'k_eps_expand')
+
+        # Plotters
+        for re in self.res:
+            for prop in ['k', 'eps']:
+                self._plot_l1_convergence(prop=prop, re=re)
+    
+    def calculate_l1(self, cases, prop='k'):
+        if prop == 'k':
+            var = 'kl1'
+        elif prop == 'eps':
+            var = 'epsl1'
+        else:
+            raise ValueError("Choose k or eps.")
+        data = {}
+        for case in cases:
+            l1 = float(case.data[var])
+            data[case.params['nx']] = l1
+        nx_arr = np.asarray(sorted(data.keys()), dtype=float)
+        l1 = np.asarray([data[x] for x in nx_arr])
+        return nx_arr, l1
+    
+    def _plot_l1_convergence(self, re, prop='k'):
+        plt.figure()
+        marker = cycle(MARKER)
+        for tc in self.ketcs:
+            for c0 in self.c0s:
+                for ke_expd in self.ke_expds:
+                    cases = filter_cases(
+                        self.cases, k_eps_test_case=tc,
+                        c0_fac=c0, re=re, k_eps_expand=ke_expd
+                    )
+                    if len(cases) < 1:
+                        continue
+                    dts, l1 = self.calculate_l1(cases, prop=prop)
+                    dts = 1./dts
+                    label = fr'Case-{tc} (c0={c0}) ($k-\epsilon$ expd: {ke_expd})'
+                    plt.loglog(dts, l1, label=label, marker=next(marker))
+
+        plt.loglog(dts, l1[0]*(dts/dts[0])**2, 'k--', linewidth=2,
+                label=r'$O(h^2)$')
+        plt.loglog(dts, l1[0]*(dts/dts[0]), 'k:', linewidth=2,
+                label=r'$O(h)$')
+        plt.grid()
+        plt.legend(loc='best')
+        plt.xlabel(r'$h$')
+        plt.ylabel(r'$L_1$ error')
+        _pl = r'$k$' if prop == 'k' else r'$\epsilon$'
+        plt.title(
+            fr'Spatial Operators Convergence - $L_1$ error in {_pl} (Re = {re})'
+        )
+        fname = self.output_path(f'{prop}_conv_re_{re}.png')
+        plt.savefig(fname, dpi=300)
+        plt.close()
+
 
 
 if __name__ == "__main__":
