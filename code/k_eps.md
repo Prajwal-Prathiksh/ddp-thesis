@@ -53,7 +53,7 @@ $$ \frac{Dk}{Dt} = \nabla \cdot \bigg( \frac{\nu_t}{\sigma_k} \nabla k \bigg) + 
 $$(\nabla k)_{i} = \sum_{j} \Big( k_j - k_i \Big) \cdot \nabla W_{ij} \omega_{j} $$
 $$ \nabla \cdot \bigg ( \frac{k^2}{\epsilon} \nabla k \bigg)_{i} = \sum_{j} \bigg ( \frac{k^2_j}{\epsilon_j}(\nabla k)_{j} - \frac{k^2_i}{\epsilon_i}(\nabla k)_{i} \bigg) \cdot \nabla W_{ij} \omega_{j} $$
 
-$$ \implies \frac{Dk}{Dt} = \frac{C_d}{\sigma_k} \nabla \cdot \bigg ( \frac{k^2}{\epsilon} \nabla k \bigg) + P_k - \epsilon $$
+$$ \boxed{\implies \frac{Dk}{Dt} = \frac{C_d}{\sigma_k} \nabla \cdot \bigg ( \frac{k^2}{\epsilon} \nabla k \bigg) + P_k - \epsilon }$$
 
 
 $$ = \frac{C_d}{\sigma_k} \bigg( \frac{k^2}{\epsilon} \nabla^2 k + \nabla k \cdot \nabla \bigg( \frac{k^2}{\epsilon} \bigg) \bigg) + P_k - \epsilon $$
@@ -68,7 +68,7 @@ $$ (\nabla \epsilon)_{i} = \sum_{j} \Big( \epsilon_j - \epsilon_i \Big) \cdot \n
 $$ \nabla \cdot \bigg ( \frac{k^2}{\epsilon} \nabla \epsilon \bigg)_{i} = \sum_{j} \bigg ( \frac{k^2_j}{\epsilon_j}(\nabla \epsilon)_{j} - \frac{k^2_i}{\epsilon_i}(\nabla \epsilon)_{i} \bigg) \cdot \nabla W_{ij} \omega_{j} $$
 
 
-$$ \implies \frac{D\epsilon}{Dt} = \frac{C_d}{\sigma_\epsilon} \nabla \cdot \bigg( \frac{k^2}{\epsilon} \nabla \epsilon \bigg) + C_{1\epsilon} \frac{\epsilon}{k} P_k - C_{2\epsilon} \frac{\epsilon^2}{k} $$
+$$ \boxed{\implies \frac{D\epsilon}{Dt} = \frac{C_d}{\sigma_\epsilon} \nabla \cdot \bigg( \frac{k^2}{\epsilon} \nabla \epsilon \bigg) + C_{1\epsilon} \frac{\epsilon}{k} P_k - C_{2\epsilon} \frac{\epsilon^2}{k} }$$
 
 $$ = \frac{C_d}{\sigma_\epsilon} \bigg( \frac{k^2}{\epsilon} \nabla^2 \epsilon + \nabla \epsilon \cdot \nabla \bigg( \frac{k^2}{\epsilon} \bigg) \bigg) + C_{1\epsilon} \frac{\epsilon}{k} P_k - C_{2\epsilon} \frac{\epsilon^2}{k} $$
 
