@@ -6,6 +6,7 @@ from pysph.sph.integrator_step import IntegratorStep
 
 from pysph.base.reduce_array import serial_reduce_array, parallel_reduce_array
 from math import sqrt
+from compyle.api import declare
 
 
 class DeltaPlusSPHStep(IntegratorStep):
