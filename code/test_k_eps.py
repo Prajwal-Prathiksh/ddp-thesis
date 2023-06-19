@@ -283,8 +283,8 @@ class TestKEpsModel(TurbulentFlowApp):
         a, b = scaling_coeffs(get_limits(eps_rhs_ex), get_limits(eps_rhs))
         eps_rhs_scld = a * eps_rhs + b
 
-        k_err = np.abs(k_rhs_scld - k_rhs_ex)
-        eps_err = np.abs(eps_rhs_scld - eps_rhs_ex)
+        k_err = np.abs(k_rhs - k_rhs_ex)
+        eps_err = np.abs(eps_rhs - eps_rhs_ex)
 
         kl1, epsl1 = np.mean(k_err), np.mean(eps_err)
 
