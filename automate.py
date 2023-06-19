@@ -1074,9 +1074,10 @@ class KEpsModelTesting(PySPHProblem):
         self.ke_expds = get_all_unique_values(sim_opts, 'k_eps_expand')
 
         # Plotters
-        for re in self.res:
-            for prop in ['k', 'eps']:
-                self._plot_l1_convergence(prop=prop, re=re)
+        for tc in self.ketcs:
+            for re in self.res:
+                for prop in ['k', 'eps']:
+                    self._plot_l1_convergence(prop=prop, re=re, tc=tc)
     
     def calculate_l1(self, cases, prop='k'):
         if prop == 'k':
@@ -1093,22 +1094,21 @@ class KEpsModelTesting(PySPHProblem):
         l1 = np.asarray([data[x] for x in nx_arr])
         return nx_arr, l1
     
-    def _plot_l1_convergence(self, re, prop='k'):
+    def _plot_l1_convergence(self, tc, re, prop='k'):
         plt.figure()
         marker = cycle(MARKER)
-        for tc in self.ketcs:
-            for c0 in self.c0s:
-                for ke_expd in self.ke_expds:
-                    cases = filter_cases(
-                        self.cases, k_eps_test_case=tc,
-                        c0_fac=c0, re=re, k_eps_expand=ke_expd
-                    )
-                    if len(cases) < 1:
-                        continue
-                    dts, l1 = self.calculate_l1(cases, prop=prop)
-                    dts = 1./dts
-                    label = fr'Case-{tc} (c0={c0}) ($k-\epsilon$ expd: {ke_expd})'
-                    plt.loglog(dts, l1, label=label, marker=next(marker))
+        for c0 in self.c0s:
+            for ke_expd in self.ke_expds:
+                cases = filter_cases(
+                    self.cases, k_eps_test_case=tc,
+                    c0_fac=c0, re=re, k_eps_expand=ke_expd
+                )
+                if len(cases) < 1:
+                    continue
+                dts, l1 = self.calculate_l1(cases, prop=prop)
+                dts = 1./dts
+                label = fr'Case-{tc} (c0={c0}) ($k-\epsilon$ expd: {ke_expd})'
+                plt.loglog(dts, l1, label=label, marker=next(marker))
 
         plt.loglog(dts, l1[0]*(dts/dts[0])**2, 'k--', linewidth=2,
                 label=r'$O(h^2)$')
@@ -1122,7 +1122,7 @@ class KEpsModelTesting(PySPHProblem):
         plt.title(
             fr'Spatial Operators Convergence - $L_1$ error in {_pl} (Re = {re})'
         )
-        fname = self.output_path(f'{prop}_conv_re_{re}.png')
+        fname = self.output_path(f'{prop}_conv_tc_{tc}_re_{re}.png')
         plt.savefig(fname, dpi=300)
         plt.close()
 
