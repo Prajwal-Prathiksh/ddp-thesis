@@ -23,7 +23,6 @@ from pysph.sph.equation import Equation, Group
 from pysph.sph.integrator import PECIntegrator
 from pysph.sph.integrator_step import IntegratorStep
 from pysph.sph.scheme import Scheme
-from pysph.sph.wc.basic import TaitEOS
 from pysph.sph.wc.kernel_correction import (GradientCorrection,
                                             GradientCorrectionPreStep)
 from pysph.tools.sph_evaluator import SPHEvaluator
@@ -49,6 +48,16 @@ def get_grp_name(grp_var):
 ###########################################################################
 # Equations
 ###########################################################################
+class LinearEOS(Equation):
+    def __init__(self, dest, sources, c0, rho0):
+        self.c0 = c0
+        self.rho0 = rho0
+
+        super(LinearEOS, self).__init__(dest, sources)
+
+    def initialize(self, d_p, d_idx, d_rho):
+        d_p[d_idx] = self.c0**2 * (d_rho[d_idx] - self.rho0)
+
 class StrainRateTensor(Equation):
     def initialize(self, d_idx, d_gradv, d_S):
         didx9 = declare('int')
@@ -487,12 +496,14 @@ class KEpsilonScheme(Scheme):
 
     def add_user_options(self, group):
         group.add_argument(
-            "--k-eps-expand", action="store_true", dest="k_eps_expand",
-            help="Use the expanded form of k-epsilon transport equations."
+            "--k-eps-expand", type=str, action="store", dest="k_eps_expand",
+            help="Use the expanded form of k-epsilon transport equations.",
+            choices=['yes', 'no'], default='no',
         )
         group.add_argument(
-            "--decouple-keps", action="store_true", dest="decouple_keps",
-            help="Decouple the effect of k-epsilon on the momentum equation."
+            "--decouple-keps", type=str, action="store", dest="decouple_keps",
+            help="Decouple the effect of k-epsilon on the momentum equation.",
+            choices=['yes', 'no'], default='no',
         )
     
     def consume_user_options(self, options):
@@ -500,6 +511,11 @@ class KEpsilonScheme(Scheme):
 
         data = dict((var, self._smart_getattr(options, var))
                     for var in vars)
+        _t = data['k_eps_expand'] 
+        data['k_eps_expand'] = True if _t == 'yes' else False
+
+        _t = data['decouple_keps']
+        data['decouple_keps'] = True if _t == 'yes' else False
         self.configure(**data)
 
     def get_timestep(self, cfl=0.5):
@@ -528,8 +544,8 @@ class KEpsilonScheme(Scheme):
         # Add equation of state
         g0 = []
         for name in self.fluids:
-            g0.append(TaitEOS(
-                dest=name, sources=None, rho0=self.rho0, c0=self.c0, gamma=self.gamma
+            g0.append(LinearEOS(
+                dest=name, sources=None, rho0=self.rho0, c0=self.c0
             ))
         equations.append(Group(equations=g0, name=get_grp_name(g0)))
 
