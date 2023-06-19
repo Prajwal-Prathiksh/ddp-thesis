@@ -1019,6 +1019,53 @@ class TGV2DIntegratorComparison(PySPHProblem):
         plt.savefig(fname, dpi=300)
         plt.close()
 
+class KEpsModelTesting(PySPHProblem):
+    def get_name(self):
+        return "k_eps_model_testing"
+
+    def _get_file(self):
+        return "code/test_k_eps.py --max-steps=1 "
+
+    def setup(self):
+        scheme_opts = mdict(k_eps_expand=['yes', 'no'])
+        tc_opts = mdict(k_eps_test_case=[0, 1, 2])
+        res_opts = mdict(
+            nx=[200], re=[100], c0_fac=[10, 20, 40]
+        )
+
+        self.sim_opts = sim_opts = dprod(
+            scheme_opts, dprod(tc_opts, res_opts)
+        )
+
+        self.case_info = {}
+        for i in range(len(sim_opts)):
+            sim_name = opts2path(
+                sim_opts[i],
+                kmap=dict(
+                    k_eps_expand='ke_expd', k_eps_test_case='ketc',
+                    c0_fac='c0',
+                )
+            )
+            self.case_info[sim_name] = sim_opts[i]
+        
+        cmd = 'python ' + self._get_file()
+        self.cases = [
+            Simulation(
+                root=self.input_path(name),
+                base_command=cmd,
+                job_info=dict(n_core=1, n_thread=1),
+                cache_nnps=None,
+                **kw
+            ) for name, kw in self.case_info.items()
+        ]
+        print(len(self.cases), 'cases created')
+        for case in self.cases:
+            self.case_info[case.name]['case'] = case
+    
+    def run(self):
+        self.make_output_dir()
+
+
 if __name__ == "__main__":
     PROBLEMS = [
         SineVelProfile,
@@ -1026,7 +1073,8 @@ if __name__ == "__main__":
         TGV2DExtForceSchemeComparison,
         TB3DExtForceSchemeComparison,
         RunTimeDomainManager,
-        TGV2DIntegratorComparison
+        TGV2DIntegratorComparison,
+        KEpsModelTesting
     ]
     automator = Automator(
         simulation_dir='outputs',
