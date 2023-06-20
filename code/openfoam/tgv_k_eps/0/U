@@ -1,0 +1,85 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  2.0.1                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volVectorField;
+    object      U;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 1 -1 0 0 0 0];
+
+internalField   #codeStream
+{
+    codeInclude
+    #{
+        #include "fvCFD.H"
+    #};
+
+    codeOptions
+    #{
+        -I$(LIB_SRC)/finiteVolume/lnInclude \
+        -I$(LIB_SRC)/meshTools/lnInclude
+    #};
+
+    //libs needed to visualize BC in paraview
+    codeLibs
+    #{
+        -lmeshTools \
+	-lfiniteVolume
+    #};
+
+    code
+    #{
+        const IOdictionary& d = static_cast<const IOdictionary&>(dict);
+        const fvMesh& mesh = refCast<const fvMesh>(d.db());
+        vectorField U(mesh.nCells(), vector(0, 0, 0));
+
+        forAll(U, i)
+        {
+            const scalar x = mesh.C()[i][0];
+            const scalar y = mesh.C()[i][1];
+
+            U[i].x() = -Foam::cos(x)*Foam::sin(y);
+            U[i].y() =  Foam::sin(x)*Foam::cos(y);
+        }
+
+        U.writeEntry("", os);
+    #};
+};
+
+boundaryField
+{
+    upperBoundary      
+    {
+        type            cyclic;
+    }
+
+    lowerBoundary      
+    {
+        type            cyclic;
+    }
+
+    leftBoundary
+    {
+        type            cyclic;
+    }
+
+    rightBoundary
+    {
+        type            cyclic;
+    }
+    frontAndBack    
+    {
+        type            empty;
+    }
+}
+
+// ************************************************************************* //
