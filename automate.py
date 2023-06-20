@@ -790,7 +790,7 @@ class TGV2DIntegratorComparison(PySPHProblem):
             scheme=['deltales_sd'], pst_freq=[10], eos=['linear']
         )
         scheme_opts += mdict(
-            scheme=['k_eps'], pst_freq=[10], eos=['linear']
+            scheme=['k_eps'], pst_freq=[10], eos=['linear', 'tait']
         )
 
         integrator_opts = mdict(
@@ -832,6 +832,7 @@ class TGV2DIntegratorComparison(PySPHProblem):
         )
         self.c0s = get_all_unique_values(sim_opts, 'c0_fac')
         self.pst_freqs = get_all_unique_values(sim_opts, 'pst_freq')
+        self.eoss = get_all_unique_values(sim_opts, 'eos')
 
         self.case_info = {}
         for i in range(len(sim_opts)):
@@ -841,7 +842,6 @@ class TGV2DIntegratorComparison(PySPHProblem):
                     integrator_dt_mul_fac='dtmul', c0_fac='c0', pst_freq='pst',
                     adaptive_timestep='adapt'
                 ),
-                ignore=['eos']
             )
             self.case_info[sim_name] = sim_opts[i]
 
@@ -963,20 +963,22 @@ class TGV2DIntegratorComparison(PySPHProblem):
             for intg in self.integrators:
                 for dtmf in self.dt_mul_facs:
                     for pst in self.pst_freqs:
-                        cases = filter_cases(
-                            self.cases, scheme=scheme, integrator=intg,
-                            c0_fac=c0, integrator_dt_mul_fac=dtmf, re=re,
-                            pst_freq=pst
-                        )
-                        if len(cases) < 1:
-                            continue
-                        dts, l1 = self.calculate_l1(cases)
-                        dts = 1./dts
-                        label = get_label_from_scheme(scheme) +\
-                            fr' ({intg}) ({dtmf}$\Delta t$) (pst={pst})'
-                        if intg == 'rk2' and dtmf == 1:
-                            label += f' (Adaptive)'
-                        plt.loglog(dts, l1, label=label, marker=next(marker))
+                        for eos in self.eoss:
+                            cases = filter_cases(
+                                self.cases, scheme=scheme, integrator=intg,
+                                c0_fac=c0, integrator_dt_mul_fac=dtmf, re=re,
+                                pst_freq=pst, eos=eos
+                            )
+                            if len(cases) < 1:
+                                continue
+                            dts, l1 = self.calculate_l1(cases)
+                            dts = 1./dts
+                            label = get_label_from_scheme(scheme) +\
+                                fr' ({intg}) ({dtmf}$\Delta t$) (pst={pst})' +\
+                                f' ({eos})'
+                            if intg == 'rk2' and dtmf == 1:
+                                label += f' (Adaptive)'
+                            plt.loglog(dts, l1, label=label, marker=next(marker))
 
         plt.loglog(dts, l1[0]*(dts/dts[0])**2, 'k--', linewidth=2,
                 label=r'$O(h^2)$')
