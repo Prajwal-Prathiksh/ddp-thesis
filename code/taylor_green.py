@@ -236,6 +236,8 @@ class TaylorGreen(TurbulentFlowApp):
             print('ewcsph')
             rhoc = (p0 / self.c0**2 + 1)
             rho = (p0 * 7.0 / self.c0**2 + 1)**(1./7.0)
+        print(f"EOS Initialisation: {self.options.eos}")
+        
         # create the arrays
         fluid = get_particle_array(
             name='fluid', x=x, y=y, m=m, h=h, u=u0, v=v0, rho=rho, rhoc=rhoc,
@@ -258,7 +260,7 @@ class TaylorGreen(TurbulentFlowApp):
         if self.options.scheme == 'k_eps':
             fluid.add_property('k')
             fluid.add_property('eps')
-            _k = 1.5*U*U
+            _k = 1.5*2e-3*U**2
             _eps = pow(0.09, 0.75)*pow(_k, 1.5)/self.L
             fluid.k[:], fluid.eps[:] = _k, _eps
             print(f"Initial k = {_k}, eps = {_eps}")
