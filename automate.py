@@ -781,13 +781,14 @@ class TGV2DIntegratorComparison(PySPHProblem):
 
     def setup(self):
         scheme_opts = mdict(
-            scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
+            scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10],
+            eos=['tait']
         )
         scheme_opts += mdict(
-            scheme=['deltales'], pst_freq=[10], eos=['linear']
+            scheme=['deltales'], pst_freq=[10], eos=['linear', 'tait']
         )
         scheme_opts += mdict(
-            scheme=['deltales_sd'], pst_freq=[10], eos=['linear']
+            scheme=['deltales_sd'], pst_freq=[10], eos=['linear', 'tait']
         )
         scheme_opts += mdict(
             scheme=['k_eps'], pst_freq=[10], eos=['linear', 'tait']
@@ -850,7 +851,7 @@ class TGV2DIntegratorComparison(PySPHProblem):
             Simulation(
                 root=self.input_path(name),
                 base_command=cmd,
-                job_info=dict(n_core=4, n_thread=8),
+                job_info=dict(n_core=2, n_thread=4),
                 cache_nnps=None,
                 **kw
             ) for name, kw in self.case_info.items()
