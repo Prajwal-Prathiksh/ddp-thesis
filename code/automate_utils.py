@@ -182,3 +182,8 @@ def get_label_from_scheme(scheme):
         return 'Delta-LES (rhoc)'
     elif scheme == 'deltales_sd':
         return 'Delta-LES (rho)'
+    elif scheme == 'k_eps':
+        return r'$k-\epsilon$'
+
+    else:
+        return NotImplementedError
