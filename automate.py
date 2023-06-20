@@ -347,15 +347,16 @@ class TGV2DSchemeComparison(PySPHProblem):
         """
         base_cmd = "python code/taylor_green.py" + BACKEND
         # scheme_opts = mdict(scheme=['edac', 'mon2017', 'ok2022'])
-        scheme_opts = mdict(
-            scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
-        )
+        # scheme_opts = mdict(
+        #     scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
+        # )
         # scheme_opts += mdict(scheme=['deltales'], les_no_pst=[None])
         # scheme_opts += mdict(
         #     scheme=['deltales'], les_no_pst=[None], les_no_tc=[None]
         # )
-        scheme_opts += mdict(scheme=['deltales'], pst_freq=[10, 50])
-        scheme_opts += mdict(scheme=['deltales_sd'], pst_freq=[10, 50])
+        # scheme_opts += mdict(scheme=['deltales'], pst_freq=[10, 50])
+        # scheme_opts += mdict(scheme=['deltales_sd'], pst_freq=[10])
+        scheme_opts = mdict(scheme=['k_eps'], pst_freq=[10])
 
         integrator_opts = mdict(
             integrator=['pec'], integrator_dt_mul_fac=[1]
@@ -372,7 +373,7 @@ class TGV2DSchemeComparison(PySPHProblem):
         res_opts = mdict(
             re=[1000, 10_000, 50_000, 100_000], 
             tf=[4], n_o_files=[50], nx=[50],
-            c0_fac=[20], hdx=[2]
+            c0_fac=[20], hdx=[2], max_steps=[2]
         )
 
         self.sim_opts = sim_opts = dprod(
