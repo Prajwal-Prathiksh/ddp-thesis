@@ -72,6 +72,7 @@ class StrainRateTensor(Equation):
 class ReynoldsStressTensor(Equation):
     def __init__(self, dest, sources, Cd=0.09):
         self.Cd = Cd
+        self.EPS = 1e-14
         super().__init__(dest, sources)
 
     def initialize(self, d_idx, d_rhoc, d_S, d_tau, d_k, d_eps):
@@ -79,7 +80,7 @@ class ReynoldsStressTensor(Equation):
         didx9 = 9*d_idx
 
         rho, k, eps = d_rhoc[d_idx], d_k[d_idx], d_eps[d_idx]
-        fac_1 = 2.0*self.Cd*rho*k**2/eps
+        fac_1 = 2.0*self.Cd*rho*k**2/(eps + self.EPS)
         fac_2 = 2.0*rho*k/3.0
 
         i = declare('int')
@@ -109,13 +110,13 @@ class GradKEpsilon(Equation):
 
     def loop(
         self, d_idx, s_idx, d_gradk, d_gradeps, 
-        d_k, d_eps, s_k, s_eps, s_m, s_rho, DWIJ
+        d_k, d_eps, s_k, s_eps, s_m, s_rho, DWIJ, EPS
     ):
         i, didx3 = declare('int', 2)
         didx3 = 3*d_idx
 
         omega_j, tmp_k, tmp_eps = declare('double', 3)
-        omega_j = s_m[s_idx]/s_rho[s_idx]
+        omega_j = s_m[s_idx]/(s_rho[s_idx] + EPS)
         tmp_k = (s_k[s_idx] - d_k[d_idx])*omega_j
         tmp_eps = (s_eps[s_idx] - d_eps[d_idx])*omega_j
         for i in range(3):
@@ -139,13 +140,13 @@ class LaplacianKEpsilon(Equation):
 
     def loop(
         self, d_idx, s_idx, d_lapk, d_lapeps, d_gradk, d_gradeps,
-        s_gradk, s_gradeps, s_m, s_rho, DWIJ
+        s_gradk, s_gradeps, s_m, s_rho, DWIJ, EPS
     ):
         i, didx3 = declare('int', 2)
         didx3 = 3*d_idx
         
         omega_j, gradkdotdw, gradepsdotdw = declare('double', 3)
-        omega_j = s_m[s_idx]/s_rho[s_idx]
+        omega_j = s_m[s_idx]/(s_rho[s_idx] + EPS)
         gradkdotdw = 0.0
         gradepsdotdw = 0.0
 
@@ -163,18 +164,18 @@ class ModifiedLaplacianKEpsilon(Equation):
 
     def loop(
         self, d_idx, s_idx, d_k, d_eps, d_lapk, d_lapeps, d_gradk, d_gradeps,
-        s_k, s_eps, s_gradk, s_gradeps, s_m, s_rho, DWIJ
+        s_k, s_eps, s_gradk, s_gradeps, s_m, s_rho, DWIJ, EPS
     ):
         i, didx3 = declare('int', 2)
         didx3 = 3*d_idx
 
         omega_j, modgradkdotdw, modgradepsdotdw = declare('double', 3)
-        omega_j = s_m[s_idx]/s_rho[s_idx]
+        omega_j = s_m[s_idx]/(s_rho[s_idx] + EPS)
         modgradkdotdw = 0.0
         modgradepsdotdw = 0.0
 
-        s_fac = s_k[s_idx]**2/s_eps[s_idx]
-        d_fac = d_k[d_idx]**2/d_eps[d_idx]
+        s_fac = s_k[s_idx]**2/(s_eps[s_idx] + EPS)
+        d_fac = d_k[d_idx]**2/(d_eps[d_idx] + EPS)
         for i in range(3):
             modgradkdotdw += (
                 s_fac*s_gradk[3*s_idx+i] - d_fac*d_gradk[didx3+i]
@@ -225,6 +226,7 @@ class KTransportEquationExpanded(Equation):
     def __init__(self, dest, sources, Cd=0.09, sigma_k=1.0):
         self.Cd = Cd
         self.sigma_k = sigma_k
+        self.EPS = 1e-14
         super().__init__(dest, sources)
     
     def initialize(self, d_idx, d_ak):
@@ -256,8 +258,8 @@ class KTransportEquationExpanded(Equation):
             Ssq += d_S[didx9+i]*d_S[didx9+i]
         Pk = self.Cd*sqrt(2.0*Ssq)
 
-        div_term = (k**2*lapk + 2*k*gradksq)/eps
-        div_term -= k**2*gradkdotgradeps/eps**2
+        div_term = (k**2*lapk + 2*k*gradksq)/(eps + self.EPS)
+        div_term -= k**2*gradkdotgradeps/(eps**2 + self.EPS)
         d_ak[d_idx] += (self.Cd/self.sigma_k)*div_term + Pk - eps
 
 class EpsilonTransportEquation(Equation):
@@ -270,6 +272,7 @@ class EpsilonTransportEquation(Equation):
         self.C2eps = C2eps
         self.fac_mod_lap = Cd/sigma_eps
         self.fac_Pk = Cd * sqrt(2.0)
+        self.EPS = 1e-14
         super().__init__(dest, sources)
     
     def initialize(self, d_idx, d_aeps):
@@ -292,8 +295,8 @@ class EpsilonTransportEquation(Equation):
             Ssq += d_S[didx9+i]*d_S[didx9+i]
         Pk = self.fac_Pk*sqrt(Ssq)
     
-        prod_term = self.C1eps*eps*Pk/k
-        decay_term = self.C2eps*eps*eps/k
+        prod_term = self.C1eps*eps*Pk/(k + self.EPS)
+        decay_term = self.C2eps*eps*eps/(k + self.EPS)
         d_aeps[d_idx] += self.fac_mod_lap*modlapeps + prod_term - decay_term
 
 class EpsilonTransportEquationExpanded(Equation):
@@ -304,6 +307,7 @@ class EpsilonTransportEquationExpanded(Equation):
         self.sigma_eps = sigma_eps
         self.C1eps = C1eps
         self.C2eps = C2eps
+        self.EPS = 1e-14
         super().__init__(dest, sources)
     
     def initialize(self, d_idx, d_aeps):
@@ -335,10 +339,10 @@ class EpsilonTransportEquationExpanded(Equation):
             Ssq += d_S[didx9+i]*d_S[didx9+i]
         Pk = self.Cd*sqrt(2.0*Ssq)
     
-        div_term = (k**2*lapeps + 2*k*gradkdotgradeps)/eps
-        div_term -= k**2*gradepssq/eps**2
+        div_term = (k**2*lapeps + 2*k*gradkdotgradeps)/(eps + self.EPS)
+        div_term -= k**2*gradepssq/(eps**2 + self.EPS)
         d_aeps[d_idx] += (self.Cd/self.sigma_eps)*div_term
-        d_aeps[d_idx] += self.C1eps*eps*Pk/k - self.C2eps*eps**2/k
+        d_aeps[d_idx] += (self.C1eps*eps*Pk - self.C2eps*eps**2)/(k + self.EPS)
 
 class KEpsilonMomentumEquation(Equation):
     def __init__(
@@ -358,7 +362,7 @@ class KEpsilonMomentumEquation(Equation):
         d_aw[d_idx] = 0.0
 
     def loop(
-        self, d_idx, s_idx, d_rhoc, d_p, d_au, d_av, d_aw, s_m, s_rho, s_p, d_tau, s_tau, DWIJ
+        self, d_idx, s_idx, d_rhoc, d_p, d_au, d_av, d_aw, s_m, s_rho, s_p, d_tau, s_tau, DWIJ, EPS
     ):
         omega_j, rho_i, gradp_term = declare('double', 3)
         didx9, sidx9 = declare('int', 2)
@@ -366,9 +370,9 @@ class KEpsilonMomentumEquation(Equation):
         sidx9 = 9*s_idx
 
         # Pressure gradient term
-        omega_j = s_m[s_idx]/s_rho[s_idx]
+        omega_j = s_m[s_idx]/(s_rho[s_idx] + EPS)
         rho_i = d_rhoc[d_idx]
-        gradp_term = omega_j*(s_p[s_idx] - d_p[d_idx])/rho_i
+        gradp_term = omega_j*(s_p[s_idx] - d_p[d_idx])/(rho_i + EPS)
 
         # Divergence of Reynolds stress tensor
         div_tau = declare('matrix(3)')
@@ -378,7 +382,7 @@ class KEpsilonMomentumEquation(Equation):
             for j in range(3):
                 ij = i*3 + j
                 div_tau[i] += (s_tau[sidx9+ij] - d_tau[didx9+ij])*DWIJ[j]
-            div_tau[i] *= omega_j/rho_i
+            div_tau[i] *= omega_j/(rho_i + EPS)
         
         d_au[d_idx] += -gradp_term * DWIJ[0]
         d_av[d_idx] += -gradp_term * DWIJ[1]
