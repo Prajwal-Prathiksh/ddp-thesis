@@ -228,7 +228,7 @@ class ContinuityEquationLES(Equation):
         rhoi = d_rho[d_idx]
         rhoj = s_rho[s_idx]
         rhoji = rhoj - rhoi
-        Vj = s_m[s_idx] / s_rho[s_idx]
+        Vj = s_m[s_idx] / (s_rho[s_idx] + EPS)
 
         # Calculate Frobenius norm of strain rate tensors
         i, didx9 = declare('int', 2)
@@ -316,7 +316,7 @@ class MomentumEquationLES(Equation):
         rhoi = d_rho[d_idx]
         rhoj = s_rho[s_idx]
         rhoji = rhoj - rhoi
-        Vj = s_m[s_idx] / s_rho[s_idx]
+        Vj = s_m[s_idx] / (s_rho[s_idx] + EPS)
 
         Pi = d_p[d_idx]
         Pj = s_p[s_idx]
@@ -363,7 +363,7 @@ class MomentumEquationLES(Equation):
         term_3 = declare('matrix(3)')
         term_4 = declare('matrix(3)')
         
-        rho0i = self.rho0 / rhoi
+        rho0i = self.rho0 / (rhoi + EPS)
 
         term_1_fac = -(Pij * Vj) / (rhoi + EPS)
         for i in range(3):
