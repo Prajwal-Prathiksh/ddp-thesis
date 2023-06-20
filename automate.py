@@ -354,8 +354,12 @@ class TGV2DSchemeComparison(PySPHProblem):
         # scheme_opts += mdict(
         #     scheme=['deltales'], les_no_pst=[None], les_no_tc=[None]
         # )
-        scheme_opts += mdict(scheme=['deltales'], pst_freq=[10, 50])
-        scheme_opts += mdict(scheme=['deltales_sd'], pst_freq=[10])
+        scheme_opts += mdict(
+            scheme=['deltales'], pst_freq=[10, 50], eos=['linear']
+        )
+        scheme_opts += mdict(
+            scheme=['deltales_sd'], pst_freq=[10], eos=['linear']
+        )
         # scheme_opts = mdict(scheme=['k_eps'], pst_freq=[10])
 
         integrator_opts = mdict(
@@ -393,7 +397,8 @@ class TGV2DSchemeComparison(PySPHProblem):
                     integrator_dt_mul_fac='dtmul', c0_fac='c0',
                     les_no_pst='no_pst', les_no_tc='no_tic',
                     pst_freq='pst'
-                )
+                ),
+                ignore=['eos']
             ).replace('None_', '')
             self.case_info[sim_name] = sim_opts[i]
         
@@ -778,9 +783,15 @@ class TGV2DIntegratorComparison(PySPHProblem):
         scheme_opts = mdict(
             scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
         )
-        scheme_opts += mdict(scheme=['deltales'], pst_freq=[10])
-        scheme_opts += mdict(scheme=['deltales_sd'], pst_freq=[10])
-        scheme_opts += mdict(scheme=['k_eps'], pst_freq=[10])
+        scheme_opts += mdict(
+            scheme=['deltales'], pst_freq=[10], eos=['linear']
+        )
+        scheme_opts += mdict(
+            scheme=['deltales_sd'], pst_freq=[10], eos=['linear']
+        )
+        scheme_opts += mdict(
+            scheme=['k_eps'], pst_freq=[10], eos=['linear']
+        )
 
         integrator_opts = mdict(
             integrator=['pec'], integrator_dt_mul_fac=[1]
@@ -829,7 +840,8 @@ class TGV2DIntegratorComparison(PySPHProblem):
                 kmap=dict(
                     integrator_dt_mul_fac='dtmul', c0_fac='c0', pst_freq='pst',
                     adaptive_timestep='adapt'
-                )
+                ),
+                ignore=['eos']
             )
             self.case_info[sim_name] = sim_opts[i]
 
