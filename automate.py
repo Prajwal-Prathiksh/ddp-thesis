@@ -1028,10 +1028,10 @@ class KEpsModelTesting(PySPHProblem):
         return "code/test_k_eps.py --max-steps=1 "
 
     def setup(self):
-        scheme_opts = mdict(k_eps_expand=['yes', 'no'])
+        scheme_opts = mdict(k_eps_expand=['no', 'yes'])
         tc_opts = mdict(k_eps_test_case=[1, 2, 3])
         res_opts = mdict(
-            nx=[50, 100, 200, 400], re=[100], c0_fac=[10, 20, 40]
+            nx=[25, 50, 100, 200], re=[100, 1000, 10_000], c0_fac=[10, 20, 40]
         )
 
         self.sim_opts = sim_opts = dprod(
