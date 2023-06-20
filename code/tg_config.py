@@ -6,7 +6,7 @@ from deltaLES import DeltaLESRK2Step, DeltaLESRK4Step, DeltaLESScheme
 from deltaLES_sd import (DeltaLES_SD_RK2Step, DeltaLES_SD_RK4Step,
                          DeltaLES_SD_Scheme)
 from ewcsph import EWCSPHScheme
-from k_eps import KEpsilonScheme
+from k_eps import KEpsilonScheme, KEpsilonRK2Step
 from monaghan2017 import Monaghan2017Scheme
 from numpy import cos, exp, linspace, pi, sin, sqrt
 from okra2022 import Okra2022Scheme
@@ -144,6 +144,12 @@ def configure_scheme(app, p0, gx=0.0):
         scheme.configure(
             hdx=app.hdx, nu=app.nu, h0=h0, gx=gx, periodic=app.no_periodic
         )
+        if integrator_cls == 'pec':
+            integrator_cls = PECIntegrator
+            extra_steppers = dict(fluid=KEpsilonRK2Step())
+        elif integrator_cls == 'rk2':
+            integrator_cls = RK2Integrator
+            extra_steppers = dict(fluid=KEpsilonRK2Step())
     elif app.options.scheme == 'deltales':
         scheme.configure(
             hdx=app.hdx, nu=app.nu, h0=h0, prob_l=app.dx
