@@ -58,6 +58,25 @@ class LinearEOS(Equation):
     def initialize(self, d_p, d_idx, d_rho):
         d_p[d_idx] = self.c0**2 * (d_rho[d_idx] - self.rho0)
 
+
+class TaitEOS(Equation):
+    def __init__(self, dest, sources, rho0, gamma, p0=0.0):
+        self.rho0 = rho0
+        self.rho01 = 1.0/rho0
+        self.gamma = gamma
+        self.gamma1 = 0.5*(gamma - 1.0)
+        self.p0 = p0
+
+        super(TaitEOS, self).__init__(dest, sources)
+
+    def initialize(self, d_idx, d_rhoc, d_p, d_c0):
+        ratio = d_rhoc[d_idx] * self.rho01
+        tmp = pow(ratio, self.gamma)
+
+        c0 = d_c0[0]
+        B = self.rho0*c0*c0/self.gamma
+        d_p[d_idx] = self.p0 + B * (tmp - 1.0)
+
 class StrainRateTensor(Equation):
     def initialize(self, d_idx, d_gradv, d_S):
         didx9 = declare('int')
@@ -476,7 +495,7 @@ class KEpsilonScheme(Scheme):
     def __init__(
         self, fluids, solids, dim, rho0, c0, h0, hdx, gx=0.0, gy=0.0, gz=0.0,
         nu=0.0, gamma=7.0, kernel_corr=False, periodic=True,
-        k_eps_expand=False, decouple_keps=False, pst_freq=10
+        k_eps_expand=False, decouple_keps=False, pst_freq=10, eos='tait'
     ):
         self.fluids = fluids
         self.solids = solids
@@ -495,6 +514,7 @@ class KEpsilonScheme(Scheme):
         self.decouple_keps = decouple_keps
         self.k_eps_expand = k_eps_expand
         self.pst_freq = pst_freq
+        self.eos = eos
         self.shifter = None
         self.solver = None
 
@@ -509,9 +529,17 @@ class KEpsilonScheme(Scheme):
             help="Decouple the effect of k-epsilon on the momentum equation.",
             choices=['yes', 'no'], default='no',
         )
+        group.add_argument(
+            '--eos', type=str, action='store', dest='eos', default='tait',
+            choices=['tait', 'linear'], help='Equation of state to use.'
+        )
+        group.add_argument(
+            "--gamma", type=float, action="store", dest="gamma",
+            default=7.0, help="Gamma for the state equation."
+        )
     
     def consume_user_options(self, options):
-        vars = ["k_eps_expand", "decouple_keps"]
+        vars = ["k_eps_expand", "decouple_keps", "eos", "gamma"]
 
         data = dict((var, self._smart_getattr(options, var))
                     for var in vars)
@@ -532,7 +560,17 @@ class KEpsilonScheme(Scheme):
         if kernel is None:
             kernel = WendlandQuinticC4(dim=self.dim)
 
-        integrator = PECIntegrator(fluid=KEpsilonRK2Step())
+        steppers = {}
+        if extra_steppers is not None:
+            steppers.update(extra_steppers)
+
+        cls = integrator_cls if integrator_cls is not None else PECIntegrator
+        step_cls = KEpsilonRK2Step
+
+        for name in self.fluids + self.solids:
+            if name not in steppers:
+                steppers[name] = step_cls()
+        integrator = cls(**steppers)
 
         if 'dt' not in kw:
             kw['dt'] = self.get_timestep()
@@ -548,9 +586,14 @@ class KEpsilonScheme(Scheme):
         # Add equation of state
         g0 = []
         for name in self.fluids:
-            g0.append(LinearEOS(
-                dest=name, sources=None, rho0=self.rho0, c0=self.c0
-            ))
+            if self.eos == 'linear':
+                g0.append(LinearEOS(
+                    dest=name, sources=None, rho0=self.rho0, c0=self.c0
+                ))
+            elif self.eos == 'tait':
+                g0.append(TaitEOS(
+                    dest=name, sources=None, rho0=self.rho0, gamma=self.gamma
+                ))
         equations.append(Group(equations=g0, name=get_grp_name(g0)))
 
         
