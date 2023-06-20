@@ -348,19 +348,22 @@ class TGV2DSchemeComparison(PySPHProblem):
         base_cmd = "python code/taylor_green.py" + BACKEND
         # scheme_opts = mdict(scheme=['edac', 'mon2017', 'ok2022'])
         scheme_opts = mdict(
-            scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10]
+            scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10],
+            eos=['tait']
         )
         # scheme_opts += mdict(scheme=['deltales'], les_no_pst=[None])
         # scheme_opts += mdict(
         #     scheme=['deltales'], les_no_pst=[None], les_no_tc=[None]
         # )
         scheme_opts += mdict(
-            scheme=['deltales'], pst_freq=[10, 50], eos=['linear']
+            scheme=['deltales'], pst_freq=[10, 50], eos=['tait']
         )
         scheme_opts += mdict(
             scheme=['deltales_sd'], pst_freq=[10], eos=['linear']
         )
-        # scheme_opts = mdict(scheme=['k_eps'], pst_freq=[10])
+        scheme_opts += mdict(
+            scheme=['k_eps'], pst_freq=[10], eos=['linear']
+        )
 
         integrator_opts = mdict(
             integrator=['pec'], integrator_dt_mul_fac=[1]
@@ -375,7 +378,7 @@ class TGV2DSchemeComparison(PySPHProblem):
         #     integrator=['rk4'], integrator_dt_mul_fac=[4]
         # )
         res_opts = mdict(
-            re=[1000, 10_000, 50_000, 100_000], 
+            re=[10_000, 100_000], 
             tf=[4], n_o_files=[50], nx=[50],
             c0_fac=[20], hdx=[2]
         )
@@ -391,14 +394,14 @@ class TGV2DSchemeComparison(PySPHProblem):
                 sim_opts[i],
                 keys=[
                     'scheme', 'integrator', 'integrator_dt_mul_fac', 're',
-                    'c0_fac', 'nx', 'les_no_pst', 'les_no_tc', 'pst_freq'
+                    'c0_fac', 'nx', 'les_no_pst', 'les_no_tc', 'pst_freq',
+                    'eos'
                 ],
                 kmap=dict(
                     integrator_dt_mul_fac='dtmul', c0_fac='c0',
                     les_no_pst='no_pst', les_no_tc='no_tic',
                     pst_freq='pst'
                 ),
-                ignore=['eos']
             ).replace('None_', '')
             self.case_info[sim_name] = sim_opts[i]
         
@@ -407,7 +410,7 @@ class TGV2DSchemeComparison(PySPHProblem):
             Simulation(
                 root=self.input_path(name),
                 base_command=base_cmd,
-                job_info=dict(n_core=4, n_thread=8),
+                job_info=dict(n_core=2, n_thread=4),
                 **kw
             ) for name, kw in self.case_info.items()
         ]
