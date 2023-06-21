@@ -321,6 +321,8 @@ class TaylorGreen(TurbulentFlowApp):
         decay, linf, l1, p_l1, lm, am = [], [], [], [], [], []
         adapt_dts = []
 
+        k_avg_hist, eps_avg_hist = [], []
+
         file_idx = 1
         for sd, array in iter_output(files[0:], 'fluid'):
             # Print progress
@@ -375,6 +377,11 @@ class TaylorGreen(TurbulentFlowApp):
             p_error = np.average(np.abs(p - p_e)) / p_e_max
             p_l1.append(p_error)
 
+            if self.options.scheme == 'k_eps':
+                _k, _eps = array.get('k', 'eps')
+                k_avg_hist.append(np.mean(_k))
+                eps_avg_hist.append(np.mean(_eps))
+
         t, ke, ke_ex, decay, l1, linf, p_l1, lm, am = list(map(
             np.asarray, (t, ke, ke_ex, decay, l1, linf, p_l1, lm, am))
         )
@@ -382,7 +389,8 @@ class TaylorGreen(TurbulentFlowApp):
         fname = os.path.join(self.output_dir, 'results.npz')
         np.savez(
             fname, t=t, ke=ke, ke_ex=ke_ex, decay=decay, linf=linf, l1=l1,
-            p_l1=p_l1, decay_ex=decay_ex, lm=lm, am=am, adapt_dts=adapt_dts
+            p_l1=p_l1, decay_ex=decay_ex, lm=lm, am=am, adapt_dts=adapt_dts,
+            k_avg_hist=k_avg_hist, eps_avg_hist=eps_avg_hist
         )
 
         import matplotlib
@@ -405,6 +413,25 @@ class TaylorGreen(TurbulentFlowApp):
             plt.xlabel(r'$t$')
             plt.title(f'Re={self.options.re}, U={self.U}')
             fig = os.path.join(self.output_dir, "adapt_dt.png")
+            plt.savefig(fig, dpi=300)
+        
+        if self.options.scheme == 'k_eps':
+            plt.clf()
+            plt.grid()
+            plt.plot(t, k_avg_hist)
+            plt.ylabel(r'$k$ (avg.)')
+            plt.xlabel(r'$t$')
+            plt.title(f'Re={self.options.re}, U={self.U}')
+            fig = os.path.join(self.output_dir, "k_avg.png")
+            plt.savefig(fig, dpi=300)
+
+            plt.clf()
+            plt.grid()
+            plt.plot(t, eps_avg_hist)
+            plt.ylabel(r'$\epsilon$ (avg.)')
+            plt.xlabel(r'$t$')
+            plt.title(f'Re={self.options.re}, U={self.U}')
+            fig = os.path.join(self.output_dir, "eps_avg.png")
             plt.savefig(fig, dpi=300)
         
         plt.clf()
