@@ -2,11 +2,12 @@
 ###
 from compyle.api import declare
 from delta_plus import DeltaPlusSPHScheme
-from deltaLES import DeltaLESRK2Step, DeltaLESRK4Step, DeltaLESScheme
+from deltaLES import (DeltaLESRK2Step, DeltaLESRK2StepAdaptive,
+                      DeltaLESRK4Step, DeltaLESScheme)
 from deltaLES_sd import (DeltaLES_SD_RK2Step, DeltaLES_SD_RK4Step,
                          DeltaLES_SD_Scheme)
 from ewcsph import EWCSPHScheme
-from k_eps import KEpsilonScheme, KEpsilonRK2Step
+from k_eps import KEpsilonRK2Step, KEpsilonScheme
 from monaghan2017 import Monaghan2017Scheme
 from numpy import cos, exp, linspace, pi, sin, sqrt
 from okra2022 import Okra2022Scheme
@@ -156,10 +157,16 @@ def configure_scheme(app, p0, gx=0.0):
         )
         if integrator_cls == 'pec':
             integrator_cls = PECIntegrator
-            extra_steppers = dict(fluid=DeltaLESRK2Step())
+            if app.adaptive_timestep:
+                extra_steppers = dict(fluid=DeltaLESRK2StepAdaptive())
+            else:
+                extra_steppers = dict(fluid=DeltaLESRK2Step())
         elif integrator_cls == 'rk2':
             integrator_cls = RK2Integrator
-            extra_steppers = dict(fluid=DeltaLESRK2Step())
+            if app.adaptive_timestep:
+                extra_steppers = dict(fluid=DeltaLESRK2StepAdaptive())
+            else:
+                extra_steppers = dict(fluid=DeltaLESRK2Step())
         elif integrator_cls == 'rk4':
             integrator_cls = RK4Integrator
             extra_steppers = dict(fluid=DeltaLESRK4Step())
