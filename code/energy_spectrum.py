@@ -1408,7 +1408,6 @@ class EnergySpectrum(object):
         plt.xlabel(r'$k$')
         plt.ylabel(r'$E(k)$')
         plt.grid()
-        plt.tight_layout()
         plt.title(f"Energy spectrum at t = {self.t:.2f}")
 
         if savefig:
@@ -1459,8 +1458,8 @@ class EnergySpectrum(object):
             plt.xlabel(r'$k$')
             plt.ylabel(r'$E_{u}(k)$')
             plt.grid()
-            plt.tight_layout()
             plt.title(r"$E_u(k)$ at t = {:.2f}".format(self.t))
+            plt.gca().axes.get_xaxis().set_ticks([])
             if savefig:
                 plt.savefig(fname, dpi=dpi)
             if show:
@@ -1475,16 +1474,21 @@ class EnergySpectrum(object):
             axes[0].set_xlabel(r"$k_x$")
             axes[0].set_ylabel(r"$k_y$")
             axes[0].invert_yaxis()
+            axes[0].axes.get_xaxis().set_ticks([])
+            axes[0].axes.get_yaxis().set_ticks([])
 
             axes[1].imshow(fftshift(self.ek_v))
             axes[1].set_title(r"$E_v(k)$ at t = {:.2f}".format(self.t))
             axes[1].set_xlabel(r"$k_x$")
             axes[1].set_ylabel(r"$k_y$")
             axes[1].invert_yaxis()
+            axes[1].axes.get_xaxis().set_ticks([])
+            axes[1].axes.get_yaxis().set_ticks([])
 
             fig.subplots_adjust(right=0.8)
             cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
             fig.colorbar(axes[0].images[0], cax=cbar_ax)
+
 
             if savefig:
                 plt.savefig(fname, dpi=dpi)

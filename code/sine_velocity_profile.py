@@ -350,7 +350,7 @@ class SinVelocityProfile(TurbulentFlowApp):
             kernel=kernel, dim=dim, integrator=integrator, dt=dt, tf=tf
         )
         solver.set_print_freq(1)
-        solver.set_max_steps(0)
+        solver.set_max_steps(1)
         return solver
 
     def create_equations(self):
