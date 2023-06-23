@@ -1,0 +1,13 @@
+#!/bin/bash
+#PBS -N TGVExtForce_RK4
+#PBS -q regular
+#PBS -l select=1:ncpus=8
+#PBS -j oe
+#PBS -V
+#PBS -o log_regular_1.out
+
+cd $PBS_O_WORKDIR
+cat $PBS_NODEFILE > ./pbsnodes_regular
+PROCS1=$(cat $PBS_NODEFILE | wc -l)
+
+python code/taylor_green.py --ext-forcing --openmp --scheme=deltales --eos=tait --pst-freq=50 --integrator=rk4 --integrator-dt-mul-fac=2 --re=100000 --nx=200 --tf=4.0 --c0-fac=20 --pfreq=10 -d ext_force_deltales_tait_rk4_nx_200_re_100000_pst_50_output

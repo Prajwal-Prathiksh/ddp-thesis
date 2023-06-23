@@ -1,13 +1,13 @@
 #!/bin/bash
-#PBS -N TGV2DSchemeComparison
+#PBS -N SineVelProfile
 #PBS -q big
 #PBS -l select=1:ncpus=32
 #PBS -j oe
 #PBS -V
-#PBS -o log_TGV2DSchemeComparison.out
+#PBS -o log_big.out
 
 cd $PBS_O_WORKDIR
 cat $PBS_NODEFILE > ./pbsnodes_big
 PROCS1=$(cat $PBS_NODEFILE | wc -l)
 
-python automate.py TGV2DSchemeComparison -f
+python automate.py SineVelProfile -f
