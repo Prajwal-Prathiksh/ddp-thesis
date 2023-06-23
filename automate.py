@@ -251,16 +251,18 @@ class SineVelProfile(PySPHProblem):
         # Create parameteric cases
         def get_opts():
             perturb_opts = mdict(
-                perturb=[0.01], hdx=[1.2, 3],
-                i_radius_scale=[1.2, 3]
+                perturb=[0, 0.01, 0.1],
+                hdx=[1.2,],
+                i_radius_scale=[1.2,]
             )
-            dim_nx_opts = mdict(dim=[1], nx=[701, 1001], n_freq=[350])
-            dim_nx_opts += mdict(dim=[2], nx=[701, 801], n_freq=[350])
-            dim_nx_opts += mdict(dim=[3], nx=[71, 101], n_freq=[35])
+            dim_nx_opts = mdict(dim=[1], nx=[701], n_freq=[350])
+            dim_nx_opts += mdict(dim=[2], nx=[701], n_freq=[350])
+            dim_nx_opts += mdict(dim=[3], nx=[71], n_freq=[35])
 
             all_options = dprod(perturb_opts, dim_nx_opts)
             KERNEL_CHOICES = ['WendlandQuinticC4']
             INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1',]
+            INTERPOLATING_METHOD_CHOICES = ['sph']
             
             i_kernel_opts = mdict(i_kernel=KERNEL_CHOICES)
             i_method_opts = mdict(i_method=INTERPOLATING_METHOD_CHOICES)
@@ -306,6 +308,13 @@ class SineVelProfile(PySPHProblem):
                     fcases, labels, plt_type="loglog", 
                     title_suffix=title_suffix, plot_grid=True
                 )
+            
+            # Set 0
+            fcases = filter_cases(self.cases, dim=dim)
+            title_suffix = f"(dim={dim}, nx={nx}, n_freq={n_freq})"
+            labels = ['perturb']
+            _temp_plotter(fcases, title_suffix, labels)
+
             # Set 1
             fcases = filter_cases(
                 self.cases, dim=dim, nx=nx, n_freq=n_freq, i_radius_scale=3
