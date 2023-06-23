@@ -296,10 +296,53 @@ From the results shown in \figref{fig:espec-scalar-fields-res}, it can be observ
 
 
 \subsection{Finite-time Lyapunov Exponent (FTLE) Field}
-% TODO
-% Implementation - PySPH, not efficient for large number of particles, since eigenvalues are being computed
-% Results of BIT & FIT for configs
-% Tracer particles as substitute
 
-\section{Turbulence Models}
+In order to compute the FTLE field, the flow field, at two different time instances is required, i.e., $t_i$ and $t_f$.
+The flow field corresponding to the earlier time instance is stored in the \texttt{initial} particle array, while the flow field corresponding to the later time instance is stored in the \texttt{final} particle array.
 
+The forward-in-time (FIT) FTLE field is calculated as \parencite{sun2016detection}:
+\begin{equation}
+	\lambda_{t_i}^{t_f}(\vect{x}) = \frac{1}{\abs{t_f - t_i}} \ln \bigg( \sqrt{\Lambda_{max}[ \mathbb{C}_{t_i}^{t_f}(\vect{x}) ]}  \bigg),
+\end{equation}
+\begin{equation}
+  \mathbb{C}_{t_i}^{t_f}(\vect{x}) = \mathbb{F}_{t_i}^{t_f}(\vect{x})^T \mathbb{F}_{t_i}^{t_f}(\vect{x}),
+\end{equation}
+where, $\mathbb{F}_{t_i}^{t_f}(\vect{x})$ is the deformation gradient tensor, and $\Lambda_{max}$ is the maximum eigenvalue of the Cauchy-Green tensor $\mathbb{C}_{t_i}^{t_f}(\vect{x})$. Correspondingly, the backward-in-time (BIT) FTLE field is calculated as:
+\begin{equation}
+  \lambda_{t_f}^{t_i}(\vect{x}) = \frac{1}{\abs{t_f - t_i}} \ln \bigg( \sqrt{ \frac{1}{\Lambda_{min}[ \mathbb{C}_{t_i}^{t_f}(\vect{x}) ]} }  \bigg).
+\end{equation}
+
+The corresponding, SPH approximations for the above equations are given as \parencite{sun2016detection}:
+\begin{equation}
+  \mathbb{F}_{t_i}^{t_f}(\vect{x}_i) = \sum_{j} \frac{m_j}{\rho_j} \vect{X}_{ji} \otimes \nabla \mathbb{L}( \vect{x}_i ) \DWIJ,
+\end{equation}
+\begin{equation}
+  \mathbb{L}( \vect{x}_i ) = \bigg[ \sum_j \vect{x}_{ji} \otimes \nabla_i W(\abs{\vect{X}_{ji}}, h_i) \bigg]^{-1},
+\end{equation}
+where, $(\vect{x}_i, \vect{X}_i)$ corresponds to the initial and final position of the same particle.
+
+In order to test the correctness of the FTLE field computation, the following test-cases were devised.
+\begin{itemize}
+  \item \texttt{parabolic}
+  \begin{equation}
+    X = 1.5x, \quad Y = x^2 + y,
+  \end{equation}
+
+  \item \texttt{spiral}
+  \begin{equation}
+    X = x + 0.1 \cos(2 \pi r^2), \quad Y = y + 0.1 \sin(2 \pi r^2), \quad r = \sqrt{x^2 + y^2},
+    \end{equation}
+\end{itemize}
+
+\begin{figure}[ht!]
+		\centering\includegraphics[width=10cm]{Code-Figures/ftle_parabolic.png}
+		\caption{Parabolic displacement field}
+    \label{fig:ftle-parabolic}
+\end{figure}
+\begin{figure}[ht!]
+  \centering\includegraphics[width=10cm]{Code-Figures/ftle_spiral.png}
+  \caption{Spiral displacement field}
+  \label{fig:ftle-spiral}
+\end{figure}
+
+As seen in \figref{fig:ftle-parabolic} and \figref{fig:ftle-spiral} ($B_0$: initial configuration, $B_t$: final configuration), it can be observed that although the FTLE fields can to an extent qualitatively capture the evolution of the configurations, i.e, attracting/repelling pathlines, it is however, not as accurate in terms of actually capturing the exact pathlines. Therefore, it was concluded that in-place of FTLE fields, tracer particles can be used to visualize the flow field, which would be more accurate in terms of capturing the exact pathlines, but would be computationally more expensive, since the tracer particles would have to be advected along with the flow field, and would also require additional post-processing to visualize the pathlines. They would also have to be done in-situ, i.e., during the simulation itself, as opposed to the FTLE fields, which can be computed post-simulation or in-situ as well.
