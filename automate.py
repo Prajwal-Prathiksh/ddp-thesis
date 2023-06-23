@@ -251,18 +251,24 @@ class SineVelProfile(PySPHProblem):
         # Create parameteric cases
         def get_opts():
             perturb_opts = mdict(
-                perturb=[0, 0.01, 0.1],
-                hdx=[1.2,],
-                i_radius_scale=[1.2,]
+                perturb=[0.01],
+                hdx=[2.0,],
+                i_radius_scale=[2.0,]
             )
-            dim_nx_opts = mdict(dim=[1], nx=[701], n_freq=[350])
-            dim_nx_opts += mdict(dim=[2], nx=[701], n_freq=[350])
-            dim_nx_opts += mdict(dim=[3], nx=[71], n_freq=[35])
+            dim_nx_opts = mdict(dim=[1], nx=[61, 91, 121], n_freq=[30])
+            dim_nx_opts += mdict(dim=[2], nx=[61, 91, 121], n_freq=[30])
+            dim_nx_opts += mdict(dim=[3], nx=[61, 91, 121], n_freq=[30])
 
             all_options = dprod(perturb_opts, dim_nx_opts)
-            KERNEL_CHOICES = ['WendlandQuinticC4']
-            INTERPOLATING_METHOD_CHOICES = ['sph', 'shepard', 'order1',]
+            KERNEL_CHOICES = ['WendlandQuinticC6']
+            # INTERPOLATING_METHOD_CHOICES = [
+            #     'sph', 'shepard', 'order1', 'order1BL', 'order1MC'
+            # ]
             INTERPOLATING_METHOD_CHOICES = ['sph']
+            # KERNEL_CHOICES = [
+            #     'CubicSpline', 'WendlandQuinticC2', 'WendlandQuinticC4',
+            #     'WendlandQuinticC6', 'Gaussian', 'SuperGaussian', 'QuinticSpline'
+            # ]
             
             i_kernel_opts = mdict(i_kernel=KERNEL_CHOICES)
             i_method_opts = mdict(i_method=INTERPOLATING_METHOD_CHOICES)
@@ -278,7 +284,7 @@ class SineVelProfile(PySPHProblem):
             Simulation(
                 root=self.input_path(opts2path(kw)),
                 base_command=base_cmd,
-                job_info=dict(n_core=N_CORES, n_thread=N_THREADS),
+                job_info=dict(n_core=2, n_thread=4),
                 **kw
             )
             for kw in all_options
@@ -291,8 +297,8 @@ class SineVelProfile(PySPHProblem):
         self.make_output_dir()
         tmp = dict(
             dim=[1,2,3],
-            nx = [701, 701, 71],
-            n_freq=[350, 350, 35],
+            nx = [101, 101, 101],
+            n_freq=[50, 50, 50]
         )
         for dim, nx, n_freq in zip(tmp['dim'], tmp['nx'], tmp['n_freq']):
             def _temp_plotter(fcases, title_suffix, labels):
@@ -300,10 +306,10 @@ class SineVelProfile(PySPHProblem):
                     return
                 print(f"title_suffix = {title_suffix}")
                 print(f"labels = {labels}")
-                self.plot_energy_spectrum(
-                    fcases, labels, plt_type="l2_error",
-                    title_suffix=title_suffix, plot_grid=True
-                )
+                # self.plot_energy_spectrum(
+                #     fcases, labels, plt_type="l2_error",
+                #     title_suffix=title_suffix, plot_grid=True
+                # )
                 self.plot_energy_spectrum(
                     fcases, labels, plt_type="loglog", 
                     title_suffix=title_suffix, plot_grid=True
@@ -311,37 +317,39 @@ class SineVelProfile(PySPHProblem):
             
             # Set 0
             fcases = filter_cases(self.cases, dim=dim)
-            title_suffix = f"(dim={dim}, nx={nx}, n_freq={n_freq})"
-            labels = ['perturb']
+            # title_suffix = f"(dim={dim}, nx={nx}, n_freq={n_freq})"
+            # labels = ['perturb']
+            title_suffix = f"(dim={dim}, pertub={0.01}, method={'sph'}, kernel={'WQC6'})"
+            labels = ['nx', 'n_freq']
             _temp_plotter(fcases, title_suffix, labels)
 
-            # Set 1
-            fcases = filter_cases(
-                self.cases, dim=dim, nx=nx, n_freq=n_freq, i_radius_scale=3
-            )
-            title_suffix = f"dim={dim}, nx={nx}, n_freq={n_freq}, " \
-                            f"i_radius_scale=3"
-            labels = ['i_method', 'hdx']
-            _temp_plotter(fcases, title_suffix, labels)
+            # # Set 1
+            # fcases = filter_cases(
+            #     self.cases, dim=dim, nx=nx, n_freq=n_freq, i_radius_scale=3
+            # )
+            # title_suffix = f"dim={dim}, nx={nx}, n_freq={n_freq}, " \
+            #                 f"i_radius_scale=3"
+            # labels = ['i_method', 'hdx']
+            # _temp_plotter(fcases, title_suffix, labels)
 
-            # Set 2
-            fcases = filter_cases(
-                self.cases, dim=dim, n_freq=n_freq, hdx=1.2,
-                i_radius_scale=3
-            )
-            title_suffix = f"dim={dim}, n_freq={n_freq}, hdx=1.2, " \
-                            f"i_radius_scale=3"
-            labels = ['i_method', 'nx']
-            _temp_plotter(fcases, title_suffix, labels)
+            # # Set 2
+            # fcases = filter_cases(
+            #     self.cases, dim=dim, n_freq=n_freq, hdx=1.2,
+            #     i_radius_scale=3
+            # )
+            # title_suffix = f"dim={dim}, n_freq={n_freq}, hdx=1.2, " \
+            #                 f"i_radius_scale=3"
+            # labels = ['i_method', 'nx']
+            # _temp_plotter(fcases, title_suffix, labels)
             
-            # Set 3
-            fcases = filter_cases(
-                self.cases, dim=dim, nx=nx, n_freq=n_freq, hdx=1.2
-            )
-            title_suffix = f"dim={dim}, nx={nx}, n_freq={n_freq}, " \
-                            f"hdx=1.2"
-            labels = ['i_method', 'i_radius_scale']
-            _temp_plotter(fcases, title_suffix, labels)
+            # # Set 3
+            # fcases = filter_cases(
+            #     self.cases, dim=dim, nx=nx, n_freq=n_freq, hdx=1.2
+            # )
+            # title_suffix = f"dim={dim}, nx={nx}, n_freq={n_freq}, " \
+            #                 f"hdx=1.2"
+            # labels = ['i_method', 'i_radius_scale']
+            # _temp_plotter(fcases, title_suffix, labels)
 
 class TGV2DSchemeComparison(PySPHProblem):
     def get_name(self):
