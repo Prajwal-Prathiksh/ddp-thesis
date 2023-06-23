@@ -189,8 +189,6 @@ class LyapunovExponentEquation(Equation):
             i = 1
         d_ftle[d_idx] = self.delta_t_inv * log(sqrt(V[i]))
 
-
-
 class FTLyapunovExponent(object):
     def __init__(
         self, dim:int, t0, pa_0, tf, pa_f,
@@ -286,7 +284,7 @@ class FTLyapunovExponent(object):
         if dim == 2:
             X, Y = np.meshgrid(_x, _x)
             R2 = X**2 + Y**2
-            flow_types = ['parabolic', 'spiral', 'exp']
+            flow_types = ['parabolic', 'spiral', 'exponential']
             if flow_type not in flow_types:
                 raise ValueError(
                     f"{flow_type} is not a valid flow type. Valid flow types "
@@ -300,7 +298,7 @@ class FTLyapunovExponent(object):
                 fac = 0.1
                 x = X + fac*cos(2*pi*R2)
                 y = Y + fac*sin(2*pi*R2)
-            elif flow_type == 'exp':
+            elif flow_type == 'exponential':
                 X = Y = np.linspace(0, 1, nx)
                 x = np.exp(-X)
                 y = np.exp(-Y)
@@ -456,7 +454,7 @@ if __name__ == '__main__':
     import time
     import argparse
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument(
         '--flow', type=str, default='exp',
         help='Flow type. Options: "parabolic", "spiral", "exp"'
