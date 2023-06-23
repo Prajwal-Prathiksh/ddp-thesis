@@ -13,7 +13,7 @@ In order to make available, all of the turbulence-specific post-processing from 
 		\item number of interpolation points along each axis,
 		\item kernel to be used for the interpolation, and the corresponding kernel radius,
 		\item interpolation method,
-		\item norm order to be used for the computation of the $1D$ energy spectrum (\textit{also referred to as the scalar energy spectrum}),
+		\item norm order to be used for the computation of the $1D$ energy spectrum (also referred to as the \textit{scalar energy spectrum}),
 		\item expected slope for the $1D$ energy spectrum,
         \item type of FTLE field (either \textit{forward} or \textit{backward}),
 	\end{itemize}
@@ -170,6 +170,124 @@ Therefore, it was concluded that the $1D$ energy field, computed from the interp
     \caption{The scalar fields $E(k)$ for $1D$, $2D$, and $3D$ case, with decay rate $\gamma=1$, and $N=n_x/2$.}
     \label{fig:espec-scalar-fields-gamma1}
 \end{figure}
+
+The same set of test-cases, with $\gamma=1$ and $N=n_x/2$, are considered, in order to identify the effect of various interpolation schemes, kernels, perturbation, and resolutions on the computed energy spectrum.
+
+In order to measure the effect of the perturbation in the particle spacing on the computed energy spectrum, once a rectangluar grid of uniform particles are defined, its coordinates are perturbed by a uniform random number $\delta \hat{x} \in [0, 1)$, scaled by a perturbation amplitude. The perturbed grid is then initialized with the corresponding velocity profile, and the energy spectrum is computed for the perturbed grid. From the results shown in \figref{fig:espec-scalar-fields-per-ampl}, it can be observed that by increasing the perturbation amplitude, energy seems to be introduced at lower resolution scales, which is reflected by the icreased energy at higher wavenumbers. This trend seems to hold true, for all dimensions.
+Therefore, we can infer that the low-pass energy dissipation effect of the interpolation scheme, will to an extent be countered by the perturbation in the particle spacing (which is typically the case in a simulation since the particles become disturbed), which will introduce energy at lower resolution scales, and hence, the slope of the energy spectrum computed from the interpolated velocity field, will be closer to the slope of the energy spectrum computed from the original velocity field. 
+
+\begin{figure}[h]
+    \begin{subfigure}{8cm}
+      \centering\includegraphics[width=7cm]{Code-Figures/sin-vel-prof-pertub/Energy Spectrum (Loglog) (Dim=1, Nx=101, N_Freq=50).png}
+      \caption{$1D$ $E(k)$ field}
+    \end{subfigure}
+    \begin{subfigure}{8cm}
+      \centering\includegraphics[width=7cm]{Code-Figures/sin-vel-prof-pertub/Energy Spectrum (Loglog) (Dim=2, Nx=101, N_Freq=50).png}
+      \caption{$2D$ $E(k)$ field}
+    \end{subfigure}
+    \begin{subfigure}{8cm}
+        \centering\includegraphics[width=7cm]{Code-Figures/sin-vel-prof-pertub/Energy Spectrum (Loglog) (Dim=3, Nx=101, N_Freq=50).png}
+        \caption{$3D$ $E(k)$ field}
+      \end{subfigure}
+    \caption{The scalar fields $E(k)$ for $1D$, $2D$, and $3D$ case, for various perturbation amplitudes.}
+    \label{fig:espec-scalar-fields-per-ampl}
+\end{figure}
+
+Then, in order to measure the effect of the interpolation scheme on the computed energy spectrum, the following interpolation schemes were considered:
+\begin{itemize}
+    \item \texttt{sph}:
+    \begin{equation}
+        \phi_i = \sum_{ij} \frac{m_j}{\rho_j} \phi_j \DWIJ,
+    \end{equation}
+    
+    \item \texttt{shepard}:
+    \begin{equation}
+        \phi_i = \frac{\sum_{ij} \phi_j \WIJ}{\sum_{ij} \WIJ},
+    \end{equation}
+
+    \item \texttt{order1}:
+    \begin{equation}
+        a = B % TODO
+        \label{eq:interp-order1}
+    \end{equation}
+
+    \item \texttt{order1BL}: same as \Eqref{eq:interp-order1}, but with $\DWIJ$ term corrected using the Bonet-Lok correction, % TODO cite
+
+    \item \texttt{order1MC}: same as \Eqref{eq:interp-order1}, but with $\DWIJ$ term corrected using the Morris-Cummins correction, % TODO cite
+\end{itemize}
+where $\phi$ is the quantity to be interpolated.
+
+From the results shown in \figref{fig:espec-scalar-fields-i-methods}, it can be observed that the \texttt{order1MC} interpolation scheme, seems to introduce the least amount of energy at lower resolution scales, with the \texttt{sph} scheme introducing the most amount of energy at lower resolution scales. This trend seems to hold true, for all dimensions.
+Therefore, considering the fact that the \texttt{sph} interpolation scheme would appear to counter the loss in energy at lower resolution scales, due to the act of interpolation, it is chosen as the default interpolation scheme for the computation of the energy spectrum.
+
+\begin{figure}[h]
+	\begin{subfigure}{8cm}
+		\centering\includegraphics[width=7cm]{Code-Figures/sin-vel-prof-i-methods/Energy Spectrum (Loglog) (Dim=1, Pertub=0.01).png}
+		\caption{$1D$ $E(k)$ field}
+	\end{subfigure}
+	\begin{subfigure}{8cm}
+		\centering\includegraphics[width=7cm]{Code-Figures/sin-vel-prof-i-methods/Energy Spectrum (Loglog) (Dim=2, Pertub=0.01).png}
+		\caption{$2D$ $E(k)$ field}
+	\end{subfigure}
+	\begin{subfigure}{8cm}
+		\centering\includegraphics[width=7cm]{Code-Figures/sin-vel-prof-i-methods/Energy Spectrum (Loglog) (Dim=3, Pertub=0.01).png}
+		\caption{$3D$ $E(k)$ field}
+	\end{subfigure}
+	\caption{The scalar fields $E(k)$ for $1D$, $2D$, and $3D$ case, for various interpolation schemes.}
+	\label{fig:espec-scalar-fields-i-methods}
+\end{figure}
+
+Then, in order to measure the effect of the kernel on the computed energy spectrum, the following kernels were considered:
+\begin{itemize}
+    \item \texttt{CubicSpline},
+    \item \texttt{WendlandQuinticC2},
+    \item \texttt{WendlandQuinticC4},
+    \item \texttt{WendlandQuinticC6},
+    \item \texttt{Gaussian},
+    \item \texttt{SuperGaussian},
+    \item \texttt{QuinticSpline}.
+\end{itemize}
+
+From the results shown in \figref{fig:espec-scalar-fields-i-kernels}, it can be observed that the \texttt{Gaussian} kernel, seems to introduce the least amount of energy at lower resolution scales, with the \texttt{WendlandQuinticC6} kernel introducing the most amount of energy at lower resolution scales. This trend seems to hold true, for all dimensions.
+Therefore, the \texttt{Gaussian} kernel is chosen as the default kernel for the computation of the energy spectrum.
+
+\begin{figure}[h]
+	\begin{subfigure}{8cm}
+		\centering\includegraphics[width=7cm]{Code-Figures/sin-vel-prof-i-kernel/Energy Spectrum (Loglog) (Dim=1, Pertub=0.01, Method=Sph).png}
+		\caption{$1D$ $E(k)$ field}
+	\end{subfigure}
+	\begin{subfigure}{8cm}
+		\centering\includegraphics[width=7cm]{Code-Figures/sin-vel-prof-i-kernel/Energy Spectrum (Loglog) (Dim=2, Pertub=0.01, Method=Sph).png}
+		\caption{$2D$ $E(k)$ field}
+	\end{subfigure}
+	\begin{subfigure}{8cm}
+		\centering\includegraphics[width=7cm]{Code-Figures/sin-vel-prof-i-kernel/Energy Spectrum (Loglog) (Dim=3, Pertub=0.01, Method=Sph).png}
+		\caption{$3D$ $E(k)$ field}
+	\end{subfigure}
+	\caption{The scalar fields $E(k)$ for $1D$, $2D$, and $3D$ case, for various interpolation kernels.}
+	\label{fig:espec-scalar-fields-i-kernels}
+\end{figure}
+
+Finally, in order to measure the effect of particle resolution on the computed energy spectrum, test-cases with a $\gamma=1$ and $N=30$ were considered for all dimensions, with the range of number of particles along each axis being $[61, 91, 121]$.
+From the results shown in \figref{fig:espec-scalar-fields-res}, it can be observed that the energy spectrum computed for the highest resolution, is observed to be the closest to the exact trend, for all dimensions.
+
+\begin{figure}[h]
+	\begin{subfigure}{8cm}
+		\centering\includegraphics[width=7cm]{Code-Figures/sin-vel-prof-res/Energy Spectrum (Loglog) (Dim=1, Pertub=0.01, Method=Sph, Kernel=Wqc6).png}
+		\caption{$1D$ $E(k)$ field}
+	\end{subfigure}
+	\begin{subfigure}{8cm}
+		\centering\includegraphics[width=7cm]{Code-Figures/sin-vel-prof-res/Energy Spectrum (Loglog) (Dim=2, Pertub=0.01, Method=Sph, Kernel=Wqc6).png}
+		\caption{$2D$ $E(k)$ field}
+	\end{subfigure}
+	\begin{subfigure}{8cm}
+		\centering\includegraphics[width=7cm]{Code-Figures/sin-vel-prof-res/Energy Spectrum (Loglog) (Dim=3, Pertub=0.01, Method=Sph, Kernel=Wqc6).png}
+		\caption{$3D$ $E(k)$ field}
+	\end{subfigure}
+	\caption{The scalar fields $E(k)$ for $1D$, $2D$, and $3D$ case, for various particle resolutions.}
+	\label{fig:espec-scalar-fields-res}
+\end{figure}
+
 
 % Effect of perturbation, show which i-method is best
 % Effect of resolution
