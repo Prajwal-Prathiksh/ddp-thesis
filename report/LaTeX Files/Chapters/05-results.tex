@@ -54,25 +54,122 @@ In order to compute the energy spectrum, the following steps are performed:
 \end{itemize}
 
 The function to compute the $1D$ energy spectrum was coded using three different backends, namely, pure \texttt{python}, \texttt{numba} \parencite{Lam_Pitrou_Seibert_2015}, and \texttt{compyle} \parencite{compyle_pr_ab-proc-scipy-2020}.
-The speedup results of the three-implementations are shown in \figref{fig:espec-dim-1}, \figref{fig:espec-dim-2}, and \figref{fig:espec-dim-3} for $1D$, $2D$, and $3D$ velocity fields respectively.
+The speedup results of the three-implementations are shown in \figref{fig:espec-speedup} for $1D$, $2D$, and $3D$ velocity fields respectively.
 
 \begin{figure}[h]
-	\centering
-	\includegraphics[width=0.8\linewidth]{Code-Figures/espec_speedup_dim_1.png}
-	\caption{Speedup of the $1D$ energy spectrum computation for a $1D$ velocity field.}
-	\label{fig:espec-dim-1}
-\end{figure}
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\linewidth]{Code-Figures/espec_speedup_dim_2.png}
-    \caption{Speedup of the $1D$ energy spectrum computation for a $2D$ velocity field.}
-    \label{fig:espec-dim-2}
-\end{figure}
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\linewidth]{Code-Figures/espec_speedup_dim_3.png}
-    \caption{Speedup of the $1D$ energy spectrum computation for a $3D$ velocity field.}
-    \label{fig:espec-dim-3}
+    \begin{subfigure}{8cm}
+      \centering\includegraphics[width=7cm]{Code-Figures/espec_speedup_dim_1.png}
+      \caption{$1D$ velocity field}
+    \end{subfigure}
+    \begin{subfigure}{8cm}
+      \centering\includegraphics[width=7cm]{Code-Figures/espec_speedup_dim_2.png}
+      \caption{$2D$ velocity field}
+    \end{subfigure}
+    \begin{subfigure}{8cm}
+      \centering\includegraphics[width=7cm]{Code-Figures/espec_speedup_dim_3.png}
+      \caption{$3D$ velocity field}
+    \end{subfigure}
+    \caption{Speedup of the $1D$ energy spectrum computation for various dimensions of the velocity field.}
+    \label{fig:espec-speedup}
 \end{figure}
 
-As clearly seen, in the speedup plots, the \texttt{numba} implementation is around $50-100x$ faster than the pure \texttt{python} implementation, while the \texttt{compyle} implementation is around $80-150x$ faster than the pure \texttt{python} implementation over various resolution scales. These trends are observed for all the three dimensions of the velocity field. The \texttt{compyle} implementation, in addition to begin faster than the \texttt{numba} implementation, also has the added advantage of not requiring any additional dependencies, which are not already required by \texttt{PySPH}, unlike the \texttt{numba} implementation, which requires the \texttt{numba} package to be installed separately. Hence, the \texttt{compyle} implementation was chosen for the final implementation of the $1D$ energy spectrum computation.
+As seen, in the speedup plots, the \texttt{numba} implementation is around $50-100x$ faster than the pure \texttt{python} implementation, while the \texttt{compyle} implementation is around $80-150x$ faster than the pure \texttt{python} implementation over various resolution scales. These trends are observed for all the three dimensions of the velocity field. The \texttt{compyle} implementation, in addition to begin faster than the \texttt{numba} implementation, also has the added advantage of not requiring any additional dependencies, which are not already required by \texttt{PySPH}, unlike the \texttt{numba} implementation, which requires the \texttt{numba} package to be installed separately. Hence, the \texttt{compyle} implementation was chosen for the final implementation of the $1D$ energy spectrum computation.
+
+In order to test the code for correctness, the following test-cases were devised. The velocity field for $1D$, is given as:
+\begin{equation}
+    v_x = - \sum_{i=1}^{N} i^{-\gamma} \cos(2 \pi i x),
+\end{equation}
+where, $N$ is the number of modes, and $\gamma$ is the decay rate of the modes.
+For $2D$, the velocity field is given as:
+\begin{equation}
+    v_x = - \sum_{i=1}^{N} i^{-\gamma} \cos(2 \pi i x) \sin(2 \pi i y)
+\end{equation}
+\begin{equation}
+    v_y = \sum_{i=1}^{N} i^{-\gamma} \sin(2 \pi i x) \cos(2 \pi i y).
+\end{equation}
+For $3D$, the velocity field is given as:
+\begin{equation}
+    v_x = - \sum_{i=1}^{N} i^{-\gamma} \cos(2 \pi i x) \sin(2 \pi i y) \sin(2 \pi i z)
+\end{equation}
+\begin{equation}
+    v_y = \sum_{i=1}^{N} i^{-\gamma} \sin(2 \pi i x) \cos(2 \pi i y) \sin(2 \pi i z)
+\end{equation}
+\begin{equation}
+    v_z = \sum_{i=1}^{N} i^{-\gamma} \sin(2 \pi i x) \sin(2 \pi i y) \cos(2 \pi i z).
+\end{equation}
+Since the energy in the flow field is a function of the square of the velocity, the corresponding decay rate in the energy spectrum is going to be $2\gamma$.
+
+First order of correctness, involved running the energy spectral calculation for the above test-cases, using only one mode ($N=1$), and zero decay rate ($\gamma=0$).
+The vector energy spectral fields are show in \figref{fig:espec-vector-fields-N1}. It should be noted, that the plots are shown by shifting the energy spectrum, such that the center of the plot corresponds to the zero wavenumber. This is done, since the energy spectrum is symmetric about the zero wavenumber, and hence, the plot is more informative when the zero wavenumber is at the center of the plot. Here, it can be observed that in both the $1D$ and $2D$ case the energy spectrum peaks only for $k=1$, and is zero for every other wavenumber, indicating the nature of the velocity field, consisting of only one mode. 
+The scalar energy spectral fields are shown in \figref{fig:espec-scalar-fields-N1}. As can be seen, the energy spectrum peaks only for $k=1$, and is zero for every other wavenumber for all dimensions.
+
+\begin{figure}[h]
+    \begin{subfigure}{8cm}
+      \centering\includegraphics[width=7cm]{Code-Figures/espec-simple-1d/EK_spectrum.png}
+      \caption{$1D$ $\vect{E}(\vect{k})$ field}
+    \end{subfigure}
+    \begin{subfigure}{8cm}
+      \centering\includegraphics[width=7cm]{Code-Figures/espec-simple-2d/EK_spectrum.png}
+      \caption{$2D$ $\vect{E}(\vect{k})$ field}
+    \end{subfigure}
+    \caption{The vector fields $\vect{E}(\vect{k})$ for $1D$ and $2D$ case, with decay rate $\gamma=0$, and $N=1$.}
+    \label{fig:espec-vector-fields-N1}
+\end{figure}
+
+\begin{figure}[h]
+    \begin{subfigure}{8cm}
+      \centering\includegraphics[width=7cm]{Code-Figures/espec-simple-1d/energy_spectrum.png}
+      \caption{$1D$ $E(k)$ field}
+    \end{subfigure}
+    \begin{subfigure}{8cm}
+      \centering\includegraphics[width=7cm]{Code-Figures/espec-simple-2d/energy_spectrum.png}
+      \caption{$2D$ $E(k)$ field}
+    \end{subfigure}
+    \begin{subfigure}{8cm}
+        \centering\includegraphics[width=7cm]{Code-Figures/espec-simple-3d/energy_spectrum.png}
+        \caption{$3D$ $E(k)$ field}
+      \end{subfigure}
+    \caption{The scalar fields $E(k)$ for $1D$, $2D$, and $3D$ case, with decay rate $\gamma=0$, and $N=1$.}
+    \label{fig:espec-scalar-fields-N1}
+\end{figure}
+
+subsequently, to test the correctness when multiple modes are involved, the test-cases were reconsidered, with $\gamma=1$, and $N$ equal to half the number of particles along one axis of the problem.
+The vector energy spectral fields are show in \figref{fig:espec-vector-fields-gamma1}. Here, it can be observed that in both the $1D$ and $2D$ case the energy spectrum peaks for $k=1$, and is non-zero upto $k=n_x/2$, indicating the nature of the velocity field, consisting of multiple modes. The amplitudes are also observed to have an exponential drop-off, as is expected given the nature of the amplitude weigthing.
+This is made all the more clear, with the scalar energy spectral fields shown in \figref{fig:espec-scalar-fields-gamma1}. The log-log plots here, allow for the exponential drop-off to be observed more clearly, by fitting a straight line to the log-log plot between wavenumbers $k \in [1, n_x/4]$. The gree-dashed lines which represent the scalar energy spectrum computed for the original velocity field (which is uniform, and rectangular) without interpolation, represents the `best'-case scenario, where the energy spectrum is computed without any loss of information in the velocity field, and the source of noise can be solely attributed to numerical errors from the discrete Fourier transform. The actual scalar energy spectrum computed from the interpolated velocity is plotted in blue.
+It is oberseved that energy spectrum computed without interpolation, is indeed the `best'-case scenario, since it much more closely follows the exact trend. However, with the computed energy spectrum from the interpolated velocity field, the trend is still observed to be followed, but only upto the $k/8$ wavenumber, beyond which the trend is lost, and the computed energy spectrum is observed to be much lower than the green-dashed line, with the difference increasing with the wavenumber.
+This seems to indicate that the act of interpolation itself, is introducing some amount of noise in the velocity field, which is reflected by the jagged nature of the blue line, and also seems to decrease the energy at lower scales, which is reflected by the blue line being consistently lower than the green-dashed line at lower wavenumbers. This allows for the conclusion that the interpolation scheme, seems to behave as a low-pass filter, which is expected, since the interpolation scheme is essentially a convolution of the velocity field with the kernel function, which is a low-pass filter.
+
+Therefore, it was concluded that the $1D$ energy field, computed from the interpolated velocity field, typically will underestimate the energy at higher wavenumbers, and hence, the slope of the energy spectrum computed from the interpolated velocity field, will be lower than the slope of the energy spectrum computed from the original velocity field, as reflected in \figref{fig:espec-scalar-fields-gamma1} as well.
+
+\begin{figure}[h]
+    \begin{subfigure}{8cm}
+      \centering\includegraphics[width=7cm]{Code-Figures/sine-vel-prof-1d/EK_spectrum.png}
+      \caption{$1D$ $\vect{E}(\vect{k})$ field}
+    \end{subfigure}
+    \begin{subfigure}{8cm}
+      \centering\includegraphics[width=7cm]{Code-Figures/sine-vel-prof-2d/EK_spectrum.png}
+      \caption{$2D$ $\vect{E}(\vect{k})$ field}
+    \end{subfigure}
+    \caption{The vector fields $\vect{E}(\vect{k})$ for $1D$ and $2D$ case, with decay rate $\gamma=1$, and $N=n_x/2$.}
+    \label{fig:espec-vector-fields-gamma1}
+\end{figure}
+
+\begin{figure}[h]
+    \begin{subfigure}{8cm}
+      \centering\includegraphics[width=7cm]{Code-Figures/sine-vel-prof-1d/ek_00000_loglog.png}
+      \caption{$1D$ $E(k)$ field}
+    \end{subfigure}
+    \begin{subfigure}{8cm}
+      \centering\includegraphics[width=7cm]{Code-Figures/sine-vel-prof-2d/ek_00000_loglog.png}
+      \caption{$2D$ $E(k)$ field}
+    \end{subfigure}
+    \begin{subfigure}{8cm}
+        \centering\includegraphics[width=7cm]{Code-Figures/sine-vel-prof-3d/ek_00000_loglog.png}
+        \caption{$3D$ $E(k)$ field}
+      \end{subfigure}
+    \caption{The scalar fields $E(k)$ for $1D$, $2D$, and $3D$ case, with decay rate $\gamma=1$, and $N=n_x/2$.}
+    \label{fig:espec-scalar-fields-gamma1}
+\end{figure}
+
+% Effect of perturbation, show which i-method is best
+% Effect of resolution
