@@ -346,3 +346,9 @@ In order to test the correctness of the FTLE field computation, the following te
 \end{figure}
 
 As seen in \figref{fig:ftle-parabolic} and \figref{fig:ftle-spiral} ($B_0$: initial configuration, $B_t$: final configuration), it can be observed that although the FTLE fields can to an extent qualitatively capture the evolution of the configurations, i.e, attracting/repelling pathlines, it is however, not as accurate in terms of actually capturing the exact pathlines. Therefore, it was concluded that in-place of FTLE fields, tracer particles can be used to visualize the flow field, which would be more accurate in terms of capturing the exact pathlines, but would be computationally more expensive, since the tracer particles would have to be advected along with the flow field, and would also require additional post-processing to visualize the pathlines. They would also have to be done in-situ, i.e., during the simulation itself, as opposed to the FTLE fields, which can be computed post-simulation or in-situ as well.
+% TODO: iPad fig of atracting and repelling pathlines
+
+\section{Turbulence Modelling}
+\subsection{Implementation of models}
+\subsection{Optimization of models}
+\subsection{Order of convergence analysis}
