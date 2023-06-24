@@ -168,22 +168,29 @@ def get_label_from_scheme(scheme):
     label : str
         The label for the given scheme.
     """
+    label = None
     if scheme == "tvf":
-        return 'TVF'
+        label = 'TVF'
     elif scheme == 'ewcsph':
-        return 'EWCSPH'
+        label = 'EWCSPH'
     elif scheme == 'delta_plus':
-        return r'$\delta^{+}SPH$'
+        label = '$\delta^{+}SPH$'
     elif scheme == 'tsph':
-        return 'L-IPST-C'
+        label = 'L-IPST-C'
     elif scheme == 'edac':
-        return 'EDAC'
+        label = 'EDAC'
     elif scheme == 'deltales':
-        return 'Delta-LES (rhoc)'
+        label = r'$\delta$-LES-SPH $(\rho_c)$'
     elif scheme == 'deltales_sd':
-        return 'Delta-LES (rho)'
+        label = r'$\delta$-LES-SPH $(\rho)$'
     elif scheme == 'k_eps':
-        return r'$k-\epsilon$'
+        label = '$k-\epsilon$'
+    elif scheme == 'ok2022':
+        label = 'SPH-LES'
+    elif scheme == 'mon2017':
+        label = r'SPH-$\epsilon$'
 
+    if label is None:
+        raise NotImplementedError
     else:
-        return NotImplementedError
+        return fr'{label}'

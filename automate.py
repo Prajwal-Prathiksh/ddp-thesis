@@ -800,40 +800,52 @@ class TGV2DIntegratorComparison(PySPHProblem):
         return 'code/taylor_green.py --no-plot --openmp --tf 0.1 --n-o-files 8 '
 
     def setup(self):
+        # scheme_opts = mdict(
+        #     scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10],
+        #     eos=['tait']
+        # )
+        # scheme_opts = mdict(
+        #     scheme=['ok2022'], pst_freq=[10], eos=['tait'],
+        #     # turb_visc=['SMAG', 'SMAG_MCG', 'SIGMA']
+        # )
+
+        # scheme_opts = mdict(
+        #     scheme=['deltales'], pst_freq=[100], eos=['tait']
+        # )
+        # scheme_opts = mdict(
+        #     scheme=['deltales_sd'], pst_freq=[100], eos=['linear']
+        # )
+        # scheme_opts = mdict(
+        #     scheme=['k_eps'], pst_freq=[100], eos=['tait'],
+        #     # k_eps_expand=['no', 'yes']
+        # )
         scheme_opts = mdict(
-            scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10],
-            eos=['tait']
-        )
-        scheme_opts += mdict(
-            scheme=['deltales'], pst_freq=[10], eos=['linear', 'tait']
-        )
-        scheme_opts += mdict(
-            scheme=['deltales_sd'], pst_freq=[10], eos=['linear', 'tait']
-        )
-        scheme_opts += mdict(
-            scheme=['k_eps'], pst_freq=[10], eos=['linear', 'tait']
+            scheme=['mon2017'], pst_freq=[-1, 10, 50, 100], eos=['tait',],
+            # mon2017_eps=[0.25, 0.5, 0.75, 1.]
+            # mon_kernel_corr=['no', 'yes']
         )
 
         integrator_opts = mdict(
             integrator=['pec'], integrator_dt_mul_fac=[1]
         )
         # integrator_opts += mdict(
-        #     integrator=['rk2'], integrator_dt_mul_fac=[2], pst_freq=[10],
+        #     integrator=['rk2'], integrator_dt_mul_fac=[1.5],
         #     # NOTE: dt_mul cannot be 1 for rk2. This has been hardcoded for
         #     # now. Refer below for more details.
         # )
         # integrator_opts += mdict(
-        #     integrator=['rk2'], integrator_dt_mul_fac=[1], pst_freq=[10],
+        #     integrator=['rk2'], integrator_dt_mul_fac=[1]
         #     adaptive_timestep=[None]
         #     # NOTE: dt_mul = 1 and integ = 'rk2' for appropriate plotting and
         #     # labelling. This has been hardcoded for now.
         # )
         # integrator_opts += mdict(
-        #     integrator=['rk3'], integrator_dt_mul_fac=[3, 6], pst_freq=[10],
+        #     integrator=['rk3'], integrator_dt_mul_fac=[2]
         # )
         # integrator_opts += mdict(
-        #     integrator=['rk4'], integrator_dt_mul_fac=[2, 4, 8], pst_freq=[10],
+        #     integrator=['rk4'], integrator_dt_mul_fac=[2]
         # )
+
         res_opts = mdict(
             nx=[25, 50, 100], c0_fac=[20], re=[100, 1000, 10_000],
         )
@@ -854,6 +866,10 @@ class TGV2DIntegratorComparison(PySPHProblem):
         self.c0s = get_all_unique_values(sim_opts, 'c0_fac')
         self.pst_freqs = get_all_unique_values(sim_opts, 'pst_freq')
         self.eoss = get_all_unique_values(sim_opts, 'eos')
+        # self.mon2017_epss = get_all_unique_values(sim_opts, 'mon2017_eps')
+        # self.mon_kernel_corrs = get_all_unique_values(sim_opts, 'mon_kernel_corr')
+        # self.k_eps_expands = get_all_unique_values(sim_opts, 'k_eps_expand')
+        # self.turb_viscs = get_all_unique_values(sim_opts, 'turb_visc')
 
         self.case_info = {}
         for i in range(len(sim_opts)):
@@ -861,7 +877,9 @@ class TGV2DIntegratorComparison(PySPHProblem):
                 sim_opts[i],
                 kmap=dict(
                     integrator_dt_mul_fac='dtmul', c0_fac='c0', pst_freq='pst',
-                    adaptive_timestep='adapt'
+                    adaptive_timestep='adapt',
+                    k_eps_expand='kepx', mon_kernel_corr='mkc',
+                    mon2017_eps='meps'
                 ),
             )
             self.case_info[sim_name] = sim_opts[i]
@@ -885,21 +903,24 @@ class TGV2DIntegratorComparison(PySPHProblem):
         for c0 in self.c0s:
             for re in self.re_s:
                 self._plot_convergence(c0=c0, re=re)
-        for intg in self.integrators:
-            for re in self.re_s:
-                if intg == 'auto':
-                    continue
-                self._plot_convergence_c0(intg=intg, re=re)
+        # for intg in self.integrators:
+        #     for re in self.re_s:
+        #         if intg == 'auto':
+        #             continue
+        #         self._plot_convergence_c0(intg=intg, re=re)
         
-        for re in self.re_s:
-            for c0 in self.c0s:
-                for pst in self.pst_freqs:
-                    self._plot_rt_speedup(
-                        re=re, c0=c0, pst=pst, largest_dtmf_only=True
-                    )
-                    self._plot_rt_speedup(
-                        re=re, c0=c0, pst=pst, largest_dtmf_only=False
-                    )
+        # for re in self.re_s:
+        #     for c0 in self.c0s:
+        #         for scheme in self.schemes:
+        #             for pst in self.pst_freqs:
+        #                 self._plot_rt_speedup(
+        #                     re=re, c0=c0, pst=pst, largest_dtmf_only=False,
+        #                     scheme=scheme
+        #                 )
+        #                 # self._plot_rt_speedup(
+        #                 #     re=re, c0=c0, pst=pst, largest_dtmf_only=True,
+        #                 #     scheme=scheme
+        #                 # )
 
     def calculate_l1(self, cases):
         data = {}
@@ -912,7 +933,7 @@ class TGV2DIntegratorComparison(PySPHProblem):
         return nx_arr, l1
 
     def _plot_rt_speedup(
-        self, c0=None, re=None, pst=None, largest_dtmf_only=True
+        self, scheme, c0=None, re=None, pst=None, largest_dtmf_only=True
     ):
         if c0 is None:
             c0 = max(self.c0s)
@@ -924,7 +945,6 @@ class TGV2DIntegratorComparison(PySPHProblem):
         plt.figure()
         dx = None
         marker = cycle(MARKER)
-        scheme = 'tsph'
         for intg in self.integrators:
             if intg == 'auto':
                 continue
@@ -964,8 +984,9 @@ class TGV2DIntegratorComparison(PySPHProblem):
         plt.legend(loc='best')
         plt.xlabel(r'$N_x$')
         plt.ylabel(r'$RT$')
+        scheme_msg = get_label_from_scheme(scheme)
         plt.title(
-            fr'CPU time - L-IPST-C Scheme (pst={pst}, c0={c0}, Re={re}) ($t_f=0.1$)'
+            fr'CPU time - {scheme_msg} Scheme (pst={pst}, c0={c0}, Re={re}) ($t_f=0.1$)'
         )
         if largest_dtmf_only:
             fname = f'pois_rt_pst_{pst}_c0_{c0}_re_{re}_largest_dtmf.png'
@@ -985,20 +1006,41 @@ class TGV2DIntegratorComparison(PySPHProblem):
                 for dtmf in self.dt_mul_facs:
                     for pst in self.pst_freqs:
                         for eos in self.eoss:
+                            # for kep in self.k_eps_expands:
+                            # for tvc in self.turb_viscs:
+                            # for mkc in self.mon_kernel_corrs:
+                            # for meps in self.mon2017_epss:
                             cases = filter_cases(
                                 self.cases, scheme=scheme, integrator=intg,
                                 c0_fac=c0, integrator_dt_mul_fac=dtmf, re=re,
-                                pst_freq=pst, eos=eos
+                                pst_freq=pst, eos=eos,
+                                # mon2017_eps=meps
+                                # mon_kernel_corr=mkc
+                                # k_eps_expand=kep
+                                # turb_visc=tvc
                             )
+                            print(len(cases))
                             if len(cases) < 1:
                                 continue
                             dts, l1 = self.calculate_l1(cases)
                             dts = 1./dts
-                            label = get_label_from_scheme(scheme) +\
-                                fr' ({intg}) ({dtmf}$\Delta t$) (pst={pst})' +\
-                                f' ({eos})'
+
+                            pst_msg = '(No PST)'
+                            if pst > 0:
+                                pst_msg = f"(pst={pst})"
+                            label = get_label_from_scheme(scheme)
+                            label += fr' ({intg}) ({dtmf}$\Delta t$) {pst_msg}'
+                            label += f' ({eos})'
+                            # label += fr' ($\epsilon$={meps})'
+                            # label += f' ({tvc})'
+                            # mkc_msg = '(BL gradient correction)'
+                            # if mkc == 'no':
+                            #     mkc_msg = ''
+                            # label += f' {mkc_msg}'
+
                             if intg == 'rk2' and dtmf == 1:
                                 label += f' (Adaptive)'
+
                             plt.loglog(dts, l1, label=label, marker=next(marker))
 
         plt.loglog(dts, l1[0]*(dts/dts[0])**2, 'k--', linewidth=2,
@@ -1022,26 +1064,27 @@ class TGV2DIntegratorComparison(PySPHProblem):
             re = max(self.re_s)
         plt.figure()
         marker = cycle(MARKER)
-        scheme = 'tsph'
         if intg not in self.integrators:
             return
-        for c0 in self.c0s:
-            for dtmf in self.dt_mul_facs:
-                for pst in self.pst_freqs:
-                    cases = filter_cases(
-                        self.cases, scheme=scheme, integrator=intg, c0_fac=c0,
-                        integrator_dt_mul_fac=dtmf, re=re, pst_freq=pst
-                    )
-                    if len(cases) < 1:
-                        continue
-                    dts, l1 = self.calculate_l1(cases)
-                    dts = 1./dts
-                    label = get_label_from_scheme(scheme) +\
-                        fr' ({intg}) ({dtmf}$\Delta t$) (pst={pst})'
-                    label += f' (c0={c0})'
-                    if intg == 'rk2' and dtmf == 1:
-                        label += f' (Adaptive)'
-                    plt.loglog(dts, l1, label=label, marker=next(marker))
+        
+        for scheme in self.schemes:
+            for c0 in self.c0s:
+                for dtmf in self.dt_mul_facs:
+                    for pst in self.pst_freqs:
+                        cases = filter_cases(
+                            self.cases, scheme=scheme, integrator=intg, c0_fac=c0,
+                            integrator_dt_mul_fac=dtmf, re=re, pst_freq=pst
+                        )
+                        if len(cases) < 1:
+                            continue
+                        dts, l1 = self.calculate_l1(cases)
+                        dts = 1./dts
+                        label = get_label_from_scheme(scheme) +\
+                            fr' ({intg}) ({dtmf}$\Delta t$) (pst={pst})'
+                        label += f' (c0={c0})'
+                        if intg == 'rk2' and dtmf == 1:
+                            label += f' (Adaptive)'
+                        plt.loglog(dts, l1, label=label, marker=next(marker))
         
         plt.loglog(dts, l1[0]*(dts/dts[0])**2, 'k--', linewidth=2,
                 label=r'$O(h^2)$')
@@ -1187,4 +1230,3 @@ if __name__ == "__main__":
     automator.run()
     toc = time.perf_counter()
     print(f"Total time taken = {toc-tic:.2f} seconds")
-
