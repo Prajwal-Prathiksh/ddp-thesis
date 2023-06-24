@@ -385,7 +385,7 @@ Building on this work, Dalrymple and Rogers \parencite{Dalrymple2006} used this 
 Canelas et al. \parencite{Canelas2016} constructed the wall-adapting local eddy viscosity (WALE) model to be incorporated in the SPH-LES scheme. They noted that studying turbulent flow fields required the identification of vortices themselves to study their interactions in the flow. They used the definition of Lagrangian Coherent Structures (LCS) to help capture these vortices. As a Lagrangian method, SPH is preferable for studying LCS since the technique provides the motion of individual fluid particles, thereby eliminating the need for expensive post-processing inherent to Eulerian solutions. 
 However, they noted that typically employed SPS strategies for LES simulations, based on the standard Smagorinsky model, cannot correctly enforce wall conditions and non-vanishing stresses with laminar flows. Hence they devised the WALE model.
 
-The authors consider the compressible Navier-Stokes (NS) along the continuity equation as their governing equation. They subsequently present the SPH formulation of the continuity equation as defined by \Eqref{eq:Canelas2016-continuity-sph}.
+The authors consider the compressible NS along the continuity equation as their governing equation. They subsequently present the SPH formulation of the continuity equation as defined by \Eqref{eq:Canelas2016-continuity-sph}.
 \begin{equation}
     \LagDerivative{\rho_i} = - \rho_i \sum_j m_j \VIJ \cdot \DWIJ
     \label{eq:Canelas2016-continuity-sph}
@@ -436,7 +436,7 @@ The authors observed that the vortices produced, would evolve to recombine into 
 
 Okraschevski et al. \parencite{Okraschevski2022}, building on the work of Hardy \parencite{hardy1982formulas}, show that SPH should be viewed as a Lagrangian quadrature technique for the governing equations of explicit LES, raising interesting implications for SPH as a method itself. Firstly, the kernel scale limits SPH’s physical resolution, rendering it unsuitable as a DNS alternative. Secondly, any deficits introduced below the kernel scale could be resolved by consideration of the stress term, from which structures above the kernel scale could benefit. The authors consider this second implication a working hypothesis to try and prove or disprove.
 
-The authors use the compressible NS equations and subject them to a spatial average to obtain the filtered governing equations. They subsequently derive the SPH formulations of the mass and momentum conservation equations as given in \Eqref{eq:Adami2012-summation-density} and \Eqref{eq:Okraschevski2022-mom-sph}.
+The authors use the compressible NS equations and subject them to a spatial average operator to obtain the filtered governing equations. They subsequently derive the SPH formulations of the mass and momentum conservation equations as given in \Eqref{eq:Adami2012-summation-density} and \Eqref{eq:Okraschevski2022-mom-sph}.
 \begin{equation}
     \overline{\rho}_i\LagDerivative{\widetilde{\vect{v}}} = - \sum_j (\overline{P}_i + \overline{P}_j) \DWIJ \Vol_j + 2(2+n_{dim})\eta \sum_j \frac{\widetilde{\vect{v}}_{ij} \cdot \RIJ}{\RtwoIJ}\DWIJ \Vol_j + \nabla \cdot \tensor{\tau}
     \label{eq:Okraschevski2022-mom-sph}
