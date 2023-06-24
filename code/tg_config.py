@@ -10,7 +10,7 @@ from ewcsph import EWCSPHScheme
 from k_eps import KEpsilonRK2Step, KEpsilonScheme
 from monaghan2017 import Monaghan2017Scheme
 from numpy import cos, exp, linspace, pi, sin, sqrt
-from okra2022 import Okra2022Scheme
+from okra2022 import Okra2022Scheme, OkraRK2Step
 from patch import initialize, stage1, stage2
 from pst import ShiftPositions
 from pysph.sph.equation import Equation, Group
@@ -139,8 +139,20 @@ def configure_scheme(app, p0, gx=0.0):
         scheme.configure(hdx=app.hdx, nu=app.nu, h0=h0, correction=correction)
     elif app.options.scheme == 'mon2017':
         scheme.configure(h0=h0, nu=app.nu)
+        if integrator_cls == 'pec':
+            integrator_cls = PECIntegrator
+            extra_steppers = dict(fluid=WCSPHStep())
+        elif integrator_cls == 'rk2':
+            integrator_cls = RK2Integrator
+            extra_steppers = dict(fluid=WCSPHStep())
     elif app.options.scheme == 'ok2022':
         scheme.configure(nu=app.nu, dx=app.dx, h0=h0)
+        if integrator_cls == 'pec':
+            integrator_cls = PECIntegrator
+            extra_steppers = dict(fluid=OkraRK2Step())
+        elif integrator_cls == 'rk2':
+            integrator_cls = RK2Integrator
+            extra_steppers = dict(fluid=OkraRK2Step())
     elif app.options.scheme == 'k_eps':
         scheme.configure(
             hdx=app.hdx, nu=app.nu, h0=h0, gx=gx, periodic=app.no_periodic
