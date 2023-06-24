@@ -214,7 +214,7 @@ class PreMomentumEquation(Equation):
             for j in range(3):
                 d_J[d_idx * 9 + i * 3 + j] = - VIJ[i] * DWIJ[j] * Vj
 
-    def post_loop(self, d_idx, d_J, d_nu_t, d_tau):
+    def post_loop(self, d_idx, d_J, d_nu_t, d_tau, EPS):
         i, j, n = declare('int', 3)
         n = 3
         D = declare('matrix(9)')
@@ -253,7 +253,7 @@ class PreMomentumEquation(Equation):
 
                 # Compute the Eddy Viscosity
                 d_nu_t[d_idx] = sigma3 * \
-                    (sigma1 - sigma2) * (sigma2 - sigma3) / sigma1**2
+                    (sigma1 - sigma2) * (sigma2 - sigma3) / (sigma1**2 + EPS)
                 d_nu_t[d_idx] *= self.SIGMA_prefactor
 
             tau_pre_fac = -2. * d_nu_t[d_idx] * self.rho0
@@ -420,7 +420,7 @@ class MomentumEquation(Equation):
 
             # Compute the divergence of the stress tensor
             div_tau_fac = 2 * (2 + self.dim) * rhoi * rhoj
-            div_tau_fac *= (nu_ti + nu_tj) / (rhoi + rhoj)
+            div_tau_fac *= (nu_ti + nu_tj) / (rhoi + rhoj + EPS)
             div_tau_fac *= vijdotxij * Vj / (R2IJ + EPS)
 
             tmp = gradp_fac + lap_vel_fac - div_tau_fac
@@ -502,9 +502,13 @@ class Okra2022Scheme(Scheme):
             default='SMAG', choices=['SMAG', 'SIGMA', 'SMAG_MCG'],
             help="Turbulent viscosity model to use for Okra2022 scheme."
         )
+        group.add_argument(
+            '--pst-freq', action='store', type=int, dest='pst_freq',
+            default=10, help='PST frequency'
+        )
 
     def consume_user_options(self, options):
-        vars = ['turb_visc']
+        vars = ['turb_visc', 'pst_freq']
         data = dict((var, self._smart_getattr(options, var))
                     for var in vars)
         self.configure(**data)
