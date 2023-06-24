@@ -795,16 +795,11 @@ class KEpsilonScheme(Scheme):
             'V0'
         ]
         props += [
-            'vmax', {
-                'name': 'dpos',
-                'stride': 3
-            }, {
-                'name': 'gradrc',
-                'stride': 3
-            }, {
-                'name': 'gradp',
-                'stride': 3
-            }, 'ki', 'ki0', 'rhoc', 'rhoc0', 'ap', 'p0'
+            'vmax', 
+            dict(name='dpos', stride=3),
+            dict(name='gradrc', stride=3),
+            dict(name='gradp', stride=3),
+            'ki', 'ki0', 'rhoc', 'rhoc0', 'ap', 'p0'
         ]
         props += [
             'k', 'eps',
@@ -821,8 +816,8 @@ class KEpsilonScheme(Scheme):
 
         if self.kernel_corr:
             delta_sph_props = [
-                {'name': 'm_mat', 'stride': 9},
-                {'name': 'gradv', 'stride': 9},
+                dict(name='m_mat', stride=9),
+                dict(name='gradv', stride=9),
             ]
             props += delta_sph_props
 

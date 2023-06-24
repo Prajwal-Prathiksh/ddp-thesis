@@ -138,7 +138,7 @@ def configure_scheme(app, p0, gx=0.0):
             correction = 'gradient'
         scheme.configure(hdx=app.hdx, nu=app.nu, h0=h0, correction=correction)
     elif app.options.scheme == 'mon2017':
-        scheme.configure(h0=h0)
+        scheme.configure(h0=h0, nu=app.nu)
     elif app.options.scheme == 'ok2022':
         scheme.configure(nu=app.nu, dx=app.dx, h0=h0)
     elif app.options.scheme == 'k_eps':
@@ -265,7 +265,8 @@ def create_scheme(rho0, c0, p0, solids=[]):
         rho_cutoff=0.2, internal_flow=True, gtvf=True
     )
     mon2017 = Monaghan2017Scheme(
-        fluids=['fluid'], solids=[], dim=2, rho0=rho0, c0=c0, h0=h0
+        fluids=['fluid'], solids=[], dim=2, rho0=rho0, c0=c0, h0=h0,
+        nu=None, eps=0.5, gamma=7.0
     )
     ok2022 = Okra2022Scheme(
         fluids=['fluid'], solids=[], dim=2, rho0=rho0, p0=p0, c0=c0,

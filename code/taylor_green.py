@@ -172,7 +172,11 @@ class TaylorGreen(TurbulentFlowApp):
 
     def post_step(self, solver):
         S = self.options.scheme
-        cond1 = (S == 'tsph' or S == 'tisph' or S == 'k_eps' or S == 'deltales' or S == 'deltales_sd')
+        schemes_with_post_step = [
+            'tsph', 'tisph', 'k_eps', 'deltales', 'deltales_sd',
+            'mon2017'
+        ]
+        cond1 = S in schemes_with_post_step
         cond2 = (self.options.remesh == 0)
         if cond1 and cond2:
             self.scheme.scheme.post_step(self.particles, self.domain)
