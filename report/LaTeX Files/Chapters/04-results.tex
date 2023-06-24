@@ -1,4 +1,4 @@
-% Chapter 5
+% Chapter 4
 
 \chapter{Results}
 \label{chap:results}
@@ -369,10 +369,19 @@ In order to better understand the nature of each major categories, and to subseq
   }
   \caption{Implementation of representative turbulence models.}
   \label{tab:rep-turb-models}
-  \end{table}
+\end{table}
 
-  The L-IPST-C scheme was considered over the other viscosity-based schemes, since it was observed to be actually second-order convergent (SOC) by Negi and Ramachandran \parencite{Negi2022Techniques}, for a wide variety of problems, which included the Gresho vortex problem, Kelvin-Helmholtz instability problem, and the Taylor-Green vortex problem. This scheme consideres the weakly-compressible Navier-Stokes equations as the governing equations, and uses the \texttt{coupled\_c} viscosity formulation, which is corrected using the Bonet and Lok coorection \parencite{bonet1999variational}. Hence, since the scheme by definition has the viscous term in its governing equation, it does require any additional `artificial'-viscosity term to be added.
-   The scheme also incorporates the iterative particle shifting technique (IPST) by Huang et al. \parencite{Huang_Long_Li_Liu_2019}, in order to resdistribute the particles to obtain a reasonably uniform grid of particles in the domain. Besides shifting the position of the particles, the scheme also updates particles' properties such as the density and velocity to keep the approximation of the particle $O(h^2)$. The particles are shifted at a frequency of 10 time-steps.
+The L-IPST-C scheme was considered over the other viscosity-based schemes, since it was observed to be actually second-order convergent (SOC) by Negi and Ramachandran \parencite{Negi2022Techniques}, for a wide variety of problems, which included the Gresho vortex problem, Kelvin-Helmholtz instability problem, and the Taylor-Green vortex problem. This scheme consideres the weakly-compressible NS equations as the governing equations, and uses the \texttt{coupled\_c} viscosity formulation, which is corrected using the Bonet and Lok coorection \parencite{bonet1999variational}. Hence, since the scheme by definition has the viscous term in its governing equation, it does require any additional `artificial'-viscosity term to be added.
+The scheme also incorporates the iterative particle shifting technique (IPST) by Huang et al. \parencite{Huang_Long_Li_Liu_2019}, in order to resdistribute the particles to obtain a reasonably uniform grid of particles in the domain. Besides shifting the position of the particles, the scheme also updates particles' properties such as the density and velocity to keep the approximation of the particle $O(h^2)$. The particles are shifted at a frequency of 10 time-steps.
+
+The SPH-LES scheme was considered over the other LES-based schemes, since it was observed to be actually SOC by Okraschevski et al. \parencite{Okraschevski2022}, since the scheme they proposed utilized the compressible NS equations and subjected those to a spatial averageing operator to obtain the filtered governing equations. They also considered, three different models for the turbulent eddy viscosity, which included the standard Smagorinsky model, $\sigma$-model and the standard model discretized in the Monaghan-Cleary-Gingold (MCG) form. Therefore, the model appeared comprehensive in terms of its implementation, and hence, was chosen.
+
+Coming to the Lagrangian LES-based models, there were only two major schemes to consider. One being the LES-SPH scheme of Di Mascio et al. \parencite{DiMascio2017} and the other being the $\delta$-LES-SPH scheme of Colagrossi et al. \parencite{Colagrossi2021QuasiLagrangian}.
+The latter was chosen, since their scheme introduced a small arbitrary velocity deviation $(\TildeDeltaV)$ to the fluid particles, which allowed for improved accuracy in simulations of high Reynolds number problems. This scheme, also included the use of PST and tensile instability control (TIC). All of this allowed the scheme to tackle without facing the issue of spurious high-frequency noise and the onset of the tensile instability, and hence was chosen.
+
+The $k-\epsilon$ SPH scheme of Shao et al. \parencite{Shao2006} was chosen over the other RANS-based schemes, since it was straightforward in terms of the governing equations invloved.
+
+
 
    
 
