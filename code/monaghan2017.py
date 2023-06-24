@@ -117,7 +117,7 @@ class Monaghan2017Scheme(Scheme):
     def add_user_options(self, group):
         group.add_argument(
             "--mon2017-eps", action="store", type=float, dest="eps",
-            default=0.5, help="Epsilon for SPH-ϵ scheme"
+            default=0.25, help="Epsilon for SPH-ϵ scheme"
         )
         group.add_argument(
             '--pst-freq', action='store', type=int, dest='pst_freq',
@@ -128,7 +128,9 @@ class Monaghan2017Scheme(Scheme):
             choices=['tait', 'linear'], help='Equation of state to use.'
         )
         group.add_argument(
-            '--mon-kernel-corr', action='store', type=str, choices=['yes', 'no'], dest='kernel_corr', default='yes', help='Whether to use kernel correction or not for Monaghan 2017 scheme.'
+            '--mon-kernel-corr', action='store', type=str,
+            choices=['yes', 'no'], dest='kernel_corr', default='no', 
+            help='Whether to use kernel correction or not for Monaghan 2017 scheme.'
         )
     
     def consume_user_options(self, options):
