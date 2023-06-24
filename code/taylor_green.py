@@ -174,7 +174,7 @@ class TaylorGreen(TurbulentFlowApp):
         S = self.options.scheme
         schemes_with_post_step = [
             'tsph', 'tisph', 'k_eps', 'deltales', 'deltales_sd',
-            'mon2017'
+            'mon2017', 'ok2022'
         ]
         cond1 = S in schemes_with_post_step
         cond2 = (self.options.remesh == 0)

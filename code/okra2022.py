@@ -13,12 +13,25 @@ References
 ###########################################################################
 # Import
 ###########################################################################
-from compyle.api import declare
 from math import sqrt
-from pysph.sph.equation import Equation
-from pysph.base.utils import get_particle_array
-from pysph.sph.integrator_step import IntegratorStep
+from compyle.api import declare
+from pst import NumberDensityMoment
+from pysph.base.kernels import WendlandQuinticC4
+from pysph.base.utils import get_particle_array, get_particle_array_wcsph
+from pysph.solver.solver import Solver
+from pysph.sph.basic_equations import (ContinuityEquation, SummationDensity,
+                                       XSPHCorrection)
+from pysph.sph.equation import Equation, Group
+from pysph.sph.integrator import PECIntegrator
+from pysph.sph.integrator_step import IntegratorStep, WCSPHStep
 from pysph.sph.scheme import Scheme
+from pysph.sph.wc.basic import TaitEOS
+from pysph.sph.wc.kernel_correction import (GradientCorrection,
+                                            GradientCorrectionPreStep)
+from pysph.tools.sph_evaluator import SPHEvaluator
+from tsph_with_pst import (CopyRhoToGhost, DensityGradient, IterativePSTNew,
+                           SaveInitialdistances, UpdateDensity, UpdateVelocity,
+                           VelocityGradient)
 
 
 ###########################################################################
@@ -463,7 +476,7 @@ class OkraRK2Step(IntegratorStep):
 ###########################################################################
 class Okra2022Scheme(Scheme):
     def __init__(
-        self, fluids, solids, dim, rho0, p0, c0, nu, dx, h0, K=1., turb_visc='SMAG'
+        self, fluids, solids, dim, rho0, p0, c0, nu, dx, h0, K=1., turb_visc='SMAG', pst_freq=10, periodic=True, kernel_corr=True
     ):
         self.fluids = fluids
         self.solids = solids
@@ -476,6 +489,12 @@ class Okra2022Scheme(Scheme):
         self.h0 = h0
         self.K = K
         self.turb_visc = turb_visc
+        self.pst_freq = pst_freq
+        self.periodic = periodic
+        self.kernel_corr = kernel_corr
+
+        self.shifter = None
+        self.solver = None
     
     def add_user_options(self, group):
         group.add_argument(
@@ -496,15 +515,12 @@ class Okra2022Scheme(Scheme):
     def configure_solver(
         self, kernel=None, integrator_cls=None, extra_steppers=None, **kw
     ):
-        from pysph.base.kernels import WendlandQuinticC4
         if kernel is None:
             kernel = WendlandQuinticC4(dim=self.dim)
 
-        from pysph.sph.integrator import PECIntegrator
 
         integrator = PECIntegrator(fluid=OkraRK2Step())
 
-        from pysph.solver.solver import Solver
         if 'dt' not in kw:
             kw['dt'] = self.get_timestep()
 
@@ -513,7 +529,6 @@ class Okra2022Scheme(Scheme):
         )
     
     def get_equations(self):
-        from pysph.sph.equation import Group
         equations = [
             Group(equations=[
                 SummationDensity(dest='fluid', sources=['fluid',]),
@@ -537,19 +552,92 @@ class Okra2022Scheme(Scheme):
         ]
 
         return equations
+
+    def post_step(self, pa_arr, domain):
+        if self.shifter is None:
+            equations = []
+            all = self.fluids + self.solids
+
+            g0 = []
+            for name in all:
+                g0.append(SummationDensity(dest=name, sources=all))
+            equations.append(Group(equations=g0))
+
+
+            g0 = []
+            if self.periodic:
+                for name in all:
+                    g0.append(CopyRhoToGhost(dest=name, sources=all))
+                equations.append(Group(equations=g0, real=False))
+
+            g1 = []
+            for name in self.fluids:
+                g1.append(GradientCorrectionPreStep(dest=name, sources=all, dim=self.dim))
+                g1.append(SaveInitialdistances(dest=name, sources=None))
+            equations.append(Group(equations=g1))
+
+
+            g2 = []
+            for name in self.fluids:
+                g2.append(GradientCorrection(dest=name, sources=all, dim=self.dim))
+                g2.append(VelocityGradient(dest=name, sources=all, dim=self.dim))
+                g2.append(DensityGradient(dest=name, sources=all, dim=self.dim))
+            equations.append(Group(equations=g2))
+
+            g3 = []
+            for name in self.fluids:
+                g3.append(IterativePSTNew(dest=name, sources=all))
+                g3.append(NumberDensityMoment(dest=name, sources=all, debug=False))
+            equations.append(Group(equations=g3, iterate=True, min_iterations=1, max_iterations=10, real=False))
+
+            g4 = []
+            for name in self.fluids:
+                g4.append(UpdateVelocity(dest=name, sources=None))
+                g4.append(UpdateDensity(dest=name, sources=None))
+            equations.append(Group(equations=g4))
+            print(equations, pa_arr)
+
+            self.shifter = SPHEvaluator(
+                arrays=pa_arr, equations=equations, dim=self.dim,
+                kernel=self.solver.kernel, backend='cython'
+            )
+
+        if self.pst_freq > 0 and self.solver.count % self.pst_freq == 0:
+            self.shifter.update()
+            self.shifter.evaluate(t=self.solver.t, dt=self.solver.dt)
     
     def setup_properties(self, particles, clean=False):
-        dummy = get_particle_array_sph_les_fluid(name='junk')
+        dummy = get_particle_array_wcsph(name='junk')
         props = list(dummy.properties.keys())
-        props.remove('tau')
-        props.remove('J')
         turb_props = [
-            {'name': 'tau', 'stride': 9},
-            {'name': 'J', 'stride': 9},
+            dict(name='tau', stride=9),
+            dict(name='J', stride=9),
+            'ax', 'ay', 'az', 'V', 'tau', 'J', 'nu_t'
         ]
         props += turb_props
-        output_props = dummy.output_property_arrays
+        props += [
+            'vmax', 
+            dict(name='dpos', stride=3),
+            dict(name='gradrc', stride=3),
+            dict(name='gradp', stride=3),
+            'ki', 'ki0', 'rhoc', 'rhoc0'
+        ]
+
+        output_props = [
+            'x', 'y', 'z', 'u', 'v', 'w', 'rho', 'm', 'h', 'pid', 'gid', 'tag',
+            'p', 'rhoc', 'gradv',
+        ]
+
+        if self.kernel_corr:
+            delta_sph_props = [
+                dict(name='m_mat', stride=9),
+                dict(name='gradv', stride=9),
+            ]
+            props += delta_sph_props
+
         for pa in particles:
             self._ensure_properties(pa, props, clean)
             pa.set_output_arrays(output_props)
-            
+            pa.add_constant('maxki0', 0.0)
+            pa.add_constant('maxki', 0.0)
+                   
