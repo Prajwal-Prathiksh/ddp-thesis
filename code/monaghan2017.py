@@ -26,12 +26,22 @@ from pysph.sph.wc.kernel_correction import (GradientCorrection,
 from pysph.tools.sph_evaluator import SPHEvaluator
 from tsph_with_pst import (CopyRhoToGhost, DensityGradient, IterativePSTNew,
                            SaveInitialdistances, UpdateDensity, UpdateVelocity,
-                           VelocityGradient)
+                           VelocityGradient, GradientCorrectionPreStepNew)
 
 
 ###########################################################################
 # Equations
 ###########################################################################
+class LinearEOS(Equation):
+    def __init__(self, dest, sources, c0, rho0):
+        self.c0 = c0
+        self.rho0 = rho0
+
+        super(LinearEOS, self).__init__(dest, sources)
+
+    def initialize(self, d_p, d_idx, d_rho):
+        d_p[d_idx] = self.c0**2 * (d_rho[d_idx] - self.rho0)
+
 # Momentum Equation------------------------------------------------------
 class MonaghanSPHEpsilonMomentumEquation(Equation):
     def __init__(self, dest, sources, rho0, c0, alpha=1.0, eps=0.5):
@@ -85,7 +95,7 @@ class MonaghanSPHEpsilonMomentumEquation(Equation):
 class Monaghan2017Scheme(Scheme):
     def __init__(
         self, fluids, solids, dim, rho0, c0, h0, nu, eps=0.5, gamma=7.,
-        pst_freq=10, periodic=True, kernel_corr=True
+        pst_freq=10, periodic=True, kernel_corr=True, eos='tait'
     ):
         self.fluids = fluids
         self.solids = solids
@@ -99,6 +109,7 @@ class Monaghan2017Scheme(Scheme):
         self.pst_freq = pst_freq
         self.periodic = periodic
         self.kernel_corr = kernel_corr
+        self.eos = eos
 
         self.shifter = None
         self.solver = None
@@ -112,9 +123,16 @@ class Monaghan2017Scheme(Scheme):
             '--pst-freq', action='store', type=int, dest='pst_freq',
             default=10, help='PST frequency'
         )
+        group.add_argument(
+            '--eos', type=str, action='store', dest='eos', default='tait',
+            choices=['tait', 'linear'], help='Equation of state to use.'
+        )
+        group.add_argument(
+            '--mon-kernel-corr', action='store', type=str, choices=['yes', 'no'], dest='kernel_corr', default='yes', help='Whether to use kernel correction or not for Monaghan 2017 scheme.'
+        )
     
     def consume_user_options(self, options):
-        vars = ['eps', 'pst_freq']
+        vars = ['eps', 'pst_freq', 'eos', 'kernel_corr']
         data = dict((var, self._smart_getattr(options, var))
                     for var in vars)
         self.configure(**data)
@@ -139,27 +157,62 @@ class Monaghan2017Scheme(Scheme):
     
     def get_equations(self):
         self.alpha = 8.*self.nu/(self.c0*self.h0)
-        equations = [
-            Group(equations=[
-                TaitEOS(
-                    dest='fluid', sources=None,
-                    rho0=self.rho0,
-                    c0=self.c0, gamma=self.gamma, p0=0.
-                )
-            ], real=False
-            ),
-            Group(equations=[
-                ContinuityEquation(dest='fluid', sources=['fluid']),
-                MonaghanSPHEpsilonMomentumEquation(
-                    dest='fluid', sources=['fluid'],
-                    rho0=self.rho0, c0=self.c0,
-                    alpha=self.alpha, eps=self.eps
-                ),
-                XSPHCorrection(dest='fluid', sources=['fluid'], eps=self.eps)
-            ], real=True
-            )
-        ]
+        equations = []
 
+        all = self.fluids + self.solids
+
+        # Add equation of state
+        g0 = []
+        for name in self.fluids:
+            if self.eos == 'linear':
+                g0.append(LinearEOS(
+                    dest=name, sources=None, rho0=self.rho0, c0=self.c0
+                ))
+            elif self.eos == 'tait':
+                g0.append(TaitEOS(
+                    dest=name, sources=None, rho0=self.rho0, gamma=self.gamma,
+                    c0=self.c0
+                ))
+        equations.append(Group(equations=g0))
+
+        # Add equation to compute pre-step of Bonet-Lok correction
+        if self.kernel_corr:
+            g2 = []
+            for name in all:
+                g2.append(GradientCorrectionPreStepNew(
+                    dest=name, sources=all, dim=self.dim
+                ))
+            equations.append(Group(equations=g2))
+
+        # Add Bonet-Lok correction
+        g3 = []
+        if self.kernel_corr:
+            for name in all:
+                g3.append(GradientCorrection(
+                    dest=name, sources=all, dim=self.dim
+                ))
+            equations.append(Group(equations=g3))
+        
+        # Add continuity equation
+        g4 = []
+        for name in self.fluids:
+            g4.append(ContinuityEquation(
+                dest=name, sources=self.fluids
+            ))
+        equations.append(Group(equations=g4))
+
+        # Add momentum equation
+        g5 = []
+        if self.kernel_corr:
+            g5.append(GradientCorrection(
+                dest=name, sources=all, dim=self.dim
+            ))
+        for name in self.fluids:
+            g5.append(MonaghanSPHEpsilonMomentumEquation(
+                dest=name, sources=self.fluids,
+                rho0=self.rho0, c0=self.c0, alpha=self.alpha, eps=self.eps
+            ))
+        equations.append(Group(equations=g5))
         return equations
 
     def post_step(self, pa_arr, domain):
@@ -221,7 +274,7 @@ class Monaghan2017Scheme(Scheme):
         
         props = list(dummy.properties.keys())
         props += [
-            'vmax', 
+            'vmax', 'V0',
             dict(name='dpos', stride=3),
             dict(name='gradrc', stride=3),
             dict(name='gradp', stride=3),
