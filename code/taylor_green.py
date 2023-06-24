@@ -307,7 +307,8 @@ class TaylorGreen(TurbulentFlowApp):
         return self._sph_eval
 
     def post_process(self, info_fname):
-        if self.options.no_post_process:
+        _running_pp = False if (self.options.post_process is None) else True
+        if self.options.no_post_process and not _running_pp:
             return
         
         self.read_info(info_fname)
@@ -516,8 +517,8 @@ class TaylorGreen(TurbulentFlowApp):
         plt.savefig(fig, dpi=300)
 
         # Turbulence specific post-processing
-        # if self.options.no_plot:
-        #     return
+        if self.options.no_plot and not _running_pp:
+            return
         
         if self.ext_forcing:
             f_idx_list = self.get_f_idx_list([5, 25, 50, 75, 100])
