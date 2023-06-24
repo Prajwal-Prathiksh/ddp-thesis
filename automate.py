@@ -1217,7 +1217,7 @@ class TGVPostProcessing(PySPHProblem):
         User-defined.
         """
         dir_name = os.path.join(os.getcwd(), 'outputs')
-        dir_name = os.path.join(dir_name, 'HPC')
+        dir_name = os.path.join(dir_name, 'tgv_2d_integrator_comparison')
         return dir_name
 
     def get_script_cmd(self):
