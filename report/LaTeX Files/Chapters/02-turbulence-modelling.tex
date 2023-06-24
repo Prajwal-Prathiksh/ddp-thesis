@@ -6,7 +6,8 @@
 %----------------------------------------------------------------------------------------
 %	Section 1 - Viscosity-Based Models
 %----------------------------------------------------------------------------------------
-\section{Viscosity-Based Models}
+\section{Viscosity-based Models}
+\label{sec:visc-based-model}
 Violeau et al. \parencite{VIOLEAU2002} were amongst the early pioneers who tried to incorporate a turbulence model in SPH. They came up with two techniques to tackle the problem of turbulence in a Lagrangian framework, which so far had been neglected till then in research, namely, the eddy viscosity model and a generalised Langevin model. For each of their techniques, they considered the following equation of state \Eqref{eq:violeau-eos}, continuity equation \Eqref{eq:violeau-continuity} and momentum equation \Eqref{eq:violeau-mom}, based on the work of \parencite{Monaghan1992}:   
 \begin{equation}
     P_i = B \Bigg[ \bigg( \frac{\rho_i}{\rho_o} \bigg)^{\gamma} - 1 \Bigg] \quad , \quad B = \frac{\rho_o c_s^2}{\gamma}
@@ -166,6 +167,7 @@ The second test case employed by the authors was that of the $3D$ TGV problem re
 %	Section 2 - Large Eddy Simulation-based Models
 %----------------------------------------------------------------------------------------
 \section{Large Eddy Simulation-based Models}
+\label{sec:les-based-model}
 \subsection{Implicit Pressure Poisson-based Models}
 \label{sec:Implicit-Pressure-Poisson-based-Models}
 Gotoh et al. \parencite{Gotoh2004} were amongst the first to integrate Large Eddy Simulation techniques with the SPH method. They derived this LES-SPH model, based on incompressible flow, to tackle the problem of reflection and transmission characteristics of regular waves by a partially immersed curtain-type breakwater. In order to compare the dissipation efficiencies, they considered the non-overtopping and overtopping cases of the problem.
@@ -517,6 +519,7 @@ prove Rennehen’s expectation that explicit SFS models in an SPH framework can 
 %	Section 3 - Lagrangian LES-based Models
 %----------------------------------------------------------------------------------------
 \section{Lagrangian LES-based Models}
+\label{sec:lagrangian-les-based-model}
 Having reviewed turbulence models developed for SPH, Di Mascio et al. \parencite{DiMascio2017} concluded that LES models could serve as an excellent middle ground between RANS and DNS. This is because only the sub-grid scale eddies would be modelled, allowing for the larger eddies to be directly simulated from the NS equations. They also note that contemporary SPH-LES models use the Eulerian differential operators in an SPH formulation and therefore do not have a rigorous background. Therefore they propose a Lagrangian form of LES to tie in with the Lagrangian quadrature technique, that is, SPH. 
 
 The authors consider a weakly compressible, barotropic fluid whose conservation equations for mass and density are given by \Eqref{eq:Gotoh2004-continuity-governing} and \Eqref{eq:DiMascio2017-mom-governing} respectively.
@@ -703,6 +706,7 @@ In \Eqref{eq:edac-filtered}, we see that the term $(\widetilde{\vect{v}\cdot\nab
 %	Section 4 - RANS-based $k-\epsilon$ Models
 %----------------------------------------------------------------------------------------
 \section[RANS-based k-epsilon Models]{RANS-based $k-\epsilon$ Models}
+\label{sec:rans-based-k-epsilon-model}
 
 Shao \parencite{Shao2006} demonstrated that the two-equation $k-\epsilon$ model, an extensively studied model derived from the Reynolds-averaged Navier–Stokes (RANS) equations, can be incorporated in the truly incompressible version of SPH (ISPH). By attempting to extend RANS equations, which are hugely successful in practical fields, to a mesh-free method such as SPH, the author provides a framework to build on the wide variety of closure models available.
 
@@ -828,6 +832,7 @@ Finally, the authors conclude on the importance of boundary treatment and the ne
 %	Section 5 - LANS-based Models
 %----------------------------------------------------------------------------------------
 \section{LANS-based Models}
+\label{sec:lans-based-model}
 So far, having dealt with RANS and LES models of turbulence, a few fundamental drawbacks of these techniques have been brought to light.
 In the case of RANS, the flow field is decomposed into
 an averaged mean flow and a fluctuating field. Such a decomposition of the NS equations provides differential equations for the mean flow containing contributions from the time-varying turbulent motion. Therefore a closure model is required to capture the effects of the fluctuations on the mean flow. However, by studying only the mean flow quantities, the complete nature of the flow, notwithstanding the complex structures stemming from these fluctuations, cannot be studied, let alone appreciated.
