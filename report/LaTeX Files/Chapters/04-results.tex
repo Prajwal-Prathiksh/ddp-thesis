@@ -371,12 +371,102 @@ In order to better understand the nature of each major categories, and to subseq
   \label{tab:rep-turb-models}
 \end{table}
 
-In order to test the schemes for SOC, the Taylor-Green vortex problem was considered. The testcases were coded using \texttt{automan} \parencite{RamachandranAutoman2018}, which is an open source, Python-based automation framework.
+In order to test the schemes for SOC, the Taylor-Green vortex problem is chosen. The test-cases are coded using \texttt{automan} \parencite{RamachandranAutoman2018}, which is an open source, Python-based automation framework. All of the simulations run hereafter, are run upto a final time of $t_f=0.1$, with the resolution for each run consisting of $N=[25^2, 50^2, 100^2]$ particles respectively, with the Reynolds number ranging between $Re=[100, 1000, 10000]$ respectively. All of the simulations are run using the \texttt{WendlandQuinticC4} kernel, with a radius multiplier of $2.0$. This choice was based on the work of \cite{Negi2022Techniques}.
 
-The L-IPST-C scheme was considered over the other viscosity-based schemes, since it was observed to be actually second-order convergent (SOC) by \cite{Negi2022Techniques}, for a wide variety of problems, which included the Gresho vortex problem, Kelvin-Helmholtz instability problem, and the Taylor-Green vortex problem. This scheme consideres the weakly-compressible NS equations as the governing equations, and uses the \texttt{coupled\_c} viscosity formulation, which is corrected using the Bonet and Lok correction \parencite{bonet1999variational}. Hence, since the scheme by definition has the viscous term in its governing equation, it does require any additional `artificial'-viscosity term to be added.
-The scheme also incorporates the iterative particle shifting technique (IPST) by \cite{Huang_Long_Li_Liu_2019}, in order to resdistribute the particles to obtain a reasonably uniform grid of particles in the domain. Besides shifting the position of the particles, the scheme also updates particles' properties such as the density and velocity to keep the approximation of the particle $O(h^2)$. The particles are shifted at a frequency of 10 time-steps.
+The $L_1$ error for each simulation in a run is computed, and plotted against the inverse of the particle spacing, in order to ascertain the order of convergence (OOC) of the scheme. The $L_1$ error at a given time instance is computed as:
+\begin{equation}
+  L_1(t) = \frac{mean{\abs{\vect{v}^2(t) - \vect{v}^2_{exact}(t)}}}{mean{\abs{\vect{v}^2_{exact}(t)}}},
+\end{equation}
+where, $\vect{v}(t)$ is the velocity field at time $t$, and $\vect{v}_{exact}(t)$ is the exact velocity field at time $t$.
+Subsequently, the $L_1$ error for the entire simulation, is defined as the mean over all the time instances, i.e.,
+\begin{equation}
+  L_1 = \frac{1}{n_t} \sum_{i=1}^{n_t} L_1(t_i).
+\end{equation}
 
+\subsection{L-IPST-C Scheme}
+
+The L-IPST-C scheme was considered over the other viscosity-based schemes, since it was observed to be actually second-order convergent (SOC) by \cite{Negi2022Techniques}, for a wide variety of problems, which included the Gresho vortex problem, Kelvin-Helmholtz instability problem, and the Taylor-Green vortex problem. This scheme considers the weakly-compressible NS equations as the governing equations, and uses the \texttt{coupled\_c} viscosity formulation, which is corrected using the Bonet and Lok correction \parencite{bonet1999variational}. Hence, since the scheme by definition has the viscous term in its governing equation, it does require any additional `artificial'-viscosity term to be added.
+The scheme also incorporates the iterative particle shifting technique (IPST) by \cite{Huang_Long_Li_Liu_2019}, in order to redistribute the particles to obtain a reasonably uniform grid of particles in the domain. Besides shifting the position of the particles, the scheme also updates particles' properties such as the density and velocity to keep the approximation of the particle $O(h^2)$.
+Based on the parametric study conducted by \cite{Negi2022Techniques}, the proposed scheme is observed to be SOC, by considering the the speed of sound to be $c_s = 20$, and the shifting frequency for the particles through PST to be at every 10 iterations $f_{pst} = 10$.
+
+Since, the study dealt with problems of low $Re$, the scheme was tested over various time-integration schemes from the Runge-Kutta family of integrators, in order to identify their effects, and to subsequently identify the most suitable integrator for problems of high $Re$.
+The integrators considered were:
+\begin{itemize}
+  \item Predict-Evaluate-Correct (\texttt{PEC}),
+  \item Runge-Kutta 2 (\texttt{RK2}),
+  \item Runge-Kutta 2 with adaptive time-step (\texttt{RK2 Adaptive}),
+  \item Runge-Kutta 3 (\texttt{RK3}), and
+  \item Runge-Kutta 4 (\texttt{RK4}),
+\end{itemize}
+with a corresponding $CFL$ values of $[1, 1, 1.5, 2, 2]$ respectively.
+
+\begin{figure}[ht!]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/lipstc/integrator/dt_pois_conv_c0_20_re_100.png}
+    \caption{$Re = 100$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/lipstc/integrator/dt_pois_conv_c0_20_re_1000.png}
+    \caption{$Re = 1000$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/lipstc/integrator/dt_pois_conv_c0_20_re_10000.png}
+    \caption{$Re = 10000$}
+  \end{subfigure}
+  \caption{Convergence of the L-IPST-C scheme over various time-integration schemes}
+  \label{fig:lipstc-integrator}
+\end{figure}
+
+From the results shown in \figref{fig:lipstc-integrator}, it is evident that the order of the integrator does not appear to have much effect on the OOC, and almost negligible effect on the actual magnitude of the $L_1$ errors as well.
+This seems to highlight a much more important aspect of the effect and role of time-integration schemes in SPH in general, which is that the time-step size is the most important factor, and the order of the integrator is not as important, since the time-step size is typically chosen to be small enough to ensure stability, and hence, the error introduced by the time-integration scheme is typically negligible.
+
+Also, when the run-times of these integrators were analysed, the higher order integrators are observed to be more computationally expensive, allowing for the \texttt{PEC} integrator to be around $\approx 1.6\times$ faster, which is reflected in the run-times shown in \figref{fig:lipstc-integrator-rt}.
+Typically such higher order integrators can be used with much larger $CFL$ values, allowing for larger time-steps and consequently faster run-times. However, in the case of SPH, such generalisations cannot be made, since the stability of the scheme is not only dependent on the time-step size, but also on the particle spacing, and hence, the $CFL$ value is typically chosen to be close to $1.0-2.0$.
+Therefore, the \texttt{PEC} integrator is chosen as the default integrator for the L-IPST-C scheme.
+
+\begin{figure}[ht!]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/lipstc/integrator/pois_rt_pst_10_c0_20_re_100.png}
+    \caption{$Re = 100$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/lipstc/integrator/pois_rt_pst_10_c0_20_re_1000.png}
+    \caption{$Re = 1000$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/lipstc/integrator/pois_rt_pst_10_c0_20_re_10000.png}
+    \caption{$Re = 10000$}
+  \end{subfigure}
+  \caption{Run-time (in $s$) of the L-IPST-C scheme over various time-integration schemes}
+  \label{fig:lipstc-integrator-rt}
+\end{figure}
+
+
+\subsection{SPH-LES Scheme}
 The SPH-LES scheme was considered over the other LES-based schemes, since it was observed to be actually SOC by \cite{Okraschevski2022}, since the scheme they proposed utilised the compressible NS equations and subjected those to a spatial averageing operator to obtain the filtered governing equations. They also considered, three different models for the turbulent eddy viscosity, which included the standard Smagorinsky model, $\sigma$-model and the standard model discretised in the Monaghan-Cleary-Gingold (MCG) form. Therefore, the model appeared comprehensive in terms of its implementation, and hence, was chosen.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Coming to the Lagrangian LES-based models, there were only two major schemes to consider. One being the LES-SPH scheme of \cite{DiMascio2017} and the other being the $\delta$-LES-SPH scheme of \cite{Colagrossi2021QuasiLagrangian}.
 The latter was chosen, since their scheme introduced a small arbitrary velocity deviation $(\TildeDeltaV)$ to the fluid particles, which allowed for improved accuracy in simulations of high Reynolds number problems. This scheme, also included the use of PST and tensile instability control (TIC). All of this allowed the scheme to tackle without facing the issue of spurious high-frequency noise and the onset of the tensile instability, and hence was chosen.
