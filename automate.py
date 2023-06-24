@@ -1208,7 +1208,48 @@ class KEpsModelTesting(PySPHProblem):
         plt.savefig(fname, dpi=300)
         plt.close()
 
+class TGVPostProcessing(PySPHProblem):
+    def get_name(self):
+        return "_tgv_post_processing"
 
+    def get_dir_name(self):
+        """
+        User-defined.
+        """
+        dir_name = os.path.join(os.getcwd(), 'outputs')
+        dir_name = os.path.join(dir_name, 'HPC')
+        return dir_name
+
+    def get_script_cmd(self):
+        """
+        User-defined.
+        """
+        cmd = "python code/taylor_green.py --post-process"
+        return cmd    
+    
+    def _get_folders(self, dir):
+        folders = []
+        for f in os.listdir(dir):
+            if os.path.isdir(os.path.join(dir, f)):
+                folders.append(os.path.join(dir, f))
+        return folders
+
+    def setup(self):
+        prob_dir = self.get_dir_name()
+        prob_folders = self._get_folders(prob_dir)
+        prob_cmd = self.get_script_cmd()
+
+        self.cases = []
+        for idx, folder in enumerate(prob_folders):
+            _c = Simulation(
+                root=self.input_path(f"case_{idx}"),
+                base_command=prob_cmd + '="' + folder + '"',
+                job_info=dict(n_core=1, n_thread=1),
+            )
+            self.cases.append(_c)
+    
+    def run(self):
+        self.make_output_dir()
 
 if __name__ == "__main__":
     PROBLEMS = [
@@ -1218,7 +1259,8 @@ if __name__ == "__main__":
         TB3DExtForceSchemeComparison,
         RunTimeDomainManager,
         TGV2DIntegratorComparison,
-        KEpsModelTesting
+        KEpsModelTesting,
+        TGVPostProcessing
     ]
     automator = Automator(
         simulation_dir='outputs',
