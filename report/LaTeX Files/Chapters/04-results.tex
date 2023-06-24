@@ -56,7 +56,7 @@ In order to compute the energy spectrum, the following steps are performed:
 The function to compute the $1D$ energy spectrum was coded using three different backends, namely, pure \texttt{python}, \texttt{numba} \parencite{Lam_Pitrou_Seibert_2015}, and \texttt{compyle} \parencite{compyle_pr_ab-proc-scipy-2020}.
 The speedup results of the three-implementations are shown in \figref{fig:espec-speedup} for $1D$, $2D$, and $3D$ velocity fields respectively.
 
-\begin{figure}[htb!]
+\begin{figure}[H]
     \begin{subfigure}{7cm}
       \centering\includegraphics[width=6cm]{Code-Figures/espec_speedup_dim_1.png}
       \caption{$1D$ velocity field}
@@ -105,7 +105,7 @@ The vector energy spectral fields are show in \figref{fig:espec-vector-fields-N1
 
 The scalar energy spectral fields are shown in \figref{fig:espec-scalar-fields-N1}. As can be seen, the energy spectrum peaks only for $k=1$, and is zero for every other wavenumber for all dimensions.
 
-\begin{figure}[htb!]
+\begin{figure}[H]
     \begin{subfigure}{7cm}
       \centering\includegraphics[width=6cm]{Code-Figures/espec-simple-1d/EK_spectrum.png}
       \caption{$1D$ $\vect{E}(\vect{k})$ field}
@@ -118,7 +118,7 @@ The scalar energy spectral fields are shown in \figref{fig:espec-scalar-fields-N
     \label{fig:espec-vector-fields-N1}
 \end{figure}
 
-\begin{figure}[htb!]
+\begin{figure}[H]
     \begin{subfigure}{7cm}
       \centering\includegraphics[width=6cm]{Code-Figures/espec-simple-1d/energy_spectrum.png}
       \caption{$1D$ $E(k)$ field}
@@ -146,7 +146,7 @@ This seems to indicate that the act of interpolation itself, is introducing some
 
 Therefore, it was concluded that the $1D$ energy field, computed from the interpolated velocity field, typically will underestimate the energy at higher wavenumbers, and hence, the slope of the energy spectrum computed from the interpolated velocity field, will be lower than the slope of the energy spectrum computed from the original velocity field, as reflected in \figref{fig:espec-scalar-fields-gamma1} as well.
 
-\begin{figure}[htb!]
+\begin{figure}[H]
     \begin{subfigure}{7cm}
       \centering\includegraphics[width=6cm]{Code-Figures/sine-vel-prof-1d/EK_spectrum.png}
       \caption{$1D$ $\vect{E}(\vect{k})$ field}
@@ -159,7 +159,7 @@ Therefore, it was concluded that the $1D$ energy field, computed from the interp
     \label{fig:espec-vector-fields-gamma1}
 \end{figure}
 
-\begin{figure}[htb!]
+\begin{figure}[H]
     \begin{subfigure}{7cm}
       \centering\includegraphics[width=6cm]{Code-Figures/sine-vel-prof-1d/ek_00000_loglog.png}
       \caption{$1D$ $E(k)$ field}
@@ -181,7 +181,7 @@ The same set of test-cases, with $\gamma=1$ and $N=n_x/2$, are considered, in or
 In order to measure the effect of the perturbation in the particle spacing on the computed energy spectrum, once a rectangluar grid of uniform particles are defined, its coordinates are perturbed by a uniform random number $\delta \hat{x} \in [0, 1)$, scaled by a perturbation amplitude. The perturbed grid is then initialised with the corresponding velocity profile, and the energy spectrum is computed for the perturbed grid. From the results shown in \figref{fig:espec-scalar-fields-per-ampl}, it can be observed that by increasing the perturbation amplitude, energy seems to be introduced at lower resolution scales, which is reflected by the icreased energy at higher wavenumbers. This trend seems to hold true, for all dimensions.
 Therefore, we can infer that the low-pass energy dissipation effect of the interpolation scheme, will to an extent be countered by the perturbation in the particle spacing (which is typically the case in a simulation since the particles become disturbed), which will introduce energy at lower resolution scales, and hence, the slope of the energy spectrum computed from the interpolated velocity field, will be closer to the slope of the energy spectrum computed from the original velocity field. 
 
-\begin{figure}[htb!]
+\begin{figure}[H]
     \begin{subfigure}{7cm}
       \centering\includegraphics[width=6cm]{Code-Figures/sin-vel-prof-pertub/Energy Spectrum (Loglog) (Dim=1, Nx=101, N_Freq=50).png}
       \caption{$1D$ $E(k)$ field}
@@ -226,7 +226,7 @@ where $\phi$ is the quantity to be interpolated, and $\hat{\phi}$ is the interpo
 From the results shown in \figref{fig:espec-scalar-fields-i-methods}, it can be observed that the \texttt{order1MC} interpolation scheme, seems to introduce the least amount of energy at lower resolution scales, with the \texttt{sph} scheme introducing the most amount of energy at lower resolution scales. This trend seems to hold true, for all dimensions.
 Therefore, considering the fact that the \texttt{sph} interpolation scheme would appear to counter the loss in energy at lower resolution scales, due to the act of interpolation, it is chosen as the default interpolation scheme for the computation of the energy spectrum.
 
-\begin{figure}[htb!]
+\begin{figure}[H]
 	\begin{subfigure}{7cm}
 		\centering\includegraphics[width=6cm]{Code-Figures/sin-vel-prof-i-methods/Energy Spectrum (Loglog) (Dim=1, Pertub=0.01).png}
 		\caption{$1D$ $E(k)$ field}
@@ -257,7 +257,7 @@ Then, in order to measure the effect of the kernel on the computed energy spectr
 From the results shown in \figref{fig:espec-scalar-fields-i-kernels}, it can be observed that the \texttt{Gaussian} kernel, seems to introduce the least amount of energy at lower resolution scales, with the \texttt{WendlandQuinticC6} kernel introducing the most amount of energy at lower resolution scales. This trend seems to hold true, for all dimensions.
 Therefore, the \texttt{Gaussian} kernel is chosen as the default kernel for the computation of the energy spectrum.
 
-\begin{figure}[htb!]
+\begin{figure}[H]
 	\begin{subfigure}{7cm}
 		\centering\includegraphics[width=6cm]{Code-Figures/sin-vel-prof-i-kernel/Energy Spectrum (Loglog) (Dim=1, Pertub=0.01, Method=Sph).png}
 		\caption{$1D$ $E(k)$ field}
@@ -277,7 +277,7 @@ Therefore, the \texttt{Gaussian} kernel is chosen as the default kernel for the 
 Finally, in order to measure the effect of particle resolution on the computed energy spectrum, test-cases with a $\gamma=1$ and $N=30$ were considered for all dimensions, with the range of number of particles along each axis being $[61, 91, 121]$.
 From the results shown in \figref{fig:espec-scalar-fields-res}, it can be observed that the energy spectrum computed for the highest resolution, is observed to be the closest to the exact trend, for all dimensions.
 
-\begin{figure}[htb!]
+\begin{figure}[H]
 	\begin{subfigure}{7cm}
 		\centering\includegraphics[width=6cm]{Code-Figures/sin-vel-prof-res/Energy Spectrum (Loglog) (Dim=1, Pertub=0.01, Method=Sph, Kernel=Wqc6).png}
 		\caption{$1D$ $E(k)$ field}
@@ -334,12 +334,12 @@ In order to test the correctness of the FTLE field computation, the following te
     \end{equation}
 \end{itemize}
 
-\begin{figure}[htb!]
+\begin{figure}[H]
 		\centering\includegraphics[width=10cm]{Code-Figures/ftle_parabolic.png}
 		\caption{Parabolic displacement field}
     \label{fig:ftle-parabolic}
 \end{figure}
-\begin{figure}[htb!]
+\begin{figure}[H]
   \centering\includegraphics[width=10cm]{Code-Figures/ftle_spiral.png}
   \caption{Spiral displacement field}
   \label{fig:ftle-spiral}
@@ -400,7 +400,7 @@ The integrators considered were:
 \end{itemize}
 with a corresponding $CFL$ values of $[1, 1, 1.5, 2, 2]$ respectively.
 
-\begin{figure}[htb!]
+\begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/lipstc/integrator/dt_pois_conv_c0_20_re_100.png}
     \caption{$Re = 100$}
@@ -424,7 +424,7 @@ Also, when the run-times of these integrators were analysed, the higher order in
 Typically such higher order integrators can be used with much larger $CFL$ values, allowing for larger time-steps and consequently faster run-times. However, in the case of SPH, such generalisations cannot be made, since the stability of the scheme is not only dependent on the time-step size, but also on the particle spacing, and hence, the $CFL$ value is typically chosen to be close to $1.0-2.0$.
 Therefore, the \texttt{PEC} integrator is chosen as the default integrator for the L-IPST-C scheme.
 
-\begin{figure}[htb!]
+\begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/lipstc/integrator/pois_rt_pst_10_c0_20_re_100.png}
     \caption{$Re = 100$}
@@ -443,9 +443,9 @@ Therefore, the \texttt{PEC} integrator is chosen as the default integrator for t
 
 
 \subsection{SPH-LES Scheme}
-The SPH-LES scheme was considered over the other LES-based schemes, since it was observed to be actually SOC by \cite{Okraschevski2022}, since the scheme they proposed utilised the compressible NS equations and subjected those to a spatial averageing operator to obtain the filtered governing equations. They also considered, three different models for the turbulent eddy viscosity, which included the standard Smagorinsky model, $\sigma$-model and the standard model discretised in the Monaghan-Cleary-Gingold (MCG) form (detailed in \secref{sec:Modified-Smagorinsky-Model}). Therefore, the model appeared comprehensive in terms of its implementation, and hence, was chosen, along with the \texttt{SMAG} model, which is the standard Smagorinsky model, since their study revealed that this model was the most accurate relatively in terms of its prediction of the energy spectrum, while using the \texttt{PEC} integrator.
+The SPH-LES scheme was considered over the other LES-based schemes, since the scheme utilised the compressible NS equations which were treated with a spatial averageing operator to obtain the filtered governing equations. They also considered, three different models for the turbulent eddy viscosity, which included the standard Smagorinsky model, $\sigma$-model and the standard model discretised in the Monaghan-Cleary-Gingold (MCG) form (detailed in \secref{sec:Modified-Smagorinsky-Model}). Therefore, the model appeared comprehensive in terms of its implementation, and hence, was chosen, along with the \texttt{SMAG} model, which is the standard Smagorinsky model, since their study revealed that this model was the most accurate relatively in terms of its prediction of the energy spectrum, while using the \texttt{PEC} integrator.
 
-\begin{figure}[htb!]
+\begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/okra2022/pst/dt_pois_conv_c0_20_re_100.png}
     \caption{$Re = 100$}
@@ -468,7 +468,7 @@ In \figref{fig:okra2022-pst-vmag}, it can be observed that without PST, the part
 Also, in \figref{fig:okra2022-pst-espec}, it can be observed that the slope of the energy spectrum at the final time instance (yellow line), increases with increasing values of $f_{pst}$, which is indicative of the fact that the energy is being concentrated at the higher resolution scales, which is expected for the high $Re$ case.
 Therefore, a value of $f_{pst} = 10$ is chosen as the default value for the PST.
 
-\begin{figure}[htb!]
+\begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/okra2022/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_-1_re_10000_ok2022/final_vmag.png}
     \caption{No PST}
@@ -489,7 +489,7 @@ Therefore, a value of $f_{pst} = 10$ is chosen as the default value for the PST.
   \label{fig:okra2022-pst-vmag}
 \end{figure}
 
-\begin{figure}[htb!]
+\begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/okra2022/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_-1_re_10000_ok2022/energy_spectrum_evolution.png}
     \caption{No PST}
@@ -511,7 +511,7 @@ Therefore, a value of $f_{pst} = 10$ is chosen as the default value for the PST.
 \end{figure}
 
 
-\begin{figure}[htb!]
+\begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/okra2022/c0/dt_pois_conv_c0_pec_re_100.png}
     \caption{$Re = 100$}
@@ -532,7 +532,7 @@ In order to test the effect of the speed of sound on the scheme, the following v
 In \figref{fig:okra2022-c0-vmag}, it can be observed that the higher $c_s$ values, which lead to smaller $\Delta t$ values, lead to a more uniformly distributed group of particles, while also leading to an increased $\abs{\vect{v}}_{max}$ value. This seems to add credence to the fact that increasing the resolution in the time domain, is dumping additional energy into the system as noise. This is also reflected in the energy spectrum shown in \figref{fig:okra2022-c0-espec}, where it can be observed that the slope of the energy spectrum, increases with increasing values of $c_s$.
 Therefore, a value of $c_s = 20$ is chosen as the default value for the speed of sound, with the caveat that this scheme, possibly cannot be used for problems of lower $Re$ at all, since they require dissipation of energy, which does not appear to be the case for this scheme.
 
-\begin{figure}[htb!]
+\begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/okra2022/c0/c0_20_tait_pec_dtmul_1_nx_50_pst_10_re_10000_ok2022/final_vmag.png}
     \caption{$c_s=20$}
@@ -549,7 +549,7 @@ Therefore, a value of $c_s = 20$ is chosen as the default value for the speed of
   \label{fig:okra2022-c0-vmag}
 \end{figure}
 
-\begin{figure}[htb!]
+\begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/okra2022/c0/c0_20_tait_pec_dtmul_1_nx_100_pst_10_re_10000_ok2022/energy_spectrum_evolution.png}
     \caption{$c_s=20$}
@@ -570,11 +570,169 @@ Hence, it can be concluded that the SPH-LES scheme is not suitable for problems 
 
 
 \subsection{$\delta$-LES-SPH Scheme}
-Coming to the Lagrangian LES-based models, there were only two major schemes to consider. One being the LES-SPH scheme of \cite{DiMascio2017} and the other being the $\delta$-LES-SPH scheme of \cite{Colagrossi2021QuasiLagrangian}.
+The Lagrangian LES-based models, have only two major schemes to offer. One being the LES-SPH scheme of \cite{DiMascio2017} and the other being the $\delta$-LES-SPH scheme of \cite{Colagrossi2021QuasiLagrangian}.
 The latter was chosen, since their scheme introduced a small arbitrary velocity deviation $(\TildeDeltaV)$ to the fluid particles, which allowed for improved accuracy in simulations of high Reynolds number problems. This scheme, also included the use of PST and tensile instability control (TIC). All of this allowed the scheme to tackle without facing the issue of spurious high-frequency noise and the onset of the tensile instability, and hence was chosen.
 
 The $k-\epsilon$ SPH scheme of \cite{Shao2006} was chosen over the other RANS-based schemes, since it was straightforward in terms of the governing equations involved.
 
+Delta LES SPH RHO - EOS \figref{fig:deltales_sd-eos}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales_sd/eos/dt_pois_conv_c0_20_re_100.png}
+    \caption{$Re = 100$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales_sd/eos/dt_pois_conv_c0_20_re_1000.png}
+    \caption{$Re = 1000$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales_sd/eos/dt_pois_conv_c0_20_re_10000.png}
+    \caption{$Re = 10000$}
+  \end{subfigure}
+  \caption{Convergence of the $\delta$-LES-SPH $(\rho)$ scheme for various equations of state.}
+  \label{fig:deltales_sd-eos}
+\end{figure}
+
+
+Delta LES SPH RHOC - EOS \figref{fig:deltales-eos}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/eos/dt_pois_conv_c0_20_re_100.png}
+    \caption{$Re = 100$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/eos/dt_pois_conv_c0_20_re_1000.png}
+    \caption{$Re = 1000$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/eos/dt_pois_conv_c0_20_re_10000.png}
+    \caption{$Re = 10000$}
+  \end{subfigure}
+  \caption{Convergence of the $\delta$-LES-SPH $(\rho_c)$ scheme for various equations of state.}
+  \label{fig:deltales-eos}
+\end{figure}
+
+
+Delta LES SPH RHOC - PST \figref{fig:deltales-pst}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/pst/dt_pois_conv_c0_20_re_100.png}
+    \caption{$Re = 100$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/pst/dt_pois_conv_c0_20_re_1000.png}
+    \caption{$Re = 1000$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/pst/dt_pois_conv_c0_20_re_10000.png}
+    \caption{$Re = 10000$}
+  \end{subfigure}
+  \caption{Convergence of the $\delta$-LES-SPH $(\rho_c)$ scheme for various $f_{pst}$ values.}
+  \label{fig:deltales-pst}
+\end{figure}
+
+
+Delta LES SPH RHOC - PST VMAG \figref{fig:deltales-pst-vmag}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_-1_re_10000_deltales/final_vmag.png}
+    \caption{No PST}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_10_re_10000_deltales/final_vmag.png}
+    \caption{$f_{pst} = 10$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_50_re_10000_deltales/final_vmag.png}
+    \caption{$f_{pst} = 50$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_100_re_10000_deltales/final_vmag.png}
+    \caption{$f_{pst} = 100$}
+  \end{subfigure}
+  \caption{Velocity magnitude field for the $\delta$-LES-SPH $(\rho_c)$ scheme for various $f_{pst}$ values $(N=50^2, t_f=0.1, Re=10000, c_s=20)$.}
+  \label{fig:deltales-pst-vmag}
+\end{figure}
+
+
+Delta LES SPH RHOC - PST ESPEC \figref{fig:deltales-pst-espec}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_-1_re_10000_deltales/energy_spectrum_evolution.png}
+    \caption{No PST}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_10_re_10000_deltales/energy_spectrum_evolution.png}
+    \caption{$f_{pst} = 10$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_50_re_10000_deltales/energy_spectrum_evolution.png}
+    \caption{$f_{pst} = 50$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_100_re_10000_deltales/energy_spectrum_evolution.png}
+    \caption{$f_{pst} = 100$}
+  \end{subfigure}
+  \caption{Evolution of the energy spectrum for the $\delta$-LES-SPH $(\rho_c)$ scheme for various $f_{pst}$ values $(N=100^2, t_f=0.1, Re=10000, c_s=20)$. Initial energy spectrum is shown in dark blue, and the final energy spectrum is shown in yellow.}
+  \label{fig:deltales-pst-espec}
+\end{figure}
+
+
+Delta LES SPH RHOC - INTEGRATOR \figref{fig:deltales-integrator}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/dt_pois_conv_c0_20_re_100.png}
+    \caption{$Re = 100$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/dt_pois_conv_c0_20_re_1000.png}
+    \caption{$Re = 1000$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/dt_pois_conv_c0_20_re_10000.png}
+    \caption{$Re = 10000$}
+  \end{subfigure}
+  \caption{Convergence of the $\delta$-LES-SPH $(\rho_c)$ scheme for various time-integration schemes.}
+  \label{fig:deltales-integrator}
+\end{figure}
+
+
+Delta LES SPH RHOC - INTEGRATOR VMAG \figref{fig:deltales-integrator-vmag}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_pec_dtmul_1_nx_50_pst_100_re_10000_deltales/final_vmag.png}
+    \caption{\texttt{PEC}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_rk2_dtmul_1.5_nx_50_pst_100_re_10000_deltales/final_vmag.png}
+    \caption{\texttt{RK2}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_rk4_dtmul_2_nx_50_pst_100_re_10000_deltales/final_vmag.png}
+    \caption{\texttt{RK4}}
+  \end{subfigure}
+  \caption{Velocity magnitude field for the $\delta$-LES-SPH $(\rho_c)$ scheme for various time-integration schemes $(N=50^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=100)$.}
+  \label{fig:deltales-integrator-vmag}
+\end{figure}
+
+
+Delta LES SPH RHOC - INTEGRATOR ESPEC \figref{fig:deltales-integrator-espec}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_pec_dtmul_1_nx_50_pst_100_re_10000_deltales/energy_spectrum_evolution.png}
+    \caption{\texttt{PEC}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_rk2_dtmul_1.5_nx_50_pst_100_re_10000_deltales/energy_spectrum_evolution.png}
+    \caption{\texttt{RK2}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_rk4_dtmul_2_nx_50_pst_100_re_10000_deltales/energy_spectrum_evolution.png}
+    \caption{\texttt{RK4}}
+  \end{subfigure}
+  \caption{Evolution of the energy spectrum for the $\delta$-LES-SPH $(\rho_c)$ scheme for various time-integration schemes $(N=100^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=100)$.}
+  \label{fig:deltales-integrator-espec}
+\end{figure}
 
 
    
