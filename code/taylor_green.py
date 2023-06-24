@@ -516,13 +516,13 @@ class TaylorGreen(TurbulentFlowApp):
         plt.savefig(fig, dpi=300)
 
         # Turbulence specific post-processing
-        if self.options.no_plot:
-            return
+        # if self.options.no_plot:
+        #     return
         
         if self.ext_forcing:
             f_idx_list = self.get_f_idx_list([5, 25, 50, 75, 100])
         else:
-            f_idx_list = self.get_f_idx_list([0, 25, 50, 75, 100])
+            f_idx_list = self.get_f_idx_list([0, 100])
 
         self.compute_interpolated_vel_field(
             f_idx_list=f_idx_list, dim=2, L=self.L
@@ -542,10 +542,12 @@ class TaylorGreen(TurbulentFlowApp):
             plot_fit=True, ylims=ylims,
             title_suffix=f'(Re={self.options.re}, U={self.U})'
         )
-        self.plot_ek_evolution(
-            f_idx='all', plot_fit=True, ylims=ylims, fname_suffix='_all',
-            title_suffix=f'(Re={self.options.re}, U={self.U})'
-        )
+        
+        if self.ext_forcing:
+            self.plot_ek_evolution(
+                f_idx='all', plot_fit=True, ylims=ylims, fname_suffix='_all',
+                title_suffix=f'(Re={self.options.re}, U={self.U})'
+            )
 
     def customize_output(self):
         self._mayavi_config('''
