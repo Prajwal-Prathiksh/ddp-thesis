@@ -56,8 +56,8 @@ The corresponding initial pressure field $(P_0)$ obtained from solving the press
 
 \subsection{Thin Double-Shear Layer}
 The thin double-shear layer is a problem often considered to be too difficult to simulate due to the small scales which are produced. 
-The main challenge of the problem, as shown by Brown and Minion \parencite{minion1997performance}, occurs when a numerical method produces spurious structures, especially when the flow is sufficiently under-resolved. 
-Drikakis and Smolarkiewicz \parencite{drikakis2001spurious} studied the problem's spurious structure to understand its numerical mechanism. They indicated that the spurious structure's generation depends on the advective scheme's choice. 
+The main challenge of the problem, as shown by \cite{minion1997performance}, occurs when a numerical method produces spurious structures, especially when the flow is sufficiently under-resolved. 
+\cite{drikakis2001spurious} studied the problem's spurious structure to understand its numerical mechanism. They indicated that the spurious structure's generation depends on the advective scheme's choice. 
 
 The initial conditions for the $2D$ periodic flow is given by \Eqref{eq:2d-tdsl-vx} - \Eqref{eq:2d-tdsl-vy}.
 \begin{equation}
@@ -77,7 +77,7 @@ The data from the database contains the three velocity components and the pressu
 database pressure, with Mach number Ma 0.1. 
 
 \subsection[2D Confined and Driven Turbulence]{$2D$ Confined \& Driven Turbulence}
-Based on the test case employed by Monaghan \parencite{Monaghan2017}, a $2D$ fluid confined to a square solid impenetrable boundary is considered $(\Boundary = [0,1]^2)$. A cylinder of radius $(r=0.7)$ is placed at the centre of the box. The circle is subsequently provided with a Lissajous trajectory to follow given by \Eqref{eq:2d-cdt-x} - \Eqref{eq:2d-cdt-y}.
+Based on the test case employed by \cite{Monaghan2017}, a $2D$ fluid confined to a square solid impenetrable boundary is considered $(\Boundary = [0,1]^2)$. A cylinder of radius $(r=0.7)$ is placed at the centre of the box. The circle is subsequently provided with a Lissajous trajectory to follow given by \Eqref{eq:2d-cdt-x} - \Eqref{eq:2d-cdt-y}.
 \begin{equation}
     x = 0.5 + 0.25 \sin \bigg( \frac{2\pi t}{5} \bigg)
     \label{eq:2d-cdt-x}
@@ -114,7 +114,7 @@ The energy spectrum is subsequently defined as given by \Eqref{eq:Shi2013-energy
 \end{equation}
 Where $(B=2\pi k)$ for $2D$ and $(B=4\pi k^2)$ for $3D$.
 
-However, SPH does not have such grid-like data to calculate the energy spectrum directly. Hence, the data has to be reconstructed using interpolation methods as outlined by Shi et al. \parencite{Shi2013}.
+However, SPH does not have such grid-like data to calculate the energy spectrum directly. Hence, the data has to be reconstructed using interpolation methods as outlined by \cite{Shi2013}.
 The authors provide three distinct methods of interpolating the data across a grid-like space. 
 The SPH interpolation method specified by the authors is given in \Eqref{eq:Shi2013-sph-interpolation}.
 \begin{equation}
@@ -130,13 +130,13 @@ Remeshed Interpolation
 \end{equation}
 Where $(\Tilde{W})$ represents the kernel where the volume of the particle $(\Vol_j)$ has been absorbed.
 
-The authors also detail the moving least squares (MLS) method as an interpolation tool. Building on the work of Lancaster and Salkauskas \parencite{lancaster1981surfaces}, who were able to extend the $2D$ interpolation technique proposed by Shepard \parencite{shepard1968two} to a general higher-order case. The authors state that they start with a weighted least squares formulation for an arbitrary fixed point and then move said point across the entire domain. This allows for the computation of a weighted least squares fit function, which can be used to evaluate grid-like points.
+The authors also detail the moving least squares (MLS) method as an interpolation tool. Building on the work of \cite{lancaster1981surfaces}, who were able to extend the $2D$ interpolation technique proposed by \cite{shepard1968two} to a general higher-order case. The authors state that they start with a weighted least squares formulation for an arbitrary fixed point and then move said point across the entire domain. This allows for the computation of a weighted least squares fit function, which can be used to evaluate grid-like points.
 
 \subsection{Lagrangian Coherent Structures}
 Complex flow cannot only be analysed through primitive flow properties such as pressure, velocity or energy density for a deep understanding of the flow interactions. Techniques using only such properties would fail to identify general coherent structures (CS) in the flow. To facilitate that, quantities such as those employing the velocity gradient, such as the vorticity, Q-criterion, $\Delta$-criterion, swirling strength criterion, etc., are used. 
-However, Haller \parencite{haller2005objective} was able to show that in some situations, most of the definitions of the vortex are not objective and suitable for studying the flow, particularly in the context of $3D$ flow.
+However, \cite{haller2005objective} was able to show that in some situations, most of the definitions of the vortex are not objective and suitable for studying the flow, particularly in the context of $3D$ flow.
 
-Therefore, Sun et al. \parencite{sun2016detection} utilise the Lagrangian Coherent Structures (LCSs) as an alternative way with specific advantages for drawing the CSs from a given flow field. In order to identify the LCSs with an objective quantity, the authors use the Finite-time Lyapunov Exponent (FTLE), which represents the rate of separation of the nearby fluid particles over a finite time interval. FTLEs can be evaluated both in forward and backward time directions.
+Therefore, \cite{sun2016detection} utilise the Lagrangian Coherent Structures (LCSs) as an alternative way with specific advantages for drawing the CSs from a given flow field. In order to identify the LCSs with an objective quantity, the authors use the Finite-time Lyapunov Exponent (FTLE), which represents the rate of separation of the nearby fluid particles over a finite time interval. FTLEs can be evaluated both in forward and backward time directions.
 
 The authors summarise the main advantages of FTLEs over different velocity gradient-based metrics as follows:
 \begin{itemize}
@@ -150,7 +150,7 @@ The authors summarise the main advantages of FTLEs over different velocity gradi
 \begin{figure}[H]
     \centering
     \includegraphics{Figures/research_papers/sun2016detection-fig-1.png}
-    \caption{Viscous flow past a circular cylinder at $Re = 105$. Top: Attracting FTLE contour plot from SPH simulation. Bottom: Photo from experiments conducted by Taneda \parencite{taneda1977visual} with electrolytic precipitation in water technique for vortex street visualisation. Reproduced from \cite{sun2016detection}}
+    \caption{Viscous flow past a circular cylinder at $Re = 105$. Top: Attracting FTLE contour plot from SPH simulation. Bottom: Photo from experiments conducted by \cite{taneda1977visual} with electrolytic precipitation in water technique for vortex street visualisation. Reproduced from \cite{sun2016detection}}
     \label{fig:sun2016detection-fig-1}
 \end{figure}
 
@@ -160,6 +160,6 @@ The authors propose two methods to calculate a flow's Cauchy–Green strain tens
 The first method uses SPH formulations for the deformation gradient to compute the Cauchy–Green strain tensors. The backward-in-time FTLE can be computed using limited resources during run-time concurrently in this method. However, the forward-in-time FTLE can only be computed during post-processing.
 
 In the second method, the forward-in-time deformation gradient is evolved as a property within the simulation's time integration step employing a governing equation for the property. This method does not need to keep track of the spatial relation between the points. This allows for the process to be suitable for Eulerian solvers as well.
-Building on this work, Dauch et al. \parencite{dauch2018highly} developed an efficient GPU-based implementation to accelerate the computation of FTLE fields or, depending on the architecture of the solver, completely move the step from being calculated on the CPU to the GPU. Their proposition is highly enticing, especially for $3D$ flows.
+Building on this work, \cite{dauch2018highly} developed an efficient GPU-based implementation to accelerate the computation of FTLE fields or, depending on the architecture of the solver, completely move the step from being calculated on the CPU to the GPU. Their proposition is highly enticing, especially for $3D$ flows.
 
 % TODO: More details of Sun2016 required

@@ -38,7 +38,7 @@ In order to compute the energy spectrum, the following steps are performed:
 
 \begin{itemize}
     \item the velocity field is interpolated along a grid of uniformly spaced rectangular points,
-    \item the velocity field is then transformed to Fourier space, using the \texttt{numpy.fft.fftn} function, and subsequently normalized as given as
+    \item the velocity field is then transformed to Fourier space, using the \texttt{numpy.fft.fftn} function \parencite{harris2020array}, and subsequently normalised as given as
     \begin{equation}
         \hat{\vect{v_i}}(\vect{k}) = \frac{ fft\{ \vect{v_i}(\vect{r}) \} }{U_0 \times len(\vect{v_i})}
     \end{equation}
@@ -178,7 +178,7 @@ Therefore, it was concluded that the $1D$ energy field, computed from the interp
 
 The same set of test-cases, with $\gamma=1$ and $N=n_x/2$, are considered, in order to identify the effect of various interpolation schemes, kernels, perturbation, and resolutions on the computed energy spectrum.
 
-In order to measure the effect of the perturbation in the particle spacing on the computed energy spectrum, once a rectangluar grid of uniform particles are defined, its coordinates are perturbed by a uniform random number $\delta \hat{x} \in [0, 1)$, scaled by a perturbation amplitude. The perturbed grid is then initialized with the corresponding velocity profile, and the energy spectrum is computed for the perturbed grid. From the results shown in \figref{fig:espec-scalar-fields-per-ampl}, it can be observed that by increasing the perturbation amplitude, energy seems to be introduced at lower resolution scales, which is reflected by the icreased energy at higher wavenumbers. This trend seems to hold true, for all dimensions.
+In order to measure the effect of the perturbation in the particle spacing on the computed energy spectrum, once a rectangluar grid of uniform particles are defined, its coordinates are perturbed by a uniform random number $\delta \hat{x} \in [0, 1)$, scaled by a perturbation amplitude. The perturbed grid is then initialised with the corresponding velocity profile, and the energy spectrum is computed for the perturbed grid. From the results shown in \figref{fig:espec-scalar-fields-per-ampl}, it can be observed that by increasing the perturbation amplitude, energy seems to be introduced at lower resolution scales, which is reflected by the icreased energy at higher wavenumbers. This trend seems to hold true, for all dimensions.
 Therefore, we can infer that the low-pass energy dissipation effect of the interpolation scheme, will to an extent be countered by the perturbation in the particle spacing (which is typically the case in a simulation since the particles become disturbed), which will introduce energy at lower resolution scales, and hence, the slope of the energy spectrum computed from the interpolated velocity field, will be closer to the slope of the energy spectrum computed from the original velocity field. 
 
 \begin{figure}[ht!]
@@ -300,7 +300,7 @@ From the results shown in \figref{fig:espec-scalar-fields-res}, it can be observ
 In order to compute the FTLE field, the flow field, at two different time instances is required, i.e., $t_i$ and $t_f$.
 The flow field corresponding to the earlier time instance is stored in the \texttt{initial} particle array, while the flow field corresponding to the later time instance is stored in the \texttt{final} particle array.
 
-The forward-in-time (FIT) FTLE field is calculated as \parencite{sun2016detection}:
+The forward-in-time (FIT) FTLE field is calculated as defined in the work of \cite{sun2016detection}:
 \begin{equation}
 	\lambda_{t_i}^{t_f}(\vect{x}) = \frac{1}{\abs{t_f - t_i}} \ln \bigg( \sqrt{\Lambda_{max}[ \mathbb{C}_{t_i}^{t_f}(\vect{x}) ]}  \bigg),
 \end{equation}
@@ -312,7 +312,7 @@ where, $\mathbb{F}_{t_i}^{t_f}(\vect{x})$ is the deformation gradient tensor, an
   \lambda_{t_f}^{t_i}(\vect{x}) = \frac{1}{\abs{t_f - t_i}} \ln \bigg( \sqrt{ \frac{1}{\Lambda_{min}[ \mathbb{C}_{t_i}^{t_f}(\vect{x}) ]} }  \bigg).
 \end{equation}
 
-The corresponding, SPH approximations for the above equations are given as \parencite{sun2016detection}:
+The corresponding, SPH approximations for the above equations are:
 \begin{equation}
   \mathbb{F}_{t_i}^{t_f}(\vect{x}_i) = \sum_{j} \frac{m_j}{\rho_j} \vect{X}_{ji} \otimes \nabla \mathbb{L}( \vect{x}_i ) \DWIJ,
 \end{equation}
@@ -371,20 +371,30 @@ In order to better understand the nature of each major categories, and to subseq
   \label{tab:rep-turb-models}
 \end{table}
 
-The L-IPST-C scheme was considered over the other viscosity-based schemes, since it was observed to be actually second-order convergent (SOC) by Negi and Ramachandran \parencite{Negi2022Techniques}, for a wide variety of problems, which included the Gresho vortex problem, Kelvin-Helmholtz instability problem, and the Taylor-Green vortex problem. This scheme consideres the weakly-compressible NS equations as the governing equations, and uses the \texttt{coupled\_c} viscosity formulation, which is corrected using the Bonet and Lok coorection \parencite{bonet1999variational}. Hence, since the scheme by definition has the viscous term in its governing equation, it does require any additional `artificial'-viscosity term to be added.
-The scheme also incorporates the iterative particle shifting technique (IPST) by Huang et al. \parencite{Huang_Long_Li_Liu_2019}, in order to resdistribute the particles to obtain a reasonably uniform grid of particles in the domain. Besides shifting the position of the particles, the scheme also updates particles' properties such as the density and velocity to keep the approximation of the particle $O(h^2)$. The particles are shifted at a frequency of 10 time-steps.
+In order to test the schemes for SOC, the Taylor-Green vortex problem was considered. The testcases were coded using \texttt{automan} \parencite{RamachandranAutoman2018}, which is an open source, Python-based automation framework.
 
-The SPH-LES scheme was considered over the other LES-based schemes, since it was observed to be actually SOC by Okraschevski et al. \parencite{Okraschevski2022}, since the scheme they proposed utilized the compressible NS equations and subjected those to a spatial averageing operator to obtain the filtered governing equations. They also considered, three different models for the turbulent eddy viscosity, which included the standard Smagorinsky model, $\sigma$-model and the standard model discretized in the Monaghan-Cleary-Gingold (MCG) form. Therefore, the model appeared comprehensive in terms of its implementation, and hence, was chosen.
+The L-IPST-C scheme was considered over the other viscosity-based schemes, since it was observed to be actually second-order convergent (SOC) by \cite{Negi2022Techniques}, for a wide variety of problems, which included the Gresho vortex problem, Kelvin-Helmholtz instability problem, and the Taylor-Green vortex problem. This scheme consideres the weakly-compressible NS equations as the governing equations, and uses the \texttt{coupled\_c} viscosity formulation, which is corrected using the Bonet and Lok correction \parencite{bonet1999variational}. Hence, since the scheme by definition has the viscous term in its governing equation, it does require any additional `artificial'-viscosity term to be added.
+The scheme also incorporates the iterative particle shifting technique (IPST) by \cite{Huang_Long_Li_Liu_2019}, in order to resdistribute the particles to obtain a reasonably uniform grid of particles in the domain. Besides shifting the position of the particles, the scheme also updates particles' properties such as the density and velocity to keep the approximation of the particle $O(h^2)$. The particles are shifted at a frequency of 10 time-steps.
 
-Coming to the Lagrangian LES-based models, there were only two major schemes to consider. One being the LES-SPH scheme of Di Mascio et al. \parencite{DiMascio2017} and the other being the $\delta$-LES-SPH scheme of Colagrossi et al. \parencite{Colagrossi2021QuasiLagrangian}.
+The SPH-LES scheme was considered over the other LES-based schemes, since it was observed to be actually SOC by \cite{Okraschevski2022}, since the scheme they proposed utilised the compressible NS equations and subjected those to a spatial averageing operator to obtain the filtered governing equations. They also considered, three different models for the turbulent eddy viscosity, which included the standard Smagorinsky model, $\sigma$-model and the standard model discretised in the Monaghan-Cleary-Gingold (MCG) form. Therefore, the model appeared comprehensive in terms of its implementation, and hence, was chosen.
+
+Coming to the Lagrangian LES-based models, there were only two major schemes to consider. One being the LES-SPH scheme of \cite{DiMascio2017} and the other being the $\delta$-LES-SPH scheme of \cite{Colagrossi2021QuasiLagrangian}.
 The latter was chosen, since their scheme introduced a small arbitrary velocity deviation $(\TildeDeltaV)$ to the fluid particles, which allowed for improved accuracy in simulations of high Reynolds number problems. This scheme, also included the use of PST and tensile instability control (TIC). All of this allowed the scheme to tackle without facing the issue of spurious high-frequency noise and the onset of the tensile instability, and hence was chosen.
 
-The $k-\epsilon$ SPH scheme of Shao et al. \parencite{Shao2006} was chosen over the other RANS-based schemes, since it was straightforward in terms of the governing equations invloved.
+The $k-\epsilon$ SPH scheme of \cite{Shao2006} was chosen over the other RANS-based schemes, since it was straightforward in terms of the governing equations involved.
 
 
 
    
 
 
-\subsection{Optimization of models}
+
+
+
+
+
+
+
+
+
 \subsection{Order of convergence analysis}
