@@ -57,7 +57,8 @@
 % Author information
 % Copy `Base/author_info.dist.tex` into `Base/author_info.tex` and set the values
 % if you do not want personal data to end up in a public git repository
-\IfFileExists{Base/author_info.tex}{\input{Base/author_info.tex}}{\input{Base/author_info.dist.tex}}
+%\IfFileExists{Base/author_info.tex}{}{\input{Base/author_info.dist.tex}}
+\input{Base/author_info.tex}
 
 % Thesis information
 \thesistitle{Turbulence Modelling for Smoothed Particle Hydrodynamics} % Your thesis title, print it elsewhere with \ttitle
