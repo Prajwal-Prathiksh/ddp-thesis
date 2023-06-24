@@ -66,17 +66,17 @@ class TurbulentFlowApp(Application):
         )
         turb_options.add_argument(
             "--i-kernel", action="store", type=str, dest="i_kernel",
-            default='WendlandQuinticC4', choices=KERNEL_CHOICES,
+            default='WendlandQuinticC6', choices=KERNEL_CHOICES,
             help="Interpolation kernel."
         )
         turb_options.add_argument(
             "--i-radius-scale", action="store", type=float,
-            dest="i_radius_scale", default=3.0,
+            dest="i_radius_scale", default=2.0,
             help="Interpolation kernel radius scale."
         )
         turb_options.add_argument(
             "--i-method", action="store", type=str, dest="i_method",
-            default='shepard', choices=INTERPOLATING_METHOD_CHOICES,
+            default='sph', choices=INTERPOLATING_METHOD_CHOICES,
             help="Interpolating method."
         )
         turb_options.add_argument(
