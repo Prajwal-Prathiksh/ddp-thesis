@@ -537,9 +537,15 @@ class KEpsilonScheme(Scheme):
             "--gamma", type=float, action="store", dest="gamma",
             default=7.0, help="Gamma for the state equation."
         )
+        group.add_argument(
+            '--pst-freq', action='store', type=int, dest='pst_freq',
+            default=10, help='PST frequency'
+        )
     
     def consume_user_options(self, options):
-        vars = ["k_eps_expand", "decouple_keps", "eos", "gamma"]
+        vars = [
+            "k_eps_expand", "decouple_keps", "eos", "gamma", "pst_freq"
+        ]
 
         data = dict((var, self._smart_getattr(options, var))
                     for var in vars)

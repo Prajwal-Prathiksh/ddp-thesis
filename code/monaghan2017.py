@@ -108,9 +108,13 @@ class Monaghan2017Scheme(Scheme):
             "--mon2017-eps", action="store", type=float, dest="eps",
             default=0.5, help="Epsilon for SPH-ϵ scheme"
         )
+        group.add_argument(
+            '--pst-freq', action='store', type=int, dest='pst_freq',
+            default=10, help='PST frequency'
+        )
     
     def consume_user_options(self, options):
-        vars = ['eps']
+        vars = ['eps', 'pst_freq']
         data = dict((var, self._smart_getattr(options, var))
                     for var in vars)
         self.configure(**data)
