@@ -437,19 +437,23 @@ class TGV2DSchemeComparison(PySPHProblem):
         sim_opts = self.sim_opts
         res = get_all_unique_values(sim_opts, 're')
         schemes = get_all_unique_values(sim_opts, 'scheme')
+        nxs = get_all_unique_values(sim_opts, 'nx')
 
         # Make plots
         KIND_CHOICES = ['ke', 'decay', 'linf', 'l1', 'p_l1', 'lm', 'am']
 
         for k in KIND_CHOICES:
             for re in res:
-                fcases = filter_cases(self.cases, re=re)
-                if len(fcases)  == 0:
-                    continue
-                fname = f"{k}_re_{re}.png"
-                self.plot_sim_prop_history(
-                    cases=fcases, kind=k, fname=fname
-                )
+                for nx in nxs:
+                    fcases = filter_cases(self.cases, re=re, nx=nx)
+                    if len(fcases)  == 0:
+                        continue
+                    fname = f"{k}_re_{re}_nx_{nx}.png"
+                    t_suf = fr" ($Re = {re}, N={nx}^2$)"
+                    self.plot_sim_prop_history(
+                        cases=fcases, kind=k, fname=fname,
+                        title_suffix=t_suf
+                    )
     
     def get_sim_prop_history(self, case, kind):
         """
@@ -486,6 +490,16 @@ class TGV2DSchemeComparison(PySPHProblem):
         """
         Plot the simulation property history.
         """
+        kind_title_dict = dict(
+            ke='Kinetic energy',
+            decay='Decay',
+            linf=r'$L_{\infty}$ error',
+            l1=r'$L_1$ error',
+            p_l1=r'$L_1$ error (pressure)',
+            lm='Linear momentum',
+            am='Angular momentum'
+        )
+
         plot_exact = False
         if kind in ['ke', 'decay']:       
             # Get the expected simulation property history
@@ -511,8 +525,8 @@ class TGV2DSchemeComparison(PySPHProblem):
             plt_method(t, prop, label=label)
         
         plt.xlabel('t')
-        plt.ylabel(kind)
-        plt.title(f"{kind} history{title_suffix}")
+        # plt.ylabel(kind)
+        plt.title(f"{kind_title_dict[kind]} {title_suffix}")
         plt.legend()
         plt.grid()
         plt.savefig(self.output_path(fname), dpi=300, bbox_inches='tight')
