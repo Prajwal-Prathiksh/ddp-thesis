@@ -371,7 +371,7 @@ In order to better understand the nature of each major categories, and to subseq
   \label{tab:rep-turb-models}
 \end{table}
 
-In order to test the schemes for SOC, the Taylor-Green vortex problem is chosen. The test-cases are coded using \texttt{automan} \parencite{RamachandranAutoman2018}, which is an open source, Python-based automation framework. All of the simulations run hereafter, are run upto a final time of $t_f=0.1$, with the resolution for each run consisting of $N=[25^2, 50^2, 100^2]$ particles respectively, with the Reynolds number ranging between $Re=[100, 1000, 10000]$ respectively. All of the simulations are run using the \texttt{WendlandQuinticC4} kernel, with a radius multiplier of $2.0$. This choice was based on the work of \cite{Negi2022Techniques}.
+In order to test the schemes for SOC, the Taylor-Green vortex (TGV) problem is chosen. The test-cases are coded using \texttt{automan} \parencite{RamachandranAutoman2018}, which is an open source, Python-based automation framework. All of the simulations run hereafter, are run upto a final time of $t_f=0.1$, with the resolution for each run consisting of $N=[25^2, 50^2, 100^2]$ particles respectively, with the Reynolds number ranging between $Re=[100, 1000, 10000]$ respectively. All of the simulations are run using the \texttt{WendlandQuinticC4} kernel, with a radius multiplier of $2.0$. This choice was based on the work of \cite{Negi2022Techniques}.
 
 The $L_1$ error for each simulation in a run is computed, and plotted against the inverse of the particle spacing, in order to ascertain the order of convergence (OOC) of the scheme. The $L_1$ error at a given time instance is computed as:
 \begin{equation}
@@ -566,7 +566,7 @@ Therefore, a value of $c_s = 20$ is chosen as the default value for the speed of
   \label{fig:okra2022-c0-espec}
 \end{figure}
 
-Hence, it can be concluded that the SPH-LES scheme is not suitable for problems of low $Re$, due to firstly the lack of dissipation of energy, and secondly, it being zero order-convergent. For the cases of high $Re$, the scheme again would require a lot more testing for each specific problem, before it the flow field can be considered to be accurate. This is reflected in the velocity magnitude plots show in \figref{fig:okra2022-pst-vmag} and \figref{fig:okra2022-c0-vmag}, where the flow field at the final time instance, is not the expected Taylor-Green profile, and instead distorted vortex structures are observed.
+Hence, it can be concluded that the SPH-LES scheme is not suitable for problems of low $Re$, due to firstly the lack of dissipation of energy, and secondly, it being zero order-convergent. For the cases of high $Re$, the scheme again would require a lot more testing for each specific problem, before it the flow field can be considered to be accurate. This is reflected in the velocity magnitude plots show in \figref{fig:okra2022-pst-vmag} and \figref{fig:okra2022-c0-vmag}, where the flow field at the final time instance, is not the expected TGV profile, and instead distorted vortex structures are observed.
 
 
 \subsection[delta-LES-SPH Scheme]{$\delta$-LES-SPH Scheme}
@@ -626,7 +626,7 @@ The results shown in \figref{fig:deltales_sd-eos} and \figref{fig:deltales-eos},
 Subsequently, in order to test for the effects of the PST on the scheme, multiple values of $f_{pst}$ were considered, and the results are shown in \figref{fig:deltales-pst}.
 The trends are hard to decipher here, since the magnitude of the error itself is lower for high values of $f_{pst}$ or even without PST; while the OOC is better for lower values of $f_{pst}$.
 Therefore, in order to better analyse these results, the velocity magnitude field and the energy spectrum are plotted in \figref{fig:deltales-pst-vmag} and \figref{fig:deltales-pst-espec} respectively.
-Here, it can be observed from the velocity magnitude plot, that PST is absolutely necessary, particularly with a low $f_{pst}$ value, since without PST, the particles become clustered, and the flow field no longer represents the expected Taylor-Green vortex profile.
+Here, it can be observed from the velocity magnitude plot, that PST is absolutely necessary, particularly with a low $f_{pst}$ value, since without PST, the particles become clustered, and the flow field no longer represents the expected TGV profile.
 In the energy spectrum plot, it can be observed that the energy distribution at the final time instanc, has barely changed, indicating that the scheme appears to be conservative w.r.t energy, with or without PST. Therefore, long-time studies would be required to ascertain the effects of PST on the evolution of the energy spectrum.
 Hence, for subsequent studies, a value of $f_{pst} = 10$ is chosen as the default value for the PST.
 
@@ -763,172 +763,58 @@ It is also noted, that there is no significant differences to be observed in the
 
 
 \subsection[k-epsilon SPH Scheme]{$k-\epsilon$ SPH Scheme}
-The $k-\epsilon$ SPH scheme of \cite{Shao2006} was chosen over the other RANS-based schemes, since it was ...
+The $k-\epsilon$ SPH scheme of \cite{Shao2006} was chosen over the other RANS-based schemes, since the authors considered the typical RANS-based $k-\epsilon$ equations, as the governing equations for their scheme, with an implicit pressure Poisson equation that needed to be solved for the time integration of the scheme.
+However, it was decided that since such an implicit pressure Poisson equation solver would be computationally expensive, as well complicated to general to other problems, the scheme was implemented with a different SPH discretisation of the $k-\epsilon$ transport equations,so as to avoid that step.
 
-K-EPS - EOS \figref{fig:keps-eos}
-\begin{figure}[H]
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/dt_pois_conv_c0_20_re_100.png}
-    \caption{$Re = 100$}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/dt_pois_conv_c0_20_re_1000.png}
-    \caption{$Re = 1000$}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/dt_pois_conv_c0_20_re_10000.png}
-    \caption{$Re = 10000$}
-  \end{subfigure}
-  \caption{Convergence of the $k-\epsilon$ SPH scheme for various equations of state.}
-  \label{fig:keps-eos}
-\end{figure}
+Therefore, when it came to discretising the $k-\epsilon$ transport equations, there were two choices available.
+The first, would involve discretising the original $k-\epsilon$ equations as detailed below:
+\begin{equation}
+  \LagDerivative{k} = \nabla \cdot \bigg( \frac{\nu_t}{\sigma_k} \nabla k \bigg) + P_k - \epsilon,
+  \label{eq:Shao2006-k-transport-eq-res-chap}
+\end{equation}
+\begin{equation}
+  \LagDerivative{\epsilon} = \nabla \cdot \bigg( \frac{\nu_t}{\sigma_{\epsilon}} \nabla \epsilon \bigg) + c_{1\epsilon} \frac{\epsilon}{k} P_k - c_{2\epsilon} \frac{\epsilon^2}{k}.
+  \label{eq:Shao2006-eps-transport-eq-res-chap}
+\end{equation}
+Or alternatively, the above equations can also be expanded, using standard identities from calculus, and substituting for the turbulent eddy viscosity $\nu_t$ to obtain:
+\begin{equation}
+  \LagDerivative{k} = \frac{c_d}{\sigma_k} \bigg( \frac{k^2}{\epsilon} \nabla^2 k + \frac{2k}{\epsilon} (\nabla k)^2 - \frac{k^2}{\epsilon^2} \nabla k \cdot \nabla \epsilon \bigg) + P_k - \epsilon,
+  \label{eq:Shao2006-k-transport-eq-exp-res-chap}
+\end{equation}
+\begin{equation}
+  \LagDerivative{\epsilon} = \frac{c_d}{\sigma_\epsilon} \bigg( \frac{k^2}{\epsilon} \nabla^2 \epsilon + \frac{2k}{\epsilon} \nabla k \cdot \nabla \epsilon - \frac{k^2}{\epsilon^2} (\nabla \epsilon)^2 \bigg) + c_{1\epsilon} \frac{\epsilon}{k} P_k - c_{2\epsilon} \frac{\epsilon^2}{k}.
+  \label{eq:Shao2006-eps-transport-eq-exp-res-chap}
+\end{equation}
 
+Therefore, the two variants, i.e, $k-\epsilon$ simplified and $k-\epsilon$ expanded, corresponding to the two choices for the pair of transport equations are discretised using SOC SPH operators as detailed in the work of \cite{Negi2022Techniques}.
+In order to verify the correctness of the SPH discretisation of the $k-\epsilon$ transport equations, in either cases, and study the OOC of the transport equations, a single time-step of the scheme was run on a predetermined set of initial conditions, for the flow properties including $k$ and $\epsilon$. The computed RHS of the $k$ and $\epsilon$ transport equations were then compared with the analytical RHS of the equations, and the appropriate $L_1$ error is computed, and plotted for various resolutions.
+Three test-cases were devised, to represent three distinct functional forms. Flow properties such as the velocity, pressure and density were modelled after the initial conditions of the $2D$ TGV problem, as detailed in \secref{sec:taylor-green-vortex-problem}, while the initial conditions for $k$ and $\epsilon$ fields were defined as follows:
+\begin{itemize}
+  \item \texttt{Test-case 1}:
+  \begin{equation}
+    k_0 = 1.5 U^2, \quad \epsilon_0 = 0.09^{0.75} \frac{k_0^{1.5}}{L},
+  \end{equation}
+  where $U$ and $L$ are the characteristic velocity and length scales respectively. This test-case, represents a constant and uniform initial condition for the $k-\epsilon$ fields.
 
-K-EPS - EOS VMAG \figref{fig:keps-eos-vmag}
-\begin{figure}[H]
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/c0_20_linear_pec_dtmul_1_nx_50_pst_10_re_10000_k_eps/final_vmag.png}
-    \caption{\texttt{LinearEOS}}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/c0_20_tait_pec_dtmul_1_nx_50_pst_10_re_10000_k_eps/final_vmag.png}
-    \caption{\texttt{TaitEOS}}
-  \end{subfigure}
-  \caption{Velocity magnitude field for the $k-\epsilon$ SPH scheme for various equations of state $(N=50^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=10)$.}
-  \label{fig:keps-eos-vmag}
-\end{figure}
+  \item \texttt{Test-case 2}:
+  \begin{equation}
+    k_0 = \abs{\vect{v}_0}^2, \quad \epsilon_0 = k_0,
+  \end{equation}
+  where $\vect{v}_0$ is the initial velocity field. This test-case, represents a $k-\epsilon$ field that is proportional to the velocity field.
 
+  \item \texttt{Test-case 3}:
+  \begin{equation}
+    k_0 = \frac{1}{2}\abs{\vect{v}_0}^2, \quad \epsilon_0 = 0.09 \frac{k_0^{3/2}}{L}.
+  \end{equation}
+  This test-case, represents a $k-\epsilon$ field that is non-linearly proportional to the velocity field.
+\end{itemize}
 
-K-EPS - EOS ESPEC \figref{fig:keps-eos-espec}
-\begin{figure}[H]
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/c0_20_linear_pec_dtmul_1_nx_100_pst_10_re_10000_k_eps/energy_spectrum_evolution.png}
-    \caption{\texttt{LinearEOS}}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/c0_20_tait_pec_dtmul_1_nx_100_pst_10_re_10000_k_eps/energy_spectrum_evolution.png}
-    \caption{\texttt{TaitEOS}}
-  \end{subfigure}
-  \caption{Evolution of the energy spectrum for the $k-\epsilon$ SPH scheme for various equations of state $(N=100^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=10)$.}
-  \label{fig:keps-eos-espec}
-\end{figure}
+The results for the $k$ and $\epsilon$ transport equations are shown in \figref{fig:k-spatial-ooc} and \figref{fig:eps-spatial-ooc} respectively. It can be oberseved here, that for the first test-case, the OOC for the spatial operators in the transport equation agree well, irrespective of the variant of discretisation.
+However, in the subsequent test-cases, the $k-\epsilon$ simplified variant, shows a better OOC, than the $k-\epsilon$ expanded variant.
+This can be attributed, to the fact the in the expanded equations of \eqref{eq:Shao2006-k-transport-eq-exp-res-chap} and \eqref{eq:Shao2006-eps-transport-eq-exp-res-chap}, the terms involve either higher-order derivatives or products of derivatives, which are not well approximated by the SPH operators, and hence, lead to increased errors. It appears, that the advantage of dealing with single-term derivatives (e.g, $\nabla k$) in the expanded equations, compared to having multi-term derivatives (e.g, $\nabla \cdot (k^2\nabla k / \epsilon)$) in the simplified equations, is not enough to offset the increased numerical errors due to the higher-order derivatives.
+This is also made more evident, in the actual $k-\epsilon$ fields, as shown in \figref{fig:k-spatial-ooc-field} and \figref{fig:eps-spatial-ooc-field}, respectively.
+Therefore, the $k-\epsilon$ simplified variant, is chosen as the default variant for the $k-\epsilon$ SPH scheme.
 
-
-K-EPS - K-EPS-EXPAND \figref{fig:keps-kexp-expand}
-\begin{figure}[H]
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/expanded/dt_pois_conv_c0_20_re_100.png}
-    \caption{$Re = 100$}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/expanded/dt_pois_conv_c0_20_re_1000.png}
-    \caption{$Re = 1000$}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/expanded/dt_pois_conv_c0_20_re_10000.png}
-    \caption{$Re = 10000$}
-  \end{subfigure}
-  \caption{Convergence of the $k-\epsilon$ SPH scheme for simplified and expanded $k-\epsilon$ transport equations.}
-  \label{fig:keps-kexp-expand}
-\end{figure}
-
-
-K-EPS - K-EPS-EXPAND VMAG \figref{fig:keps-kexp-expand-vmag}
-\begin{figure}[H]
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/expanded/c0_20_tait_pec_dtmul_1_kepx_no_nx_50_pst_100_re_10000_k_eps/final_vmag.png}
-    \caption{Simplified $k-\epsilon$ transport equations}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-	\centering\includegraphics[width=6cm]{Code-Figures/keps/expanded/c0_20_tait_pec_dtmul_1_kepx_yes_nx_50_pst_100_re_10000_k_eps/final_vmag.png}
-	\caption{Expanded $k-\epsilon$ transport equations}
-\end{subfigure}
-  \caption{Velocity magnitude field for the $k-\epsilon$ SPH scheme for simplified and expanded $k-\epsilon$ transport equations $(N=50^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=10)$.}
-  \label{fig:keps-kexp-expand-vmag}
-\end{figure}
-
-
-K-EPS - K-EPS-EXPAND ESPEC \figref{fig:keps-kexp-expand-espec}
-\begin{figure}[H]
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/expanded/c0_20_tait_pec_dtmul_1_kepx_yes_nx_100_pst_100_re_10000_k_eps/energy_spectrum_evolution.png}
-    \caption{Expanded $k-\epsilon$ transport equations}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/expanded/c0_20_tait_pec_dtmul_1_kepx_no_nx_100_pst_100_re_10000_k_eps/energy_spectrum_evolution.png}
-    \caption{Simplified $k-\epsilon$ transport equations}
-  \end{subfigure}
-  \caption{Evolution of the energy spectrum for the $k-\epsilon$ SPH scheme for expanded or simplified $k-\epsilon$ transport equations $(N=100^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=10)$.}
-  \label{fig:keps-kexp-expand-espec}
-\end{figure}
-
-
-K-EPS - PST \figref{fig:keps-pst}
-\begin{figure}[H]
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/dt_pois_conv_c0_20_re_100.png}
-    \caption{$Re = 100$}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/dt_pois_conv_c0_20_re_1000.png}
-    \caption{$Re = 1000$}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/dt_pois_conv_c0_20_re_10000.png}
-    \caption{$Re = 10000$}
-  \end{subfigure}
-  \caption{Convergence of the $k-\epsilon$ SPH scheme for various $f_{pst}$ values.}
-  \label{fig:keps-pst}
-\end{figure}
-
-
-K-EPS - PST VMAG \figref{fig:keps-pst-vmag}
-\begin{figure}[H]
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_-1_re_10000_k_eps/final_vmag.png}
-    \caption{No PST}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_10_re_10000_k_eps/final_vmag.png}
-    \caption{$f_{pst} = 10$}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_50_re_10000_k_eps/final_vmag.png}
-    \caption{$f_{pst} = 50$}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_100_re_10000_k_eps/final_vmag.png}
-    \caption{$f_{pst} = 100$}
-  \end{subfigure}
-  \caption{Velocity magnitude field for the $k-\epsilon$ SPH scheme for various $f_{pst}$ values $(N=50^2, t_f=0.1, Re=10000, c_s=20)$.}
-  \label{fig:keps-pst-vmag}
-\end{figure}
-
-
-K-EPS - PST ESPEC \figref{fig:keps-pst-espec}
-\begin{figure}[H]
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_-1_re_10000_k_eps/energy_spectrum_evolution.png}
-    \caption{No PST}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_10_re_10000_k_eps/energy_spectrum_evolution.png}
-    \caption{$f_{pst} = 10$}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_50_re_10000_k_eps/energy_spectrum_evolution.png}
-    \caption{$f_{pst} = 50$}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_100_re_10000_k_eps/energy_spectrum_evolution.png}
-    \caption{$f_{pst} = 100$}
-  \end{subfigure}
-  \caption{Evolution of the energy spectrum for the $k-\epsilon$ SPH scheme for various $f_{pst}$ values $(N=100^2, t_f=0.1, Re=10000, c_s=20)$.}
-  \label{fig:keps-pst-espec}
-\end{figure}
-
-
-K - SPATIAL OOC \figref{fig:k-spatial-ooc}
 \begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/k_conv_tc_1_re_10000.png}
@@ -946,8 +832,6 @@ K - SPATIAL OOC \figref{fig:k-spatial-ooc}
   \label{fig:k-spatial-ooc}
 \end{figure}
 
-
-EPS - SPATIAL OOC \figref{fig:eps-spatial-ooc}
 \begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/eps_conv_tc_1_re_10000.png}
@@ -965,8 +849,6 @@ EPS - SPATIAL OOC \figref{fig:eps-spatial-ooc}
   \label{fig:eps-spatial-ooc}
 \end{figure}
 
-
-K - SPATIAL OOC FIELD \figref{fig:k-spatial-ooc-field}
 \begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/c0_60_ke_expd_no_ketc_1_nx_150_re_10000/k_rhs.png}
@@ -996,7 +878,6 @@ K - SPATIAL OOC FIELD \figref{fig:k-spatial-ooc-field}
   \label{fig:k-spatial-ooc-field}
 \end{figure}
 
-EPS - SPATIAL OOC FIELD \figref{fig:eps-spatial-ooc-field}
 \begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/c0_60_ke_expd_no_ketc_1_nx_150_re_10000/eps_rhs.png}
@@ -1024,6 +905,119 @@ EPS - SPATIAL OOC FIELD \figref{fig:eps-spatial-ooc-field}
   \end{subfigure}
   \caption{RHS of the $\epsilon$ transport equation for various test-cases $(N=150^2, t_f=1\Delta t, Re=10000, c_s=60)$.}
   \label{fig:eps-spatial-ooc-field}
+\end{figure}
+
+
+In order to study the effects of the various equations of state on the, the convergence study was performed on the $k-\epsilon$ SPH scheme, involving the SPH discretisation of simplified $k-\epsilon$ transport equations, and the \texttt{PEC} time-integrator.
+The results are shown in \figref{fig:keps-eos}, where it can be observed that both the \texttt{LinearEOS} and \texttt{TaitEOS}, appear to offer zeroth-order convergence.
+To gain further insight, \figref{fig:keps-eos-vmag} and \figref{fig:keps-eos-espec} are referred to, where it can be observed that the velocity field computed using the \texttt{TaitEOS} appears to better correspond to the typical TGV profile.
+The energy spectrum is interesting, in the sense that, the \texttt{LinearEOS} appears to redistribute energy from the larger to smaller scales, while the \texttt{TaitEOS} appears to dissipate energy in the system for all scales.
+Although, the former behaviour is more desirable, as it is more representative of the physical system, the actual velocity field plot for the \texttt{LinearEOS} scheme indicates its instability, and hence, the \texttt{TaitEOS} is chosen as the default equation of state for the $k-\epsilon$ SPH scheme.
+
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/dt_pois_conv_c0_20_re_100.png}
+    \caption{$Re = 100$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/dt_pois_conv_c0_20_re_1000.png}
+    \caption{$Re = 1000$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/dt_pois_conv_c0_20_re_10000.png}
+    \caption{$Re = 10000$}
+  \end{subfigure}
+  \caption{Convergence of the $k-\epsilon$ SPH scheme for various equations of state.}
+  \label{fig:keps-eos}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/c0_20_linear_pec_dtmul_1_nx_50_pst_10_re_10000_k_eps/final_vmag.png}
+    \caption{\texttt{LinearEOS}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/c0_20_tait_pec_dtmul_1_nx_50_pst_10_re_10000_k_eps/final_vmag.png}
+    \caption{\texttt{TaitEOS}}
+  \end{subfigure}
+  \caption{Velocity magnitude field for the $k-\epsilon$ SPH scheme for various equations of state $(N=50^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=10)$.}
+  \label{fig:keps-eos-vmag}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/c0_20_linear_pec_dtmul_1_nx_100_pst_10_re_10000_k_eps/energy_spectrum_evolution.png}
+    \caption{\texttt{LinearEOS}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/c0_20_tait_pec_dtmul_1_nx_100_pst_10_re_10000_k_eps/energy_spectrum_evolution.png}
+    \caption{\texttt{TaitEOS}}
+  \end{subfigure}
+  \caption{Evolution of the energy spectrum for the $k-\epsilon$ SPH scheme for various equations of state $(N=100^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=10)$.}
+  \label{fig:keps-eos-espec}
+\end{figure}
+
+A similar study was undertaken to study the effects of $f_{pst}$ on the $k-\epsilon$ SPH scheme. The results are shown in \figref{fig:keps-pst}, where it can again be observed that the scheme appears to offer zeroth-order convergence for all values of $f_{pst}$.
+Looking into the velocity magnitude field, as shown in \figref{fig:keps-pst-vmag}, similar trends are observed, in the that, higher values of $f_{pst}$ or lack of one, leads to clustering of particles, and hence, the velocity field appears jagged.
+No other noticeable differences are observed in the energy spectrum, as shown in \figref{fig:keps-pst-espec}, which seems to indicate the $f_{pst}$ does not seem to have a strong effect on the energy spectrum, at least for short time simulations.
+
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/dt_pois_conv_c0_20_re_100.png}
+    \caption{$Re = 100$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/dt_pois_conv_c0_20_re_1000.png}
+    \caption{$Re = 1000$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/dt_pois_conv_c0_20_re_10000.png}
+    \caption{$Re = 10000$}
+  \end{subfigure}
+  \caption{Convergence of the $k-\epsilon$ SPH scheme for various $f_{pst}$ values.}
+  \label{fig:keps-pst}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_-1_re_10000_k_eps/final_vmag.png}
+    \caption{No PST}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_10_re_10000_k_eps/final_vmag.png}
+    \caption{$f_{pst} = 10$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_50_re_10000_k_eps/final_vmag.png}
+    \caption{$f_{pst} = 50$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_100_re_10000_k_eps/final_vmag.png}
+    \caption{$f_{pst} = 100$}
+  \end{subfigure}
+  \caption{Velocity magnitude field for the $k-\epsilon$ SPH scheme for various $f_{pst}$ values $(N=50^2, t_f=0.1, Re=10000, c_s=20)$.}
+  \label{fig:keps-pst-vmag}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_-1_re_10000_k_eps/energy_spectrum_evolution.png}
+    \caption{No PST}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_10_re_10000_k_eps/energy_spectrum_evolution.png}
+    \caption{$f_{pst} = 10$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_50_re_10000_k_eps/energy_spectrum_evolution.png}
+    \caption{$f_{pst} = 50$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_100_re_10000_k_eps/energy_spectrum_evolution.png}
+    \caption{$f_{pst} = 100$}
+  \end{subfigure}
+  \caption{Evolution of the energy spectrum for the $k-\epsilon$ SPH scheme for various $f_{pst}$ values $(N=100^2, t_f=0.1, Re=10000, c_s=20)$.}
+  \label{fig:keps-pst-espec}
 \end{figure}
 
 
