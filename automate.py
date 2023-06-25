@@ -436,7 +436,6 @@ class TGV2DSchemeComparison(PySPHProblem):
         # Unpack simulation opts
         sim_opts = self.sim_opts
         res = get_all_unique_values(sim_opts, 're')
-        schemes = get_all_unique_values(sim_opts, 'scheme')
         nxs = get_all_unique_values(sim_opts, 'nx')
 
         # Make plots
@@ -557,7 +556,7 @@ class TGV2DSchemeComparison(PySPHProblem):
         plt.savefig(self.output_path(fname), dpi=300, bbox_inches='tight')
         plt.close()
         
-class TGV2DExtForceSchemeComparison(PySPHProblem):
+class TGV2DExtForceSchemeComparison(TGV2DSchemeComparison):
     def get_name(self):
         """
         Problem name.
@@ -568,45 +567,54 @@ class TGV2DExtForceSchemeComparison(PySPHProblem):
         """
         Setup the problem.
         """
-        base_cmd = "python code/taylor_green.py --ext-forcing " + BACKEND
-    
-        # scheme_opts = mdict(scheme=['edac'])
-        # scheme_opts += mdict(
-        #     scheme=['tsph'], method=['no_sd'], scm=['edac'], pst_freq=[10],
-        # )
-        # scheme_opts += mdict(scheme=['mon2017'])
+        base_cmd = "python code/taylor_green.py --ext-forcing=prestep " + BACKEND
         scheme_opts = mdict(
             scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10],
-            n_o_files=[50]
+            eos=['tait'],
+            integrator=['pec'], integrator_dt_mul_fac=[1]
         )
-        integrator_opts = mdict(
-            integrator=['pec'], integrator_dt_mul_fac=[1],
+        # scheme_opts += mdict(
+        #     scheme=['ok2022'], pst_freq=[10], eos=['tait'],
+        #     turb_visc=['SMAG', 'SMAG_MCG', 'SIGMA'],
+        #     integrator=['pec'], integrator_dt_mul_fac=[1],
+        # )
+        scheme_opts += mdict(
+            scheme=['deltales'], pst_freq=[10], eos=['tait'],
+            integrator=['rk2'], integrator_dt_mul_fac=[1.5]
         )
-        integrator_opts += mdict(
-            integrator=['rk3'], integrator_dt_mul_fac=[3],
+        scheme_opts += mdict(
+            scheme=['k_eps'], pst_freq=[10], eos=['tait'],
+            k_eps_expand=['no'],
+            integrator=['pec'], integrator_dt_mul_fac=[1]
         )
-        integrator_opts += mdict(
-            integrator=['rk4'], integrator_dt_mul_fac=[4],
+        scheme_opts += mdict(
+            scheme=['mon2017'], pst_freq=[20], eos=['tait'],
+            mon2017_eps=[0.5],
+            mon_kernel_corr=['yes'],
+            integrator=['pec'], integrator_dt_mul_fac=[1]
         )
+
+
         res_opts = mdict(
-            re=[10_000, 100_000, 1_000_000],
-            nx=[200], tf=[6.], c0_fac=[80]
+            re=[10_000, 100_000, 1_000_000], 
+            tf=[3], n_o_files=[50], nx=[100],
+            c0_fac=[20], hdx=[2],
+            max_steps=[5]
         )
 
         self.sim_opts = sim_opts = dprod(
             scheme_opts,
-            dprod(integrator_opts, res_opts)
+            res_opts
         )
 
         self.case_info = {}
         for i in range(len(sim_opts)):
             sim_name = opts2path(
                 sim_opts[i],
-                keys=[
-                    'scheme', 'integrator', 'integrator_dt_mul_fac', 're',
-                    'c0_fac', 'nx', 'tf'
-                ],
-                kmap=dict(integrator_dt_mul_fac='dtmul', c0_fac='c0')
+                kmap=dict(
+                    integrator_dt_mul_fac='dtmul', c0_fac='c0',
+                    pst_freq='pst'
+                )
             )
             self.case_info[sim_name] = sim_opts[i]
 
@@ -615,7 +623,7 @@ class TGV2DExtForceSchemeComparison(PySPHProblem):
             Simulation(
                 root=self.input_path(name),
                 base_command=base_cmd,
-                job_info=dict(n_core=4, n_thread=8),
+                job_info=dict(n_core=1, n_thread=1),
                 **kw
             ) for name, kw in self.case_info.items()
         ]
@@ -629,6 +637,82 @@ class TGV2DExtForceSchemeComparison(PySPHProblem):
         Run the problem.
         """
         self.make_output_dir()
+
+        # Unpack simulation opts
+        sim_opts = self.sim_opts
+        res = get_all_unique_values(sim_opts, 're')
+        nxs = get_all_unique_values(sim_opts, 'nx')
+
+        # Make plots
+        KIND_CHOICES = ['ke', 'lm', 'am']
+
+        for k in KIND_CHOICES:
+            for re in res:
+                for nx in nxs:
+                    fcases = filter_cases(self.cases, re=re, nx=nx)
+                    if len(fcases)  == 0:
+                        continue
+                    fname = f"{k}_re_{re}_nx_{nx}.png"
+                    t_suf = fr" ($Re = {re}, N={nx}^2$)"
+                    self.plot_sim_prop_history(
+                        cases=fcases, re=int(re), kind=k, fname=fname,
+                        title_suffix=t_suf
+                    )
+
+    def plot_sim_prop_history(
+        self, cases, re, kind, fname, title_suffix='',
+        ylims=None,
+    ):
+        """
+        Plot the simulation property history.
+        """
+        kind_title_dict = dict(
+            ke='Kinetic energy',
+            lm='Linear momentum',
+            am='Angular momentum'
+        )
+
+        plot_exact = False
+        if kind == 'ke':
+            from code.automate_utils import get_colagrossi2021_fig1_ke
+            # Get the expected simulation property history
+            t_exp, prop_exp = get_colagrossi2021_fig1_ke(re=re)
+            plot_exact = True
+
+        # Set plotter method
+        plt_method = plt.plot
+        
+        sim_t_max = 0
+        plt.figure()
+        for case in cases:
+            t, prop = self.get_sim_prop_history(case, kind)
+            _s = case.render_parameter('scheme').split('=')[-1]
+            _i = case.render_parameter('integrator').split('=')[-1]
+            label = get_label_from_scheme(_s) + f" ({_i})"
+            plt_method(t, prop, label=label)
+
+            sim_t_max = max(sim_t_max, t[-1])
+
+        # Plot the simulation property history
+        if plot_exact:
+            idx = 0
+            for _t in t_exp:
+                if _t > sim_t_max:
+                    break
+                idx += 1
+            t_exp, prop_exp = t_exp[:idx], prop_exp[:idx]
+            plt_method(t_exp, prop_exp, 'k--', label='exact')
+
+        if ylims is not None:
+            plt.ylim(ylims)
+
+        plt.xlabel('t')
+        plt.title(f"{kind_title_dict[kind]} {title_suffix}")
+        plt.legend()
+        plt.grid()
+        plt.savefig(self.output_path(fname), dpi=300, bbox_inches='tight')
+        plt.close()
+                    
 
 class TB3DExtForceSchemeComparison(PySPHProblem):
     def get_name(self):
