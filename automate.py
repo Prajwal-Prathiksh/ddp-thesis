@@ -368,11 +368,11 @@ class TGV2DSchemeComparison(PySPHProblem):
             eos=['tait'],
             integrator=['pec'], integrator_dt_mul_fac=[1]
         )
-        scheme_opts += mdict(
-            scheme=['ok2022'], pst_freq=[10], eos=['tait'],
-            turb_visc=['SMAG'],
-            integrator=['pec'], integrator_dt_mul_fac=[1],
-        )
+        # scheme_opts += mdict(
+        #     scheme=['ok2022'], pst_freq=[10], eos=['tait'],
+        #     turb_visc=['SMAG', 'SMAG_MCG', 'SIGMA'],
+        #     integrator=['pec'], integrator_dt_mul_fac=[1],
+        # )
         scheme_opts += mdict(
             scheme=['deltales'], pst_freq=[10], eos=['tait'],
             integrator=['rk2'], integrator_dt_mul_fac=[1.5]
@@ -441,6 +441,16 @@ class TGV2DSchemeComparison(PySPHProblem):
 
         # Make plots
         KIND_CHOICES = ['ke', 'decay', 'linf', 'l1', 'p_l1', 'lm', 'am']
+        
+        Y_LIM_DICT = dict(
+            ke=(2.4e-1, 2.52e-1),
+            decay=(9.8e-1, 1.01),
+            linf=(0, 0.005),
+            l1=(0, 0.008),
+            p_l1=(0, 0.45),
+            lm=(-1e-3, 1e-3),
+            am=(-1e-3, 1e-3)
+        )
 
         for k in KIND_CHOICES:
             for re in res:
@@ -454,6 +464,16 @@ class TGV2DSchemeComparison(PySPHProblem):
                         cases=fcases, kind=k, fname=fname,
                         title_suffix=t_suf
                     )
+
+                    if k in Y_LIM_DICT:
+                        _y_l = Y_LIM_DICT[k]
+                        fname = f"{k}_re_{re}_nx_{nx}_limit.png"
+                        self.plot_sim_prop_history(
+                            cases=fcases, kind=k, fname=fname,
+                            title_suffix=t_suf,
+                            ylims=_y_l
+                        )
+
     
     def get_sim_prop_history(self, case, kind):
         """
@@ -486,7 +506,10 @@ class TGV2DSchemeComparison(PySPHProblem):
         # Return the expected property history
         return t[idx], prop[idx]
     
-    def plot_sim_prop_history(self, cases, kind, fname, title_suffix=''):
+    def plot_sim_prop_history(
+        self, cases, kind, fname, title_suffix='',
+        ylims=None,
+    ):
         """
         Plot the simulation property history.
         """
@@ -523,9 +546,11 @@ class TGV2DSchemeComparison(PySPHProblem):
             _i = case.render_parameter('integrator').split('=')[-1]
             label = get_label_from_scheme(_s) + f" ({_i})"
             plt_method(t, prop, label=label)
-        
+
+        if ylims is not None:
+            plt.ylim(ylims)
+
         plt.xlabel('t')
-        # plt.ylabel(kind)
         plt.title(f"{kind_title_dict[kind]} {title_suffix}")
         plt.legend()
         plt.grid()
