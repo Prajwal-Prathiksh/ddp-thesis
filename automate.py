@@ -809,9 +809,9 @@ class TGV2DIntegratorComparison(PySPHProblem):
         #     # turb_visc=['SMAG', 'SMAG_MCG', 'SIGMA']
         # )
 
-        # scheme_opts = mdict(
-        #     scheme=['deltales'], pst_freq=[100], eos=['tait']
-        # )
+        scheme_opts = mdict(
+            scheme=['deltales'], pst_freq=[10], eos=['tait']
+        )
         # scheme_opts = mdict(
         #     scheme=['deltales_sd'], pst_freq=[100], eos=['linear']
         # )
@@ -819,20 +819,20 @@ class TGV2DIntegratorComparison(PySPHProblem):
         #     scheme=['k_eps'], pst_freq=[100], eos=['tait'],
         #     # k_eps_expand=['no', 'yes']
         # )
-        scheme_opts = mdict(
-            scheme=['mon2017'], pst_freq=[-1, 10, 50, 100], eos=['tait',],
-            # mon2017_eps=[0.25, 0.5, 0.75, 1.]
-            # mon_kernel_corr=['no', 'yes']
-        )
+        # scheme_opts = mdict(
+        #     scheme=['mon2017'], pst_freq=[-1, 10, 50, 100], eos=['tait',],
+        #     # mon2017_eps=[0.25, 0.5, 0.75, 1.]
+        #     # mon_kernel_corr=['no', 'yes']
+        # )
 
         integrator_opts = mdict(
             integrator=['pec'], integrator_dt_mul_fac=[1]
         )
-        # integrator_opts += mdict(
-        #     integrator=['rk2'], integrator_dt_mul_fac=[1.5],
-        #     # NOTE: dt_mul cannot be 1 for rk2. This has been hardcoded for
-        #     # now. Refer below for more details.
-        # )
+        integrator_opts += mdict(
+            integrator=['rk2'], integrator_dt_mul_fac=[1.5],
+            # NOTE: dt_mul cannot be 1 for rk2. This has been hardcoded for
+            # now. Refer below for more details.
+        )
         # integrator_opts += mdict(
         #     integrator=['rk2'], integrator_dt_mul_fac=[1]
         #     adaptive_timestep=[None]
@@ -842,9 +842,9 @@ class TGV2DIntegratorComparison(PySPHProblem):
         # integrator_opts += mdict(
         #     integrator=['rk3'], integrator_dt_mul_fac=[2]
         # )
-        # integrator_opts += mdict(
-        #     integrator=['rk4'], integrator_dt_mul_fac=[2]
-        # )
+        integrator_opts += mdict(
+            integrator=['rk4'], integrator_dt_mul_fac=[2]
+        )
 
         res_opts = mdict(
             nx=[25, 50, 100], c0_fac=[20], re=[100, 1000, 10_000],
@@ -909,18 +909,18 @@ class TGV2DIntegratorComparison(PySPHProblem):
         #             continue
         #         self._plot_convergence_c0(intg=intg, re=re)
         
-        # for re in self.re_s:
-        #     for c0 in self.c0s:
-        #         for scheme in self.schemes:
-        #             for pst in self.pst_freqs:
-        #                 self._plot_rt_speedup(
-        #                     re=re, c0=c0, pst=pst, largest_dtmf_only=False,
-        #                     scheme=scheme
-        #                 )
-        #                 # self._plot_rt_speedup(
-        #                 #     re=re, c0=c0, pst=pst, largest_dtmf_only=True,
-        #                 #     scheme=scheme
-        #                 # )
+        for re in self.re_s:
+            for c0 in self.c0s:
+                for scheme in self.schemes:
+                    for pst in self.pst_freqs:
+                        self._plot_rt_speedup(
+                            re=re, c0=c0, pst=pst, largest_dtmf_only=False,
+                            scheme=scheme
+                        )
+                        # self._plot_rt_speedup(
+                        #     re=re, c0=c0, pst=pst, largest_dtmf_only=True,
+                        #     scheme=scheme
+                        # )
 
     def calculate_l1(self, cases):
         data = {}
@@ -1019,7 +1019,6 @@ class TGV2DIntegratorComparison(PySPHProblem):
                                 # k_eps_expand=kep
                                 # turb_visc=tvc
                             )
-                            print(len(cases))
                             if len(cases) < 1:
                                 continue
                             dts, l1 = self.calculate_l1(cases)
