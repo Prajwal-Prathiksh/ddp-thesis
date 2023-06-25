@@ -135,8 +135,13 @@ class Monaghan2017Scheme(Scheme):
     
     def consume_user_options(self, options):
         vars = ['eps', 'pst_freq', 'eos', 'kernel_corr']
+        
         data = dict((var, self._smart_getattr(options, var))
                     for var in vars)
+
+        _bool = lambda x: True if x == 'yes' else False
+        data['kernel_corr'] = _bool(data['kernel_corr'])
+
         self.configure(**data)
 
     def get_timestep(self, cfl=0.5):
