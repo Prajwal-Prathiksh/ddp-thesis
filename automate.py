@@ -383,9 +383,9 @@ class TGV2DSchemeComparison(PySPHProblem):
             integrator=['pec'], integrator_dt_mul_fac=[1]
         )
         scheme_opts += mdict(
-            scheme=['mon2017'], pst_freq=[20], eos=['tait'],
+            scheme=['mon2017'], pst_freq=[10], eos=['tait'],
             mon2017_eps=[0.5],
-            mon_kernel_corr=['yes'],
+            mon_kernel_corr=['no'],
             integrator=['pec'], integrator_dt_mul_fac=[1]
         )
 
@@ -588,15 +588,15 @@ class TGV2DExtForceSchemeComparison(TGV2DSchemeComparison):
             integrator=['pec'], integrator_dt_mul_fac=[1]
         )
         scheme_opts += mdict(
-            scheme=['mon2017'], pst_freq=[20], eos=['tait'],
+            scheme=['mon2017'], pst_freq=[10], eos=['tait'],
             mon2017_eps=[0.5],
-            mon_kernel_corr=['yes'],
+            mon_kernel_corr=['no'],
             integrator=['pec'], integrator_dt_mul_fac=[1]
         )
 
 
         res_opts = mdict(
-            re=[10_000, 100_000, 1_000_000], 
+            re=[10_000],#, 100_000, 1_000_000], 
             tf=[3], n_o_files=[50], nx=[100],
             c0_fac=[20], hdx=[2],
             max_steps=[5]
