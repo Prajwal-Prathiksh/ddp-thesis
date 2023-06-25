@@ -389,7 +389,7 @@ The L-IPST-C scheme was considered over the other viscosity-based schemes, since
 The scheme also incorporates the iterative particle shifting technique (IPST) by \cite{Huang_Long_Li_Liu_2019}, in order to redistribute the particles to obtain a reasonably uniform grid of particles in the domain. Besides shifting the position of the particles, the scheme also updates particles' properties such as the density and velocity to keep the approximation of the particle $O(h^2)$.
 Based on the parametric study conducted by \cite{Negi2022Techniques}, the proposed scheme is observed to be SOC, by considering the the speed of sound to be $c_s = 20$, and the shifting frequency for the particles through PST to be at every 10 iterations $f_{pst} = 10$.
 
-Since, the study dealt with problems of low $Re$, the scheme was tested for various time-integration schemes from the Runge-Kutta family of integrators, in order to identify their effects, and to subsequently identify the most suitable integrator for problems of high $Re$.
+Since, the study dealt with problems of low $Re$, the scheme was tested for various time-integrators from the Runge-Kutta family of integrators, in order to identify their effects, and to subsequently identify the most suitable integrator for problems of high $Re$.
 The integrators considered were:
 \begin{itemize}
   \item Predict-Evaluate-Correct (\texttt{PEC}),
@@ -413,12 +413,12 @@ with a corresponding $CFL$ values of $[1, 1, 1.5, 2, 2]$ respectively.
     \centering\includegraphics[width=6cm]{Code-Figures/lipstc/integrator/dt_pois_conv_c0_20_re_10000.png}
     \caption{$Re = 10000$}
   \end{subfigure}
-  \caption{Convergence of the L-IPST-C scheme for various time-integration schemes.}
+  \caption{Convergence of the L-IPST-C scheme for various time-integrators.}
   \label{fig:lipstc-integrator}
 \end{figure}
 
 From the results shown in \figref{fig:lipstc-integrator}, it is evident that the order of the integrator does not appear to have much effect on the OOC, and almost negligible effect on the actual magnitude of the $L_1$ errors as well.
-This seems to highlight a much more important aspect of the effect and role of time-integration schemes in SPH in general, which is that the time-step size is the most important factor, and the order of the integrator is not as important, since the time-step size is typically chosen to be small enough to ensure stability, and hence, the error introduced by the time-integration scheme is typically negligible.
+This seems to highlight a much more important aspect of the effect and role of time-integrators in SPH in general, which is that the time-step size is the most important factor, and the order of the integrator is not as important, since the time-step size is typically chosen to be small enough to ensure stability, and hence, the error introduced by the time-integrator is typically negligible.
 
 Also, when the run-times of these integrators were analysed, the higher order integrators are observed to be more computationally expensive, allowing for the \texttt{PEC} integrator to be around $\approx 1.6\times$ faster, which is reflected in the run-times shown in \figref{fig:lipstc-integrator-rt}.
 Typically such higher order integrators can be used with much larger $CFL$ values, allowing for larger time-steps and consequently faster run-times. However, in the case of SPH, such generalisations cannot be made, since the stability of the scheme is not only dependent on the time-step size, but also on the particle spacing, and hence, the $CFL$ value is typically chosen to be close to $1.0-2.0$.
@@ -437,7 +437,7 @@ Therefore, the \texttt{PEC} integrator is chosen as the default integrator for t
     \centering\includegraphics[width=6cm]{Code-Figures/lipstc/integrator/pois_rt_pst_10_c0_20_re_10000.png}
     \caption{$Re = 10000$}
   \end{subfigure}
-  \caption{Run-time (in $s$) of the L-IPST-C scheme for various time-integration schemes.}
+  \caption{Run-time (in $s$) of the L-IPST-C scheme for various time-integrators.}
   \label{fig:lipstc-integrator-rt}
 \end{figure}
 
@@ -566,16 +566,29 @@ Therefore, a value of $c_s = 20$ is chosen as the default value for the speed of
   \label{fig:okra2022-c0-espec}
 \end{figure}
 
-Hence, it can be concluded that the SPH-LES scheme is not suitable for problems of low $Re$, due to firstly the lack of dissipation of energy, and secondly, it being zero order-convergent. For the cases of high $Re$, the scheme again would require a lot more testing for each specific problem, before it the flow field can be considered to be accurate. This is refected in the velocity magnitude plots show in \figref{fig:okra2022-pst-vmag} and \figref{fig:okra2022-c0-vmag}, where the flow field at the final time instance, is not the expected Taylor-Green profile, and instead distorted vortex structures are observed.
+Hence, it can be concluded that the SPH-LES scheme is not suitable for problems of low $Re$, due to firstly the lack of dissipation of energy, and secondly, it being zero order-convergent. For the cases of high $Re$, the scheme again would require a lot more testing for each specific problem, before it the flow field can be considered to be accurate. This is reflected in the velocity magnitude plots show in \figref{fig:okra2022-pst-vmag} and \figref{fig:okra2022-c0-vmag}, where the flow field at the final time instance, is not the expected Taylor-Green profile, and instead distorted vortex structures are observed.
 
 
 \subsection[delta-LES-SPH Scheme]{$\delta$-LES-SPH Scheme}
 The Lagrangian LES-based models, have only two major schemes to offer. One being the LES-SPH scheme of \cite{DiMascio2017} and the other being the $\delta$-LES-SPH scheme of \cite{Colagrossi2021QuasiLagrangian}.
-The latter was chosen, since their scheme introduced a small arbitrary velocity deviation $(\TildeDeltaV)$ to the fluid particles, which allowed for improved accuracy in simulations of high Reynolds number problems. This scheme, also included the use of PST and tensile instability control (TIC). All of this allowed the scheme to tackle without facing the issue of spurious high-frequency noise and the onset of the tensile instability, and hence was chosen.
+The latter was chosen, since their scheme introduced a small arbitrary velocity deviation $(\TildeDeltaV)$ to the fluid particles, which allowed for improved accuracy in simulations of high Reynolds number problems. This scheme, also included the use of PST and tensile instability control (TIC). All of this allowed the scheme to tackle the issue of spurious high-frequency noise and the onset of the tensile instability, and was hence chosen.
 
-The $k-\epsilon$ SPH scheme of \cite{Shao2006} was chosen over the other RANS-based schemes, since it was straightforward in terms of the governing equations involved.
+During the implementation of the scheme, two choices were made with regards to the treatment of the fluid density. The first choice was to note that the fluid density $\rho_c$ is independent of the summation density $\rho$, and in the second choice both were treated as the same. This was done based on the work of \cite{Negi2022Techniques}, where they observed that the former choice led to improved OOC, since the $\rho_c$ should not depend on the particle configuration and should be prescribed with an initial condition. Therefore, these two variants, i.e, $\delta$-LES-SPH $(\rho_c)$ and $\delta$-LES-SPH $(\rho)$, corresponding to the two choices respectively, were considered.
 
-Delta LES SPH RHO - EOS \figref{fig:deltales_sd-eos}
+In order to test the influence of the equation of state type on the scheme, the following equations of state were considered:
+\begin{itemize}
+  \item \texttt{TaitEOS}:
+  \begin{equation}
+    P_i = P_0 + \frac{\rho_0 c_0^2}{\gamma} \bigg( \Big( \frac{\rho_i}{\rho_0} \Big)^{\gamma} - 1 \bigg),
+  \end{equation}
+
+  \item \texttt{LinearEOS}:
+  \begin{equation}
+    P_i = c_0^2 (\rho_i - \rho_0).
+  \end{equation}
+\end{itemize}
+The results shown in \figref{fig:deltales_sd-eos} and \figref{fig:deltales-eos}, highlight clearly that the $\delta$-LES-SPH $(\rho_c)$ implementation with the \texttt{TaitEOS}, clearly offers the best OOC, and hence, is chosen as the default implementation for the $\delta$-LES-SPH scheme.
+
 \begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/deltales_sd/eos/dt_pois_conv_c0_20_re_100.png}
@@ -593,8 +606,6 @@ Delta LES SPH RHO - EOS \figref{fig:deltales_sd-eos}
   \label{fig:deltales_sd-eos}
 \end{figure}
 
-
-Delta LES SPH RHOC - EOS \figref{fig:deltales-eos}
 \begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/deltales/eos/dt_pois_conv_c0_20_re_100.png}
@@ -612,8 +623,13 @@ Delta LES SPH RHOC - EOS \figref{fig:deltales-eos}
   \label{fig:deltales-eos}
 \end{figure}
 
+Subsequently, in order to test for the effects of the PST on the scheme, multiple values of $f_{pst}$ were considered, and the results are shown in \figref{fig:deltales-pst}.
+The trends are hard to decipher here, since the magnitude of the error itself is lower for high values of $f_{pst}$ or even without PST; while the OOC is better for lower values of $f_{pst}$.
+Therefore, in order to better analyse these results, the velocity magnitude field and the energy spectrum are plotted in \figref{fig:deltales-pst-vmag} and \figref{fig:deltales-pst-espec} respectively.
+Here, it can be observed from the velocity magnitude plot, that PST is absolutely necessary, particularly with a low $f_{pst}$ value, since without PST, the particles become clustered, and the flow field no longer represents the expected Taylor-Green vortex profile.
+In the energy spectrum plot, it can be observed that the energy distribution at the final time instanc, has barely changed, indicating that the scheme appears to be conservative w.r.t energy, with or without PST. Therefore, long-time studies would be required to ascertain the effects of PST on the evolution of the energy spectrum.
+Hence, for subsequent studies, a value of $f_{pst} = 10$ is chosen as the default value for the PST.
 
-Delta LES SPH RHOC - PST \figref{fig:deltales-pst}
 \begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/deltales/pst/dt_pois_conv_c0_20_re_100.png}
@@ -631,8 +647,6 @@ Delta LES SPH RHOC - PST \figref{fig:deltales-pst}
   \label{fig:deltales-pst}
 \end{figure}
 
-
-Delta LES SPH RHOC - PST VMAG \figref{fig:deltales-pst-vmag}
 \begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/deltales/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_-1_re_10000_deltales/final_vmag.png}
@@ -654,8 +668,6 @@ Delta LES SPH RHOC - PST VMAG \figref{fig:deltales-pst-vmag}
   \label{fig:deltales-pst-vmag}
 \end{figure}
 
-
-Delta LES SPH RHOC - PST ESPEC \figref{fig:deltales-pst-espec}
 \begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/deltales/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_-1_re_10000_deltales/energy_spectrum_evolution.png}
@@ -677,8 +689,9 @@ Delta LES SPH RHOC - PST ESPEC \figref{fig:deltales-pst-espec}
   \label{fig:deltales-pst-espec}
 \end{figure}
 
+The original scheme of \cite{Colagrossi2021QuasiLagrangian} used a \texttt{RK4} time-integrator, with a $CFL=1.5$. Therefore, to study the effects of the time-integrator, the following schemes were considered: \texttt{PEC}, \texttt{RK2} and \texttt{RK4}, with an appropriate $CFL$ value for each scheme. The results are shown in \figref{fig:deltales-integrator}, where it can be observed that the \texttt{RK2} scheme offers the best OOC, and hence, is chosen as the default time-integrator for the $\delta$-LES-SPH scheme. It is also to be noted that, the \texttt{RK2} integrator is also the fastest, as shown in \figref{fig:deltales-integrator-rt}, while offering a speed-up of $\approx 1.6$ times over the \texttt{RK4} integrator.
+It is also noted, that there is no significant differences to be observed in the velocity magnitude field and the energy spectrum, as shown in \figref{fig:deltales-integrator-vmag} and \figref{fig:deltales-integrator-espec} respectively, for the different time-integrators.
 
-Delta LES SPH RHOC - INTEGRATOR \figref{fig:deltales-integrator}
 \begin{figure}[H]
   \begin{subfigure}{7cm}
     \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/dt_pois_conv_c0_20_re_100.png}
@@ -692,45 +705,58 @@ Delta LES SPH RHOC - INTEGRATOR \figref{fig:deltales-integrator}
     \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/dt_pois_conv_c0_20_re_10000.png}
     \caption{$Re = 10000$}
   \end{subfigure}
-  \caption{Convergence of the $\delta$-LES-SPH $(\rho_c)$ scheme for various time-integration schemes.}
+  \caption{Convergence of the $\delta$-LES-SPH $(\rho_c)$ scheme for various time-integrators.}
   \label{fig:deltales-integrator}
 \end{figure}
 
-
-Delta LES SPH RHOC - INTEGRATOR VMAG \figref{fig:deltales-integrator-vmag}
 \begin{figure}[H]
   \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_pec_dtmul_1_nx_50_pst_100_re_10000_deltales/final_vmag.png}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/pois_rt_pst_10_c0_20_re_100.png}
+    \caption{$Re = 100$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/pois_rt_pst_10_c0_20_re_1000.png}
+    \caption{$Re = 1000$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/pois_rt_pst_10_c0_20_re_10000.png}
+    \caption{$Re = 10000$}
+  \end{subfigure}
+  \caption{Run-time (in $s$) of the $\delta$-LES-SPH $(\rho_c)$ scheme for various time-integrators.}
+  \label{fig:deltales-integrator-rt}
+\end{figure}
+
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_pec_dtmul_1_nx_50_pst_10_re_10000_deltales/final_vmag.png}
     \caption{\texttt{PEC}}
   \end{subfigure}
   \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_rk2_dtmul_1.5_nx_50_pst_100_re_10000_deltales/final_vmag.png}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_rk2_dtmul_1.5_nx_50_pst_10_re_10000_deltales/final_vmag.png}
     \caption{\texttt{RK2}}
   \end{subfigure}
   \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_rk4_dtmul_2_nx_50_pst_100_re_10000_deltales/final_vmag.png}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_rk4_dtmul_2_nx_50_pst_10_re_10000_deltales/final_vmag.png}
     \caption{\texttt{RK4}}
   \end{subfigure}
-  \caption{Velocity magnitude field for the $\delta$-LES-SPH $(\rho_c)$ scheme for various time-integration schemes $(N=50^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=100)$.}
+  \caption{Velocity magnitude field for the $\delta$-LES-SPH $(\rho_c)$ scheme for various time-integrators $(N=50^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=10)$.}
   \label{fig:deltales-integrator-vmag}
 \end{figure}
 
-
-Delta LES SPH RHOC - INTEGRATOR ESPEC \figref{fig:deltales-integrator-espec}
 \begin{figure}[H]
   \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_pec_dtmul_1_nx_100_pst_100_re_10000_deltales/energy_spectrum_evolution.png}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_pec_dtmul_1_nx_100_pst_10_re_10000_deltales/energy_spectrum_evolution.png}
     \caption{\texttt{PEC}}
   \end{subfigure}
   \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_rk2_dtmul_1.5_nx_100_pst_100_re_10000_deltales/energy_spectrum_evolution.png}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_rk2_dtmul_1.5_nx_100_pst_10_re_10000_deltales/energy_spectrum_evolution.png}
     \caption{\texttt{RK2}}
   \end{subfigure}
   \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_rk4_dtmul_2_nx_100_pst_100_re_10000_deltales/energy_spectrum_evolution.png}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_rk4_dtmul_2_nx_100_pst_10_re_10000_deltales/energy_spectrum_evolution.png}
     \caption{\texttt{RK4}}
   \end{subfigure}
-  \caption{Evolution of the energy spectrum for the $\delta$-LES-SPH $(\rho_c)$ scheme for various time-integration schemes $(N=100^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=100)$.}
+  \caption{Evolution of the energy spectrum for the $\delta$-LES-SPH $(\rho_c)$ scheme for various time-integrators $(N=100^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=10)$.}
   \label{fig:deltales-integrator-espec}
 \end{figure}
 
