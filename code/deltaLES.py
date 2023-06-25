@@ -77,6 +77,8 @@ class CalculateShiftVelocity(Equation):
         self.fac = prob_l*Ma*c0
         self.Umax = Umax
 
+        self.EPS = 1e-14
+
         super().__init__(dest, sources)
     
     def initialize(self, d_idx, d_du, d_dv, d_dw):
@@ -88,14 +90,14 @@ class CalculateShiftVelocity(Equation):
         self, d_idx, s_idx,
         d_h, d_du, d_dv, d_dw,
         s_m, s_rho,
-        DWIJ, WIJ, SPH_KERNEL
+        DWIJ, WIJ, SPH_KERNEL, EPS
     ):
         hi = d_h[d_idx]
         dx = hi / self.hdx
         wdx = SPH_KERNEL.kernel([0, 0, 0], dx, d_h[d_idx])
-        Vj = s_m[s_idx] / s_rho[s_idx]
+        Vj = s_m[s_idx] / (s_rho[s_idx] + EPS)
         
-        tmp = (WIJ / wdx)**self.shiftvel_exp
+        tmp = (WIJ / (wdx + EPS))**self.shiftvel_exp
         fac = 1. + self.xhi * tmp
         
         d_du[d_idx] += fac * Vj * DWIJ[0]
@@ -110,7 +112,7 @@ class CalculateShiftVelocity(Equation):
         du, dv, dw = d_du[d_idx], d_dv[d_idx], d_dw[d_idx]
         dvmag = (du**2 + dv**2 + dw**2)**0.5
         
-        fac = min(dvmag, self.Umax*0.5)/dvmag
+        fac = min(dvmag, self.Umax*0.5)/(dvmag + self.EPS)
 
         d_du[d_idx] = fac * du
         d_dv[d_idx] = fac * dv
@@ -131,10 +133,10 @@ class VelocityGradient(Equation):
         for i in range(9):
             d_gradv[9*d_idx+i] = 0.0
 
-    def loop(self, d_idx, s_idx, d_gradv, s_m, s_rho, DWIJ, VIJ):
+    def loop(self, d_idx, s_idx, d_gradv, s_m, s_rho, DWIJ, VIJ, EPS):
 
         i, j = declare('int', 2)
-        tmp = s_m[s_idx]/s_rho[s_idx]
+        tmp = s_m[s_idx]/(s_rho[s_idx] + EPS)
         for i in range(3):
             for j in range(3):
                 d_gradv[9*d_idx+3*i+j] += tmp * -VIJ[i] * DWIJ[j]
@@ -166,8 +168,8 @@ class CalculatePressureGradient(Equation):
         for i in range(3):
             d_gradp[didx3 + i] = 0.0
     
-    def loop(self, d_idx, s_idx, d_rhoc, d_gradp, s_m, s_rho, DWIJ):
-        Vj = s_m[s_idx] / s_rho[s_idx]
+    def loop(self, d_idx, s_idx, d_rhoc, d_gradp, s_m, s_rho, DWIJ, EPS):
+        Vj = s_m[s_idx] / (s_rho[s_idx] + EPS)
         fac = Vj * (s_rho[s_idx] - d_rhoc[d_idx])
 
         i = declare('int')
