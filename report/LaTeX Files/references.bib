@@ -1,5 +1,4 @@
 @article{Monaghan1992,
-abstract = {Smoothed particle hydrodynamics (SPH) was invented to simulate nonaxisymmetric phenomena in astrophysics (Lucy 1977, Gingold {\&} Monaghan 1977). We wanted a method that was easy to work with and could give reasonable accuracy. The SPH method satisfied these require- ments. As a bonus we found the SPH was rugged, gave sensible answers in difficult situations, and could be extended to complicated physics with- out much trouble. The SPH method is a particle method. Unlike the particle in cell method (PIC) (Harlow 1957, 1974, 1988), SPH does not need a grid to calculate spatial derivatives. Instead, they are found by analytical differentiation of interpolation formulae. The equations of momentum and energy become sets of ordinary differential equations which are easy to understand in mechanical and thermodynamical terms. For example, the pressure gradi- ent becomes a force between pairs of particles. The astrophysicist can then use intuition in a way which is difficult with the original partial differential equations. This intuition, coupled with detailed analysis, has allowed SPH to be extended to a wide variety of astrophysical problems. Although very accurate finite-difference methods exist-and these are better than SPH for some problems-they cannot handle complex physics in three dimensions with the same ease. Various aspects of SPH have been reviewed by Monaghan (1985, 1988a) and Benz (1988, 1989).},
 author = {Monaghan, J. J.},
 doi = {10.1146/annurev.aa.30.090192.002551},
 issn = {00664146},
@@ -9,7 +8,6 @@ month = {9},
 number = {1},
 pages = {543--574},
 title = {{Smoothed particle hydrodynamics}},
-url = {http://adsabs.harvard.edu/full/1992ARA{\&}A..30..543M http://www.annualreviews.org/doi/10.1146/annurev.aa.30.090192.002551},
 volume = {30},
 year = {1992}
 }
@@ -37,7 +35,6 @@ year = {1992}
    publisher = {WORLD SCIENTIFIC},
    title = {Two Attempts Of Turbulence Modelling In Smoothed Particle Hydrodynamics},
    volume = {1},
-   url = {http://guest.cnki.net/grid2008/brief/detailj.aspx?filename=DZDQ200901001251\&dbname=CPFD2010 http://www.worldscientific.com/doi/abs/10.1142/9789812777591_0041},
    year = {2002},
 }
 @article{Gotoh2004,
@@ -81,7 +78,6 @@ year = {1992}
    year = {2006},
 }
 @article{Kitsionas2009,
-   abstract = {Context. Simulations of astrophysical turbulence have reached such a level of sophistication that quantitative results are now starting to emerge. However, contradicting results have been reported in the literature with respect to the performance of the numerical techniques employed for its study and their relevance to the physical systems modelled.Aims. We aim at characterising the performance of a variety of hydrodynamics codes including different particle-based and grid-based techniques on the modelling of decaying supersonic turbulence. This is the first such large-scale comparison ever conducted.Methods. We modelled driven, compressible, supersonic, isothermal turbulence with an rms Mach number of Mms̃4, and then let it decay in the absence of gravity, using runs performed with four different grid codes (ENZO, FLASH, TVD, ZEUS) and three different SPH codes (GADGET, PHANTOM, VINE). We additionally analysed two calculations denoted as PHANTOM A and PHANTOM B using two different implementations of artificial viscosity in PHANTOM. We analysed the results of our numerical experiments using volume-averaged quantities like the rms Mach number, volume-and density-weighted velocity Fourier spectrum functions, and probability distribution functions of density, velocity, and velocity derivatives.Results. Our analysis indicates that grid codes tend to be less dissipative than SPH codes, though details of the techniques used can make large differences in both cases. For example, the Morris \& Monaghan viscosity implementation for SPH results in less dissipation (PHANTOM B and VINE versus GADGET and PHANTOM A). For grid codes, using a smaller diffusion parameter leads to less dissipation, but results in a larger bottleneck effect (our ENZO versus FLASH runs). As a general result, we find that by using a similar number of resolution elements N for each spatial direction means that all codes (both grid-based and particle-based) show encouraging similarity of all statistical quantities for isotropic supersonic turbulence on spatial scales k≥N/32 (all scales resolved by more than 32 grid cells), while scales smaller than that are significantly affected by the specific implementation of the algorithm for solving the equations of hydrodynamics. At comparable numerical resolution (Nparticles≈ Ncells), the SPH runs were on average about ten times more computationally intensive than the grid runs, although with variations of up to a factor of ten between the different SPH runs and between the different grid runs.Conclusions. At the resolutions employed here, the ability to model supersonic to transonic flows is comparable across the various codes used in this study. © 2009 ESO.},
    author = {S. Kitsionas and C. Federrath and R. S. Klessen and W. Schmidt and D. J. Price and L. J. Dursi and M. Gritschneder and S. Walch and R. Piontek and J. Kim and A. K. Jappsen and P. Ciecielag and M. M. Mac Low},
    doi = {10.1051/0004-6361/200811170},
    issn = {00046361},
@@ -383,7 +379,11 @@ year = {2005}
   year={1963},
   publisher={American Meteorological Society}
 }
-@phdthesis{Synolakis1986, title={The runup of long waves}, school={California Institute of Technology}, author={Synolakis, Constantine Emmanuel}, year={1986}
+@phdthesis{Synolakis1986,
+title={The runup of long waves},
+school={California Institute of Technology},
+author={Synolakis, Constantine Emmanuel},
+year={1986}
 }
 @inproceedings{ROGERS2005,
 author = {Rogers, Benedict D. and Dalrymple, Robert A.},
@@ -467,7 +467,6 @@ year = {2005}
   publisher={APS}
 }
 @article{Foias2001,
-abstract = {We review the properties of the nonlinearly dispersive Navier-Stokes-alpha (NS-$\alpha$) model of incompressible fluid turbulence - also called the viscous Camassa-Holm equations in the literature. We first re-derive the NS-$\alpha$ model by filtering the velocity of the fluid loop in Kelvin's circulation theorem for the Navier-Stokes equations. Then we show that this filtering causes the wavenumber spectrum of the translational kinetic energy for the NS-$\alpha$ model to roll off as k-3 for k$\alpha$ {\textgreater} 1 in three dimensions, instead of continuing along the slower Kolmogorov scaling law, k-5/3, that it follows for k$\alpha$ {\textless} 1. This roll off at higher wavenumbers shortens the inertial range for the NS-$\alpha$ model and thereby makes it more computable. We also explain how the NS-$\alpha$ model is related to large eddy simulation (LES) turbulence modeling and to the stress tensor for second-grade fluids. We close by surveying recent results in the literature for the NS-$\alpha$ model and its inviscid limit (the Euler-$\alpha$ model). {\textcopyright} 2001 Published by Elsevier Science B.V.},
 archivePrefix = {arXiv},
 arxivId = {nlin/0103037},
 author = {Foias, Ciprian and Holm, Darryl D. and Titi, Edriss S.},
@@ -589,7 +588,6 @@ volume = {physics.fl},
 year = {2007}
 }
 @article{Hu2015,
-abstract = {A coarse-grained particle model for incompressible Navier-Stokes (NS) equation is proposed based on spatial filtering by utilizing smoothed particle hydrodynamics (SPH) approximations. This model is similar to our previous developed SPH discretization of NS equation (Hu X.Y. {\&} N.A. Adams, J. Comput. Physics, 227:264-278, 2007 and 228:2082-2091, 2009) and the Lagrangian averaged NS (LANS-$\alpha$) turbulence model. Other than using smoothing approaches, this model obtains particle transport velocity by imposing constant $\sigma$ which is associated with the particle density, and is called SPH-$\sigma$ model. Numerical tests on two-dimensional decay and forced turbulences with high Reynolds number suggest that the model is able to reproduce both the inverse energy cascade and direct enstrophy cascade of the kinetic energy spectrum, the time scaling of enstrophy decay and the non-Guassian probability density function (PDF) of particle acceleration.},
 archivePrefix = {arXiv},
 arxivId = {1204.5097},
 author = {Hu, X. Y. and Adams, N. A.},
@@ -980,7 +978,15 @@ year = {2022}
     doi = {10.1145/3460773},
     langid = {english}
 }
-@inproceedings{Lam_Pitrou_Seibert_2015, address={New York, NY, USA}, title={Numba: A LLVM-based Python JIT compiler}, ISBN={9781450340052}, booktitle={Proceedings of the Second Workshop on the LLVM Compiler Infrastructure in HPC}, publisher={ACM}, author={Lam, Siu Kwan and Pitrou, Antoine and Seibert, Stanley}, year={2015} }
+@inproceedings{Lam_Pitrou_Seibert_2015,
+address={New York, NY, USA},
+title={Numba: A LLVM-based Python JIT compiler},
+ISBN={9781450340052},
+booktitle={Proceedings of the Second Workshop on the LLVM Compiler Infrastructure in HPC},
+publisher={ACM},
+author={Lam, Siu Kwan and Pitrou, Antoine and Seibert, Stanley},
+year={2015}
+}
 @InProceedings{ compyle_pr_ab-proc-scipy-2020,
   author    = { {A}ditya {B}hosale and {P}rabhu {R}amachandran },
   title     = { {C}ompyle: a {P}ython package for parallel computing },
@@ -1005,10 +1011,20 @@ title = {{Restoring particle consistency in smoothed particle hydrodynamics}},
 volume = {56},
 year = {2006}
 }
-@article{Huang_Long_Li_Liu_2019, title={A kernel gradient-free SPH method with iterative particle shifting technology for modeling low-Reynolds flows around airfoils}, volume={106}, ISSN={0955-7997}, url={http://dx.doi.org/10.1016/j.enganabound.2019.06.010}, DOI={10.1016/j.enganabound.2019.06.010}, journal={Engineering analysis with boundary elements}, author={Huang, C. and Long, T. and Li, S. M. and Liu, M. B.}, year={2019}, pages={571–587}, language={en} }
+@article{Huang_Long_Li_Liu_2019,
+title={A kernel gradient-free SPH method with iterative particle shifting technology for modeling low-Reynolds flows around airfoils},
+volume={106},
+ISSN={0955-7997},
+url={http://dx.doi.org/10.1016/j.enganabound.2019.06.010}, DOI={10.1016/j.enganabound.2019.06.010},
+journal={Engineering analysis with boundary elements},
+author={Huang, C. and Long, T. and Li, S. M. and Liu, M. B.},
+year={2019},
+pages={571–587},
+language={en}
+}
 @ARTICLE {RamachandranAutoman2018,
 author = {P. Ramachandran},
-journal = {Computing in Science &amp; Engineering},
+journal={Computing in Science \& Engineering}, 
 title = {automan: A Python-Based Automation Framework for Numerical Computing},
 year = {2018},
 volume = {20},
