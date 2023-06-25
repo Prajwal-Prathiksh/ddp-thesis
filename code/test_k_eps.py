@@ -113,7 +113,6 @@ def get_test_solution(_x, _y, c0=10., test_case=0):
 
     return _u, _v, _p, _rho, _k, _eps, _k_rhs, _eps_rhs
 
-
 class TestKEpsModel(TurbulentFlowApp):
     def add_user_options(self, group):
         group.add_argument(
@@ -229,6 +228,7 @@ class TestKEpsModel(TurbulentFlowApp):
     def create_particles(self):
         fluid = self.create_fluid()
         self.scheme.setup_properties([fluid], clean=False)
+        fluid.add_constant('c0', self.c0)
 
         print("Test K-Epsilon Model :: nfluid = %d, dt = %g" % (
             fluid.get_number_of_particles(), self.dt))
@@ -313,7 +313,7 @@ class TestKEpsModel(TurbulentFlowApp):
         plt.clf()
         plt.subplot(221)
         plt.scatter(x, y, c=k_rhs, s=10)
-        plt.title(r'$k$ (RHS)')
+        plt.title(r'$k$ (RHS) Computed')
         _common_plt_macro(no_x=True)
 
         plt.subplot(222)
@@ -328,22 +328,24 @@ class TestKEpsModel(TurbulentFlowApp):
         plt.title(msg)
         _common_plt_macro()
 
-        plt.subplot(224)
-        plt.scatter(x, y, c=k_rhs_scld, s=10)
-        plt.title(r'$k$ (RHS) Scaled')
-        _common_plt_macro()
-
         plt.suptitle(
-            fr'$k$ at t = {t[-1]:.2f} (Re = {self.re}, c0 = {self.c0}) '
-            f'(TC = {self.k_eps_test_case})'
+            fr'$k$ field (Re = {self.re}, c0 = {self.c0}) '
+            f'(Test Case = {self.k_eps_test_case})',
+            fontsize=14.5
         )
+        plt.subplots_adjust(wspace=0.15, hspace=0.15, top=0.9)
+        # Reduce space between subplots
+        # plt.subplots_adjust(wspace=0.1, hspace=0.1)
+        # Reduce space between suptitle and subplots
+        # plt.subplots_adjust(top=1.1)
         fname = os.path.join(self.output_dir, "k_rhs.png")
-        plt.savefig(fname, dpi=300)
+        plt.savefig(fname, dpi=300, bbox_inches='tight')
+        print("Saved figure to %s" % fname)
 
         plt.clf()
         plt.subplot(221)
         plt.scatter(x, y, c=eps_rhs, s=10)
-        plt.title(r'$\epsilon$ (RHS)')
+        plt.title(r'$\epsilon$ (RHS) Computed')
         _common_plt_macro(no_x=True)
 
         plt.subplot(222)
@@ -358,18 +360,13 @@ class TestKEpsModel(TurbulentFlowApp):
         plt.title(msg)
         _common_plt_macro()
 
-        plt.subplot(224)
-        plt.scatter(x, y, c=eps_rhs_scld, s=10)
-        plt.title(r'$\epsilon$ (RHS) Scaled')
-        _common_plt_macro()
-
         plt.suptitle(
-            fr'$\epsilon$ at t = {t[-1]:.2f} (Re = {self.re}, c0 = {self.c0}) '
-            f'(TC = {self.k_eps_test_case})'
+            fr'$\epsilon$ field (Re = {self.re}, c0 = {self.c0}) '
+            f'(Test Case = {self.k_eps_test_case})'
         )
         fname = os.path.join(self.output_dir, "eps_rhs.png")
-        plt.savefig(fname, dpi=300)
-        
+        plt.savefig(fname, dpi=300, bbox_inches='tight')
+        print("Saved figure to %s" % fname)
 
     def customize_output(self):
         self._mayavi_config('''
