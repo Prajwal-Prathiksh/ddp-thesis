@@ -450,7 +450,7 @@ def create_equation(app, solids=[]):
                 g2 = eqns[1].equations
                 g2.insert(0, eq1)
     
-    if app.ext_forcing:
+    if app.options.ext_forcing == 'eq':
         eqns.append(
             Group(
                 equations=[ExtForceColagrossi2021(
@@ -604,6 +604,49 @@ def ramp(t_star):
         return 0.
 
 
+def ext_force_colagrossi2021(x, y, t, L=1., U=1.):
+    """
+    External forcing term for the Taylor-Green vortex problem.
+
+    References
+    ----------
+        .. [Colagrossi2021] A. Colagrossi, “Smoothed particle hydrodynamics 
+        method from a large eddy simulation perspective . Generalization to a 
+        quasi-Lagrangian model Smoothed particle hydrodynamics method from a 
+        large eddy simulation perspective . Generalization to a 
+        quasi-Lagrangian model,” vol. 015102, no. December 2020, 2021,
+        doi: 10.1063/5.0034568.
+
+    Parameters
+    ----------
+    x, y : array_like
+        Coordinates.
+    t : float
+        Time.
+    L : float, optional
+        Length of the domain. Default is 1.
+    U : float, optional
+        Maximum velocity of the flow. Default is 1.
+    
+    Returns
+    -------
+    fx, fy : array_like
+        External forcing term in the x- and y-directions.
+    """
+    A = 1.3*U*U/L
+    x_star = x/L
+    y_star = y/L
+    t_star = t*U/L
+    eightpi = 8.*pi
+    
+    if ramp(t_star) > 0.:
+        fx = sin(eightpi*x_star)*cos(eightpi*y_star)
+        fy = -cos(eightpi*x_star)*sin(eightpi*y_star)
+        return A*ramp(t_star)*fx, A*ramp(t_star)*fy
+    else:
+        return 0.*x_star, 0.*y_star
+    
+
 def ext_force_antuono2020(x, y, z, t, nu, L=1., U=1.):
     """
     External forcing term for the Triperiodic Beltrami flow problem.
@@ -662,6 +705,15 @@ def prestep(app, solver):
     """
     Pre-step function for the Taylor-Green vortex problem.
     """
+    if app.options.ext_forcing == 'prestep':
+        pa = app.particles[0]
+        x, y = pa.x, pa.y
+        L, U = app.L, app.U
+        dt, t = solver.dt, solver.t
+        fx, fy = ext_force_colagrossi2021(x, y, t, L, U)
+        pa.u[:] += fx*dt
+        pa.v[:] += fy*dt
+        
     if app.options.scheme == 'wcsph':
         if app.scheme.scheme.delta_sph:
             p = app.particles[0].p
@@ -704,8 +756,4 @@ class ExtForceColagrossi2021(Equation):
         
         d_au[d_idx] = self.A*t_fac*fx
         d_av[d_idx] = self.A*t_fac*fy
-
-
-# TODO: Missing term from the NS equation correspodning to compressiblitly
-# TODO: Try PEIPST, check with HO interators and C0
-# TODO: MMS of RHS wirh k-eps model
+    

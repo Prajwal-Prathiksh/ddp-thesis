@@ -108,8 +108,8 @@ class TaylorGreen(TurbulentFlowApp):
             help="Make periodic domain"
         )
         group.add_argument(
-            "--ext-forcing", action="store_true",
-            dest="ext_forcing",
+            "--ext-forcing", action="store", type=str, dest="ext_forcing",
+            choices=['none', 'prestep', 'eq'], default='none',
             help="Use external forcing"
         )
         sph_int_choices = ['auto', 'pec', 'rk2', 'rk3', 'rk4']
@@ -164,6 +164,7 @@ class TaylorGreen(TurbulentFlowApp):
         self.kernel_correction = self.options.kernel_correction
         self.no_periodic = self.options.no_periodic
         self.ext_forcing = self.options.ext_forcing
+        self.ext_forcing = False if self.ext_forcing == 'none' else True
         self.adaptive_timestep = self.options.adaptive_timestep
 
     def pre_step(self, solver):
