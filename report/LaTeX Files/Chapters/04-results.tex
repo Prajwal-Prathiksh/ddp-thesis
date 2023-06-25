@@ -900,3 +900,102 @@ K-EPS - PST ESPEC \figref{fig:keps-pst-espec}
   \caption{Evolution of the energy spectrum for the $k-\epsilon$ SPH scheme for various $f_{pst}$ values $(N=100^2, t_f=0.1, Re=10000, c_s=20)$.}
   \label{fig:keps-pst-espec}
 \end{figure}
+
+
+K - SPATIAL OOC \figref{fig:k-spatial-ooc}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/k_conv_tc_1_re_10000.png}
+    \caption{Test-case 1}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/k_conv_tc_2_re_10000.png}
+    \caption{Test-case 2}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/k_conv_tc_3_re_10000.png}
+    \caption{Test-case 3}
+  \end{subfigure}
+  \caption{Convergence of the spatial operators in the $k$ transport equation for various test-cases.}
+  \label{fig:k-spatial-ooc}
+\end{figure}
+
+
+EPS - SPATIAL OOC \figref{fig:eps-spatial-ooc}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/eps_conv_tc_1_re_10000.png}
+    \caption{Test-case 1}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/eps_conv_tc_2_re_10000.png}
+    \caption{Test-case 2}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/eps_conv_tc_3_re_10000.png}
+    \caption{Test-case 3}
+  \end{subfigure}
+  \caption{Convergence of the spatial operators in the $\epsilon$ transport equation for various test-cases.}
+  \label{fig:eps-spatial-ooc}
+\end{figure}
+
+
+K - SPATIAL OOC FIELD \figref{fig:k-spatial-ooc-field}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/c0_60_ke_expd_no_ketc_1_nx_150_re_10000/k_rhs.png}
+    \caption{Test-case 1, Simplified $k$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/c0_60_ke_expd_yes_ketc_1_nx_150_re_10000/k_rhs.png}
+    \caption{Test-case 1, Expanded $k$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/c0_60_ke_expd_no_ketc_2_nx_150_re_10000/k_rhs.png}
+    \caption{Test-case 2, Simplified $k$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/c0_60_ke_expd_yes_ketc_2_nx_150_re_10000/k_rhs.png}
+    \caption{Test-case 2, Expanded $k$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/c0_60_ke_expd_no_ketc_3_nx_150_re_10000/k_rhs.png}
+    \caption{Test-case 3, Simplified $k$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/c0_60_ke_expd_yes_ketc_3_nx_150_re_10000/k_rhs.png}
+    \caption{Test-case 3, Expanded $k$}
+  \end{subfigure}
+  \caption{RHS of the $k$ transport equation for various test-cases $(N=150^2, t_f=1\Delta t, Re=10000, c_s=60)$.}
+  \label{fig:k-spatial-ooc-field}
+\end{figure}
+
+EPS - SPATIAL OOC FIELD \figref{fig:eps-spatial-ooc-field}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/c0_60_ke_expd_no_ketc_1_nx_150_re_10000/eps_rhs.png}
+    \caption{Test-case 1, Simplified $\epsilon$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/c0_60_ke_expd_yes_ketc_1_nx_150_re_10000/eps_rhs.png}
+    \caption{Test-case 1, Expanded $\epsilon$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/c0_60_ke_expd_no_ketc_2_nx_150_re_10000/eps_rhs.png}
+    \caption{Test-case 2, Simplified $\epsilon$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/c0_60_ke_expd_yes_ketc_2_nx_150_re_10000/eps_rhs.png}
+    \caption{Test-case 2, Expanded $\epsilon$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/c0_60_ke_expd_no_ketc_3_nx_150_re_10000/eps_rhs.png}
+    \caption{Test-case 3, Simplified $\epsilon$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/keps-op-conv/c0_60_ke_expd_yes_ketc_3_nx_150_re_10000/eps_rhs.png}
+    \caption{Test-case 3, Expanded $\epsilon$}
+  \end{subfigure}
+  \caption{RHS of the $\epsilon$ transport equation for various test-cases $(N=150^2, t_f=1\Delta t, Re=10000, c_s=60)$.}
+  \label{fig:eps-spatial-ooc-field}
+\end{figure}
