@@ -73,7 +73,7 @@ The speedup results of the three implementations are shown in \figref{fig:espec-
     \label{fig:espec-speedup}
 \end{figure}
 
-As seen in the speedup plots, the \texttt{numba} implementation is around $50-100\times$ faster than the pure \texttt{python} implementation, while the \texttt{compyle} implementation is around $80-150\times$ faster than the pure \texttt{python} implementation for various resolution scales. These trends are observed across all dimensions of the velocity field. The \texttt{compyle} implementation, in addition, to being faster than the \texttt{numba} implementation, also has the added advantage of not requiring any additional dependencies, which are not already required by \texttt{PySPH}, unlike the \texttt{numba} implementation, which requires the \texttt{numba} package to be installed separately. Hence, the \texttt{compyle} implementation was chosen for the final implementation of the $1D$ energy spectrum computation.
+The speedup plots show that the \texttt{numba} implementation is around $50-100\times$ faster than the pure \texttt{python} implementation. In comparison, the \texttt{compyle} implementation is around $80-150\times$ faster than the pure \texttt{python} implementation for various resolution scales. These trends are observed across all dimensions of the velocity field. The \texttt{compyle} implementation, in addition, to being faster than the \texttt{numba} implementation, also has the added advantage of not requiring any additional dependencies, which are not already required by \texttt{PySPH}, unlike the \texttt{numba} implementation, which requires the \texttt{numba} package to be installed separately. Hence, the \texttt{compyle} implementation was chosen for the final implementation of the $1D$ energy spectrum computation.
 
 In order to test the code for correctness, the following test cases were devised. The velocity field for $1D$, is given as:
 \begin{equation}
@@ -97,7 +97,7 @@ For $3D$, the velocity field is given as:
 \begin{equation}
     v_z = \sum_{i=1}^{N} i^{-\gamma} \sin(2 \pi i x) \sin(2 \pi i y) \cos(2 \pi i z).
 \end{equation}
-Since the energy in the flow field is a function of the square of the velocity, the corresponding decay rate in the energy spectrum is going to be $2\gamma$.
+Since the energy in the flow field is a function of the square of the velocity, the corresponding decay rate in the energy spectrum will be $2\gamma$.
 
 The first order of correctness involved running the energy spectral calculation for the above test cases, using only one mode ($N=1$) and zero decay rate ($\gamma=0$).
 
@@ -135,16 +135,16 @@ The scalar energy spectral fields are shown in \figref{fig:espec-scalar-fields-N
     \label{fig:espec-scalar-fields-N1}
 \end{figure}
 
-Subsequently, to test the correctness when multiple modes are involved, the test cases were reconsidered, with $\gamma=1$ and $N$ equal to half the number of particles along one axis of the problem.
+Subsequently, the test cases were reconsidered to test the correctness when multiple modes are involved, with $\gamma=1$ and $N$ equal to half the number of particles along one axis of the problem.
 
 The vector energy spectral fields are shown in \figref{fig:espec-vector-fields-gamma1}. Here, it can be observed that in both the $1D$ and $2D$ case, the energy spectrum peaks for $k=1$ and is non-zero up to $k=n_x/2$, indicating the nature of the velocity field, consisting of multiple modes. The amplitudes are also observed to have an exponential drop-off, as is expected, given the nature of the amplitude weighting.
 
-This is made all the more clear with the scalar energy spectral fields shown in \figref{fig:espec-scalar-fields-gamma1}. The log-log plots here allow for the exponential drop-off to be observed more clearly, by fitting a straight line to the log-log plot between wavenumbers $k \in [1, n_x/4]$. The gree-dashed lines, which represent the scalar energy spectrum computed for the original velocity field (which is uniform and rectangular) without interpolation, represent the `best'-case scenario, where the energy spectrum is computed without any loss of information in the velocity field, and the source of noise can be solely attributed to numerical errors from the discrete Fourier transform. The actual scalar energy spectrum computed from the interpolated velocity is plotted in blue.
+This is made all the more apparent with the scalar energy spectral fields shown in \figref{fig:espec-scalar-fields-gamma1}. The log-log plots here allow for the exponential drop-off to be observed more clearly, by fitting a straight line to the log-log plot between wavenumbers $k \in [1, n_x/4]$. The gree-dashed lines, which represent the scalar energy spectrum computed for the original velocity field (which is uniform and rectangular) without interpolation, represent the `best'-case scenario, where the energy spectrum is computed without any loss of information in the velocity field, and the source of noise can be solely attributed to numerical errors from the discrete Fourier transform. The scalar energy spectrum computed from the interpolated velocity is plotted in blue.
 
 It is observed that the energy spectrum computed without interpolation is indeed the `best'-case scenario since it much more closely follows the exact trend. However, with the computed energy spectrum from the interpolated velocity field, the trend is still observed to be followed, but only up to the $k/8$ wavenumber, beyond which the trend is lost, and the computed energy spectrum is observed to be much lower than the green-dashed line, with the difference increasing with the wavenumber.
-This seems to indicate that the act of interpolation itself is introducing some amount of noise in the velocity field, which is reflected by the jagged nature of the blue line, and also seems to decrease the energy at lower scales, which is reflected by the blue line being consistently lower than the green-dashed line at lower wavenumbers. This allows for the conclusion that the interpolation scheme seems to behave as a low-pass filter, which is expected since the interpolation scheme is essentially a convolution of the velocity field with the kernel function, which is a low-pass filter.
+This seems to indicate that the act of interpolation itself is introducing some amount of noise in the velocity field, which is reflected by the jagged nature of the blue line, and also seems to decrease the energy at lower scales, which is reflected by the blue line being consistently lower than the green-dashed line at lower wavenumbers. This allows for the conclusion that the interpolation scheme behaves as a low-pass filter, which is expected since the interpolation scheme is essentially a convolution of the velocity field with the kernel function, which is a low-pass filter.
 
-Therefore, it was concluded that the $1D$ energy field, computed from the interpolated velocity field, typically will underestimate the energy at higher wavenumbers, and hence, the slope of the energy spectrum computed from the interpolated velocity field will be lower than the slope of the energy spectrum computed from the original velocity field, as reflected in \figref{fig:espec-scalar-fields-gamma1} as well.
+Therefore, it was concluded that the $1D$ energy field, computed from the interpolated velocity field, typically will underestimate the energy at higher wavenumbers. Hence, the slope of the energy spectrum computed from the interpolated velocity field will be lower than the slope computed from the original velocity field, as reflected in \figref{fig:espec-scalar-fields-gamma1} as well.
 
 \begin{figure}[H]
     \begin{subfigure}{7cm}
@@ -176,9 +176,9 @@ Therefore, it was concluded that the $1D$ energy field, computed from the interp
     \label{fig:espec-scalar-fields-gamma1}
 \end{figure}
 
-The same set of test cases, with $\gamma=1$ and $N=n_x/2$, are considered in order to identify the effect of various interpolation schemes, kernels, perturbation, and resolutions on the computed energy spectrum.
+The same set of test cases, with $\gamma=1$ and $N=n_x/2$, are considered to identify the effect of various interpolation schemes, kernels, perturbation, and resolutions on the computed energy spectrum.
 
-In order to measure the effect of the perturbation in the particle spacing on the computed energy spectrum, once a rectangular grid of uniform particles is defined, its coordinates are perturbed by a uniform random number $\delta \hat{x} \in [0, 1)$, scaled by a perturbation amplitude. The perturbed grid is then initialised with the corresponding velocity profile, and the energy spectrum is computed for the perturbed grid. From the results shown in \figref{fig:espec-scalar-fields-per-ampl}, it can be observed that by increasing the perturbation amplitude, energy seems to be introduced at lower resolution scales, which is reflected by the increased energy at higher wavenumbers. This trend seems to hold true for all dimensions.
+In order to measure the effect of the perturbation in the particle spacing on the computed energy spectrum, once a rectangular grid of uniform particles is defined, its coordinates are perturbed by a uniform random number $\delta \hat{x} \in [0, 1)$, scaled by a perturbation amplitude. The perturbed grid is then initialised with the corresponding velocity profile, and the energy spectrum is computed for the perturbed grid. From the results shown in \figref{fig:espec-scalar-fields-per-ampl}, it can be observed that by increasing the perturbation amplitude, energy seems to be introduced at lower resolution scales, which is reflected by the increased energy at higher wavenumbers. This trend seems to hold for all dimensions.
 Therefore, we can infer that the low-pass energy dissipation effect of the interpolation scheme will to an extent, be countered by the perturbation in the particle spacing (which is typically the case in a simulation since the particles become disturbed), which will introduce energy at lower resolution scales, and hence, the slope of the energy spectrum computed from the interpolated velocity field will be closer to the slope of the energy spectrum computed from the original velocity field. 
 
 \begin{figure}[H]
@@ -223,8 +223,8 @@ Then, in order to measure the effect of the interpolation scheme on the computed
 \end{itemize}
 where $\phi$ is the quantity to be interpolated, and $\hat{\phi}$ is the interpolated quantity.
 
-From the results shown in \figref{fig:espec-scalar-fields-i-methods}, it can be observed that the \texttt{order1MC} interpolation scheme seems to introduce the least amount of energy at lower resolution scales, with the \texttt{sph} scheme introducing the most amount of energy at lower resolution scales. This trend seems to hold true for all dimensions.
-Therefore, considering the fact that the \texttt{sph} interpolation scheme would appear to counter the loss in energy at lower resolution scales due to the act of interpolation, it is chosen as the default interpolation scheme for the computation of the energy spectrum.
+From the results shown in \figref{fig:espec-scalar-fields-i-methods}, it can be observed that the \texttt{order1MC} interpolation scheme seems to introduce the least amount of energy at lower resolution scales, with the \texttt{sph} scheme introducing the most amount of energy at lower resolution scales. This trend seems to hold for all dimensions.
+Therefore, because the \texttt{sph} interpolation scheme would appear to counter the loss in energy at lower resolution scales due to the act of interpolation, it is chosen as the default interpolation scheme for the computation of the energy spectrum.
 
 \begin{figure}[H]
 	\begin{subfigure}{7cm}
@@ -254,7 +254,7 @@ Then, in order to measure the effect of the kernel on the computed energy spectr
     \item \texttt{QuinticSpline}.
 \end{itemize}
 
-From the results shown in \figref{fig:espec-scalar-fields-i-kernels}, it can be observed that the \texttt{Gaussian} kernel seems to introduce the least amount of energy at lower resolution scales, with the \texttt{WendlandQuinticC6} kernel introducing the most amount of energy at lower resolution scales. This trend seems to hold true for all dimensions.
+From the results shown in \figref{fig:espec-scalar-fields-i-kernels}, it can be observed that the \texttt{Gaussian} kernel seems to introduce the least amount of energy at lower resolution scales, with the \texttt{WendlandQuinticC6} kernel introducing the most amount of energy at lower resolution scales. This trend seems to hold for all dimensions.
 Therefore, the \texttt{Gaussian} kernel is chosen as the default kernel for the computation of the energy spectrum.
 
 \begin{figure}[H]
@@ -345,7 +345,7 @@ In order to test the correctness of the FTLE field computation, the following te
   \label{fig:ftle-spiral}
 \end{figure}
 
-As seen in \figref{fig:ftle-parabolic} and \figref{fig:ftle-spiral} ($B_0$: initial configuration, $B_t$: final configuration), it can be observed that although the FTLE field is capable of qualitatively capturing the evolution of the configurations, i.e., attracting/repelling pathlines, it is however, not as accurate in terms of actually capturing the exact pathlines. Therefore, it was concluded that in place of FTLE fields, tracer particles could be used to visualise the flow field, which would be more accurate in terms of capturing the exact pathlines but would be computationally more expensive since the tracer particles would have to be advected along with the flow field, and would also require additional post-processing to visualise the pathlines. They would also have to be done in situ, i.e., during the simulation itself, as opposed to the FTLE fields, which can be computed post-simulation or in situ as well.
+As seen in \figref{fig:ftle-parabolic} and \figref{fig:ftle-spiral} ($B_0$: initial configuration, $B_t$: final configuration), it can be observed that although the FTLE field is capable of qualitatively capturing the evolution of the configurations, i.e., attracting/repelling pathlines, it is however, not as accurate in terms of actually capturing the exact pathlines. Therefore, it was concluded that in place of FTLE fields, tracer particles could be used to visualise the flow field, which would be more accurate in terms of capturing the exact pathlines but would be computationally more expensive since the tracer particles would have to be advected along with the flow field, and would also require additional post-processing to visualise the pathlines. They would also have to be done in situ, i.e., during the simulation itself, as opposed to the FTLE fields, which can be computed post-simulation or in situ.
 % TODO: iPad fig of attracting and repelling pathlines
 
 
@@ -371,9 +371,9 @@ In order to better understand the nature of each major category and to subsequen
   \label{tab:rep-turb-models}
 \end{table}
 
-In order to test the schemes for SOC, the Taylor-Green vortex (TGV) problem is chosen. The test cases are coded using \texttt{automan} \parencite{RamachandranAutoman2018}, which is an open-source, Python-based automation framework. All of the simulations run hereafter are run upto a final time of $t_f=0.1$, with the resolution for each run consisting of $N=[25^2, 50^2, 100^2]$ particles respectively, with the Reynolds number ranging between $Re=[100, 1000, 10000]$ respectively. All of the simulations are run using the \texttt{WendlandQuinticC4} kernel, with a radius multiplier of $2.0$. This choice was based on the work of \cite{Negi2022Techniques}.
+In order to test the schemes for SOC, the Taylor-Green vortex (TGV) problem is chosen. The test cases are coded using \texttt{automan} \parencite{RamachandranAutoman2018}, an open-source, Python-based automation framework. All of the simulations run hereafter are run upto a final time of $t_f=0.1$, with the resolution for each run consisting of $N=[25^2, 50^2, 100^2]$ particles respectively, with the Reynolds number ranging between $Re=[100, 1000, 10000]$ respectively. All simulations are run using the \texttt{WendlandQuinticC4} kernel, with a radius multiplier of $2.0$. This choice was based on the work of \cite{Negi2022Techniques}.
 
-The $L_1$ error for each simulation in a run is computed and plotted against the inverse of the particle spacing in order to ascertain the order of convergence (OOC) of the scheme. The $L_1$ error at a given time instance is computed as:
+The $L_1$ error for each simulation in a run is computed and plotted against the particle spacing inverse to evaluate the scheme's order of convergence (OOC). The $L_1$ error at a given time instance is computed as:
 \begin{equation}
   L_1(t) = \frac{mean{\abs{\vect{v}^2(t) - \vect{v}^2_{exact}(t)}}}{mean{\abs{\vect{v}^2_{exact}(t)}}},
 \end{equation}
@@ -385,11 +385,11 @@ Subsequently, the $L_1$ error for the entire simulation is defined as the mean o
 
 \subsection{L-IPST-C Scheme}
 
-The L-IPST-C scheme was considered over the other viscosity-based schemes since it was observed to be actually second-order convergent (SOC) by \cite{Negi2022Techniques}, for a wide variety of problems, which included the Gresho vortex problem, Kelvin-Helmholtz instability problem, and the Taylor-Green vortex problem. This scheme considers the weakly-compressible NS equations as the governing equations and uses the \texttt{coupled\_c} viscosity formulation, which is corrected using the Bonet and Lok correction \parencite{bonet1999variational}. Hence, since the scheme, by definition, has the viscous term in its governing equation, it does require any additional `artificial'-viscosity term to be added.
+The L-IPST-C scheme was considered over the other viscosity-based schemes since it was observed to be second-order convergent (SOC) by \cite{Negi2022Techniques}, for a wide variety of problems, which included the Gresho vortex problem, Kelvin-Helmholtz instability problem, and the Taylor-Green vortex problem. This scheme considers the weakly-compressible NS equations the governing equations and uses the \texttt{coupled\_c} viscosity formulation, which is corrected using the Bonet and Lok correction \parencite{bonet1999variational}. Hence, since the scheme, by definition, has the viscous term in its governing equation, it does require any additional `artificial'-viscosity term to be added.
 The scheme also incorporates the iterative particle shifting technique (IPST) by \cite{Huang_Long_Li_Liu_2019} in order to redistribute the particles to obtain a reasonably uniform grid of particles in the domain. Besides shifting the position of the particles, the scheme also updates the particles' properties, such as the density and velocity, to keep the approximation of the particle $O(h^2)$.
 Based on the parametric study conducted by \cite{Negi2022Techniques}, the proposed scheme is observed to be SOC by considering the speed of sound to be $c_s = 20$ and the shifting frequency for the particles through PST to be at every ten iterations $f_{pst} = 10$.
 
-Since the study dealt with problems of low $Re$, the scheme was tested for various time integrators from the Runge-Kutta family of integrators in order to identify their effects and subsequently identify the most suitable integrator for problems of high $Re$.
+Since the study dealt with problems of low $Re$, the scheme was tested for various time integrators from the Runge-Kutta family of integrators to identify their effects and the most suitable integrator for problems of high $Re$.
 The integrators considered were:
 \begin{itemize}
   \item Predict-Evaluate-Correct (\texttt{PEC}),
@@ -418,10 +418,10 @@ with a corresponding $CFL$ values of $[1, 1, 1.5, 2, 2]$ respectively.
 \end{figure}
 
 From the results shown in \figref{fig:lipstc-integrator}, it is evident that the order of the integrator does not appear to have much effect on the OOC and almost negligible effect on the actual magnitude of the $L_1$ errors as well.
-This seems to highlight a much more important aspect of the effect and role of time-integrators in SPH in general, which is that the time-step size is the most important factor, and the order of the integrator is not as important since the time-step size is typically chosen to be small enough to ensure stability, and hence, the error introduced by the time-integrator is typically negligible.
+This highlights a much more important aspect of the effect and role of time integrators in SPH: the time-step size is the most critical factor. The order of the integrator is less important since the time-step size is typically chosen to be small enough to ensure stability. Hence, the error introduced by the time integrator is typically negligible.
 
 Also, when the run-times of these integrators were analysed, the higher order integrators were observed to be more computationally expensive, allowing for the \texttt{PEC} integrator to be around $\approx 1.6\times$ faster, which is reflected in the run-times shown in \figref{fig:lipstc-integrator-rt}.
-Typically such higher-order integrators can be used with much larger $CFL$ values, allowing for larger time steps and, consequently, faster run times. However, in the case of SPH, such generalisations cannot be made since the stability of the scheme is not only dependent on the time-step size but also on the particle spacing, and hence, the $CFL$ value is typically chosen to be close to $1.0-2.0$.
+Typically, such higher-order integrators can be used with much larger $CFL$ values, allowing for larger time steps and faster run times. However, in the case of SPH, such generalisations cannot be made since the stability of the scheme is not only dependent on the time-step size but also on the particle spacing, and hence, the $CFL$ value is typically chosen to be close to $1.0-2.0$.
 Therefore, the \texttt{PEC} integrator is chosen as the default integrator for the L-IPST-C scheme.
 
 \begin{figure}[H]
@@ -464,9 +464,9 @@ The SPH-LES scheme was considered over the other LES-based schemes since the sch
 
 
 In order to identify the effects of the PST on the scheme, the following values were considered: $f_{pst} = [None, 10, 50, 100]$, with the speed of sound for the particles through PST to be $c_s = 20$. The results are shown in \figref{fig:okra2022-pst}, where it can be seen that the scheme worryingly appears to be zero-order convergent. The velocity magnitude field and the energy spectrum are plotted to help provide a deeper insight into the issue.
-In \figref{fig:okra2022-pst-vmag}, it can be observed that without PST, the particles get clustered, and there are marked regions which are devoid of particles. It is also evident that high values of $f_{PST}$ are also not desirable since it leads to the particles being clustered in a different manner and hence the formation of regions devoid of particles.
+In \figref{fig:okra2022-pst-vmag}, it can be observed that the particles get clustered without PST, and there are marked regions devoid of particles. It is also evident that high values of $f_{PST}$ are also not desirable since the particles are still clustered and hence the formation of regions devoid of particles.
 Also, in \figref{fig:okra2022-pst-espec}, it can be observed that the slope of the energy spectrum at the final time instance (yellow line) increases with increasing values of $f_{pst}$, which is indicative of the fact that the energy is being concentrated at the higher resolution scales, which is expected for the high $Re$ case.
-Therefore, a value of $f_{pst} = 10$ is chosen as the default value for the PST.
+Therefore, $f_{pst} = 10$ is chosen as the default value for the PST.
 
 \begin{figure}[H]
   \begin{subfigure}{7cm}
@@ -566,14 +566,14 @@ Therefore, a value of $c_s = 20$ is chosen as the default value for the speed of
   \label{fig:okra2022-c0-espec}
 \end{figure}
 
-Hence, it can be concluded that the SPH-LES scheme is not suitable for problems of low $Re$ due to firstly the lack of dissipation of energy and, secondly, it is zero order-convergent. For the cases of high $Re$, the scheme again would require a lot more testing for each specific problem before the computed flow field can be considered to be accurate. This is reflected in the velocity magnitude plots shown in \figref{fig:okra2022-pst-vmag} and \figref{fig:okra2022-c0-vmag}, where the flow field at the final time instance, is not the expected TGV profile, and instead distorted vortex structures are observed.
+Hence, the SPH-LES scheme is unsuitable for problems of low $Re$ due to the lack of energy dissipation and zero-order convergence. For the cases of high $Re$, the scheme would require much more testing for each specific problem before the computed flow field can be considered accurate. This is reflected in the velocity magnitude plots shown in \figref{fig:okra2022-pst-vmag} and \figref{fig:okra2022-c0-vmag}, where the flow field at the final time instance, is not the expected TGV profile, and instead distorted vortex structures are observed.
 
 
 \subsection[delta-LES-SPH Scheme]{$\delta$-LES-SPH Scheme}
 The Lagrangian LES-based models have only two major schemes to offer. One is the LES-SPH scheme of \cite{DiMascio2017}, and the other is the $\delta$-LES-SPH scheme of \cite{Colagrossi2021QuasiLagrangian}.
-The latter was chosen since their scheme introduced a small arbitrary velocity deviation $(\TildeDeltaV)$ to the fluid particles, which allowed for improved accuracy in simulations of high Reynolds number problems. This scheme also included the use of PST and tensile instability control (TIC). All of this allowed the scheme to tackle the issue of spurious high-frequency noise and the onset of the tensile instability and was hence chosen.
+The latter was chosen since their scheme introduced a small arbitrary velocity deviation $(\TildeDeltaV)$ to the fluid particles, which allowed for improved accuracy in simulations of high Reynolds number problems. This scheme also included PST and tensile instability control (TIC). This allowed the scheme to tackle the issue of spurious high-frequency noise and the onset of the tensile instability and was hence chosen.
 
-During the implementation of the scheme, two choices were made with regard to the treatment of the fluid density. The first choice was to note that the fluid density $\rho_c$ is independent of the summation density $\rho$, and in the second choice, both were treated as the same. This was done based on the work of \cite{Negi2022Techniques}, where they observed that the former choice led to improved OOC since the $\rho_c$ should not depend on the particle configuration and should be prescribed with an initial condition. Therefore, these two variants, i.e, $\delta$-LES-SPH $(\rho_c)$ and $\delta$-LES-SPH $(\rho)$, corresponding to the two choices respectively, were considered.
+During the scheme's implementation, two choices were made regarding the treatment of the fluid density. The first choice was to note that the fluid density $\rho_c$ is independent of the summation density $\rho$, and in the second choice, both were treated as the same. This was done based on the work of \cite{Negi2022Techniques}, where they observed that the former choice led to improved OOC since the $\rho_c$ should not depend on the particle configuration and should be prescribed with an initial condition. Therefore, these two variants, i.e, $\delta$-LES-SPH $(\rho_c)$ and $\delta$-LES-SPH $(\rho)$, corresponding to the two choices respectively, were considered.
 
 In order to test the influence of the equation of state type on the scheme, the following equations of state were considered:
 \begin{itemize}
@@ -623,11 +623,11 @@ The results shown in \figref{fig:deltales_sd-eos} and \figref{fig:deltales-eos} 
   \label{fig:deltales-eos}
 \end{figure}
 
-Subsequently, in order to test for the effects of the PST on the scheme, multiple values of $f_{pst}$ were considered, and the results are shown in \figref{fig:deltales-pst}.
+Subsequently, to test for the effects of the PST on the scheme, multiple values of $f_{pst}$ were considered, and the results are shown in \figref{fig:deltales-pst}.
 The trends are hard to decipher here since the magnitude of the error itself is lower for high values of $f_{pst}$ or even without PST, while the OOC is better for lower values of $f_{pst}$.
-Therefore, in order to better analyse these results, the velocity magnitude field and the energy spectrum are plotted in \figref{fig:deltales-pst-vmag} and \figref{fig:deltales-pst-espec} respectively.
-Here, it can be observed from the velocity magnitude plot that PST is absolutely necessary, particularly with a low $f_{pst}$ value, since without PST, the particles become clustered, and the flow field no longer represents the expected TGV profile.
-In the energy spectrum plot, it can be observed that the energy distribution at the final time instance has barely changed, indicating that the scheme appears to be conservative w.r.t energy, with or without PST. Therefore, long-time studies would be required to ascertain the effects of PST on the evolution of the energy spectrum.
+Therefore, to better analyse these results, the velocity magnitude field and the energy spectrum are plotted in \figref{fig:deltales-pst-vmag} and \figref{fig:deltales-pst-espec} respectively.
+Here, it can be observed from the velocity magnitude plot that PST is necessary, particularly with a low $f_{pst}$ value, since without PST, the particles become clustered, and the flow field no longer represents the expected TGV profile.
+The energy spectrum plot shows that the energy distribution at the final time instance has barely changed, indicating that the scheme appears to be conservative w.r.t energy, with or without PST. Therefore, long-time studies would be required to ascertain PST's effects on the energy spectrum's evolution.
 Hence, for subsequent studies, a value of $f_{pst} = 10$ is chosen as the default value for the PST.
 
 \begin{figure}[H]
@@ -764,9 +764,9 @@ It is also noted that there are no significant differences to be observed in the
 
 \subsection[k-epsilon SPH Scheme]{$k-\epsilon$ SPH Scheme}
 The $k-\epsilon$ SPH scheme of \cite{Shao2006} was chosen over the other RANS-based schemes since the authors considered the typical RANS-based $k-\epsilon$ equations, as the governing equations for their scheme, with an implicit pressure Poisson equation that needed to be solved for the time integration of the scheme.
-However, it was decided that since such an implicit pressure Poisson equation solver would be computationally expensive, as well as complicated to general to other problems, the scheme was implemented with a different SPH discretisation of the $k-\epsilon$ transport equations so as to avoid that step.
+However, it was decided that since such an implicit pressure Poisson equation solver would be computationally expensive, as well as complicated to general to other problems, the scheme was implemented with a different SPH discretisation of the $k-\epsilon$ transport equations to avoid that step.
 
-Therefore, when it came to discretising the $k-\epsilon$ transport equations, there were two choices available.
+Therefore, two choices were available when it came to discretising the $k-\epsilon$ transport equations.
 The first would involve discretising the original $k-\epsilon$ equations as detailed below:
 \begin{equation}
   \LagDerivative{k} = \nabla \cdot \bigg( \frac{\nu_t}{\sigma_k} \nabla k \bigg) + P_k - \epsilon,
@@ -776,7 +776,7 @@ The first would involve discretising the original $k-\epsilon$ equations as deta
   \LagDerivative{\epsilon} = \nabla \cdot \bigg( \frac{\nu_t}{\sigma_{\epsilon}} \nabla \epsilon \bigg) + c_{1\epsilon} \frac{\epsilon}{k} P_k - c_{2\epsilon} \frac{\epsilon^2}{k}.
   \label{eq:Shao2006-eps-transport-eq-res-chap}
 \end{equation}
-Or alternatively, the above equations can also be expanded, using standard identities from calculus and substituting for the turbulent eddy viscosity $\nu_t$ to obtain:
+Alternatively, the above equations can also be expanded, using standard identities from calculus and substituting for the turbulent eddy viscosity $\nu_t$ to obtain:
 \begin{equation}
   \LagDerivative{k} = \frac{c_d}{\sigma_k} \bigg( \frac{k^2}{\epsilon} \nabla^2 k + \frac{2k}{\epsilon} (\nabla k)^2 - \frac{k^2}{\epsilon^2} \nabla k \cdot \nabla \epsilon \bigg) + P_k - \epsilon,
   \label{eq:Shao2006-k-transport-eq-exp-res-chap}
@@ -788,19 +788,19 @@ Or alternatively, the above equations can also be expanded, using standard ident
 
 Therefore, the two variants, i.e., $k-\epsilon$ simplified and $k-\epsilon$ expanded, corresponding to the two choices for the pair of transport equations are discretised using SOC SPH operators as detailed in the work of \cite{Negi2022Techniques}.
 In order to verify the correctness of the SPH discretisation of the $k-\epsilon$ transport equations, in either case, and study the OOC of the transport equations, a single time-step of the scheme was run on a predetermined set of initial conditions for the flow properties, including $k$ and $\epsilon$. The computed RHS of the $k$ and $\epsilon$ transport equations were then compared with the analytical RHS of the equations, and the appropriate $L_1$ error was computed and plotted for various resolutions.
-Three test cases were devised to represent three distinct functional forms. Flow properties such as the velocity, pressure and density were modelled after the initial conditions of the $2D$ TGV problem, as detailed in \secref{sec:taylor-green-vortex-problem}, while the initial conditions for $k$ and $\epsilon$ fields were defined as follows:
+Three test cases were devised to represent three distinct functional forms. Flow properties such as the velocity, pressure and density were modelled after the initial conditions of the $2D$ TGV problem, as detailed in \secref{sec:taylor-green-vortex-problem}. In contrast, the initial conditions for $k$ and $\epsilon$ fields were defined as follows:
 \begin{itemize}
   \item \texttt{Test-case 1}:
   \begin{equation}
     k_0 = 1.5 U^2, \quad \epsilon_0 = 0.09^{0.75} \frac{k_0^{1.5}}{L},
   \end{equation}
-  where $U$ and $L$ are the characteristic velocity and length scales, respectively. This test case represents a constant and uniform initial condition for the $k-\epsilon$ fields.
+  where $U$ and $L$ are the characteristic velocity and length scales. This test case represents a constant and uniform initial condition for the $k-\epsilon$ fields.
 
   \item \texttt{Test-case 2}:
   \begin{equation}
     k_0 = \abs{\vect{v}_0}^2, \quad \epsilon_0 = k_0,
   \end{equation}
-  where $\vect{v}_0$ is the initial velocity field. This test case represents a $k-\epsilon$ field that is proportional to the velocity field.
+  where $\vect{v}_0$ is the initial velocity field. This test case represents a $k-\epsilon$ field proportional to the velocity field.
 
   \item \texttt{Test-case 3}:
   \begin{equation}
@@ -811,7 +811,7 @@ Three test cases were devised to represent three distinct functional forms. Flow
 For all of the above cases, the analytical values of the RHS of the $k$ and $\epsilon$ transport equations are computed using \texttt{SymPy} \parencite{Meurer2017}, a symbolic package in order to automate the process and avoid any errors in the analytical computation.
 
 The results for the $k$ and $\epsilon$ transport equations are shown in \figref{fig:k-spatial-ooc} and \figref{fig:eps-spatial-ooc} respectively. It can be observed here that for the first test case, the OOC for the spatial operators in the transport equation agrees well, irrespective of the variant of discretisation.
-However, in the subsequent test cases, the $k-\epsilon$ simplified variant shows a better OOC than the $k-\epsilon$ expanded variant.
+However, the $k-\epsilon$ simplified variant in the subsequent test cases shows a better OOC than the $k-\epsilon$ expanded variant.
 This can be attributed to the fact that in the expanded equations of \eqref{eq:Shao2006-k-transport-eq-exp-res-chap} and \eqref{eq:Shao2006-eps-transport-eq-exp-res-chap}, the terms involve either higher-order derivatives or products of derivatives, which are not well approximated by the SPH operators, and hence, lead to increased errors. It appears that the advantage of dealing with single-term derivatives (e.g., $\nabla k$) in the expanded equations, compared to having multi-term derivatives (e.g., $\nabla \cdot (k^2\nabla k / \epsilon)$) in the simplified equations, is not enough to offset the increased numerical errors due to the higher-order derivatives.
 This is also made more evident in the actual $k-\epsilon$ fields, as shown in \figref{fig:k-spatial-ooc-field} and \figref{fig:eps-spatial-ooc-field}, respectively.
 Therefore, the $k-\epsilon$ simplified variant is chosen as the default variant for the $k-\epsilon$ SPH scheme.
@@ -912,7 +912,7 @@ Therefore, the $k-\epsilon$ simplified variant is chosen as the default variant 
 In order to study the effects of the various equations of state on the, the convergence study was performed on the $k-\epsilon$ SPH scheme, involving the SPH discretisation of simplified $k-\epsilon$ transport equations, and the \texttt{PEC} time-integrator.
 The results are shown in \figref{fig:keps-eos}, where it can be observed that both the \texttt{LinearEOS} and \texttt{TaitEOS} appear to offer zeroth-order convergence.
 To gain further insight, \figref{fig:keps-eos-vmag} and \figref{fig:keps-eos-espec} are referred to, where it can be observed that the velocity field computed using the \texttt{TaitEOS} appears to better correspond to the typical TGV profile.
-The energy spectrum is interesting in the sense that the \texttt{LinearEOS} appears to redistribute energy from the larger to smaller scales, while the \texttt{TaitEOS} appears to dissipate energy in the system for all scales.
+The energy spectrum is interesting because the \texttt{LinearEOS} appears to redistribute energy from the larger to smaller scales. In contrast, the \texttt{TaitEOS} appears to dissipate energy in the system for all scales.
 Although the former behaviour is more desirable, as it is more representative of the physical system, the actual velocity field plot for the \texttt{LinearEOS} scheme indicates its instability, and hence, the \texttt{TaitEOS} is chosen as the default equation of state for the $k-\epsilon$ SPH scheme.
 
 \begin{figure}[H]
@@ -958,9 +958,9 @@ Although the former behaviour is more desirable, as it is more representative of
   \label{fig:keps-eos-espec}
 \end{figure}
 
-A similar study was undertaken to study the effects of $f_{pst}$ on the $k-\epsilon$ SPH scheme. The results are shown in \figref{fig:keps-pst}, where it can again be observed that the scheme appears to offer zeroth-order convergence for all values of $f_{pst}$.
+A similar study was undertaken on the effects of $f_{pst}$ on the $k-\epsilon$ SPH scheme. The results are shown in \figref{fig:keps-pst}, where it can again be observed that the scheme appears to offer zeroth-order convergence for all values of $f_{pst}$.
 Looking into the velocity magnitude field, as shown in \figref{fig:keps-pst-vmag}, similar trends are observed, in that, higher values of $f_{pst}$ or lack of one leads to clustering of particles, and hence, the velocity field appears jagged.
-No other noticeable differences are observed in the energy spectrum, as shown in \figref{fig:keps-pst-espec}, which seems to indicate the $f_{pst}$ does not seem to have a strong effect on the energy spectrum, at least for short time simulations.
+No other noticeable differences are observed in the energy spectrum, as shown in \figref{fig:keps-pst-espec}, which seems to indicate the $f_{pst}$ does not seem to have a substantial effect on the energy spectrum, at least for short time simulations.
 
 \begin{figure}[H]
   \begin{subfigure}{7cm}
