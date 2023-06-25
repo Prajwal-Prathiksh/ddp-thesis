@@ -1030,7 +1030,7 @@ Amongst all of the LANS-based turbulence models, the SPH-$\epsilon$ scheme of \c
 The scheme was not implemented with the gradient correction term in the original work, and hence, to study its potential effects, a convergence study was performed on the scheme with and without the Bonet and Lok gradient correction term.
 The results are shown in \figref{fig:sph-eps-grad-corr}, where it can be observed that the gradient correction term does not appear to have a significant effect on the convergence of the scheme.
 The same conclusion can be drawn from the velocity magnitude field, as shown in \figref{fig:sph-eps-grad-corr-vmag}, where the velocity field does not appear to be significantly different for the two cases.
-However, when the energy spectrum is considered, as shown in \figref{fig:sph-eps-grad-corr-espec}, it can be observed that the gradient correction term leads to a steeper slope for the spectrum, which is indicative of a more dissipative scheme. Since this attribute is desirable for modelling problems of high $Re$, the variant with the gradient correction term is chosen as the default for the SPH-$\epsilon$ scheme.
+Similarly, the energy spectrum, as shown in \figref{fig:sph-eps-grad-corr-espec}, also does not appear to be significantly different for the two cases. Therefore, variant without the gradient correction term is chosen as the default for the SPH-$\epsilon$ scheme.
 
 \begin{figure}[htbp!]
   \begin{subfigure}{7cm}
@@ -1076,9 +1076,9 @@ However, when the energy spectrum is considered, as shown in \figref{fig:sph-eps
 \end{figure}
 
 Since the scheme has the smoothing parameter $\epsilon$ as a free parameter, a convergence study was performed on the scheme for various values of $\epsilon$.
-The results are shown in \figref{fig:sph-eps-meps}. The first major observation here is that as the $Re$ increases, the OOC of the scheme increases, which is promising. Also, as the $\epsilon$ value increases, the magnitude of the $L_1$ error increases, but in the limit of $h \rightarrow 0$, the error appears to converge to a constant value. 
-Interestingly, the $\epsilon$ value does not appear to have a significant effect on either the velocity magnitude field, as shown in \figref{fig:sph-eps-meps-vmag}, or the energy spectrum, as shown in \figref{fig:sph-eps-meps-espec}.
-Therefore, long time simulations would be required to study the effects of $\epsilon$ on the evolution of the energy spectrum.
+The results are shown in \figref{fig:sph-eps-meps}. Firstly, it can be observed that the scheme appears to offer zeroth-order convergence for all values of $\epsilon$, which is not surprising, as the scheme is not designed to be a high-order scheme. Secondly, the value of $\epsilon$ does not appear to have a significant effect on the convergence of the scheme, except for minor differences in the magnitude of the $L_1$ error, particularly for low values of $Re$.
+The velocity magnitude field, as shown in \figref{fig:sph-eps-meps-vmag}, indicates that as the $\epsilon$ value increases, the velocity field appears to be more diffused, which is expected, as the scheme is designed to be more dissipative for higher values of $\epsilon$, but this comes at the cost of a velocity profile that is not as accurate as the lower values of $\epsilon$.
+From the energy spectrum plot, as shown in \figref{fig:sph-eps-meps-espec}, it can be observed that the higher values of $\epsilon$ reduces the overall energy in the system relatively, in addition to reducing the slope of the energy spectrum, further indicating the dissipative nature of the scheme for higher values of $\epsilon$.
 
 \begin{figure}[htbp!]
   \begin{subfigure}{7cm}
@@ -1139,8 +1139,8 @@ Therefore, long time simulations would be required to study the effects of $\eps
   \label{fig:sph-eps-meps-espec}
 \end{figure}
 
-Similarly, a convergence study was performed to study the effects of the equation of state on the SPH-$\epsilon$ scheme. The results are shown in \figref{fig:sph-eps-eos}, where it can be observed that again, the nature of the equation of state does not affect the convergence of the scheme.
-This is made evident by the both the velocity magnitude field, as shown in \figref{fig:sph-eps-eos-vmag}, and the energy spectrum, as shown in \figref{fig:sph-eps-eos-espec}, which do not appear to be significantly different for the two cases.
+Similarly, a convergence study was performed to study the effects of the equation of state on the SPH-$\epsilon$ scheme. The results are shown in \figref{fig:sph-eps-eos}, where it can be observed that once again, the nature of the equation of state does not affect the convergence of the scheme.
+This is made evident by the both the velocity magnitude field, as shown in \figref{fig:sph-eps-eos-vmag}, and the energy spectrum, as shown in \figref{fig:sph-eps-eos-espec}, which do not appear to be significantly different for the two cases. Hence, following through with the original scheme, \texttt{TaitEOS} is chosen as the default equation of state for the SPH-$\epsilon$ scheme.
 
 \begin{figure}[htbp!]
   \begin{subfigure}{7cm}
@@ -1185,9 +1185,11 @@ This is made evident by the both the velocity magnitude field, as shown in \figr
   \label{fig:sph-eps-eos-espec}
 \end{figure}
 
-Finally, a convergence study was performed to study the effects of $f_{pst}$ on the SPH-$\epsilon$ scheme. From observing the results shown in \figref{fig:sph-eps-pst}, it can be observed large values of $f_{pst}$ reduces the magnitude of the $L_1$ error. However, like in the earlier case, the error appears to converge to a constant value in the limit of $h \rightarrow 0$.
-Therefore, there is no significant effect of $f_{pst}$ on the velocity magnitude field, as shown in \figref{fig:sph-eps-pst-vmag}, or the energy spectrum, as shown in \figref{fig:sph-eps-pst-espec}.
-Hence, a long time simulation would be required to study the effects of $f_{pst}$ on the system in general as well.
+Finally, a convergence study was performed to study the effects of $f_{pst}$ on the SPH-$\epsilon$ scheme. From observing the results shown in \figref{fig:sph-eps-pst}, it can be concluded that though large values of $f_{pst}$ reduces the magnitude of the $L_1$ error, the OOC is still zeroth-order.
+On the other hand, the velocity magnitude field, as shown in \figref{fig:sph-eps-pst-vmag}, indicates that higher values of $f_{pst}$ leads to clustering of particles.
+The energy spectrum, as shown in \figref{fig:sph-eps-pst-espec}, indicates that higher values of $f_{pst}$, or lack of one, does not lead to much change in to the energy distribution in the system. Whereas, smaller values of $f_{pst}$ appears to dump energy into the smaller scales, with the larger scales remaining relatively unaffected.
+This is an interesting observation, since addition of energy to the system without a dissipative mechanism, will potentially lead to instability at high $Re$. If one tries to counter this with the natural dissipative mechanism of the smoothing parameter $\epsilon$, there appears to be a trade-off between the accuracy of the velocity field and the energy spectrum.
+Hence, a default value of $f_{pst} = 100$, and $\epsilon = 0.5$ is chosen for the SPH-$\epsilon$ scheme.
 
 \begin{figure}[htbp!]
   \begin{subfigure}{7cm}
