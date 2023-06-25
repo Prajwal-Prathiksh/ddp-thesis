@@ -1112,7 +1112,9 @@ class KEpsModelTesting(PySPHProblem):
         scheme_opts = mdict(k_eps_expand=['no', 'yes'])
         tc_opts = mdict(k_eps_test_case=[1, 2, 3])
         res_opts = mdict(
-            nx=[25, 50, 100, 200], re=[10_000], c0_fac=[20, 40, 60]
+            nx=[50, 75, 100, 150, 200, 300, 400],
+            re=[10_000],
+            c0_fac=[20, 60]
         )
 
         self.sim_opts = sim_opts = dprod(
@@ -1189,8 +1191,9 @@ class KEpsModelTesting(PySPHProblem):
                     continue
                 dts, l1 = self.calculate_l1(cases, prop=prop)
                 dts = 1./dts
+                print(ke_expd)
                 kexp_m = r"($k-\epsilon$ simplified)"
-                if kexp_m == "yes":
+                if ke_expd == "yes":
                     kexp_m = r"($k-\epsilon$ expanded)"
                 label = fr'Case-{tc} (c0={c0}) {kexp_m}'
                 plt.loglog(dts, l1, label=label, marker=next(marker))
