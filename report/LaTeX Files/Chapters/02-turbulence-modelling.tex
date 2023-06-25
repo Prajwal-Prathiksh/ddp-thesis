@@ -52,7 +52,7 @@ Where $(\otimes)$ denotes the tensor product.
 
 On simulating Poiseuille flow for a high Reynolds number case, the authors could show that the velocity profile showed only a slight discrepancy with theory, with the expected log-law profile near the walls \figref{fig:violeau2002-eddy-viscosity-result}. This indicated that the model is appropriate for turbulent mixing problems or for cases involving spatially-varying viscosity while restricted to shear flows.
 
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics{Figures/research_papers/violeau2002-eddy-viscosity-result.png}
     \caption{Turbulent Poiseuille flow in a pipe $(Re = \SciNot{6.4}{4})$ modelled using the eddy viscosity model. Computed mean velocity profiles after $(t=1s)$ (solid circles), against theory (solid line). Reproduced from \cite{VIOLEAU2002}}
@@ -91,7 +91,7 @@ It is to be noted that the authors did not estimate the dissipation rate through
 The same test case as mentioned in \secref{sec:eddy-visc-model} was considered for the performance of GLM. 
 The authors observed large fluctuations. They attributed the discrepancy to the mean operator being redefined as given by \Eqref{eq:violeau-ra-vel} instead of being a Reynolds average. In fact, by redefining the mean operator in such a fashion, they appeared to have constructed a rudimentary LES filter. 
 As observed in \figref{fig:violeau2002-GLM-result}, the fluctuations have an order of magnitude of $k^{1/2}$. However, as claimed by the authors, unlike the eddy viscosity model, the GLM method can be used for different flows instead of being restricted to only shear flows.
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics{Figures/research_papers/violeau2002-GLM-result.png}
     \caption{Turbulent Poiseuille flow in a pipe $(Re = \SciNot{6.4}{4})$ modelled using the generalised Langevin model. Computed mean velocity profiles after $(t=1s)$ (solid circles), against theory (solid line). Reproduced from \cite{VIOLEAU2002}}
@@ -134,7 +134,7 @@ particle motion stemming from the additional background pressure $(P_o = \rho_o 
 The authors estimated the energy spectra of the flow simulations in order to analyse the results of their test cases, using first and second-order moving-least-squares (MLS) method \parencite{gossler2001moving} and its subsequent Fourier transform \parencite{frigo2005design}.
 Their first test case, the $2D$ variant of the Taylor-Green Vortex (TGV) problem, involved $8\times 8$ counter-rotating vortices, requiring $64^2$ particles. They considered the viscosity to be zero.
 As seen in the time evolution of the 
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[scale=0.7]{Figures/research_papers/adami2012-evolution-vel-field-tgv.png}
     \caption{Velocity vector plot at $t=2$ (left) and $t=30$ (right). $Re = \infty$. Reproduced from \cite{Adami2012} }
@@ -142,7 +142,7 @@ As seen in the time evolution of the
 \end{figure}
 
 The time evolution of the velocity field is given in \figref{fig:adami2012-evolution-vel-field-tgv}, where it can be observed that the $2D$ turbulence is characterised by merging and pairing of small vortices. The energy spectra given in \figref{fig:adami2012-energy-spectra-tgv} show that at low wave numbers, both interpolation schemes give the same results, but at high wave numbers, the results differ. The energy spectrum of the standard SPH has a linear slope of magnitude $m = 1$ in a log-log scale equivalent to a purely noisy velocity field. Theoretically, however, $2D$ turbulence has an energy cascade with a slope of $m = -3$ in the inertial range, which is reasonably predicted using mSPH.
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[scale=0.55]{Figures/research_papers/adami2012-energy-spectra-tgv.png}
     \caption{Comparison of energy spectra $t=10$. $+$ and $\times$ denote standard SPH results with quintic spline and MLS interpolation; $\circ$ and $\square$ denote mSPH results with quintic spline and MLS interpolation. Reproduced from \cite{Adami2012} }
@@ -150,13 +150,13 @@ The time evolution of the velocity field is given in \figref{fig:adami2012-evolu
 \end{figure}
 
 The second test case employed by the authors was that of the $3D$ TGV problem requiring $64^3$ particles for a wide range of Reynolds numbers. The dissipation rate of the flow simulations are shown in \figref{fig:adami2012-dissipation-re400} and \figref{fig:adami2012-dissipation-re3000}. It can be observed that the standard SPH is unable to simulate transitional flows due to excessive dissipation. In contrast, mSPH can reproduce the dissipation rate reasonably well. This implies that the corrected particle transport velocity is an analogous eddy-viscosity model on scales below the numerical resolution.
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[scale=0.7]{Figures/research_papers/adami2012-dissipation-re400.png}
     \caption{Dissipation rate at $Re = 400$ using DNS (solid line), Smagorinsky model (dashed line), standard SPH ($+$) and mSPH ($\circ$). Reproduced from \cite{Adami2012}}
     \label{fig:adami2012-dissipation-re400}
 \end{figure}
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[scale=0.7]{Figures/research_papers/adami2012-dissipation-re3000.png}
     \caption{Dissipation rate at $Re = 3000$ using DNS (solid line), Smagorinsky model (dashed line) and mSPH ($\circ$). Reproduced from \cite{Adami2012}}
@@ -278,7 +278,7 @@ Finally, the laminar stress term, consisting of the velocity Laplacian term, is 
 
 The authors used this SPH-LES model to investigate the wave interaction with a partially immersed breakwater and compared the results with experimentally obtained values of a similar setup. Their computational domain was $2D$ populated by $\approx 1.2 \times  10^4$ particles.
 
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[width=12cm]{Figures/research_papers/gotoh2004-wave-profile-result.png}
     \caption{Time sequences of computational and experimental wave profiles near curtain wall (overtopping). Reproduced from \cite{Gotoh2004}}
@@ -310,7 +310,7 @@ The authors validated this SPH-LES Model using experimental data from the experi
 From the computed wave profiles shown in \figref{fig:shao2005-wave-profile-result}, it can be visually observed that there is reasonable agreement between the experimental and computation data. This verifies the model’s accuracy in tracking free surfaces with less or no numerical diffusion.
 Furthermore, by performing a convergence study of the SPH-LES model using the dam-break problem, the authors could show that the scheme’s spatial and temporal accuracy is $O(\Delta t + \Delta x^{1.25})$.
 
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[scale=0.6]{Figures/research_papers/shao2005-wave-profile-result.png}
     \caption{Experimental and computational wave profiles by SPH and MPS model. Reproduced from \cite{Shao2005}}
@@ -415,19 +415,19 @@ The WALE model redefines the turbulent eddy viscosity as given by \Eqref{eq:Cane
 
 In order to test their model, the authors considered an array of cylinders in fluid flow as shown in \figref{fig:Canelas2016-vel-field}, with a constant body force. They computed the vorticity field and the Finite-Time Lyapunov Exponents (FTLE) field to study the LCSs in the flow. These fields are shown in \figref{fig:Canelas2016-vorticity-field} and \figref{fig:Canelas2016-ftle-field} respectively.
 
- \begin{figure}[H]
+ \begin{figure}[htbp!]
     \centering
     \includegraphics{Figures/research_papers/Canelas2016-vel-field.png}
     \caption{Cylinder distribution and instantaneous velocity overlapped by velocity vectors. Velocity in $m/s$, at $t=20s$. The flow direction is from left to right. Reproduced from \cite{Canelas2016}}
     \label{fig:Canelas2016-vel-field}
 \end{figure}
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics{Figures/research_papers/Canelas2016-vorticity-field.png}
     \caption{Vorticity field. Vorticity in Hz, at $t = 20s$. Reproduced from \cite{Canelas2016}}
     \label{fig:Canelas2016-vorticity-field}
 \end{figure}
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics{Figures/research_papers/Canelas2016-ftle-field.png}
     \caption{FTLE field with negative integration time $(T = -0.4 s)$ (unstable manifolds - attracting LCS) at $t = 20s$. Reproduced from \cite{Canelas2016}}
@@ -490,19 +490,19 @@ The authors consider three models for the turbulent eddy viscosity:
 The authors show a correlation between the vorticity and SFS tensor. They subsequently conclude that the fluctuations in the vorticity, energy spectra and SFS tensor are correlated quantities that contain different information about the numerical dissipation dynamics.
 
 The authors use the $3D$ TGV problem to study and investigate the proposed models. They consider various resolutions to study the problem, varying from $\approx 200^3 - 500^3$ particles.
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[scale=0.9]{Figures/research_papers/Okraschevski2022-fig-6.png}
     \caption{Comparison of quantitative metrics for different particle counts $N$. (a) \& (b) Temporal evolution of the density-weighted averaged kinetic energy. (c) \& (d) Temporal evolution of the averaged dissipation rate. Reproduced from \cite{Okraschevski2022}}
     \label{fig:Okraschevski2022-fig-6}
 \end{figure}
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[scale=0.9]{Figures/research_papers/Okraschevski2022-fig-9.png}
     \caption{Backward FTLE at the plane $z =\pi$ for $N = 2563$ and $t = 14 s$ in the range $[11;14] s$. (a) Without explicit SFS model. (b) With the SMAG model. (c) With SIGMA model. (d) With the SMAG-MCG model. Reproduced from \cite{Okraschevski2022}}
     \label{fig:Okraschevski2022-fig-9}
 \end{figure}
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[scale=0.9]{Figures/research_papers/Okraschevski2022-fig-11.png}
 	    \caption{Comparison of quantitative metrics for different $N = 256^3$ runs. (a) \& (b) Temporal evolution of the density-weighted averaged kinetic energy. (c) \& (d) Temporal evolution of the averaged dissipation rate. Reproduced from \cite{Okraschevski2022}}
@@ -644,13 +644,13 @@ The above equations, coupled with the closure models, allow the authors to repla
 
 The authors used the  $2D$ and $3D$ TGV problems to validate the model. The authors considered Reynolds number up to $\approx \SciNot{1.2}{5}$ for the $2D$ case, and $\approx \SciNot{1.5}{3}$ for the $3D$ case. The authors also compared the proposed model against that of the DNS SPH scheme, which was developed by \cite{mayrhofer2015dns} as observed in \figref{fig:DiMascio2017-fig-4} and \figref{fig:DiMascio2017-fig-9}.
 
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[scale=0.5]{Figures/research_papers/DiMascio2017-fig-4.png}
     \caption{$2D$ freely decaying turbulence $(tU/L = 2, Re = \SciNot{1.25}{5})$. Left: Energy spectrum using DNS-SPH. Right: Energy spectrum using LES- SPH. Reproduced from \cite{DiMascio2017}}
     \label{fig:DiMascio2017-fig-4}
 \end{figure}
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[scale=0.75]{Figures/research_papers/DiMascio2017-fig-9.png}
     \caption{$3D$ homogeneous turbulence decay. Comparison between DNS-SPH and LES-SPH simulations $(tU/L = 5)$. Left: Particle resolution = $64^3$. Right: particle resolution = $128^3$. Reproduced from \cite{DiMascio2017}}
@@ -669,13 +669,13 @@ This was done since the Lagrangian nature of the proposed model was proving to b
 
 The authors subsequently employed this $\delta$-LES-SPH scheme with the same set of closure models as detailed by \cite{DiMascio2017}. They compared their proposed model with standard LES-SPH on the $2D$ and $3D$ TGV problems for Reynolds numbers up to $\SciNot{1}{6}$.
 
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[scale=0.7]{Figures/research_papers/Colagrossi2021QuasiLagrangian-fig-4.png}
     \caption{Left: Energy spectrum at $(tU/L = 3, Re = \SciNot{1}{6})$ as predicted by the $\delta$-LES-SPH model and a finite volume scheme. Symbols $k_f$ and $k_R$ indicate the wave numbers of the external forcing and the kernel radius, respectively, while $k_{\lambda}$ and $k_D$ are the wave numbers associated with the Taylor and Kolmogorov scales. Right: $k$ field at the same instant. Reproduced from \cite{Colagrossi2021QuasiLagrangian}}
     \label{fig:Colagrossi2021QuasiLagrangian-fig-4}
 \end{figure}
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[scale=0.65]{Figures/research_papers/Colagrossi2021QuasiLagrangian-fig-8.png}
     \caption{Left: Time histories of $k$ as predicted by finite volume scheme and the $\delta$-LES-SPH model. Right: Energy spectra. Symbols $k_f$ and $k_R$ denote the wave numbers of the external forcing and the kernel radius, respectively. Reproduced from \cite{Colagrossi2021QuasiLagrangian}}
@@ -761,7 +761,7 @@ The author tested the model on the problem of $2D$ wave breaking and overtopping
 
 As seen from the evolution of the water surface elevation plotted in \figref{fig:Shao2006-water-surf-elevations}, the author could ascertain that the proposed model produced better results than those of \cite{li2004wave}, compared to the experimental data in \figref{fig:Shao2006-water-surf-elevations}(a) and \figref{fig:Shao2006-water-surf-elevations}(b). This could be attributed to the free surfaces being accurately tracked by particles without numerical diffusion. 
 In \figref{fig:Shao2006-water-surf-elevations}(c) and \figref{fig:Shao2006-water-surf-elevations}(d), despite the wave profiles being consistent with each other in phase and shape, the proposed model predicts smaller elevation levels. Li et al. use a dynamic Smagorinsky model, whereas the proposed model uses constant empirical coefficients. The author believes these coefficients derived from a quasi-steady state may behave sub-optimally in transient flow, such as the problem at hand.
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[scale=0.9]{Figures/research_papers/Shao2006-water-surf-elevations.png}
     \caption{Comparisons of computed water surface elevations by SPH (solid lines) with experimental ($\circ$) and numerical (dotted lines) data of \cite{li2004wave}. Reproduced from \cite{Shao2006}}
@@ -810,13 +810,13 @@ The authors also derived an SPH formulation for the strain rate tensor defined i
 \end{equation}
 
 The authors validated the model against the problem of a solitary wave propagating over a bottom-mounted barrier in $2D$. Its results are shown in \figref{fig:Wang2020-wave-propogation-result}. They also considered the problem involving wave breaking on a slopping wall in $2D$, which is shown in \figref{fig:Wang2020-wave-breaking-result}.
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[scale=0.75]{Figures/research_papers/Wang2020-wave-propogation-result.png}
     \caption{Comparisons between experimental data (left) and numerical results (right) for turbulence intensity $(m/s)$ at $t=0.6s$ (top panels) and the corresponding vertical cross-sections (lower panels). In the lower panels, solid lines and $\circ$ represent the numerical and experimental results, respectively. Reproduced from \cite{Wang2020}}
     \label{fig:Wang2020-wave-propogation-result}
 \end{figure}
-\begin{figure}[H]
+\begin{figure}[htbp!]
     \centering
     \includegraphics[scale=0.8]{Figures/research_papers/Wang2020-wave-breaking-result.png}
     \caption{Comparisons of numerical and experimental turbulent kinetic energy in x-direction and y-direction. Reproduced from \cite{Wang2020}}
@@ -854,6 +854,7 @@ The LANS-$\alpha$ equations, assuming incompressibility and isotropic turbulence
 \end{equation}
 \begin{equation}
     \tensor{\sigma}(\vect{v}) = -P\tensor{I} + 2\nu(1 - \alpha^2\Delta)\tensor{S} + 2\alpha^2\Dot{\tensor{S}}
+    \label{eq:LANS-alpha-stress-tensor}
 \end{equation}
 \begin{equation}
     \Dot{\tensor{S}} = \LagDerivative{\tensor{S}} + \tensor{S}\tensor{R} - \tensor{R}\tensor{S}
