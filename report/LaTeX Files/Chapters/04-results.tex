@@ -719,15 +719,15 @@ Delta LES SPH RHOC - INTEGRATOR VMAG \figref{fig:deltales-integrator-vmag}
 Delta LES SPH RHOC - INTEGRATOR ESPEC \figref{fig:deltales-integrator-espec}
 \begin{figure}[H]
   \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_pec_dtmul_1_nx_50_pst_100_re_10000_deltales/energy_spectrum_evolution.png}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_pec_dtmul_1_nx_100_pst_100_re_10000_deltales/energy_spectrum_evolution.png}
     \caption{\texttt{PEC}}
   \end{subfigure}
   \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_rk2_dtmul_1.5_nx_50_pst_100_re_10000_deltales/energy_spectrum_evolution.png}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_rk2_dtmul_1.5_nx_100_pst_100_re_10000_deltales/energy_spectrum_evolution.png}
     \caption{\texttt{RK2}}
   \end{subfigure}
   \begin{subfigure}{7cm}
-    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_rk4_dtmul_2_nx_50_pst_100_re_10000_deltales/energy_spectrum_evolution.png}
+    \centering\includegraphics[width=6cm]{Code-Figures/deltales/integrator/c0_20_tait_rk4_dtmul_2_nx_100_pst_100_re_10000_deltales/energy_spectrum_evolution.png}
     \caption{\texttt{RK4}}
   \end{subfigure}
   \caption{Evolution of the energy spectrum for the $\delta$-LES-SPH $(\rho_c)$ scheme for various time-integration schemes $(N=100^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=100)$.}
@@ -735,16 +735,168 @@ Delta LES SPH RHOC - INTEGRATOR ESPEC \figref{fig:deltales-integrator-espec}
 \end{figure}
 
 
-   
+
+\subsection{$k-\epsilon$ SPH Scheme}
+The $k-\epsilon$ SPH scheme of \cite{Shao2006} was chosen over the other RANS-based schemes, since it was ...
+
+K-EPS - EOS \figref{fig:keps-eos}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/dt_pois_conv_c0_20_re_100.png}
+    \caption{$Re = 100$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/dt_pois_conv_c0_20_re_1000.png}
+    \caption{$Re = 1000$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/dt_pois_conv_c0_20_re_10000.png}
+    \caption{$Re = 10000$}
+  \end{subfigure}
+  \caption{Convergence of the $k-\epsilon$ SPH scheme for various equations of state.}
+  \label{fig:keps-eos}
+\end{figure}
 
 
+K-EPS - EOS VMAG \figref{fig:keps-eos-vmag}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/c0_20_linear_pec_dtmul_1_nx_50_pst_10_re_10000_k_eps/final_vmag.png}
+    \caption{\texttt{LinearEOS}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/c0_20_tait_pec_dtmul_1_nx_50_pst_10_re_10000_k_eps/final_vmag.png}
+    \caption{\texttt{TaitEOS}}
+  \end{subfigure}
+  \caption{Velocity magnitude field for the $k-\epsilon$ SPH scheme for various equations of state $(N=50^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=10)$.}
+  \label{fig:keps-eos-vmag}
+\end{figure}
 
 
+K-EPS - EOS ESPEC \figref{fig:keps-eos-espec}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/c0_20_linear_pec_dtmul_1_nx_100_pst_10_re_10000_k_eps/energy_spectrum_evolution.png}
+    \caption{\texttt{LinearEOS}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/eos/c0_20_tait_pec_dtmul_1_nx_100_pst_10_re_10000_k_eps/energy_spectrum_evolution.png}
+    \caption{\texttt{TaitEOS}}
+  \end{subfigure}
+  \caption{Evolution of the energy spectrum for the $k-\epsilon$ SPH scheme for various equations of state $(N=100^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=10)$.}
+  \label{fig:keps-eos-espec}
+\end{figure}
 
 
+K-EPS - K-EPS-EXPAND \figref{fig:keps-kexp-expand}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/expanded/dt_pois_conv_c0_20_re_100.png}
+    \caption{$Re = 100$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/expanded/dt_pois_conv_c0_20_re_1000.png}
+    \caption{$Re = 1000$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/expanded/dt_pois_conv_c0_20_re_10000.png}
+    \caption{$Re = 10000$}
+  \end{subfigure}
+  \caption{Convergence of the $k-\epsilon$ SPH scheme for simplified and expanded $k-\epsilon$ transport equations.}
+  \label{fig:keps-kexp-expand}
+\end{figure}
 
 
+K-EPS - K-EPS-EXPAND VMAG \figref{fig:keps-kexp-expand-vmag}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/expanded/c0_20_tait_pec_dtmul_1_kepx_no_nx_50_pst_100_re_10000_k_eps/final_vmag.png}
+    \caption{Simplified $k-\epsilon$ transport equations}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+	\centering\includegraphics[width=6cm]{Code-Figures/keps/expanded/c0_20_tait_pec_dtmul_1_kepx_yes_nx_50_pst_100_re_10000_k_eps/final_vmag.png}
+	\caption{Expanded $k-\epsilon$ transport equations}
+\end{subfigure}
+  \caption{Velocity magnitude field for the $k-\epsilon$ SPH scheme for simplified and expanded $k-\epsilon$ transport equations $(N=50^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=10)$.}
+  \label{fig:keps-kexp-expand-vmag}
+\end{figure}
 
 
+K-EPS - K-EPS-EXPAND ESPEC \figref{fig:keps-kexp-expand-espec}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/expanded/c0_20_tait_pec_dtmul_1_kepx_yes_nx_100_pst_100_re_10000_k_eps/energy_spectrum_evolution.png}
+    \caption{Expanded $k-\epsilon$ transport equations}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/expanded/c0_20_tait_pec_dtmul_1_kepx_no_nx_100_pst_100_re_10000_k_eps/energy_spectrum_evolution.png}
+    \caption{Simplified $k-\epsilon$ transport equations}
+  \end{subfigure}
+  \caption{Evolution of the energy spectrum for the $k-\epsilon$ SPH scheme for expanded or simplified $k-\epsilon$ transport equations $(N=100^2, t_f=0.1, Re=10000, c_s=20, f_{pst}=10)$.}
+  \label{fig:keps-kexp-expand-espec}
+\end{figure}
 
-\subsection{Order of convergence analysis}
+
+K-EPS - PST \figref{fig:keps-pst}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/dt_pois_conv_c0_20_re_100.png}
+    \caption{$Re = 100$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/dt_pois_conv_c0_20_re_1000.png}
+    \caption{$Re = 1000$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/dt_pois_conv_c0_20_re_10000.png}
+    \caption{$Re = 10000$}
+  \end{subfigure}
+  \caption{Convergence of the $k-\epsilon$ SPH scheme for various $f_{pst}$ values.}
+  \label{fig:keps-pst}
+\end{figure}
+
+
+K-EPS - PST VMAG \figref{fig:keps-pst-vmag}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_-1_re_10000_k_eps/final_vmag.png}
+    \caption{No PST}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_10_re_10000_k_eps/final_vmag.png}
+    \caption{$f_{pst} = 10$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_50_re_10000_k_eps/final_vmag.png}
+    \caption{$f_{pst} = 50$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_50_pst_100_re_10000_k_eps/final_vmag.png}
+    \caption{$f_{pst} = 100$}
+  \end{subfigure}
+  \caption{Velocity magnitude field for the $k-\epsilon$ SPH scheme for various $f_{pst}$ values $(N=50^2, t_f=0.1, Re=10000, c_s=20)$.}
+  \label{fig:keps-pst-vmag}
+\end{figure}
+
+
+K-EPS - PST ESPEC \figref{fig:keps-pst-espec}
+\begin{figure}[H]
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_-1_re_10000_k_eps/energy_spectrum_evolution.png}
+    \caption{No PST}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_10_re_10000_k_eps/energy_spectrum_evolution.png}
+    \caption{$f_{pst} = 10$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_50_re_10000_k_eps/energy_spectrum_evolution.png}
+    \caption{$f_{pst} = 50$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/keps/pst/c0_20_tait_pec_dtmul_1_nx_100_pst_100_re_10000_k_eps/energy_spectrum_evolution.png}
+    \caption{$f_{pst} = 100$}
+  \end{subfigure}
+  \caption{Evolution of the energy spectrum for the $k-\epsilon$ SPH scheme for various $f_{pst}$ values $(N=100^2, t_f=0.1, Re=10000, c_s=20)$.}
+  \label{fig:keps-pst-espec}
+\end{figure}
