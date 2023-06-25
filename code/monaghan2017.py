@@ -293,12 +293,11 @@ class Monaghan2017Scheme(Scheme):
             'p', 'rhoc', 'gradv',
         ]
 
-        if self.kernel_corr:
-            delta_sph_props = [
-                dict(name='m_mat', stride=9),
-                dict(name='gradv', stride=9),
-            ]
-            props += delta_sph_props
+        delta_sph_props = [
+            dict(name='m_mat', stride=9),
+            dict(name='gradv', stride=9),
+        ]
+        props += delta_sph_props
 
         for pa in particles:
             self._ensure_properties(pa, props, clean)
