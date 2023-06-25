@@ -797,7 +797,7 @@ class TGV2DIntegratorComparison(PySPHProblem):
         return 'tgv_2d_integrator_comparison'
 
     def _get_file(self):
-        return 'code/taylor_green.py --no-plot --openmp --tf 0.1 --n-o-files 8 '
+        return 'code/taylor_green.py --openmp --tf 0.1 --n-o-files 8 '
 
     def setup(self):
         # scheme_opts = mdict(
@@ -1032,7 +1032,7 @@ class TGV2DIntegratorComparison(PySPHProblem):
                                 label += f' ({eos})'
                                 # label += fr' ($\epsilon$={meps})'
                                 # label += f' ({tvc})'
-                                # mkc_msg = '(BL gradient correction)'
+                                mkc_msg = '(BL gradient correction)'
                                 if mkc == 'no':
                                     mkc_msg = ''
                                 label += f' {mkc_msg}'
