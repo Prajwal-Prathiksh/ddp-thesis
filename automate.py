@@ -363,63 +363,54 @@ class TGV2DSchemeComparison(PySPHProblem):
         Setup the problem.
         """
         base_cmd = "python code/taylor_green.py" + BACKEND
-        # scheme_opts = mdict(scheme=['edac', 'mon2017', 'ok2022'])
         scheme_opts = mdict(
             scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10],
-            eos=['tait']
-        )
-        # scheme_opts += mdict(scheme=['deltales'], les_no_pst=[None])
-        # scheme_opts += mdict(
-        #     scheme=['deltales'], les_no_pst=[None], les_no_tc=[None]
-        # )
-        scheme_opts += mdict(
-            scheme=['deltales'], pst_freq=[10, 50], eos=['tait']
-        )
-        scheme_opts += mdict(
-            scheme=['deltales_sd'], pst_freq=[10], eos=['linear']
-        )
-        scheme_opts += mdict(
-            scheme=['k_eps'], pst_freq=[10], eos=['linear']
-        )
-
-        integrator_opts = mdict(
+            eos=['tait'],
             integrator=['pec'], integrator_dt_mul_fac=[1]
         )
-        # integrator_opts += mdict(
-            # integrator=['rk2'], integrator_dt_mul_fac=[2]
-        # )
-        # integrator_opts += mdict(
-        #     integrator=['rk3'], integrator_dt_mul_fac=[3]
-        # )
-        # integrator_opts += mdict(
-        #     integrator=['rk4'], integrator_dt_mul_fac=[4]
-        # )
+        scheme_opts += mdict(
+            scheme=['ok2022'], pst_freq=[10], eos=['tait'],
+            turb_visc=['SMAG'],
+            integrator=['pec'], integrator_dt_mul_fac=[1],
+        )
+        scheme_opts += mdict(
+            scheme=['deltales'], pst_freq=[10], eos=['tait'],
+            integrator=['rk2'], integrator_dt_mul_fac=[1.5]
+        )
+        scheme_opts += mdict(
+            scheme=['k_eps'], pst_freq=[10], eos=['tait'],
+            k_eps_expand=['no'],
+            integrator=['pec'], integrator_dt_mul_fac=[1]
+        )
+        scheme_opts += mdict(
+            scheme=['mon2017'], pst_freq=[20], eos=['tait'],
+            mon2017_eps=[0.5],
+            mon_kernel_corr=['yes'],
+            integrator=['pec'], integrator_dt_mul_fac=[1]
+        )
+
+
         res_opts = mdict(
             re=[10_000, 100_000], 
-            tf=[4], n_o_files=[50], nx=[50],
-            c0_fac=[20], hdx=[2]
+            tf=[2], n_o_files=[50], nx=[100],
+            c0_fac=[20], hdx=[2],
+            # max_steps=[5]
         )
 
         self.sim_opts = sim_opts = dprod(
             scheme_opts,
-            dprod(integrator_opts, res_opts)
+            res_opts
         )
 
         self.case_info = {}
         for i in range(len(sim_opts)):
             sim_name = opts2path(
                 sim_opts[i],
-                keys=[
-                    'scheme', 'integrator', 'integrator_dt_mul_fac', 're',
-                    'c0_fac', 'nx', 'les_no_pst', 'les_no_tc', 'pst_freq',
-                    'eos'
-                ],
                 kmap=dict(
                     integrator_dt_mul_fac='dtmul', c0_fac='c0',
-                    les_no_pst='no_pst', les_no_tc='no_tic',
                     pst_freq='pst'
                 ),
-            ).replace('None_', '')
+            )
             self.case_info[sim_name] = sim_opts[i]
         
         # Setup cases
@@ -427,7 +418,7 @@ class TGV2DSchemeComparison(PySPHProblem):
             Simulation(
                 root=self.input_path(name),
                 base_command=base_cmd,
-                job_info=dict(n_core=2, n_thread=4),
+                job_info=dict(n_core=4, n_thread=8),
                 **kw
             ) for name, kw in self.case_info.items()
         ]
@@ -445,55 +436,13 @@ class TGV2DSchemeComparison(PySPHProblem):
         # Unpack simulation opts
         sim_opts = self.sim_opts
         res = get_all_unique_values(sim_opts, 're')
-        integrators = get_all_unique_values(sim_opts, 'integrator')
-        integrator_dt_mul_facs = get_all_unique_values(
-            sim_opts, 'integrator_dt_mul_fac'
-        )
-        print(res, integrators, integrator_dt_mul_facs)
+        schemes = get_all_unique_values(sim_opts, 'scheme')
 
         # Make plots
         KIND_CHOICES = ['ke', 'decay', 'linf', 'l1', 'p_l1', 'lm', 'am']
 
-        # min_dtmf = 1
-        # if min_dtmf:
-        #     integrator_dt_mul_facs.sort()
-        # else:
-        #     integrator_dt_mul_facs.sort(reverse=True)
-        # for re in res:
-        #     for k in KIND_CHOICES:
-        #         filtered_cases = []
-        #         for intg in integrators:
-        #             for dtmf in integrator_dt_mul_facs:
-        #                 fcases = filter_cases(
-        #                     self.cases, re=re, integrator=intg,
-        #                     integrator_dt_mul_fac=dtmf
-        #                 )
-        #                 if len(fcases) >= 1:
-        #                     filtered_cases.extend(fcases)
-        #                     break
-        #         if len(filtered_cases) == 0:
-        #             continue
-        #         fname = f"{k}_re_{re}.png"
-        #         self.plot_sim_prop_history(
-        #             cases=filtered_cases, kind=k, fname=fname
-        #         )
-
-
-        # for re in res:
-        #     for intg in integrators:
-        #             for k in KIND_CHOICES:
-        #                 fcases = filter_cases(
-        #                     self.cases, re=re, integrator=intg,
-        #                 )
-        #                 if len(fcases) == 0:
-        #                     continue
-        #                 fname = f"{k}_re_{re}_{intg}.png"
-        #                 self.plot_sim_prop_history(
-        #                     cases=fcases, kind=k, fname=fname
-        #                 )
-
-        for re in res:
-            for k in KIND_CHOICES:
+        for k in KIND_CHOICES:
+            for re in res:
                 fcases = filter_cases(self.cases, re=re)
                 if len(fcases)  == 0:
                     continue
@@ -556,11 +505,14 @@ class TGV2DSchemeComparison(PySPHProblem):
 
         for case in cases:
             t, prop = self.get_sim_prop_history(case, kind)
-            plt_method(t, prop, label=case.name)
+            _s = case.render_parameter('scheme').split('=')[-1]
+            _i = case.render_parameter('integrator').split('=')[-1]
+            label = get_label_from_scheme(_s) + f" ({_i})"
+            plt_method(t, prop, label=label)
         
         plt.xlabel('t')
         plt.ylabel(kind)
-        plt.title(f"{kind} history {title_suffix}")
+        plt.title(f"{kind} history{title_suffix}")
         plt.legend()
         plt.grid()
         plt.savefig(self.output_path(fname), dpi=300, bbox_inches='tight')
