@@ -191,6 +191,6 @@ def get_label_from_scheme(scheme):
         label = r'SPH-$\epsilon$'
 
     if label is None:
-        raise NotImplementedError
+        raise NotImplementedError(f'No label for: {scheme}')
     else:
         return fr'{label}'
