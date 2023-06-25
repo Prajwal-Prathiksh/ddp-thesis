@@ -1191,7 +1191,6 @@ class KEpsModelTesting(PySPHProblem):
                     continue
                 dts, l1 = self.calculate_l1(cases, prop=prop)
                 dts = 1./dts
-                print(ke_expd)
                 kexp_m = r"($k-\epsilon$ simplified)"
                 if ke_expd == "yes":
                     kexp_m = r"($k-\epsilon$ expanded)"
