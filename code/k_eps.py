@@ -549,11 +549,11 @@ class KEpsilonScheme(Scheme):
 
         data = dict((var, self._smart_getattr(options, var))
                     for var in vars)
-        _t = data['k_eps_expand'] 
-        data['k_eps_expand'] = True if _t == 'yes' else False
-
-        _t = data['decouple_keps']
-        data['decouple_keps'] = True if _t == 'yes' else False
+        
+        _bool = lambda x: True if x == 'yes' else False
+        data['k_eps_expand'] = _bool(data['k_eps_expand'])
+        data['decouple_keps'] = _bool(data['decouple_keps'])
+        
         self.configure(**data)
 
     def get_timestep(self, cfl=0.5):
