@@ -808,8 +808,9 @@ Three test-cases were devised, to represent three distinct functional forms. Flo
   \end{equation}
   This test-case, represents a $k-\epsilon$ field that is non-linearly proportional to the velocity field.
 \end{itemize}
+For all of the above cases, the analytical RHS of the $k$ and $\epsilon$ transport equations ae computed using \texttt{SymPy} \parencite{Meurer2017}. a symbolic package, in order to automate the process, and avoid any errors in the analytical computation.
 
-The results for the $k$ and $\epsilon$ transport equations are shown in \figref{fig:k-spatial-ooc} and \figref{fig:eps-spatial-ooc} respectively. It can be oberseved here, that for the first test-case, the OOC for the spatial operators in the transport equation agree well, irrespective of the variant of discretisation.
+The results for the $k$ and $\epsilon$ transport equations are shown in \figref{fig:k-spatial-ooc} and \figref{fig:eps-spatial-ooc} respectively. It can be observed here, that for the first test-case, the OOC for the spatial operators in the transport equation agree well, irrespective of the variant of discretisation.
 However, in the subsequent test-cases, the $k-\epsilon$ simplified variant, shows a better OOC, than the $k-\epsilon$ expanded variant.
 This can be attributed, to the fact the in the expanded equations of \eqref{eq:Shao2006-k-transport-eq-exp-res-chap} and \eqref{eq:Shao2006-eps-transport-eq-exp-res-chap}, the terms involve either higher-order derivatives or products of derivatives, which are not well approximated by the SPH operators, and hence, lead to increased errors. It appears, that the advantage of dealing with single-term derivatives (e.g, $\nabla k$) in the expanded equations, compared to having multi-term derivatives (e.g, $\nabla \cdot (k^2\nabla k / \epsilon)$) in the simplified equations, is not enough to offset the increased numerical errors due to the higher-order derivatives.
 This is also made more evident, in the actual $k-\epsilon$ fields, as shown in \figref{fig:k-spatial-ooc-field} and \figref{fig:eps-spatial-ooc-field}, respectively.
