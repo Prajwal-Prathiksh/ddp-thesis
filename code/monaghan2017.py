@@ -18,7 +18,7 @@ from pysph.sph.basic_equations import (ContinuityEquation, SummationDensity,
                                        XSPHCorrection)
 from pysph.sph.equation import Equation, Group
 from pysph.sph.integrator import PECIntegrator
-from pysph.sph.integrator_step import WCSPHStep
+from pysph.sph.integrator_step import IntegratorStep
 from pysph.sph.scheme import Scheme
 from pysph.sph.wc.basic import TaitEOS
 from pysph.sph.wc.kernel_correction import (GradientCorrection,
@@ -88,6 +88,66 @@ class MonaghanSPHEpsilonMomentumEquation(Equation):
         d_au[d_idx] += - force * DWIJ[0]
         d_av[d_idx] += - force * DWIJ[1]
         d_aw[d_idx] += - force * DWIJ[2]
+
+###########################################################################
+# Steppers
+###########################################################################
+class WCSPHStep(IntegratorStep):
+    """Standard Predictor Corrector integrator for the WCSPH formulation
+
+    Use this integrator for WCSPH formulations. In the predictor step,
+    the particles are advanced to `t + dt/2`. The particles are then
+    advanced with the new force computed at this position.
+
+    This integrator can be used in PEC or EPEC mode.
+
+    The same integrator can be used for other problems. Like for
+    example solid mechanics (see SolidMechStep)
+
+    """
+    def initialize(self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
+                   d_u0, d_v0, d_w0, d_u, d_v, d_w, d_rho0, d_rho):
+        d_x0[d_idx] = d_x[d_idx]
+        d_y0[d_idx] = d_y[d_idx]
+        d_z0[d_idx] = d_z[d_idx]
+
+        d_u0[d_idx] = d_u[d_idx]
+        d_v0[d_idx] = d_v[d_idx]
+        d_w0[d_idx] = d_w[d_idx]
+
+        d_rho0[d_idx] = d_rho[d_idx]
+
+    def stage1(self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
+                   d_u0, d_v0, d_w0, d_u, d_v, d_w, d_rho0, d_rho, d_au, d_av,
+                   d_aw, d_ax, d_ay, d_az, d_arho, dt):
+        dtb2 = 0.5*dt
+
+        d_u[d_idx] = d_u0[d_idx] + dtb2*d_au[d_idx]
+        d_v[d_idx] = d_v0[d_idx] + dtb2*d_av[d_idx]
+        d_w[d_idx] = d_w0[d_idx] + dtb2*d_aw[d_idx]
+
+
+        d_x[d_idx] = d_x0[d_idx] + dtb2 * d_ax[d_idx]
+        d_y[d_idx] = d_y0[d_idx] + dtb2 * d_ay[d_idx]
+        d_z[d_idx] = d_z0[d_idx] + dtb2 * d_az[d_idx]
+
+        # Update densities and smoothing lengths from the accelerations
+        d_rho[d_idx] = d_rho0[d_idx] + dtb2 * d_arho[d_idx]
+
+    def stage2(self, d_idx, d_x0, d_y0, d_z0, d_x, d_y, d_z,
+                   d_u0, d_v0, d_w0, d_u, d_v, d_w, d_rho0, d_rho, d_au, d_av,
+                   d_aw, d_ax, d_ay, d_az, d_arho, dt):
+
+        d_u[d_idx] = d_u0[d_idx] + dt*d_au[d_idx]
+        d_v[d_idx] = d_v0[d_idx] + dt*d_av[d_idx]
+        d_w[d_idx] = d_w0[d_idx] + dt*d_aw[d_idx]
+
+        d_x[d_idx] = d_x0[d_idx] + dt * d_ax[d_idx]
+        d_y[d_idx] = d_y0[d_idx] + dt * d_ay[d_idx]
+        d_z[d_idx] = d_z0[d_idx] + dt * d_az[d_idx]
+
+        # Update densities and smoothing lengths from the accelerations
+        d_rho[d_idx] = d_rho0[d_idx] + dt * d_arho[d_idx]
 
 ###########################################################################
 # Scheme
@@ -220,6 +280,14 @@ class Monaghan2017Scheme(Scheme):
                 rho0=self.rho0, c0=self.c0, alpha=self.alpha, eps=self.eps
             ))
         equations.append(Group(equations=g5))
+
+        # Add XSPH correction
+        g6 = []
+        for name in self.fluids:
+            g6.append(XSPHCorrection(
+                dest=name, sources=self.fluids, eps=self.eps
+            ))
+        equations.append(Group(equations=g6))
         return equations
 
     def post_step(self, pa_arr, domain):
