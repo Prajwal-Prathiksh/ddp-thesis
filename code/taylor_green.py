@@ -466,6 +466,23 @@ class TaylorGreen(TurbulentFlowApp):
         plt.grid()
         if not self.ext_forcing:
             plt.semilogy(t, ke_ex, label="exact")
+        else:
+            from deltaLES import get_colagrossi2021_fig1_ke
+            _t_exp_c, _ke_exp_c = get_colagrossi2021_fig1_ke(
+                re=self.options.re
+            )
+            if _t_exp_c is not None:
+                idx = 0
+                for _tt in _t_exp_c:
+                    if _tt > t[-1]:
+                        break
+                    idx += 1
+                _t_exp_c, _ke_exp_c = _t_exp_c[:idx], _ke_exp_c[:idx]
+                plt.plot(
+                    _t_exp_c, _ke_exp_c,
+                    'k--',
+                    label="exact (Colagrossi et al. 2021)"
+                )
         plt.plot(t, ke, label="computed")
         plt.xlabel('t')
         plt.ylabel('kinetic energy')
@@ -535,8 +552,9 @@ class TaylorGreen(TurbulentFlowApp):
         omega_mag = np.sqrt(omegax**2 + omegay**2 + omegaz**2)
 
         q_sc, q_clr, q_alph = (15, 'k', 0.5)
+        sct_s = 0.5
         plt.clf()
-        plt.scatter(x, y, c=vmag)
+        plt.scatter(x, y, c=vmag, s=sct_s)
         plt.colorbar()
         quiver_mask(x, y, u, v, scale=q_sc, color=q_clr, alpha=q_alph)
         plt.title(f'Re={self.options.re}, U={self.U} (t={_t:.4f})')
@@ -546,7 +564,7 @@ class TaylorGreen(TurbulentFlowApp):
         plt.savefig(fig, dpi=300)
 
         plt.clf()
-        plt.scatter(x, y, c=omega_mag)
+        plt.scatter(x, y, c=omega_mag, s=sct_s)
         plt.colorbar()
         quiver_mask(x, y, u, v, scale=q_sc, color=q_clr, alpha=q_alph)
         plt.xlim(0, self.L)
@@ -557,7 +575,7 @@ class TaylorGreen(TurbulentFlowApp):
 
         def _plot_macro(prop, pname):
             plt.clf()
-            plt.scatter(x, y, c=prop)
+            plt.scatter(x, y, c=prop, s=sct_s)
             plt.colorbar()
             plt.title(f'Re={self.options.re}, U={self.U} (t={_t:.4f})')
             plt.xlim(0, self.L)
