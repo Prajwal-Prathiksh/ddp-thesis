@@ -355,7 +355,7 @@ As seen in \figref{fig:ftle-parabolic} and \figref{fig:ftle-spiral} ($B_0$: init
 A broad classification of the major categories of turbulence models has already been discussed in \chapref{chap:turbulence-modelling}.
 In order to better understand the nature of each major category and to subsequently understand the implementation of the same, a select few representative schemes from each of these models are considered, which are listed in \tabref{tab:rep-turb-models}.
 
-\begin{table}[ht!]
+\begin{table}[htbp!]
   \centering
   \resizebox{\textwidth}{!}{%
   \begin{tabular}{|l|l|l|l|}
@@ -1252,8 +1252,36 @@ Hence, a default value of $f_{pst} = 10$, and $\epsilon = 0.5$ is chosen for the
 
 
 \subsection{Long time simulations - Taylor-Green Vortex Problem}
+As mentioned, in the previous section, a long time simulation of the TGV problem was essential to build an understanding for each of the turbulence models, with regards to if and when instability would appear in the flow field.
+Therefore, the TGV problem was simulated for a longer time period of $t_f = 2.0$, for Reynolds number of $Re=[10^4, 10^5]$. Each simulation run, was repeated for the resolutions of $N=[100^2, 200^2]$, with $c_s=20$. The \texttt{WendlandQuinticC4} kernel was used for all simulations, with a radius multiplier of $2.0$. 
+Further scheme-specific parameters are listed in \tabref{tab:opt-sph-schemes}.
+The run time for the simulations are also listed in the table, for the case of $(N=200^2, Re=10^5)$, which was the most expensive simulation run.
+When arranged in order of increasing run time, the schemes are arranged as follows: SPH-$\epsilon$, L-IPST-C, $k-\epsilon$ SPH, and $\delta$-LES-SPH.
+The SPH-LES scheme on the other hand, was never able to simulate the TGV problem for the given time period, and hence, the run time is not listed in the table.
 
-AM AND LM \figref{fig:ltgv-am-lm}
+The results will be presented in the subsequent sections. It should be noted that, each scheme is assigned a unique colour for the plots. The opacity, i.e. the transparency of the colour, is used to indicate the resolution of the simulation, with the higher opacity indicating the higher resolution. For example, the blue line with the highest opacity, indicates the results for the L-IPST-C scheme with $N=200^2$.
+
+\begin{table}[htbp!]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tabular}{|c|c|c|c|c|c|c|c|}
+  \hline
+  \textbf{Turbulence Model}         & \textbf{Scheme Name}                                                                                                             & \textbf{PST Frequency} & \textbf{Equation of State} & \textbf{Integrator} & \textbf{CFL} & \textbf{Scheme-specific Parameters}                                               & \textbf{Run Time (in $s$) $(N=200^2, Re=10^5)$} \\ \hline
+  Viscosity-based Model             & \begin{tabular}[c]{@{}c@{}}Lagrangian with iterative PST and \texttt{coupled\_c} viscosity formulation\\ (L-IPST-C)\end{tabular} & 10                     & \texttt{TaitEOS}           & \texttt{PEC}        & 1            & -                                                                                 & 5900                                         \\ \hline
+  Large Eddy Simulation-based Model & SPH-LES                                                                                                                          & 10                     & \texttt{TaitEOS}           & \texttt{PEC}        & 1            & Viscous models=[\texttt{SMAG, SMAG-MCG, SIGMA}]                                   & \texttt{n.a.}                                \\ \hline
+  Lagrangian LES-based Model        & $\delta$-LES-SPH $(\rho_c)$                                                                                                      & 10                     & \texttt{TaitEOS}           & \texttt{RK2}        & 1.5          & No gradient correction;                                                           & 8200                                         \\ \hline
+  RANS-based $k-\epsilon$ Model     & $k-\epsilon$ SPH                                                                                                                 & 10                     & \texttt{TaitEOS}           & \texttt{PEC}        & 1            & Simplied $k-\epsilon$ transport equations.                                        & 6400                                         \\ \hline
+  LANS-based Model                  & SPH-$\epsilon$                                                                                                                   & 10                     & \texttt{TaitEOS}           & \texttt{PEC}        & 1            & \begin{tabular}[c]{@{}c@{}}No gradient correction;\\ $\epsilon=0.5$;\end{tabular} & 3000                                         \\ \hline
+  \end{tabular}%
+  }
+  \caption{Optimised SPH schemes for each category of turbulence model.}
+  \label{tab:opt-sph-schemes}
+\end{table}
+
+Since the problem does not have any external force, or torque acting on the system, the angular and linear momentum of the system should be conserved.
+Therefore, on plotting the evolution of the angular and linear momentum of the system, as shown in \figref{fig:ltgv-am-lm}, it can be observed that the $k-\epsilon$ SPH scheme, appears, to be the only scheme that conserves both the angular and linear momentum to a high precision (this will be discussed in more detail in the subsequent sections). The L-IPST-C scheme, and the $\delta$-LES-SPH scheme, appear to oscillate about the zero line, but tend to stay bounded. The bounds become tighter with increasing resolution, indicating that the schemes are converging to a solution.
+The SPH-$\epsilon$ scheme, on the other hand, appears to be the only scheme that does not follow any specific trend with increasing resolution. This is evident from the fact that the bounds on the angular and linear momentum of the system, do not appear to be converging to a specific value, and moreover, instances when there are sudden jumps in the momentum of the system appear to be arbitrary, implying that the scheme is not conservative.
+
 \begin{figure}[htbp!]
   \begin{subfigure}{7cm}
   \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/limit_am_re_10000.png}
@@ -1275,7 +1303,11 @@ AM AND LM \figref{fig:ltgv-am-lm}
   \label{fig:ltgv-am-lm}
 \end{figure}
 
-KE AND DECAY \figref{fig:ltgv-ke-decay}
+The evolution of the kinetic energy and velocity decay for the various schemes are shown in \figref{fig:ltgv-ke-decay}. 
+Here, it is observed that for the L-IPTS-C and $\delta$-LES-SPH schemes, the kinetic energy and the decay follow the exact solution accurately, with this accuracy increasing with increasing resolution. It is also interesting to note, that for the L-IPTS-C scheme generally seems to overpredict the energy in the system and by increasing the resolution, this can be reduced. For the $\delta$-LES-SPH scheme, it is the other way around, where the energy in the system is underpredicted, and increasing the resolution increases the energy in the system.
+Interestingly, the $k-\epsilon$ SPH scheme, which was the only scheme that conserved the angular and linear momentum of the system, seems to dissipate the energy in the system drastically, even for the high $Re$ case. Therefore, this `almost' zero-energy solution, which is not a physical solution, provided for such high precision in the conservation of the angular and linear momentum of the system, and not because of the accuracy of the scheme.
+The SPH-$\epsilon$ scheme, on the other hand, seems to constantly dump energy into the system, which, after a certain point, leads to instability in the system.
+
 \begin{figure}[htbp!]
   \begin{subfigure}{7cm}
   \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/limit_ke_re_10000.png}
@@ -1305,7 +1337,13 @@ KE AND DECAY \figref{fig:ltgv-ke-decay}
   \label{fig:ltgv-ke-decay}
 \end{figure}
 
-L1 ERROR \figref{fig:ltgv-l1}
+The evolution of the $L_1$ error for the various schemes are shown in \figref{fig:ltgv-l1}.
+For the case of the $L_1$ error, which is a function of the velocity profile, the L-IPST-C scheme performs the best, followed by the $\delta$-LES-SPH scheme.
+This is also supported by the actual velocity magnitude plots as shown in \figref{fig:ltgv-scheme-vmag}, where we see that both these schemes still accurately capture the velocity profile, even for the high $Re$ case.
+With the SPH-$\epsilon$ scheme, the $L_1$ error is relatively high, and ends up diverging. However, the velocity magnitude plot does still indicate the presence of the typical TGV vortex cells, but the magnitude of the velocity is significantly higher than the other schemes. This leads to the conclusion, that with a suitable dissipate mechanism, the SPH-$\epsilon$ scheme can be a competent alternative. 
+The same cannot be said for the $k-\epsilon$ SPH scheme, which, as mentioned, completely drains all the energy from the system, with even the velocity magnitude plot indicating random fluctuations in the velocity field.
+Supporting observations can be made from the vorticity magnitude plots as well, which are shown in \figref{fig:ltgv-scheme-vorticity}.
+
 \begin{figure}[htbp!]
   \begin{subfigure}{7cm}
   \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/limit_l1_re_10000.png}
@@ -1327,7 +1365,52 @@ L1 ERROR \figref{fig:ltgv-l1}
   \label{fig:ltgv-l1}
 \end{figure}
 
-P-L1 ERROR \figref{fig:ltgv-pl1}
+\begin{figure}[htbp!]
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_200_pst_10_re_100000_tsph_wcsph_tf_2/final_vmag.png}
+  \caption{L-IPST-C scheme (\texttt{PEC})}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_rk2_dtmul_1.5_n_o_files_50_nx_200_pst_10_re_100000_deltales_tf_2/final_vmag.png}
+  \caption{$\delta$-LES scheme (\texttt{RK2})}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_no_n_o_files_50_nx_200_pst_10_re_100000_k_eps_tf_2/final_vmag.png}
+  \caption{$k$-$\epsilon$ scheme (\texttt{PEC})}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_mon2017_eps_0.5_no_n_o_files_50_nx_200_pst_10_re_100000_mon2017_tf_2/final_vmag.png}
+  \caption{SPH-$\epsilon$ scheme (\texttt{PEC})}
+  \end{subfigure}
+  \caption{Velocity magnitude field \textit{(arrows represent the velocity vector)} for various schemes $(N=200^2, t_f=2, Re=10^5, c_s=20)$.}
+  \label{fig:ltgv-scheme-vmag}
+\end{figure}
+
+\begin{figure}[htbp!]
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_200_pst_10_re_100000_tsph_wcsph_tf_2/final_omega_mag.png}
+  \caption{L-IPST-C scheme (\texttt{PEC})}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_rk2_dtmul_1.5_n_o_files_50_nx_200_pst_10_re_100000_deltales_tf_2/final_omega_mag.png}
+  \caption{$\delta$-LES scheme (\texttt{RK2})}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_no_n_o_files_50_nx_200_pst_10_re_100000_k_eps_tf_2/final_omega_mag.png}
+  \caption{$k$-$\epsilon$ scheme (\texttt{PEC})}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_mon2017_eps_0.5_no_n_o_files_50_nx_200_pst_10_re_100000_mon2017_tf_2/final_omega_mag.png}
+  \caption{SPH-$\epsilon$ scheme (\texttt{PEC})}
+  \end{subfigure}
+  \caption{Vorticity magnitude field \textit{(arrows represent the velocity vector)} for various schemes $(N=200^2, t_f=2, Re=10^5, c_s=20)$.}
+  \label{fig:ltgv-scheme-vorticity}
+\end{figure}
+
+
+
+The evolution of the $L_1$ error for the pressure field for the various schemes are shown in \figref{fig:ltgv-pl1}.
+
 \begin{figure}[htbp!]
   \begin{subfigure}{7cm}
   \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/limit_p_l1_re_10000.png}
@@ -1350,49 +1433,8 @@ P-L1 ERROR \figref{fig:ltgv-pl1}
 \end{figure}
 
 
-SCHEME - VMAG \figref{fig:ltgv-scheme-vmag}
-\begin{figure}[htbp!]
-  \begin{subfigure}{7cm}
-  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_200_pst_10_re_100000_tsph_wcsph_tf_2/final_vmag.png}
-  \caption{L-IPST-C scheme (\texttt{PEC})}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_rk2_dtmul_1.5_n_o_files_50_nx_200_pst_10_re_100000_deltales_tf_2/final_vmag.png}
-  \caption{$\delta$-LES scheme (\texttt{RK2})}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_no_n_o_files_50_nx_200_pst_10_re_100000_k_eps_tf_2/final_vmag.png}
-  \caption{$k$-$\epsilon$ scheme (\texttt{PEC})}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_mon2017_eps_0.5_no_n_o_files_50_nx_200_pst_10_re_100000_mon2017_tf_2/final_vmag.png}
-  \caption{SPH-$\epsilon$ scheme (\texttt{PEC})}
-  \end{subfigure}
-  \caption{Velocity magnitude field \textit{(arrows represent the velocity vector)} for various schemes $(N=200^2, t_f=2, Re=10^5, c_s=20)$.}
-  \label{fig:ltgv-scheme-vmag}
-\end{figure}
 
-SCHEME - VORTICITY \figref{fig:ltgv-scheme-vorticity}
-\begin{figure}[htbp!]
-  \begin{subfigure}{7cm}
-  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_200_pst_10_re_100000_tsph_wcsph_tf_2/final_omega_mag.png}
-  \caption{L-IPST-C scheme (\texttt{PEC})}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_rk2_dtmul_1.5_n_o_files_50_nx_200_pst_10_re_100000_deltales_tf_2/final_omega_mag.png}
-  \caption{$\delta$-LES scheme (\texttt{RK2})}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_no_n_o_files_50_nx_200_pst_10_re_100000_k_eps_tf_2/final_omega_mag.png}
-  \caption{$k$-$\epsilon$ scheme (\texttt{PEC})}
-  \end{subfigure}
-  \begin{subfigure}{7cm}
-  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_mon2017_eps_0.5_no_n_o_files_50_nx_200_pst_10_re_100000_mon2017_tf_2/final_omega_mag.png}
-  \caption{SPH-$\epsilon$ scheme (\texttt{PEC})}
-  \end{subfigure}
-  \caption{Vorticity magnitude field \textit{(arrows represent the velocity vector)} for various schemes $(N=200^2, t_f=2, Re=10^5, c_s=20)$.}
-  \label{fig:ltgv-scheme-vorticity}
-\end{figure}
+
 
 SCHEME - PRESSURE \figref{fig:ltgv-scheme-pressure}
 \begin{figure}[htbp!]
@@ -1436,4 +1478,26 @@ SCHEME - Density \figref{fig:ltgv-scheme-density}
   \end{subfigure}
   \caption{Density field for various schemes $(N=200^2, t_f=2, Re=10^5, c_s=20)$.}
   \label{fig:ltgv-scheme-density}
+\end{figure}
+
+SCHEME - ESPEC \figref{fig:ltgv-scheme-espec}
+\begin{figure}[htbp!]
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_200_pst_10_re_100000_tsph_wcsph_tf_2/energy_spectrum_evolution_all.png}
+  \caption{L-IPST-C scheme (\texttt{PEC}) $(\rho_c)$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_rk2_dtmul_1.5_n_o_files_50_nx_200_pst_10_re_100000_deltales_tf_2/energy_spectrum_evolution_all.png}
+  \caption{$\delta$-LES scheme (\texttt{RK2}) $(\rho_c)$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_no_n_o_files_50_nx_200_pst_10_re_100000_k_eps_tf_2/energy_spectrum_evolution_all.png}
+  \caption{$k$-$\epsilon$ scheme (\texttt{PEC}) $(\rho)$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_mon2017_eps_0.5_no_n_o_files_50_nx_200_pst_10_re_100000_mon2017_tf_2/energy_spectrum_evolution_all.png}
+  \caption{SPH-$\epsilon$ scheme (\texttt{PEC}) $(\rho)$}
+  \end{subfigure}
+  \caption{Evolution of the energy spectrum for various schemes $(N=200^2, t_f=2, Re=10^5, c_s=20)$.}
+  \label{fig:ltgv-scheme-espec}
 \end{figure}
