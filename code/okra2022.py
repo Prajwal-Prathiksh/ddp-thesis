@@ -23,7 +23,7 @@ from pysph.sph.basic_equations import (ContinuityEquation, SummationDensity,
                                        XSPHCorrection)
 from pysph.sph.equation import Equation, Group
 from pysph.sph.integrator import PECIntegrator
-from pysph.sph.integrator_step import IntegratorStep, WCSPHStep
+from pysph.sph.integrator_step import IntegratorStep
 from pysph.sph.scheme import Scheme
 from pysph.sph.wc.basic import TaitEOS
 from pysph.sph.wc.kernel_correction import (GradientCorrection,
