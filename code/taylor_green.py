@@ -23,14 +23,14 @@ rho0 = 1.0
 c0 = 10 * U
 p0 = c0**2 * rho0
 
-def quiver_mask(x, y, u, v, mask=None, **kwargs):
-    if mask is None:
-        mask = np.ones_like(x, dtype=bool)
-    else:
-        temp = np.ones_like(x, dtype=bool)
-        # Every Nth value becomes zero where N is the mask value
-        temp[::mask] = 0
-        mask = temp.astype(bool)
+def quiver_mask(x, y, u, v, visible_num=600, **kwargs):
+    if visible_num > len(x):
+        visible_num = len(x)
+    np.random.seed(1)
+    _range = np.arange(len(x))
+    visible_idx = np.random.choice(_range, size=visible_num, replace=False)
+    mask = np.zeros_like(x, dtype=bool)
+    mask[visible_idx] = 1    
     return plt.quiver(x[mask], y[mask], u[mask], v[mask], **kwargs)
 
 
@@ -537,7 +537,7 @@ class TaylorGreen(TurbulentFlowApp):
         plt.clf()
         plt.scatter(x, y, c=vmag)
         plt.colorbar()
-        quiver_mask(x, y, u, v, mask=2, scale=20, color='k', alpha=0.4)
+        quiver_mask(x, y, u, v, scale=15, color='k', alpha=0.5)
         plt.title(f'Re={self.options.re}, U={self.U} (t={_t:.4f})')
         plt.xlim(0, self.L)
         plt.ylim(0, self.L)
@@ -547,7 +547,7 @@ class TaylorGreen(TurbulentFlowApp):
         plt.clf()
         plt.scatter(x, y, c=omega_mag)
         plt.colorbar()
-        quiver_mask(x, y, u, v, mask=2, scale=20, color='k', alpha=0.4)
+        quiver_mask(x, y, u, v, scale=15, color='k', alpha=0.5)
         plt.xlim(0, self.L)
         plt.ylim(0, self.L)
         plt.title(f'Re={self.options.re}, U={self.U} (t={_t:.4f})')
