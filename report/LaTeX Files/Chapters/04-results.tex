@@ -1249,3 +1249,191 @@ Hence, a default value of $f_{pst} = 10$, and $\epsilon = 0.5$ is chosen for the
   \caption{Evolution of the energy spectrum for the SPH-$\epsilon$ scheme for various $f_{pst}$ values $(N=100^2, t_f=0.1, Re=10000, c_s=20)$.}
   \label{fig:sph-eps-pst-espec}
 \end{figure}
+
+
+\subsection{Long time simulations - Taylor-Green Vortex Problem}
+
+AM AND LM \figref{fig:ltgv-am-lm}
+\begin{figure}[htbp!]
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/limit_am_re_10000.png}
+  \caption{Angular momentum ($Re = 10,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/limit_lm_re_10000.png}
+  \caption{Linear momentum ($Re = 10,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/limit_am_re_100000.png}
+  \caption{Angular momentum ($Re = 100,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/limit_lm_re_100000.png}
+  \caption{Linear momentum ($Re = 100,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \caption{Evolution of the angular and linear momentum for various schemes $(N=[100^2, 200^2], Re=[10^4, 10^5], c_s=20)$.}
+  \label{fig:ltgv-am-lm}
+\end{figure}
+
+KE AND DECAY \figref{fig:ltgv-ke-decay}
+\begin{figure}[htbp!]
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/limit_ke_re_10000.png}
+  \caption{Kinetic energy ($Re = 10,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/limit_decay_re_10000.png}
+  \caption{Velocity decay ($Re = 10,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/limit_ke_re_100000.png}
+  \caption{Kinetic energy ($Re = 100,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/limit_decay_re_100000.png}
+  \caption{Velocity decay ($Re = 100,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/ke_re_100000.png}
+    \caption{Kinetic energy ($Re = 100,000$)}
+    \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/decay_re_100000.png}
+    \caption{Velocity decay ($Re = 100,000$)}
+  \end{subfigure}
+  \caption{Evolution of the kinetic energy and velocity decay for various schemes $(N=[100^2, 200^2], Re=[10^4, 10^5], c_s=20)$.}
+  \label{fig:ltgv-ke-decay}
+\end{figure}
+
+L1 ERROR \figref{fig:ltgv-l1}
+\begin{figure}[htbp!]
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/limit_l1_re_10000.png}
+  \caption{$L_1$ error ($Re = 10,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/limit_l1_re_100000.png}
+  \caption{$L_1$ error ($Re = 100,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/l1_re_10000.png}
+  \caption{$L_1$ error ($Re = 10,000$)}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/l1_re_100000.png}
+  \caption{$L_1$ error ($Re = 100,000$)}
+  \end{subfigure}
+  \caption{Evolution of the $L_1$ error for various schemes $(N=[100^2, 200^2], Re=[10^4, 10^5], c_s=20)$.}
+  \label{fig:ltgv-l1}
+\end{figure}
+
+P-L1 ERROR \figref{fig:ltgv-pl1}
+\begin{figure}[htbp!]
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/limit_p_l1_re_10000.png}
+  \caption{$L_1$ error (pressure) ($Re = 10,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/limit_p_l1_re_100000.png}
+  \caption{$L_1$ error (pressure) ($Re = 100,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/p_l1_re_10000.png}
+  \caption{$L_1$ error (pressure) ($Re = 10,000$)}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/p_l1_re_100000.png}
+  \caption{$L_1$ error (pressure) ($Re = 100,000$)}
+  \end{subfigure}
+  \caption{Evolution of the $L_1$ error (pressure) for various schemes $(N=[100^2, 200^2], Re=[10^4, 10^5], c_s=20)$.}
+  \label{fig:ltgv-pl1}
+\end{figure}
+
+
+SCHEME - VMAG \figref{fig:ltgv-scheme-vmag}
+\begin{figure}[htbp!]
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_200_pst_10_re_100000_tsph_wcsph_tf_2/final_vmag.png}
+  \caption{L-IPST-C scheme (\texttt{PEC})}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_rk2_dtmul_1.5_n_o_files_50_nx_200_pst_10_re_100000_deltales_tf_2/final_vmag.png}
+  \caption{$\delta$-LES scheme (\texttt{RK2})}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_no_n_o_files_50_nx_200_pst_10_re_100000_k_eps_tf_2/final_vmag.png}
+  \caption{$k$-$\epsilon$ scheme (\texttt{PEC})}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_mon2017_eps_0.5_no_n_o_files_50_nx_200_pst_10_re_100000_mon2017_tf_2/final_vmag.png}
+  \caption{SPH-$\epsilon$ scheme (\texttt{PEC})}
+  \end{subfigure}
+  \caption{Velocity magnitude field \textit{(arrows represent the velocity vector)} for various schemes $(N=200^2, t_f=2, Re=10^5, c_s=20)$.}
+  \label{fig:ltgv-scheme-vmag}
+\end{figure}
+
+SCHEME - VORTICITY \figref{fig:ltgv-scheme-vorticity}
+\begin{figure}[htbp!]
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_200_pst_10_re_100000_tsph_wcsph_tf_2/final_omega_mag.png}
+  \caption{L-IPST-C scheme (\texttt{PEC})}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_rk2_dtmul_1.5_n_o_files_50_nx_200_pst_10_re_100000_deltales_tf_2/final_omega_mag.png}
+  \caption{$\delta$-LES scheme (\texttt{RK2})}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_no_n_o_files_50_nx_200_pst_10_re_100000_k_eps_tf_2/final_omega_mag.png}
+  \caption{$k$-$\epsilon$ scheme (\texttt{PEC})}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_mon2017_eps_0.5_no_n_o_files_50_nx_200_pst_10_re_100000_mon2017_tf_2/final_omega_mag.png}
+  \caption{SPH-$\epsilon$ scheme (\texttt{PEC})}
+  \end{subfigure}
+  \caption{Vorticity magnitude field \textit{(arrows represent the velocity vector)} for various schemes $(N=200^2, t_f=2, Re=10^5, c_s=20)$.}
+  \label{fig:ltgv-scheme-vorticity}
+\end{figure}
+
+SCHEME - PRESSURE \figref{fig:ltgv-scheme-pressure}
+\begin{figure}[htbp!]
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_200_pst_10_re_100000_tsph_wcsph_tf_2/final_p.png}
+  \caption{L-IPST-C scheme (\texttt{PEC})}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_rk2_dtmul_1.5_n_o_files_50_nx_200_pst_10_re_100000_deltales_tf_2/final_p.png}
+  \caption{$\delta$-LES scheme (\texttt{RK2})}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_no_n_o_files_50_nx_200_pst_10_re_100000_k_eps_tf_2/final_p.png}
+  \caption{$k$-$\epsilon$ scheme (\texttt{PEC})}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_mon2017_eps_0.5_no_n_o_files_50_nx_200_pst_10_re_100000_mon2017_tf_2/final_p.png}
+  \caption{SPH-$\epsilon$ scheme (\texttt{PEC})}
+  \end{subfigure}
+  \caption{Pressure field for various schemes $(N=200^2, t_f=2, Re=10^5, c_s=20)$.}
+  \label{fig:ltgv-scheme-pressure}
+\end{figure}
+
+SCHEME - Density \figref{fig:ltgv-scheme-density}
+\begin{figure}[htbp!]
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_200_pst_10_re_100000_tsph_wcsph_tf_2/final_rhoc.png}
+  \caption{L-IPST-C scheme (\texttt{PEC}) $(\rho_c)$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_rk2_dtmul_1.5_n_o_files_50_nx_200_pst_10_re_100000_deltales_tf_2/final_rhoc.png}
+  \caption{$\delta$-LES scheme (\texttt{RK2}) $(\rho_c)$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_no_n_o_files_50_nx_200_pst_10_re_100000_k_eps_tf_2/final_rho.png}
+  \caption{$k$-$\epsilon$ scheme (\texttt{PEC}) $(\rho)$}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_mon2017_eps_0.5_no_n_o_files_50_nx_200_pst_10_re_100000_mon2017_tf_2/final_rho.png}
+  \caption{SPH-$\epsilon$ scheme (\texttt{PEC}) $(\rho)$}
+  \end{subfigure}
+  \caption{Density field for various schemes $(N=200^2, t_f=2, Re=10^5, c_s=20)$.}
+  \label{fig:ltgv-scheme-density}
+\end{figure}
