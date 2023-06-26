@@ -534,10 +534,11 @@ class TaylorGreen(TurbulentFlowApp):
         omegaz = gradv[3::9] - gradv[1::9]
         omega_mag = np.sqrt(omegax**2 + omegay**2 + omegaz**2)
 
+        q_sc, q_clr, q_alph = (15, 'k', 0.5)
         plt.clf()
         plt.scatter(x, y, c=vmag)
         plt.colorbar()
-        quiver_mask(x, y, u, v, scale=15, color='k', alpha=0.5)
+        quiver_mask(x, y, u, v, scale=q_sc, color=q_clr, alpha=q_alph)
         plt.title(f'Re={self.options.re}, U={self.U} (t={_t:.4f})')
         plt.xlim(0, self.L)
         plt.ylim(0, self.L)
@@ -547,7 +548,7 @@ class TaylorGreen(TurbulentFlowApp):
         plt.clf()
         plt.scatter(x, y, c=omega_mag)
         plt.colorbar()
-        quiver_mask(x, y, u, v, scale=15, color='k', alpha=0.5)
+        quiver_mask(x, y, u, v, scale=q_sc, color=q_clr, alpha=q_alph)
         plt.xlim(0, self.L)
         plt.ylim(0, self.L)
         plt.title(f'Re={self.options.re}, U={self.U} (t={_t:.4f})')
