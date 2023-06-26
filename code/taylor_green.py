@@ -6,6 +6,7 @@ Author: K T Prajwal Prathiksh
 import os
 import numpy as np
 from numpy import pi, cos
+import matplotlib.pyplot as plt
 from pprint import pprint
 
 from pysph.base.nnps import DomainManager
@@ -21,6 +22,16 @@ U = 1.0
 rho0 = 1.0
 c0 = 10 * U
 p0 = c0**2 * rho0
+
+def quiver_mask(x, y, u, v, mask=None, **kwargs):
+    if mask is None:
+        mask = np.ones_like(x, dtype=bool)
+    else:
+        temp = np.ones_like(x, dtype=bool)
+        # Every Nth value becomes zero where N is the mask value
+        temp[::mask] = 0
+        mask = temp.astype(bool)
+    return plt.quiver(x[mask], y[mask], u[mask], v[mask], **kwargs)
 
 
 class TaylorGreen(TurbulentFlowApp):
@@ -401,7 +412,6 @@ class TaylorGreen(TurbulentFlowApp):
 
         import matplotlib
         matplotlib.use('Agg')
-        from matplotlib import pyplot as plt
         if self.adaptive_timestep:
             plt.clf()
             plt.grid()
@@ -510,12 +520,55 @@ class TaylorGreen(TurbulentFlowApp):
         fig = os.path.join(self.output_dir, "ang_mom.png")
         plt.savefig(fig, dpi=300)
 
+
+        # Plot final prop fields
+        data = load(files[-1])
+        sd, fluid = data['solver_data'], data['arrays']['fluid']
+        x, y, p, rhoc, rho, gradv = fluid.get(
+            'x', 'y', 'p', 'rhoc', 'rho', 'gradv'
+        )
+        u, v = fluid.get('u', 'v')
+        vmag = np.sqrt(u**2 + v**2)
+        omegax = gradv[5::9] - gradv[7::9]
+        omegay = gradv[6::9] - gradv[2::9]
+        omegaz = gradv[3::9] - gradv[1::9]
+        omega_mag = np.sqrt(omegax**2 + omegay**2 + omegaz**2)
+
         plt.clf()
         plt.scatter(x, y, c=vmag)
         plt.colorbar()
-        plt.title(f'Re={self.options.re}, U={self.U} (t={_t})')
+        quiver_mask(x, y, u, v, mask=2, scale=20, color='k', alpha=0.4)
+        plt.title(f'Re={self.options.re}, U={self.U} (t={_t:.4f})')
+        plt.xlim(0, self.L)
+        plt.ylim(0, self.L)
         fig = os.path.join(self.output_dir, "final_vmag.png")
         plt.savefig(fig, dpi=300)
+
+        plt.clf()
+        plt.scatter(x, y, c=omega_mag)
+        plt.colorbar()
+        quiver_mask(x, y, u, v, mask=2, scale=20, color='k', alpha=0.4)
+        plt.xlim(0, self.L)
+        plt.ylim(0, self.L)
+        plt.title(f'Re={self.options.re}, U={self.U} (t={_t:.4f})')
+        fig = os.path.join(self.output_dir, "final_omega_mag.png")
+        plt.savefig(fig, dpi=300)
+
+        def _plot_macro(prop, pname):
+            plt.clf()
+            plt.scatter(x, y, c=prop)
+            plt.colorbar()
+            plt.title(f'Re={self.options.re}, U={self.U} (t={_t:.4f})')
+            plt.xlim(0, self.L)
+            plt.ylim(0, self.L)
+            fig = os.path.join(self.output_dir, f"final_{pname}.png")
+            plt.savefig(fig, dpi=300)
+
+        _plot_macro(p, 'p')
+        _plot_macro(rhoc, 'rhoc')
+        _plot_macro(rho, 'rho')
+
+
 
         # Turbulence specific post-processing
         if self.options.no_plot and not _running_pp:
