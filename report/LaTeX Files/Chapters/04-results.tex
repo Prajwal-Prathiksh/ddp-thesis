@@ -1524,3 +1524,105 @@ The observations with the $k-\epsilon$ SPH and SPH-$\epsilon$ schemes, are much 
   \caption{Evolution of the energy spectrum for various schemes $(N=200^2, t_f=2, Re=10^5, c_s=20)$.}
   \label{fig:ltgv-scheme-espec}
 \end{figure}
+
+
+\section{Externally Forced Taylor-Green Vortex Problem}
+
+AM AND LM \figref{fig:tgv-forced-am-lm}
+\begin{figure}[htbp!]
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/ext-force-tgv/limit_am_re_10000.png}
+  \caption{Angular momentum ($Re = 10,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/ext-force-tgv/limit_lm_re_10000.png}
+  \caption{Linear momentum ($Re = 10,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/ext-force-tgv/limit_am_re_100000.png}
+  \caption{Angular momentum ($Re = 100,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/ext-force-tgv/limit_lm_re_100000.png}
+  \caption{Linear momentum ($Re = 100,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/ext-force-tgv/limit_am_re_1000000.png}
+    \caption{Angular momentum ($Re = 1,000,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/ext-force-tgv/limit_lm_re_1000000.png}
+    \caption{Linear momentum ($Re = 1,000,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \caption{Evolution of the angular and linear momentum for various schemes $(N=[100^2, 200^2], Re=[10^4, 10^5, 10^6], c_s=20)$.}
+  \label{fig:tgv-forced-am-lm}
+\end{figure}
+
+KE \figref{fig:tgv-forced-ke}
+\begin{figure}[htbp!]
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/ext-force-tgv/limit_ke_re_10000.png}
+  \caption{Kinetic energy ($Re = 10,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/ext-force-tgv/limit_ke_re_100000.png}
+  \caption{Kinetic energy ($Re = 100,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+  \centering\includegraphics[width=6cm]{Code-Figures/ext-force-tgv/limit_ke_re_1000000.png}
+  \caption{Kinetic energy ($Re = 1,000,000$) \textit{(zoomed in)}}
+  \end{subfigure}
+  \caption{Evolution of the kinetic energy for various schemes in the externally-forced TGV problem $(N=[100^2, 200^2], Re=[10^4, 10^5, 10^6], c_s=20)$. Compared with data obtained from \cite{Colagrossi2021QuasiLagrangian}.}
+  \label{fig:tgv-forced-ke}
+\end{figure}
+
+
+COLAG - P \figref{fig:tgv-forced-colag-p}
+\begin{figure}[htbp!]
+  \centering
+  \begin{subfigure}{10cm}
+    \includegraphics[width=10cm]{Code-Figures/ext-force-tgv/colag_p_t_1.92.png}
+    \caption{Pressure field ($Re = 10^6$), reproduced from \cite{Colagrossi2021QuasiLagrangian}}
+  \end{subfigure}
+  \vspace{2cm}
+  \begin{subfigure}{14cm}
+    \includegraphics[width=14cm]{Code-Figures/ext-force-tgv/p_t_1.92.png}
+    \caption{Pressure field ($Re = 10^6$), computed from the L-IPST-C and $\delta$-LES-SPH schemes}
+  \end{subfigure}
+  \caption{Comparison between expected pressure field \parencite{Colagrossi2021QuasiLagrangian}, and the computed pressure field from the L-IPST-C and $\delta$-LES-SPH schemes $(N=200^2, t_f=1.92, Re=10^6, c_s=20)$.}
+  \label{fig:tgv-forced-colag-p}
+\end{figure}
+
+
+COLAG - VMAG \figref{fig:tgv-forced-colag-vmag}
+\begin{figure}[htbp!]
+  \centering
+  \begin{subfigure}{10cm}
+  \centering\includegraphics[width=10cm]{Code-Figures/ext-force-tgv/colag_vmag_t_3.png}
+  \caption{Velocity magnitude field ($Re = 10^6$), reproduced from \cite{Colagrossi2021QuasiLagrangian}}
+  \end{subfigure}
+  \\ \vspace{2cm}
+  \begin{subfigure}{14cm}
+  \centering\includegraphics[width=14cm]{Code-Figures/ext-force-tgv/vmag_t_3.png}
+  \caption{Velocity magnitude field ($Re = 10^6$), computed from the L-IPST-C and $\delta$-LES-SPH schemes}
+  \end{subfigure}
+  \caption{Comparison between expected velocity magnitude field \parencite{Colagrossi2021QuasiLagrangian}, and the computed velocity magnitude field from the L-IPST-C and $\delta$-LES-SPH schemes $(N=200^2, t_f=1.92, Re=10^6, c_s=20)$.}
+  \label{fig:tgv-forced-colag-vmag}
+\end{figure}
+
+COLAG - OMEGA \figref{fig:tgv-forced-colag-omega}
+\begin{figure}[htbp!]
+  \begin{subfigure}{10cm}
+  \centering\includegraphics[width=10cm]{Code-Figures/ext-force-tgv/colag_omegaz_t_3.png}
+  \caption{$\omega_z$ field ($Re = 10^6$), reproduced from \cite{Colagrossi2021QuasiLagrangian}}
+  \end{subfigure}
+  \vspace{4cm}
+  \begin{subfigure}{14cm}
+  \centering\includegraphics[width=14cm]{Code-Figures/ext-force-tgv/omegaz_t_3.png}
+  \caption{$\omega_z$ field ($Re = 10^6$), computed from the L-IPST-C and $\delta$-LES-SPH schemes}
+  \end{subfigure}
+  \caption{Comparison between expected $\omega_z$ field \parencite{Colagrossi2021QuasiLagrangian}, and the computed $\omega_z$ field from the L-IPST-C and $\delta$-LES-SPH schemes $(N=200^2, t_f=1.92, Re=10^6, c_s=20)$.}
+  \label{fig:tgv-forced-colag-omega}
+\end{figure}
+
+
