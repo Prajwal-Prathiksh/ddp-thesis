@@ -30,6 +30,8 @@ from code.automate_utils import (
 BACKEND = " --openmp "
 N_CORES, N_THREADS = 4, 8
 
+POST_PROCESSING_ONLY = True
+
 class SineVelProfilePlotters(Simulation):
     """
     Helper methods for making comparisons plots for the sinusoidal velocity
@@ -440,8 +442,6 @@ class TGV2DSchemeComparison(PySPHProblem):
 
         # Make plots
         KIND_CHOICES = ['ke', 'decay', 'linf', 'l1', 'p_l1', 'lm', 'am']
-
-        # KIND_CHOICES = ['ke']
         
         Y_LIM_DICT = dict(
             ke=(2.3e-1, 2.6e-1),
@@ -549,7 +549,7 @@ class TGV2DSchemeComparison(PySPHProblem):
             tsph='tab:blue', deltales='tab:orange', k_eps='tab:green',
             mon2017='tab:red', ok2022='tab:purple'
         )
-        NX_MRK = {
+        ALPH_VALS = {
             '100': 0.4, '200': 1
         }
 
@@ -566,10 +566,11 @@ class TGV2DSchemeComparison(PySPHProblem):
             plt_method = plt.plot
         
         plt.figure()
-        # Plot the simulation property history
+        # Plot expected value
         if plot_exact:
             plt_method(t_exp, prop_exp, 'k--', label='exact')
 
+        # Plot the simulation property history
         for case in cases:
             t, prop = self.get_sim_prop_history(case, kind)
             _s = case.render_parameter('scheme').split('=')[-1]
@@ -583,7 +584,7 @@ class TGV2DSchemeComparison(PySPHProblem):
             if _s not in SC_CLR:
                 raise ValueError(f"Unknown scheme: {_s} in plotting!")
             plt_method(
-                t, prop, label=label, color=SC_CLR[_s], alpha=NX_MRK[_n]
+                t, prop, label=label, color=SC_CLR[_s], alpha=ALPH_VALS[_n]
             )
 
         if ylims is not None:
@@ -593,7 +594,7 @@ class TGV2DSchemeComparison(PySPHProblem):
         plt.title(f"{kind_title_dict[kind]} {title_suffix}")
         plt.legend(
             ncol=1, loc='upper right',
-            title=r'Line Alpha $\propto$ $N$'
+            title=r'Line opacity $\propto$ $N$'
         )
         plt.grid()
         plt.savefig(self.output_path(fname), dpi=300, bbox_inches='tight')
@@ -614,35 +615,46 @@ class TGV2DExtForceSchemeComparison(TGV2DSchemeComparison):
         scheme_opts = mdict(
             scheme=['tsph'], method=['sd'], scm=['wcsph'], pst_freq=[10],
             eos=['tait'],
-            integrator=['pec'], integrator_dt_mul_fac=[1]
+            integrator=['pec'], integrator_dt_mul_fac=[1],
+            nx=[100, 200]
         )
         # scheme_opts += mdict(
         #     scheme=['ok2022'], pst_freq=[10], eos=['tait'],
         #     turb_visc=['SMAG', 'SMAG_MCG', 'SIGMA'],
         #     integrator=['pec'], integrator_dt_mul_fac=[1],
+        #     nx=[100]
         # )
         scheme_opts += mdict(
             scheme=['deltales'], pst_freq=[10], eos=['tait'],
-            integrator=['rk2'], integrator_dt_mul_fac=[1.5]
+            integrator=['rk2'], integrator_dt_mul_fac=[1.5],
+            nx=[100, 200],
         )
-        scheme_opts += mdict(
-            scheme=['k_eps'], pst_freq=[10], eos=['tait'],
-            k_eps_expand=['no'],
-            integrator=['pec'], integrator_dt_mul_fac=[1]
-        )
-        scheme_opts += mdict(
-            scheme=['mon2017'], pst_freq=[10], eos=['tait'],
-            mon2017_eps=[0.5],
-            mon_kernel_corr=['no'],
-            integrator=['pec'], integrator_dt_mul_fac=[1]
-        )
+        # scheme_opts += mdict(
+        #     scheme=['k_eps'], pst_freq=[10], eos=['tait'],
+        #     k_eps_expand=['no'],
+        #     integrator=['pec'], integrator_dt_mul_fac=[1],
+        #     nx=[100],
+        # )
+        # scheme_opts += mdict(
+        #     scheme=['mon2017'], pst_freq=[10], eos=['tait'],
+        #     mon2017_eps=[0.5],
+        #     mon_kernel_corr=['no'],
+        #     integrator=['pec'], integrator_dt_mul_fac=[1],
+        #     nx=[100, 200],
+        # )
+        # scheme_opts += mdict(
+        #     scheme=['mon2017'], pst_freq=[10], eos=['tait'],
+        #     mon2017_eps=[0.5],
+        #     mon_kernel_corr=['no'],
+        #     integrator=['pec'], integrator_dt_mul_fac=[1],
+        #     nx=[200],
+        # )
 
 
         res_opts = mdict(
-            re=[10_000],#, 100_000, 1_000_000], 
-            tf=[3], n_o_files=[50], nx=[100],
+            tf=[3], n_o_files=[80],
             c0_fac=[20], hdx=[2],
-            max_steps=[5]
+            re=[10_000, 100_000, 1_000_000], 
         )
 
         self.sim_opts = sim_opts = dprod(
@@ -662,7 +674,7 @@ class TGV2DExtForceSchemeComparison(TGV2DSchemeComparison):
             self.case_info[sim_name] = sim_opts[i]
 
         # Setup cases
-        self.cases = [
+        self.cases_temp = [
             Simulation(
                 root=self.input_path(name),
                 base_command=base_cmd,
@@ -670,7 +682,15 @@ class TGV2DExtForceSchemeComparison(TGV2DSchemeComparison):
                 **kw
             ) for name, kw in self.case_info.items()
         ]
-        print(len(self.cases), 'cases created')
+        print(len(self.cases_temp), 'cases created')
+        
+        if not POST_PROCESSING_ONLY:
+            self.cases = self.cases_temp
+        else:
+            print('*'*80)
+            print('WARNING: POST_PROCESSING_ONLY is set to True!')
+            print('*'*80)
+            self.cases = []
 
         for case in self.cases:
             self.case_info[case.name]['case'] = case
@@ -689,18 +709,33 @@ class TGV2DExtForceSchemeComparison(TGV2DSchemeComparison):
         # Make plots
         KIND_CHOICES = ['ke', 'lm', 'am']
 
+        Y_LIM_DICT = dict(
+            ke=(0., 0.4),
+            lm=(-3e-2, 3e-2),
+            am=(-3e-2, 3e-2)
+        )
+
         for k in KIND_CHOICES:
             for re in res:
-                for nx in nxs:
-                    fcases = filter_cases(self.cases, re=re, nx=nx)
-                    if len(fcases)  == 0:
-                        continue
-                    fname = f"{k}_re_{re}_nx_{nx}.png"
-                    t_suf = fr" ($Re = {re}, N={nx}^2$)"
-                    self.plot_sim_prop_history(
-                        cases=fcases, re=int(re), kind=k, fname=fname,
-                        title_suffix=t_suf
-                    )
+                fcases = filter_cases(self.cases_temp, re=re)
+                if len(fcases)  == 0:
+                    continue
+                fname = f"{k}_re_{re}.png"
+                t_suf = fr" ($Re = {re}, N=[100^2, 200^2]$)"
+                self.plot_sim_prop_history(
+                    cases=fcases, re=int(re), kind=k, fname=fname,
+                    title_suffix=t_suf
+                )
+
+                if k not in Y_LIM_DICT: continue
+                _y_l = Y_LIM_DICT[k]
+                fname = f"limit_{k}_re_{re}.png"
+                self.plot_sim_prop_history(
+                    cases=fcases, re=int(re), kind=k, fname=fname,
+                    title_suffix=t_suf, ylims=_y_l
+                )
+    
+    def plot_vmag
 
     def plot_sim_prop_history(
         self, cases, re, kind, fname, title_suffix='',
@@ -714,6 +749,13 @@ class TGV2DExtForceSchemeComparison(TGV2DSchemeComparison):
             lm='Linear momentum',
             am='Angular momentum'
         )
+        SC_CLR = dict(
+            tsph='tab:blue', deltales='tab:orange', k_eps='tab:green',
+            mon2017='tab:red', ok2022='tab:purple'
+        )
+        ALPH_VALS = {
+            '100': 0.4, '200': 1
+        }
 
         plot_exact = False
         if kind == 'ke':
@@ -725,18 +767,30 @@ class TGV2DExtForceSchemeComparison(TGV2DSchemeComparison):
         # Set plotter method
         plt_method = plt.plot
         
+        # Plot the simulation property history
         sim_t_max = 0
         plt.figure()
         for case in cases:
             t, prop = self.get_sim_prop_history(case, kind)
             _s = case.render_parameter('scheme').split('=')[-1]
             _i = case.render_parameter('integrator').split('=')[-1]
-            label = get_label_from_scheme(_s) + f" ({_i})"
-            plt_method(t, prop, label=label)
+            _n = case.render_parameter('nx').split('=')[-1]
 
+            label = get_label_from_scheme(_s) + fr" ({_i})"
+            if _n == '100':
+                label = ''
+
+            if _s not in SC_CLR:
+                raise ValueError(f"Unknown scheme: {_s} in plotting!")
+
+            plt_method(
+                t, prop, label=label, color=SC_CLR[_s], alpha=ALPH_VALS[_n]
+            )
+
+            # Get max simualtion tf
             sim_t_max = max(sim_t_max, t[-1])
-
-        # Plot the simulation property history
+        
+        # Plot expected value
         if plot_exact:
             idx = 0
             for _t in t_exp:
@@ -744,14 +798,17 @@ class TGV2DExtForceSchemeComparison(TGV2DSchemeComparison):
                     break
                 idx += 1
             t_exp, prop_exp = t_exp[:idx], prop_exp[:idx]
-            plt_method(t_exp, prop_exp, 'k--', label='exact')
+            plt_method(t_exp, prop_exp, 'k--', label='Colagrossi (2021)')
 
         if ylims is not None:
             plt.ylim(ylims)
 
         plt.xlabel('t')
         plt.title(f"{kind_title_dict[kind]} {title_suffix}")
-        plt.legend()
+        plt.legend(
+            ncol=1, loc='lower right',
+            title=r'Line opacity $\propto$ $N$'
+        )
         plt.grid()
         plt.savefig(self.output_path(fname), dpi=300, bbox_inches='tight')
         plt.close()
