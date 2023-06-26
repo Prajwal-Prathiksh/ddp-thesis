@@ -806,7 +806,11 @@ class TGV2DExtForceSchemeComparison(TGV2DSchemeComparison):
             cmap_name = PROPS_CMAPS[prop]
             cbar_lim = PROPS_CMAP_LIM[prop]   
             # Create figure with subplots
-            fig, axs = plt.subplots(1, n_case, figsize=(4*n_case, 4))
+            _size_fac = 1.6
+            fig, axs = plt.subplots(
+                1, n_case,
+                figsize=(4*n_case*_size_fac, 4*_size_fac),
+            )
             cmap = cm.get_cmap(cmap_name)
             norm = Normalize(vmin=cbar_lim[0], vmax=cbar_lim[1])
             im = cm.ScalarMappable(norm=norm, cmap=cmap)
@@ -839,7 +843,7 @@ class TGV2DExtForceSchemeComparison(TGV2DSchemeComparison):
 
             # Save figure
             fname = f"{prop}_t_{t}.png"
-            plt.savefig(self.output_path(fname), dpi=300, bbox_inches='tight')
+            plt.savefig(self.output_path(fname), dpi=500, bbox_inches='tight')
 
 
     def plot_sim_prop_history(
