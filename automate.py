@@ -392,7 +392,7 @@ class TGV2DSchemeComparison(PySPHProblem):
 
         res_opts = mdict(
             re=[10_000, 100_000], 
-            tf=[2], n_o_files=[50], nx=[100],
+            tf=[2], n_o_files=[50], nx=[100, 200],
             c0_fac=[20], hdx=[2],
             # max_steps=[5]
         )
@@ -440,38 +440,62 @@ class TGV2DSchemeComparison(PySPHProblem):
 
         # Make plots
         KIND_CHOICES = ['ke', 'decay', 'linf', 'l1', 'p_l1', 'lm', 'am']
+
+        # KIND_CHOICES = ['ke']
         
         Y_LIM_DICT = dict(
-            ke=(2.4e-1, 2.52e-1),
-            decay=(9.8e-1, 1.01),
-            linf=(0, 0.005),
-            l1=(0, 0.008),
-            p_l1=(0, 0.45),
-            lm=(-1e-3, 1e-3),
-            am=(-1e-3, 1e-3)
+            ke=(2.3e-1, 2.6e-1),
+            decay=(9.8e-1, 1.05),
+            linf=(0, 0.015),
+            l1=(0, 0.015),
+            p_l1=(0, 0.6),
+            lm=(-1e-2, 1e-2),
+            am=(-1e-2, 1e-2)
         )
 
         for k in KIND_CHOICES:
             for re in res:
-                for nx in nxs:
-                    fcases = filter_cases(self.cases, re=re, nx=nx)
-                    if len(fcases)  == 0:
-                        continue
-                    fname = f"{k}_re_{re}_nx_{nx}.png"
-                    t_suf = fr" ($Re = {re}, N={nx}^2$)"
-                    self.plot_sim_prop_history(
-                        cases=fcases, kind=k, fname=fname,
-                        title_suffix=t_suf
-                    )
+                fcases = filter_cases(self.cases, re=re)
+                if len(fcases)  == 0:
+                    continue
+                fname = f"{k}_re_{re}.png"
+                t_suf = fr" ($Re = {re}, N=[100^2, 200^2]$)"
+                self.plot_sim_prop_history(
+                    cases=fcases, kind=k, fname=fname,
+                    title_suffix=t_suf
+                )
 
-                    if k in Y_LIM_DICT:
-                        _y_l = Y_LIM_DICT[k]
-                        fname = f"{k}_re_{re}_nx_{nx}_limit.png"
-                        self.plot_sim_prop_history(
-                            cases=fcases, kind=k, fname=fname,
-                            title_suffix=t_suf,
-                            ylims=_y_l
-                        )
+                if k not in Y_LIM_DICT: continue
+                _y_l = Y_LIM_DICT[k]
+                fname = f"limit_{k}_re_{re}.png"
+                self.plot_sim_prop_history(
+                    cases=fcases, kind=k, fname=fname,
+                    title_suffix=t_suf,
+                    ylims=_y_l
+                )
+
+
+        # for k in KIND_CHOICES:
+        #     for re in res:
+        #         for nx in nxs:
+        #             fcases = filter_cases(self.cases, re=re, nx=nx)
+        #             if len(fcases)  == 0:
+        #                 continue
+        #             fname = f"{k}_re_{re}_nx_{nx}.png"
+        #             t_suf = fr" ($Re = {re}, N={nx}^2$)"
+        #             self.plot_sim_prop_history(
+        #                 cases=fcases, kind=k, fname=fname,
+        #                 title_suffix=t_suf
+        #             )
+
+        #             if k not in Y_LIM_DICT: continue
+        #             _y_l = Y_LIM_DICT[k]
+        #             fname = f"{k}_re_{re}_nx_{nx}_limit.png"
+        #             self.plot_sim_prop_history(
+        #                 cases=fcases, kind=k, fname=fname,
+        #                 title_suffix=t_suf,
+        #                 ylims=_y_l
+        #             )
 
     
     def get_sim_prop_history(self, case, kind):
@@ -521,6 +545,13 @@ class TGV2DSchemeComparison(PySPHProblem):
             lm='Linear momentum',
             am='Angular momentum'
         )
+        SC_CLR = dict(
+            tsph='tab:blue', deltales='tab:orange', k_eps='tab:green',
+            mon2017='tab:red', ok2022='tab:purple'
+        )
+        NX_MRK = {
+            '100': 0.4, '200': 1
+        }
 
         plot_exact = False
         if kind in ['ke', 'decay']:       
@@ -543,15 +574,27 @@ class TGV2DSchemeComparison(PySPHProblem):
             t, prop = self.get_sim_prop_history(case, kind)
             _s = case.render_parameter('scheme').split('=')[-1]
             _i = case.render_parameter('integrator').split('=')[-1]
-            label = get_label_from_scheme(_s) + f" ({_i})"
-            plt_method(t, prop, label=label)
+            _n = case.render_parameter('nx').split('=')[-1]
+
+            label = get_label_from_scheme(_s) + fr" ({_i})"
+            if _n == '100':
+                label = ''
+
+            if _s not in SC_CLR:
+                raise ValueError(f"Unknown scheme: {_s} in plotting!")
+            plt_method(
+                t, prop, label=label, color=SC_CLR[_s], alpha=NX_MRK[_n]
+            )
 
         if ylims is not None:
             plt.ylim(ylims)
 
         plt.xlabel('t')
         plt.title(f"{kind_title_dict[kind]} {title_suffix}")
-        plt.legend()
+        plt.legend(
+            ncol=1, loc='upper right',
+            title=r'Line Alpha $\propto$ $N$'
+        )
         plt.grid()
         plt.savefig(self.output_path(fname), dpi=300, bbox_inches='tight')
         plt.close()
