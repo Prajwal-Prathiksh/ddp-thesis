@@ -1,0 +1,2 @@
+/home/prajwal/ddp-thesis/code/energy_spectrum.py:29: UserWarning: Numba not installed. Some functions will not be compiled.
+  warnings.warn(

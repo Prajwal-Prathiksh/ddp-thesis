@@ -554,7 +554,7 @@ class TaylorGreen(TurbulentFlowApp):
         q_sc, q_clr, q_alph = (15, 'k', 0.5)
         # q_sc, q_clr, q_alph = (40, 'w', 0.7)
         # q_sc, q_clr, q_alph = (7e-4, 'w', 0.4)
-        sct_s = 0.5 if self.nx > 100 else None
+        sct_s = 0.5 if self.options.nx > 100 else None
         plt.clf()
         plt.scatter(x, y, c=vmag, s=sct_s)
         plt.colorbar()

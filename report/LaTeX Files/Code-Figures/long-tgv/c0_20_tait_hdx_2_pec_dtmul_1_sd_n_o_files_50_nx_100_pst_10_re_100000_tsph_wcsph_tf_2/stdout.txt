@@ -1,0 +1,7 @@
+Time taken to interpolate and save velocity field: 5.72 s.
+Time taken to compute and save energy spectrum: 0.68 s.
+Energy spectrum plot saved to: /home/prajwal/ddp-thesis/outputs/tgv_2d_scheme_comparison/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_100_pst_10_re_100000_tsph_wcsph_tf_2/ek_00000_loglog.png.
+Energy spectrum plot saved to: /home/prajwal/ddp-thesis/outputs/tgv_2d_scheme_comparison/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_100_pst_10_re_100000_tsph_wcsph_tf_2/ek_08575_loglog.png.
+Energy spectrum plot saved to: /home/prajwal/ddp-thesis/outputs/tgv_2d_scheme_comparison/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_100_pst_10_re_100000_tsph_wcsph_tf_2/ek_16807_loglog.png.
+Energy spectrum evolution plot saved to: /home/prajwal/ddp-thesis/outputs/tgv_2d_scheme_comparison/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_100_pst_10_re_100000_tsph_wcsph_tf_2/energy_spectrum_evolution.png.
+Energy spectrum evolution plot saved to: /home/prajwal/ddp-thesis/outputs/tgv_2d_scheme_comparison/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_100_pst_10_re_100000_tsph_wcsph_tf_2/energy_spectrum_evolution_all.png.

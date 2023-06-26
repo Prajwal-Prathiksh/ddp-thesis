@@ -1251,7 +1251,7 @@ Hence, a default value of $f_{pst} = 10$, and $\epsilon = 0.5$ is chosen for the
 \end{figure}
 
 
-\subsection{Long time simulations - Taylor-Green Vortex Problem}
+\section{Long time simulations - Taylor-Green Vortex Problem}
 As mentioned, in the previous section, a long time simulation of the TGV problem was essential to build an understanding for each of the turbulence models, with regards to if and when instability would appear in the flow field.
 Therefore, the TGV problem was simulated for a longer time period of $t_f = 2.0$, for Reynolds number of $Re=[10^4, 10^5]$. Each simulation run, was repeated for the resolutions of $N=[100^2, 200^2]$, with $c_s=20$. The \texttt{WendlandQuinticC4} kernel was used for all simulations, with a radius multiplier of $2.0$. 
 Further scheme-specific parameters are listed in \tabref{tab:opt-sph-schemes}.
@@ -1270,7 +1270,7 @@ The results will be presented in the subsequent sections. It should be noted tha
   Viscosity-based Model             & \begin{tabular}[c]{@{}c@{}}Lagrangian with iterative PST and \texttt{coupled\_c} viscosity formulation\\ (L-IPST-C)\end{tabular} & 10                     & \texttt{TaitEOS}           & \texttt{PEC}        & 1            & -                                                                                 & 5900                                         \\ \hline
   Large Eddy Simulation-based Model & SPH-LES                                                                                                                          & 10                     & \texttt{TaitEOS}           & \texttt{PEC}        & 1            & Viscous models=[\texttt{SMAG, SMAG-MCG, SIGMA}]                                   & \texttt{n.a.}                                \\ \hline
   Lagrangian LES-based Model        & $\delta$-LES-SPH $(\rho_c)$                                                                                                      & 10                     & \texttt{TaitEOS}           & \texttt{RK2}        & 1.5          & No gradient correction;                                                           & 8200                                         \\ \hline
-  RANS-based $k-\epsilon$ Model     & $k-\epsilon$ SPH                                                                                                                 & 10                     & \texttt{TaitEOS}           & \texttt{PEC}        & 1            & Simplied $k-\epsilon$ transport equations.                                        & 6400                                         \\ \hline
+  RANS-based $k-\epsilon$ Model     & $k-\epsilon$ SPH                                                                                                                 & 10                     & \texttt{TaitEOS}           & \texttt{PEC}        & 1            & Simplified $k-\epsilon$ transport equations.                                        & 6400                                         \\ \hline
   LANS-based Model                  & SPH-$\epsilon$                                                                                                                   & 10                     & \texttt{TaitEOS}           & \texttt{PEC}        & 1            & \begin{tabular}[c]{@{}c@{}}No gradient correction;\\ $\epsilon=0.5$;\end{tabular} & 3000                                         \\ \hline
   \end{tabular}%
   }
@@ -1304,7 +1304,7 @@ The SPH-$\epsilon$ scheme, on the other hand, appears to be the only scheme that
 \end{figure}
 
 The evolution of the kinetic energy and velocity decay for the various schemes are shown in \figref{fig:ltgv-ke-decay}. 
-Here, it is observed that for the L-IPTS-C and $\delta$-LES-SPH schemes, the kinetic energy and the decay follow the exact solution accurately, with this accuracy increasing with increasing resolution. It is also interesting to note, that for the L-IPTS-C scheme generally seems to overpredict the energy in the system and by increasing the resolution, this can be reduced. For the $\delta$-LES-SPH scheme, it is the other way around, where the energy in the system is underpredicted, and increasing the resolution increases the energy in the system.
+Here, it is observed that for the L-IPTS-C and $\delta$-LES-SPH schemes, the kinetic energy and the decay follow the exact solution accurately, with this accuracy increasing with increasing resolution. It is also interesting to note, that for the L-IPTS-C scheme generally seems to over-predict the energy in the system and by increasing the resolution, this can be reduced. For the $\delta$-LES-SPH scheme, it is the other way around, where the energy in the system is under-predicted, and increasing the resolution increases the energy in the system.
 Interestingly, the $k-\epsilon$ SPH scheme, which was the only scheme that conserved the angular and linear momentum of the system, seems to dissipate the energy in the system drastically, even for the high $Re$ case. Therefore, this `almost' zero-energy solution, which is not a physical solution, provided for such high precision in the conservation of the angular and linear momentum of the system, and not because of the accuracy of the scheme.
 The SPH-$\epsilon$ scheme, on the other hand, seems to constantly dump energy into the system, which, after a certain point, leads to instability in the system.
 
@@ -1410,6 +1410,10 @@ Supporting observations can be made from the vorticity magnitude plots as well, 
 
 
 The evolution of the $L_1$ error for the pressure field for the various schemes are shown in \figref{fig:ltgv-pl1}.
+Here, we see that the L-IPST-C scheme produces the least error, which reduces with incrasing resolution.
+The $\delta$-LES-SPH scheme, interestingly, seems to be significantly affected by th resolution of the simulation. Although the error rates for the resolution of $N=200^2$ is under 20\%, the error rates for the resolution of $N=100^2$ is the most for all the schemes. This seems to indicate that the $\delta$-LES-SPH scheme will require much higher resolutions to produce accurate results, compared to the L-IPST-C scheme.
+On observing the actual pressure field plots, as shown in \figref{fig:ltgv-scheme-pressure}, we see that the both the L-IPST-C and $\delta$-LES-SPH schemes are able to accurately capture the pressure field, even for the high $Re$ case when $N=200^2$.
+Correspondingly, by observing the density plots, as shown in \figref{fig:ltgv-scheme-density}.
 
 \begin{figure}[htbp!]
   \begin{subfigure}{7cm}
@@ -1432,51 +1436,61 @@ The evolution of the $L_1$ error for the pressure field for the various schemes 
   \label{fig:ltgv-pl1}
 \end{figure}
 
-
-
-
-
-SCHEME - PRESSURE \figref{fig:ltgv-scheme-pressure}
 \begin{figure}[htbp!]
   \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_100_pst_10_re_100000_tsph_wcsph_tf_2/final_p.png}
+    \caption{L-IPST-C scheme (\texttt{PEC}) ($N=100^2$)}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_rk2_dtmul_1.5_n_o_files_50_nx_100_pst_10_re_100000_deltales_tf_2/final_p.png}
+    \caption{$\delta$-LES scheme (\texttt{RK2}) ($N=100^2$)}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
   \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_200_pst_10_re_100000_tsph_wcsph_tf_2/final_p.png}
-  \caption{L-IPST-C scheme (\texttt{PEC})}
+  \caption{L-IPST-C scheme (\texttt{PEC}) ($N=200^2$)}
   \end{subfigure}
   \begin{subfigure}{7cm}
   \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_rk2_dtmul_1.5_n_o_files_50_nx_200_pst_10_re_100000_deltales_tf_2/final_p.png}
-  \caption{$\delta$-LES scheme (\texttt{RK2})}
+  \caption{$\delta$-LES scheme (\texttt{RK2}) ($N=200^2$)}
   \end{subfigure}
   \begin{subfigure}{7cm}
   \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_no_n_o_files_50_nx_200_pst_10_re_100000_k_eps_tf_2/final_p.png}
-  \caption{$k$-$\epsilon$ scheme (\texttt{PEC})}
+  \caption{$k$-$\epsilon$ scheme (\texttt{PEC}) ($N=200^2$)}
   \end{subfigure}
   \begin{subfigure}{7cm}
   \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_mon2017_eps_0.5_no_n_o_files_50_nx_200_pst_10_re_100000_mon2017_tf_2/final_p.png}
-  \caption{SPH-$\epsilon$ scheme (\texttt{PEC})}
+  \caption{SPH-$\epsilon$ scheme (\texttt{PEC}) ($N=200^2$)}
   \end{subfigure}
-  \caption{Pressure field for various schemes $(N=200^2, t_f=2, Re=10^5, c_s=20)$.}
+  \caption{Pressure field for various schemes $(t_f=2, Re=10^5, c_s=20)$.}
   \label{fig:ltgv-scheme-pressure}
 \end{figure}
 
-SCHEME - Density \figref{fig:ltgv-scheme-density}
 \begin{figure}[htbp!]
   \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_100_pst_10_re_100000_tsph_wcsph_tf_2/final_rhoc.png}
+    \caption{L-IPST-C scheme (\texttt{PEC}) $(\rho_c)$ ($N=100^2$)}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
+    \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_rk2_dtmul_1.5_n_o_files_50_nx_100_pst_10_re_100000_deltales_tf_2/final_rhoc.png}
+    \caption{$\delta$-LES scheme (\texttt{RK2}) $(\rho_c)$ ($N=100^2$)}
+  \end{subfigure}
+  \begin{subfigure}{7cm}
   \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_200_pst_10_re_100000_tsph_wcsph_tf_2/final_rhoc.png}
-  \caption{L-IPST-C scheme (\texttt{PEC}) $(\rho_c)$}
+  \caption{L-IPST-C scheme (\texttt{PEC}) $(\rho_c)$ ($N=200^2$)}
   \end{subfigure}
   \begin{subfigure}{7cm}
   \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_rk2_dtmul_1.5_n_o_files_50_nx_200_pst_10_re_100000_deltales_tf_2/final_rhoc.png}
-  \caption{$\delta$-LES scheme (\texttt{RK2}) $(\rho_c)$}
+  \caption{$\delta$-LES scheme (\texttt{RK2}) $(\rho_c)$ ($N=200^2$)}
   \end{subfigure}
   \begin{subfigure}{7cm}
   \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_no_n_o_files_50_nx_200_pst_10_re_100000_k_eps_tf_2/final_rho.png}
-  \caption{$k$-$\epsilon$ scheme (\texttt{PEC}) $(\rho)$}
+  \caption{$k$-$\epsilon$ scheme (\texttt{PEC}) $(\rho)$ ($N=200^2$)}
   \end{subfigure}
   \begin{subfigure}{7cm}
   \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_mon2017_eps_0.5_no_n_o_files_50_nx_200_pst_10_re_100000_mon2017_tf_2/final_rho.png}
-  \caption{SPH-$\epsilon$ scheme (\texttt{PEC}) $(\rho)$}
+  \caption{SPH-$\epsilon$ scheme (\texttt{PEC}) $(\rho)$ ($N=200^2$)}
   \end{subfigure}
-  \caption{Density field for various schemes $(N=200^2, t_f=2, Re=10^5, c_s=20)$.}
+  \caption{Density field for various schemes $(t_f=2, Re=10^5, c_s=20)$.}
   \label{fig:ltgv-scheme-density}
 \end{figure}
 
