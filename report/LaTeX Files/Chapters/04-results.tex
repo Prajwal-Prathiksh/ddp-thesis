@@ -1412,8 +1412,13 @@ Supporting observations can be made from the vorticity magnitude plots as well, 
 The evolution of the $L_1$ error for the pressure field for the various schemes are shown in \figref{fig:ltgv-pl1}.
 Here, we see that the L-IPST-C scheme produces the least error, which reduces with incrasing resolution.
 The $\delta$-LES-SPH scheme, interestingly, seems to be significantly affected by th resolution of the simulation. Although the error rates for the resolution of $N=200^2$ is under 20\%, the error rates for the resolution of $N=100^2$ is the most for all the schemes. This seems to indicate that the $\delta$-LES-SPH scheme will require much higher resolutions to produce accurate results, compared to the L-IPST-C scheme.
-On observing the actual pressure field plots, as shown in \figref{fig:ltgv-scheme-pressure}, we see that the both the L-IPST-C and $\delta$-LES-SPH schemes are able to accurately capture the pressure field, even for the high $Re$ case when $N=200^2$.
-Correspondingly, by observing the density plots, as shown in \figref{fig:ltgv-scheme-density}.
+On observing the actual pressure field plots, as shown in \figref{fig:ltgv-scheme-pressure}, we see that the both the L-IPST-C and $\delta$-LES-SPH schemes are able to accurately capture the pressure field, even for the high $Re$ case when $N=200^2$. However, when the case for $N=100^2$ is considered, we see that even though the $\delta$-LES-SPH scheme is able to capture the pressure field, the magnitude of the pressure is significantly lower than that of the the L-IPST-C scheme.
+Here, we note that since all of the formulations are weakly-compressible, pressure has an explicit and closed form expression with the density.
+Correspondingly, by observing the density plots, as shown in \figref{fig:ltgv-scheme-density}, we note that the $\delta$-LES-SPH scheme again captures the trends of the density field, but the upper and lower limits in the density are both lower than that of the L-IPST-C scheme.
+This also appears to be the case for the $N=200^2$ case, but the difference is not as significant. However, it might just be delaying the inevitable, since the error rates for the $N=200^2$ case are also increasing with time. Hence, identifying the cause of this behaviour, and rectifying it, will be essential for the $\delta$-LES-SPH scheme to be a viable alternative to the L-IPST-C scheme in terms of accuracy when it comes to the pressure and density field.
+With the $k-\epsilon$ SPH scheme, there is not much to comment, other than that the density and the pressure field is bunch of noise.
+On the other hand, with the SPH-$\epsilon$ scheme, $L_1$ error in pressure is comparable to that of the $\delta$-LES-SPH case, with perhaps exaggerated trends. This is evident with the pressure fields as well, where the SPH-$\epsilon$ scheme, still appears to have still maintained the pressure field trends, with the discrepancy coming from the larger lower and limits for the pressure field.
+Therefore, it is reasonable to conclude, that these trends might be a result of a fundamental flaw affecting both the schemes. A much more rigorous analysis would have to be performed to identify the cause of this behaviour.
 
 \begin{figure}[htbp!]
   \begin{subfigure}{7cm}
@@ -1494,7 +1499,11 @@ Correspondingly, by observing the density plots, as shown in \figref{fig:ltgv-sc
   \label{fig:ltgv-scheme-density}
 \end{figure}
 
-SCHEME - ESPEC \figref{fig:ltgv-scheme-espec}
+
+The evolution of the energy spectrum for the various schemes are shown in \figref{fig:ltgv-scheme-espec}.
+Here, we see that both the L-IPST-C and $\delta$-LES-SPH schemes, seem to have similar influence when it comes to the energy dissipation in the system over time. However, the $\delta$-LES-SPH scheme, does seem to perform better than the L-IPST-C scheme, in terms of redistributing the energy to lower scales, which is evident from the lower slope, and increased energy in the lower scales at the expense of the higher scales with the $\delta$-LES-SPH scheme. This is indeed what is expected from a reasonable turbulence model. This redistribution of the energy, is something that the L-IPST-C scheme currently lacks, and will need to be improved upon in the future to serve as a suitable turbulence model.
+The observations with the $k-\epsilon$ SPH and SPH-$\epsilon$ schemes, are much simpler to identify. The $k-\epsilon$ scheme reduces the energy for all scales drastically. While, the SPH-$\epsilon$ scheme, increases the energy in the smaller scales drastically, with the effect on the large scales being negligible.
+
 \begin{figure}[htbp!]
   \begin{subfigure}{7cm}
   \centering\includegraphics[width=6cm]{Code-Figures/long-tgv/c0_20_tait_hdx_2_pec_dtmul_1_sd_n_o_files_50_nx_200_pst_10_re_100000_tsph_wcsph_tf_2/energy_spectrum_evolution_all.png}
