@@ -704,7 +704,17 @@ class TGV2DExtForceSchemeComparison(TGV2DSchemeComparison):
         # Unpack simulation opts
         sim_opts = self.sim_opts
         res = get_all_unique_values(sim_opts, 're')
-        nxs = get_all_unique_values(sim_opts, 'nx')
+
+        cases = filter_cases(self.cases_temp, re=1_000_000, nx=200)
+        PROPS = ['p', 'vmag', 'omegaz', 'omega_mag']
+
+        for _t in [1, 3, 1.44, 1.92]:
+            self.plot_comparitive_prop_for_given_time(
+                t=_t,
+                fcases=cases,
+                props=PROPS
+            )
+        raise SystemExit
 
         # Make plots
         KIND_CHOICES = ['ke', 'lm', 'am']
@@ -735,7 +745,102 @@ class TGV2DExtForceSchemeComparison(TGV2DSchemeComparison):
                     title_suffix=t_suf, ylims=_y_l
                 )
     
-    def plot_vmag
+    def get_pysph_ofile_to_closest_t(self, t, case):
+        from pysph.solver.utils import iter_output, load
+        _dir = case.input_path()
+        files = [case.input_path(f) for f in os.listdir(_dir) if f.endswith('.hdf5')]
+
+        t_l = []
+        for sd, _ in iter_output(files, 'fluid'):
+            t_l.append(sd['t'])
+        
+        # Find the index of the closest time
+        idx = np.argmin(np.abs(np.array(t_l) - t))
+
+        data = load(files[idx])
+        sd, fluid = data['solver_data'], data['arrays']['fluid']
+        return sd, fluid
+    
+    def plot_comparitive_prop_for_given_time(self, t, props, fcases):
+        from matplotlib.colors import Normalize
+        import matplotlib.cm as cm
+
+        PROPS_CMAPS = dict(
+            p='jet', vmag='jet', omegaz='RdBu_r', omega_mag='RdBu_r'
+        )
+        PROPS_CMAP_LIM = dict(
+            p=(-1.5, 1.5),
+            vmag=(0, 1),
+            omegaz=(-20, 20),
+            omega_mag=(0, 20)
+        )
+
+        def _prop_helper(prop, fluid):
+            if prop == 'vmag':
+                u, v, w = fluid.get('u', 'v', 'w')
+                return np.sqrt(u**2 + v**2 + w**2)
+            elif prop == 'omegaz':
+                gradv = fluid.get('gradv')
+                omegaz = gradv[3::9] - gradv[1::9]
+                return omegaz
+            elif prop == 'omega_mag':
+                gradv = fluid.get('gradv')
+                omegax = gradv[5::9] - gradv[7::9]
+                omegay = gradv[6::9] - gradv[2::9]
+                omegaz = gradv[3::9] - gradv[1::9]
+                omega_mag = np.sqrt(omegax**2 + omegay**2 + omegaz**2)
+            else:
+                return fluid.get(prop)
+
+        # Get the required data
+        case_sd, case_fluid = [], []
+        for case in fcases:
+            # Get the closest time data
+            sd, fluid = self.get_pysph_ofile_to_closest_t(t, case)
+            case_sd.append(sd)
+            case_fluid.append(fluid)
+        print(f'Data loaded for all cases for t={t}')
+
+        n_case = len(fcases)
+        for prop in props:
+            cmap_name = PROPS_CMAPS[prop]
+            cbar_lim = PROPS_CMAP_LIM[prop]   
+            # Create figure with subplots
+            fig, axs = plt.subplots(1, n_case, figsize=(4*n_case, 4))
+            cmap = cm.get_cmap(cmap_name)
+            norm = Normalize(vmin=cbar_lim[0], vmax=cbar_lim[1])
+            im = cm.ScalarMappable(norm=norm, cmap=cmap)
+            
+            for idx, case in enumerate(fcases):
+                print(f'Plotting {prop} for t={t}')
+                print(f'Case: {case.name}')
+                x, y = case_fluid[idx].x, case_fluid[idx].y
+                prop_val = _prop_helper(prop, case_fluid[idx])
+                
+                # Plot
+                axs[idx].scatter(x, y, c=prop_val, cmap=cmap, norm=norm, s=0.6)
+                axs[idx].set_aspect('equal')
+
+                _s = case.render_parameter('scheme').split('=')[-1]
+                _i = case.render_parameter('integrator').split('=')[-1]
+                _n = case.render_parameter('nx').split('=')[-1]
+                _t = case_sd[idx]['t']
+                _title = get_label_from_scheme(_s) + fr" ({_i}) $(N={_n}^2)$"
+                _title += f"\n$t={_t:.2f}$"
+                axs[idx].set_title(_title)
+
+                axs[idx].set_xlim(0, 1)
+                axs[idx].set_ylim(0, 1)
+            
+            # Add colorbar
+            fig.subplots_adjust(right=0.8)
+            cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+            fig.colorbar(im, cax=cbar_ax)
+
+            # Save figure
+            fname = f"{prop}_t_{t}.png"
+            plt.savefig(self.output_path(fname), dpi=300, bbox_inches='tight')
+
 
     def plot_sim_prop_history(
         self, cases, re, kind, fname, title_suffix='',
