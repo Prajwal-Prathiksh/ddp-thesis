@@ -1683,3 +1683,54 @@ However, the L-IPST-C scheme is not as accurate as the $\delta$-LES-SPH scheme r
   \caption{Evolution of the angular and linear momentum for the externally-forced TGV problem $(N=[100^2, 200^2], Re=[10^4, 10^5, 10^6], c_s=20)$.}
   \label{fig:tgv-forced-am-lm}
 \end{figure}
+
+
+
+
+\summary
+Post-processing
+- Identified suitable: interpolation schemes, kernel, hdx value for calculation of the energy spectrum using sinuosoidal velocity field with multiple modes
+- Identified the effect of particle resolutiona and pertubation amplitude on the energy spectrum
+- FTLE field is mostly a qualitative measure of the flow field; tracer particles are a better alternative for quantitative analysis of the Lagrangian coherent structures
+
+Turbulence modelling:
+- Identified 5 representative schemes for each of the major category of turbulence models:
+    [L-ISPT-C, SPH-LES, delta-LES, k-eps SPH, SPH-eps]
+- Performed SOC analysis on each of the schemes, over:
+    - EOS: Tait/Linear
+    - Time integrators
+    - PST Freq/No PST
+    - Speed of sound
+    - Gradient correction/No gradient correction
+    - Fluid density/Summation density
+    - Scheme-specific parameters
+- SOC analysis consisted of testing the scheme over various parameters for three major Re regions: [10^2, 10^3, 10^4]
+- The analysis also involved analysis the flow field themselves, energy spectrum and vorticity besides looking at the L1 and Linf error plots.
+- Discretised k-eps eqs using SOC operators (not done before); Verfied spatial SOC for three major representative test-case; Implemenented it in a scheme without an implicit pressure poisson solver
+- Demonstrated effect of simplified/expanded k-eps eqs during the SPH discretisation
+- Identified optimum set of parameters for each scheme
+
+Long-time TGV:
+- Performed long-time TGV simulation for each of the optimised scheme with two levels of resolution: [100^2, 200^2], and two levels of Re: [10^4, 10^5]
+- Demostrated that SPH-LES could not be used for long-time simulations due to it being zero order convergent
+- Identified and explained why SPH-eps and k-eps SPH schemes are bad in their current state as SPH schemes
+- Demonstrated that L-ISPT-C and delta-LES schemes are the most promising schemes for turbulence modelling in SPH
+- All of this analysis involved stuyding the error plots, energy spectrum, and vorticity, and density and making qualitative comparisons with the expected results
+- Identified how SPH-eps and k-eps SPH schemes can be improved upon
+- Identified how L-ISPT-C and delta-LES schemes can be improved upon
+
+Externally forced TGV:
+- Used only L-ISPT-C and delta-LES schemes for this analysis; Involved testing the schemes at three levels of Re: [10^4, 10^5, 10^6], and two levels of resolution: [100^2, 200^2]
+- Demonstrated how the L-ISPT-C scheme is over-predicting the energy of the system, due to a lack of a mechanism to dissipate energy at smaller scales
+- Demonstrated how the delta-LES scheme is under-predicting the energy of the system, due to a very strong dissipative effect coming from the LES terms
+- Was able to reproduce the expected results of Colagrossi with two different schemes (albeit optimmised) but with much lower resolution and lower order time integrators
+- Showed how in the limit of h-->0, both the schemes converge to the expected results
+- Identified how both the schemes can be improved upon
+
+Future work:
+- Need to test these two schemes agaisnt complex problems that involve Re-onset instabilities, boundary layers, etc.
+- Need to test these schemes for 3D problems
+- Was working on periodic boundary conditions for the L-ISPT-C scheme which would be SOC in order to speedup the simulations; preliminary results show there will be tradefoff between accuracy this way, and the also increased memory requirements arising due to multiple layers of ghost particles needed 
+- Need to look into other ways of evaluating turbulence models besides from the energy spectrum, such as considering the Lagrangian coherent structures, etc.
+- Improve L-ISPT-C and delta-LES scheme
+- Try to incorporate PE-IPST scheme into the delta-LES scheme, since the latter currently suffers from perssure field instability
