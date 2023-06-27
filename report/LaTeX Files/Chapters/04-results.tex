@@ -351,7 +351,7 @@ As seen in \figref{fig:ftle-parabolic} and \figref{fig:ftle-spiral} ($B_0$: init
 
 
 \section{Turbulence Modelling}
-\subsection{Implementation of models}
+\subsection{Implementation of Models}
 A broad classification of the major categories of turbulence models has already been discussed in \chapref{chap:turbulence-modelling}.
 In order to better understand the nature of each major category and to subsequently understand the implementation of the same, a select few representative schemes from each of these models are considered, which are listed in \tabref{tab:rep-turb-models}.
 
@@ -1250,7 +1250,7 @@ Hence, a default value of $f_{pst} = 10$, and $\epsilon = 0.5$ is chosen for the
   \label{fig:sph-eps-pst-espec}
 \end{figure}
 
-\section{Long-time simulations - Taylor-Green Vortex Problem}
+\section{Long-time Simulations - Taylor-Green Vortex Problem}
 As mentioned in the previous section, a long-time simulation of the TGV problem was essential to understand each turbulence model regarding if and when instability would appear in the flow field.
 Therefore, the TGV problem was simulated for a more extended period of $t_f = 2.0$, for Reynolds number of $Re=[10^4, 10^5]$. Each simulation run was repeated for the resolutions of $N=[100^2, 200^2]$, with $c_s=20$. The \texttt{WendlandQuinticC4} kernel was used for all simulations, with a radius multiplier of $2.0$. 
 Further scheme-specific parameters are listed in \tabref{tab:opt-sph-schemes}.
@@ -1525,7 +1525,7 @@ The observations with the $k-\epsilon$ SPH and SPH-$\epsilon$ schemes are much s
 \end{figure}
 
 
-\section{Externally Forced Taylor-Green Vortex Problem}
+\section{Externally Forced Variant - Taylor-Green Vortex Problem}
 
 From the previous section, it is evident that $k-\epsilon$ SPH and SPH-$\epsilon$ need to be improved before they can be considered potential turbulence modelling schemes in SPH.
 Therefore, to better gauge the differences between the L-IPST-C and $\delta$-LES-SPH schemes, the externally forced TGV problem is considered.
