@@ -51,7 +51,7 @@ The $3D$ case of the problem, defined for a tri-periodic domain with boundary $(
 \end{equation}
 The corresponding initial pressure field $(P_0)$ obtained from solving the pressure Poisson equation for incompressible flow is given by \Eqref{eq:3d-tgv-p} \parencite{pereira2021modeling}.
 \begin{equation}
-    P_{0} = P_o + \frac{\rho_o \nu_o^2}{16} \bigg(2 + \cos(2z) \bigg) \bigg(\cos(2x) + \cos(2y) \bigg),
+    P_{0} = P_o + \frac{\rho_o \nu_o^2}{16} \bigg(2 + \cos(2z) \bigg) \bigg(\cos(2x) + \cos(2y) \bigg).
     \label{eq:3d-tgv-p}
 \end{equation}
 
@@ -78,13 +78,13 @@ The data from the database contains the three velocity components and the pressu
 database pressure, with Mach number Ma 0.1. 
 
 \subsection[2D Confined and Driven Turbulence]{$2D$ Confined \& Driven Turbulence}
-Based on the test case employed by \cite{Monaghan2017}, a $2D$ fluid confined to a square solid impenetrable boundary is considered $(\Boundary = [0,1]^2)$. A cylinder of radius $(r=0.7)$ is placed at the centre of the box. The circle is subsequently provided with a Lissajous trajectory to follow given by \Eqref{eq:2d-cdt-x} - \Eqref{eq:2d-cdt-y}.
+Based on the test case employed by \cite{Monaghan2017}, a $2D$ fluid confined to a square solid impenetrable boundary is considered $(\Boundary = [0,1]^2)$. A cylinder of radius $(r=0.7)$ is placed at the centre of the box. The circle is subsequently provided with a Lissajous trajectory to follow given by:
 \begin{equation}
-    x = 0.5 + 0.25 \sin \bigg( \frac{2\pi t}{5} \bigg)
+    x = 0.5 + 0.25 \sin \bigg( \frac{2\pi t}{5} \bigg),
     \label{eq:2d-cdt-x}
 \end{equation}
 \begin{equation}
-    y = 0.5 + 0.25 \sin \bigg( \frac{4\pi t}{5} \bigg)
+    y = 0.5 + 0.25 \sin \bigg( \frac{4\pi t}{5} \bigg).
     \label{eq:2d-cdt-y}
 \end{equation}
 
@@ -99,37 +99,36 @@ As seen in numerous works involving turbulence models in the previous chapter, t
 In order to analyse the predicted flow and validate the turbulent model, energy spectra are the most used description since it has to fall off as prescribed by the  Kolmogorov - $5/3$ Law.
 Typical mesh or grid-based methods facilitate the calculation of the energy spectrum $(E[\WaveNumber])$ by using the Fourier transform of the velocity field as given in \Eqref{eq:Shi2013-vel-FT}, to obtain the velocity spectrum as defined in \Eqref{eq:Shi2013-vel-spectrum}.
 \begin{equation}
-    \vect{V}(\vect{k}) = \frac{1}{L^3} \int \exp(-i \vect{k} \cdot \vect{r}) \vect{v}(\vect{r}) d\vect{r}
+    \vect{V}(\vect{k}) = \frac{1}{L^3} \int \exp(-i \vect{k} \cdot \vect{r}) \vect{v}(\vect{r}) d\vect{r},
     \label{eq:Shi2013-vel-FT}
 \end{equation}
-Where $(d\vect{r}=dxdy)$ for $2D$ and $(d\vect{r}=dxdydz)$ for $3D$, and $[\vect{k} = (\WaveNumber_x, \WaveNumber_y, \WaveNumber_z)]$ is the wave-number vector.
+where $(d\vect{r}=dxdy)$ for $2D$ and $(d\vect{r}=dxdydz)$ for $3D$, and $[\vect{k} = (\WaveNumber_x, \WaveNumber_y, \WaveNumber_z)]$ is the wave-number vector.
 \begin{equation}
-    E(\vect{k}) = \HalfFrac \abs{ \vect{V}(\vect{k}) \cdot \vect{V}^*(\vect{k}) }
+    E(\vect{k}) = \HalfFrac \abs{ \vect{V}(\vect{k}) \cdot \vect{V}^*(\vect{k}) }.
     \label{eq:Shi2013-vel-spectrum}
 \end{equation}
 
 The energy spectrum is subsequently defined as given by \Eqref{eq:Shi2013-energy-spectrum} for the case of isotropic turbulence.
 \begin{equation}
-    E(\WaveNumber) = B \langle E(\vect{k}) \rangle \quad , \quad \WaveNumber = \abs{\vect{k}}
+    E(\WaveNumber) = B \langle E(\vect{k}) \rangle \quad , \quad \WaveNumber = \abs{\vect{k}},
     \label{eq:Shi2013-energy-spectrum}
 \end{equation}
-Where $(B=2\pi k)$ for $2D$ and $(B=4\pi k^2)$ for $3D$.
+where $(B=2\pi k)$ for $2D$ and $(B=4\pi k^2)$ for $3D$.
 
 However, SPH does not have such grid-like data to calculate the energy spectrum directly. Hence, the data has to be reconstructed using interpolation methods as outlined by \cite{Shi2013}.
 The authors provide three distinct methods of interpolating the data across a grid-like space. 
-The SPH interpolation method specified by the authors is given in \Eqref{eq:Shi2013-sph-interpolation}.
+The SPH interpolation method specified by the authors is given below:
 \begin{equation}
-    A(\vect{r}) \approx \sum_j A_j W(\abs{\vect{r} - \vect{r}_j}, h) \Vol_j
+    A(\vect{r}) \approx \sum_j A_j W(\abs{\vect{r} - \vect{r}_j}, h) \Vol_j.
     \label{eq:Shi2013-sph-interpolation}
 \end{equation}
 
-The remeshed interpolation method is outlined in \Eqref{eq:Shi2013-remeshed-interpolation}.
-Remeshed Interpolation
+The remeshed interpolation method is given by:
 \begin{equation}
-    A(\vect{r}) \approx \sum_j A_j \Tilde{W}(\abs{x-x_j}, h) \Tilde{W}(\abs{y-y_j}, h) \Tilde{W}(\abs{z-z_j}, h)
+    A(\vect{r}) \approx \sum_j A_j \Tilde{W}(\abs{x-x_j}, h) \Tilde{W}(\abs{y-y_j}, h) \Tilde{W}(\abs{z-z_j}, h),
     \label{eq:Shi2013-remeshed-interpolation}
 \end{equation}
-Where $(\Tilde{W})$ represents the kernel where the volume of the particle $(\Vol_j)$ has been absorbed.
+where $(\Tilde{W})$ represents the kernel where the volume of the particle $(\Vol_j)$ has been absorbed.
 
 The authors also detail the moving least squares (MLS) method as an interpolation tool. Building on the work of \cite{lancaster1981surfaces}, who were able to extend the $2D$ interpolation technique proposed by \cite{shepard1968two} to a general higher-order case. The authors state that they start with a weighted least squares formulation for an arbitrary fixed point and then move said point across the entire domain. This allows for the computation of a weighted least squares fit function, which can be used to evaluate grid-like points.
 

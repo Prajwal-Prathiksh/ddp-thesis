@@ -38,18 +38,18 @@ In order to compute the energy spectrum, the following steps are performed:
 
 \begin{itemize}
     \item the velocity field is interpolated along a grid of uniformly spaced rectangular points,
-    \item the velocity field is then transformed to Fourier space, using the \texttt{numpy.fft.fftn} function \parencite{harris2020array}, and subsequently normalised as given as
+    \item the velocity field is then transformed to Fourier space, using the \texttt{numpy.fft.fftn} function \parencite{harris2020array}, and subsequently normalised as given as:
     \begin{equation}
-        \hat{\vect{v_i}}(\vect{k}) = \frac{ fft\{ \vect{v_i}(\vect{r}) \} }{U_0 \times len(\vect{v_i})}
+        \hat{\vect{v_i}}(\vect{k}) = \frac{ fft\{ \vect{v_i}(\vect{r}) \} }{U_0 \times len(\vect{v_i})},
     \end{equation}
     where $U_0$ is a reference velocity and $\vect{v_i}$ is the $i^{th}$ component of the velocity field,
-    \item the corresponding energy spectrum is then computed as
+    \item the corresponding energy spectrum is then computed as:
     \begin{equation}
-        \vect{E_i}(\vect{k}) = \frac{1}{2} \hat{\vect{v_i}}^2
+        \vect{E_i}(\vect{k}) = \frac{1}{2} \hat{\vect{v_i}}^2,
     \end{equation}
-    \item the $1D$ energy spectrum $E(k)$ is then computed from the energy vector field $\vect{E_i}(k_x, k_y, k_z)$, by integrating it over the surface of a sphere of appropriate dimension between the limits $k=0$ and $k=k_{max}$, where $k_{max}$ is the maximum wavenumber of the energy spectrum, where 
+    \item the $1D$ energy spectrum $E(k)$ is then computed from the energy vector field $\vect{E_i}(k_x, k_y, k_z)$, by integrating it over the surface of a sphere of appropriate dimension between the limits $k=0$ and $k=k_{max}$, where $k_{max}$ is the maximum wavenumber of the energy spectrum, where:
     \begin{equation}
-        k_{max} = round(1 + ceil(|(l_x, l_y, l_z)|/2))
+        k_{max} = round(1 + ceil(|(l_x, l_y, l_z)|/2)).
     \end{equation}
 \end{itemize}
 
@@ -82,7 +82,7 @@ In order to test the code for correctness, the following test cases were devised
 where, $N$ is the number of modes, and $\gamma$ is the decay rate of the modes.
 For $2D$, the velocity field is given as:
 \begin{equation}
-    v_x = - \sum_{i=1}^{N} i^{-\gamma} \cos(2 \pi i x) \sin(2 \pi i y)
+    v_x = - \sum_{i=1}^{N} i^{-\gamma} \cos(2 \pi i x) \sin(2 \pi i y),
 \end{equation}
 \begin{equation}
     v_y = \sum_{i=1}^{N} i^{-\gamma} \sin(2 \pi i x) \cos(2 \pi i y).
@@ -204,6 +204,7 @@ Then, in order to measure the effect of the interpolation scheme on the computed
     \begin{equation}
         \hat{\phi_i} = \sum_{ij} \frac{m_j}{\rho_j} \phi_j \DWIJ,
     \end{equation}
+	where $\phi$ is the quantity to be interpolated, and $\hat{\phi}$ is the interpolated quantity,
     
     \item \texttt{shepard}:
     \begin{equation}
@@ -212,16 +213,15 @@ Then, in order to measure the effect of the interpolation scheme on the computed
 
     \item \texttt{order1} \parencite{Liu2006}:
     \begin{equation}
-      \tensor{A}_{4 \times 4} \vect{x}_{4 \times 1} = \vect{b}_{4 \times 1}
+      \tensor{A}_{4 \times 4} \vect{x}_{4 \times 1} = \vect{b}_{4 \times 1},
       \label{eq:interp-order1}
     \end{equation}
     where $\tensor{A}$ is the moment matrix, $\vect{b} = [\phi, \nabla \phi]^T$ is the interpolated property, and its gradient is calculated using basic SPH, and $\vect{x} = [\hat{\phi}, \nabla \hat{\phi}]^T$ is the unknown interpolated property and its gradient,
 
     \item \texttt{order1BL}: same as \Eqref{eq:interp-order1}, but with the $\DWIJ$ term corrected using the Bonet-Lok correction \parencite{bonet1999variational},
 
-    \item \texttt{order1MC}: same as \Eqref{eq:interp-order1}, but with the $\DWIJ$ term corrected using the Mixed-Kernel correction \parencite{bonet1999variational},
+    \item \texttt{order1MC}: same as \Eqref{eq:interp-order1}, but with the $\DWIJ$ term corrected using the Mixed-Kernel correction \parencite{bonet1999variational}.
 \end{itemize}
-where $\phi$ is the quantity to be interpolated, and $\hat{\phi}$ is the interpolated quantity.
 
 From the results shown in \figref{fig:espec-scalar-fields-i-methods}, it can be observed that the \texttt{order1MC} interpolation scheme seems to introduce the least amount of energy at lower resolution scales, with the \texttt{sph} scheme introducing the most amount of energy at lower resolution scales. This trend seems to hold for all dimensions.
 Therefore, because the \texttt{sph} interpolation scheme would appear to counter the loss in energy at lower resolution scales due to the act of interpolation, it is chosen as the default interpolation scheme for the computation of the energy spectrum.
@@ -324,14 +324,14 @@ where $(\vect{x}_i, \vect{X}_i)$ corresponds to the initial and final position o
 
 In order to test the correctness of the FTLE field computation, the following test cases were devised.
 \begin{itemize}
-  \item \texttt{parabolic}
+  \item \texttt{parabolic}:
   \begin{equation}
     X = 1.5x, \quad Y = x^2 + y,
   \end{equation}
 
-  \item \texttt{spiral}
+  \item \texttt{spiral}:
   \begin{equation}
-    X = x + 0.1 \cos(2 \pi r^2), \quad Y = y + 0.1 \sin(2 \pi r^2), \quad r = \sqrt{x^2 + y^2},
+    X = x + 0.1 \cos(2 \pi r^2), \quad Y = y + 0.1 \sin(2 \pi r^2), \quad r = \sqrt{x^2 + y^2}.
     \end{equation}
 \end{itemize}
 
@@ -805,9 +805,9 @@ Three test cases were devised to represent three distinct functional forms. Flow
 
   \item \texttt{Test-case 3}:
   \begin{equation}
-    k_0 = \frac{1}{2}\abs{\vect{v}_0}^2, \quad \epsilon_0 = 0.09 \frac{k_0^{3/2}}{L}.
+    k_0 = \frac{1}{2}\abs{\vect{v}_0}^2, \quad \epsilon_0 = 0.09 \frac{k_0^{3/2}}{L},
   \end{equation}
-  This test case represents a $k-\epsilon$ field that is non-linearly proportional to the velocity field.
+  this test case represents a $k-\epsilon$ field that is non-linearly proportional to the velocity field.
 \end{itemize}
 For all of the above cases, the analytical values of the RHS of the $k$ and $\epsilon$ transport equations are computed using \texttt{SymPy} \parencite{Meurer2017}, a symbolic package in order to automate the process and avoid any errors in the analytical computation.
 
