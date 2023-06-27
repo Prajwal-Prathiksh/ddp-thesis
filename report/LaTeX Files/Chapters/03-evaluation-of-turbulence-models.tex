@@ -20,38 +20,38 @@ Hence, appropriate test cases must be used when analysing turbulence.
 The Taylor-Green vortex problem is a challenging case to tackle. The flow is periodic, incompressible and consists of decaying vortices.
 The $2D$ case of the problem is analytically defined as given by \Eqref{eq:2d-tgv-vx} - \Eqref{eq:2d-tgv-p}.
 \begin{equation}
-    v_x = -U e^{bt} \cos(2\pi x) \sin(2\pi y)
+    v_x = -U e^{bt} \cos(2\pi x) \sin(2\pi y),
     \label{eq:2d-tgv-vx}
 \end{equation}
 \begin{equation}
-    v_y = U e^{bt} \sin(2\pi x) \cos(2\pi y)
+    v_y = U e^{bt} \sin(2\pi x) \cos(2\pi y),
     \label{eq:2d-tgv-vy}
 \end{equation}
 \begin{equation}
-    p = (U e^{bt})^2 \frac{\cos(4\pi x) + \cos(4\pi y)}{4}
+    p = (U e^{bt})^2 \frac{\cos(4\pi x) + \cos(4\pi y)}{4},
     \label{eq:2d-tgv-p}
 \end{equation}
 \begin{equation}
-    b = -\frac{8\pi}{Re} \quad , \quad Re = \frac{UL}{\nu}
+    b = -\frac{8\pi}{Re} \quad , \quad Re = \frac{UL}{\nu},
 \end{equation}
-Where $(U, Re, L)$ are flow constants.
+where $(U, Re, L)$ are flow constants.
 
 The $3D$ case of the problem, defined for a tri-periodic domain with boundary $(\Boundary = [0, 2\pi]^3)$ is initially set-up as given in \Eqref{eq:3d-tgv-vx} - \Eqref{eq:3d-tgv-vz}.
 \begin{equation}
-    v_{x, 0} = \sin(x) \cos(y) \cos(z)
+    v_{x, 0} = \sin(x) \cos(y) \cos(z),
     \label{eq:3d-tgv-vx}
 \end{equation}
 \begin{equation}
-    v_{y, 0} = -\cos(x) \sin(y) \cos(z)
+    v_{y, 0} = -\cos(x) \sin(y) \cos(z),
     \label{eq:3d-tgv-vy}
 \end{equation}
 \begin{equation}
-    v_{z, 0} = 0
+    v_{z, 0} = 0.
     \label{eq:3d-tgv-vz}
 \end{equation}
 The corresponding initial pressure field $(P_0)$ obtained from solving the pressure Poisson equation for incompressible flow is given by \Eqref{eq:3d-tgv-p} \parencite{pereira2021modeling}.
 \begin{equation}
-    P_{0} = P_o + \frac{\rho_o \nu_o^2}{16} \bigg(2 + \cos(2z) \bigg) \bigg(\cos(2x) + \cos(2y) \bigg)
+    P_{0} = P_o + \frac{\rho_o \nu_o^2}{16} \bigg(2 + \cos(2z) \bigg) \bigg(\cos(2x) + \cos(2y) \bigg),
     \label{eq:3d-tgv-p}
 \end{equation}
 
@@ -60,13 +60,13 @@ The thin double-shear layer is a problem often considered to be too difficult to
 The main challenge of the problem, as shown by \cite{minion1997performance}, occurs when a numerical method produces spurious structures, especially when the flow is sufficiently under-resolved. 
 \cite{drikakis2001spurious} studied the problem's spurious structure to understand its numerical mechanism. They indicated that the spurious structure's generation depends on the advective scheme's choice. 
 
-The initial conditions for the $2D$ periodic flow is given by \Eqref{eq:2d-tdsl-vx} - \Eqref{eq:2d-tdsl-vy}.
+The initial conditions for the $2D$ periodic flow is given by:
 \begin{equation}
-    v_{x, 0} = \tanh \big(80 \times \min[y-0.25, 0.75-y] \big)
+    v_{x, 0} = \tanh \big(80 \times \min[y-0.25, 0.75-y] \big),
     \label{eq:2d-tdsl-vx}
 \end{equation}
 \begin{equation}
-    v_{y, 0} = \delta \sin \big( 2\pi (x+0.25) \big)
+    v_{y, 0} = \delta \sin \big( 2\pi (x+0.25) \big).
     \label{eq:2d-tdsl-vy}
 \end{equation}
 

@@ -8,7 +8,7 @@
 %----------------------------------------------------------------------------------------
 \section{Viscosity-based Models}
 \label{sec:visc-based-model}
-\cite{VIOLEAU2002} were amongst the early pioneers who tried to incorporate a turbulence model in SPH. They came up with two techniques to tackle the problem of turbulence in a Lagrangian framework, which so far had been neglected till then in research, namely, the eddy viscosity model and a generalised Langevin model. For each of their techniques, they considered the following equation of state, 
+\cite{VIOLEAU2002} were amongst the early pioneers who tried to incorporate a turbulence model in SPH. They came up with two techniques to tackle the problem of turbulence in a Lagrangian framework, which so far had been neglected till then in research, namely, the eddy viscosity model and a generalised Langevin model. For each of their techniques, they considered the following equation of state:
 \begin{equation}
     P_i = B \Bigg[ \bigg( \frac{\rho_i}{\rho_o} \bigg)^{\gamma} - 1 \Bigg] \quad , \quad B = \frac{\rho_o c_s^2}{\gamma},
     \label{eq:violeau-eos}
@@ -177,7 +177,7 @@ The second test case employed by the authors was that of the $3D$ TGV problem re
 
 The governing equations of the system were described as given by the continuity equation in \Eqref{eq:Gotoh2004-continuity-governing} and the momentum equation in \Eqref{eq:Adami2012-mom-governing}.
 \begin{equation}
-    \frac{1}{\rho} \LagDerivative{\rho} + \nabla \cdot \vect{v} = 0
+    \frac{1}{\rho} \LagDerivative{\rho} + \nabla \cdot \vect{v} = 0.
     \label{eq:Gotoh2004-continuity-governing}
 \end{equation}
 
@@ -326,56 +326,53 @@ Furthermore, by performing a convergence study of the SPH-LES model using the da
 
 \cite{ROGERS2005}, similar to the work on SPH-LES modelling detailed in \secref{sec:Implicit-Pressure-Poisson-based-Models}, came up with an LES-type sub-particle-scale (SPS) formulation based on the weakly compressible assumption in order to develop a turbulence model for SPH.
 
-The authors considered the mass and momentum conservation equations as already given in \Eqref{eq:Gotoh2004-continuity-governing} and  \Eqref{eq:Adami2012-mom-governing} respectively, along with the equation of state \Eqref{eq:violeau-eos}. However, for the value of $(B)$ in the state equation, the authors considered the definition given in \Eqref{eq:ROGERS2005-eos-b}:
+The authors considered the mass and momentum conservation equations as already given in \Eqref{eq:Gotoh2004-continuity-governing} and  \Eqref{eq:Adami2012-mom-governing} respectively, along with the equation of state \Eqref{eq:violeau-eos}. However, for the value of $(B)$ in the state equation, the authors considered the definition given below:
 \begin{equation}
-    B' = 10 u_{max}
+    B' = 10 u_{max},
     \label{eq:ROGERS2005-eos-b}
 \end{equation}
-Where $(u_{max})$ is the maximum particle velocity.
+where $(u_{max})$ is the maximum particle velocity.
 
-They subsequently filtered the compressible conservation equations using Favre averaging as given by \Eqref{eq:ROGERS2005-favre-averaging}.
+They subsequently filtered the compressible conservation equations using Favre averaging as given by:
 \begin{equation}
-    \widetilde{f} = \frac{\overline{\rho f}}{\overline{\rho}}
+    \widetilde{f} = \frac{\overline{\rho f}}{\overline{\rho}}.
     \label{eq:ROGERS2005-favre-averaging}
 \end{equation}
 
 
-The derived filtered conservation equations for mass and momentum are detailed in \Eqref{eq:ROGERS2005-continuity-filtered} and \Eqref{eq:ROGERS2005-mom-filtered}.
+The derived filtered conservation equations for mass and momentum are detailed below:
 \begin{equation}
-    \LagDerivative{\overline{\rho}} = -\overline{\rho} \nabla \cdot \vect{\widetilde{v}}
+    \LagDerivative{\overline{\rho}} = -\overline{\rho} \nabla \cdot \vect{\widetilde{v}},
     \label{eq:ROGERS2005-continuity-filtered}
 \end{equation}
 \begin{equation}
-    \LagDerivative{\vect{\widetilde{v}}} = - \frac{1}{\overline{\rho}}\nabla \overline{P} + \frac{1}{\overline{\rho}} (\nabla \cdot \overline{\rho \nu} \nabla) \vect{\widetilde{v}} + \frac{1}{\overline{\rho}}\nabla\cdot\tensor{\tau} + \vect{F}
+    \LagDerivative{\vect{\widetilde{v}}} = - \frac{1}{\overline{\rho}}\nabla \overline{P} + \frac{1}{\overline{\rho}} (\nabla \cdot \overline{\rho \nu} \nabla) \vect{\widetilde{v}} + \frac{1}{\overline{\rho}}\nabla\cdot\tensor{\tau} + \vect{F},
     \label{eq:ROGERS2005-mom-filtered}
 \end{equation}
-
-Where the SPS stress tensor and turbulent eddy viscosity is given by \Eqref{eq:ROGERS2005-tau} and \Eqref{eq:ROGERS2005-turbulent-eddy-visc} respectively.
+where the SPS stress tensor and turbulent eddy viscosity is defined as:
 \begin{equation}
-    \tensor{\tau} = \overline{\rho}\bigg(2\nu_t \tensor{S} - \frac{2}{3}\operatorname{tr}[\tensor{S}]\tensor{I}\bigg) - \frac{2}{3}\overline{\rho}C_I \overline{\Delta}^2 \tensor{I} \quad , \quad C_I = \SciNot{6.6}{-4}
+    \tensor{\tau} = \overline{\rho}\bigg(2\nu_t \tensor{S} - \frac{2}{3}\operatorname{tr}[\tensor{S}]\tensor{I}\bigg) - \frac{2}{3}\overline{\rho}C_I \overline{\Delta}^2 \tensor{I} \quad , \quad C_I = \SciNot{6.6}{-4},
     \label{eq:ROGERS2005-tau}
 \end{equation}
 \begin{equation}
-    \nu_t = (C_s \Delta x)^2 \sqrt{2 \FrobeniusInnerProduct{S}{S}} \quad , \quad C_s = 0.12
+    \nu_t = (C_s \Delta x)^2 \sqrt{2 \FrobeniusInnerProduct{S}{S}} \quad , \quad C_s = 0.12.
     \label{eq:ROGERS2005-turbulent-eddy-visc}
 \end{equation}
-
-As for the SPH formulations of the aforementioned governing equations, the authors
 
 The authors derived the SPH formulations of the aforementioned governing equations. The continuity equation takes the form as detailed in \Eqref{eq:violeau-continuity}. The pressure gradient term is given in \Eqref{eq:Gotoh2004-grad-p-sph}. The laminar stress term, consisting of the velocity Laplacian is given by \Eqref{eq:ROGERS2005-vel-laplacian-sph}, which itself was built on the work of \cite{morris1997modeling} as given in \Eqref{eq:morris1997modeling-vel-laplacian-sph}. Finally the stress divergence is defined by \Eqref{eq:Gotoh2004-div-tau-sph}.
 
 \begin{equation}
-    \bigg( \frac{1}{\rho} (\nabla \cdot \eta \nabla) \vect{v} \bigg)_i = \sum_j m_j \frac{\nu (\rho_i + \rho_i)}{\rho_{ij}^2} \frac{\VIJ \RIJ \cdot \DWIJ}{\RtwoIJ + \MachineEpsilon^2}
+    \bigg( \frac{1}{\rho} (\nabla \cdot \eta \nabla) \vect{v} \bigg)_i = \sum_j m_j \frac{\nu (\rho_i + \rho_i)}{\rho_{ij}^2} \frac{\VIJ \RIJ \cdot \DWIJ}{\RtwoIJ + \MachineEpsilon^2},
     \label{eq:ROGERS2005-vel-laplacian-sph}
 \end{equation}
 \begin{equation}
-    \bigg( \frac{1}{\rho} (\nabla \cdot \eta \nabla) \vect{v} \bigg)_i = \sum_j m_j \frac{(\eta_i + \eta_j) \VIJ}{\rho_i \rho_j} \bigg( \frac{1}{\RtwoIJ[]} \PartialDerivative[r_i]{\WIJ} \bigg) \quad , \quad \DWIJ = \frac{\RIJ}{\RtwoIJ[]} \PartialDerivative[r_i]{\WIJ}
+    \bigg( \frac{1}{\rho} (\nabla \cdot \eta \nabla) \vect{v} \bigg)_i = \sum_j m_j \frac{(\eta_i + \eta_j) \VIJ}{\rho_i \rho_j} \bigg( \frac{1}{\RtwoIJ[]} \PartialDerivative[r_i]{\WIJ} \bigg) \quad , \quad \DWIJ = \frac{\RIJ}{\RtwoIJ[]} \PartialDerivative[r_i]{\WIJ}.
     \label{eq:morris1997modeling-vel-laplacian-sph}
 \end{equation}
 
 The authors noted that the LES description of viscous effects in slightly compressible SPH could lead to unphysical behaviour at free surfaces due to density variations being magnified by the equation of state. The lack of artificial viscosity implies that such variations are not damped. They subsequently noted that averaging the density would ensure smooth and physically acceptable free surfaces, based on the work of \cite{panizzo2004physical}. Hence, they performed Shepard filtering of the density as defined in \Eqref{eq:ROGERS2005-rho-shepard-filter} every 40-time steps.
 \begin{equation}
-    \rho_i = \frac{\sum_j \rho_j \WIJ \Vol_j}{\sum_j \WIJ \Vol_j}
+    \rho_i = \frac{\sum_j \rho_j \WIJ \Vol_j}{\sum_j \WIJ \Vol_j}.
     \label{eq:ROGERS2005-rho-shepard-filter}
 \end{equation}
 
@@ -390,30 +387,30 @@ Building on this work, \cite{Dalrymple2006} used this scheme on a wide variety o
 \cite{Canelas2016} constructed the wall-adapting local eddy viscosity (WALE) model to be incorporated in the SPH-LES scheme. They noted that studying turbulent flow fields required the identification of vortices themselves to study their interactions in the flow. They used the definition of Lagrangian Coherent Structures (LCS) to help capture these vortices. As a Lagrangian method, SPH is preferable for studying LCS since the technique provides the motion of individual fluid particles, thereby eliminating the need for expensive post-processing inherent to Eulerian solutions. 
 However, they noted that typically employed SPS strategies for LES simulations, based on the standard Smagorinsky model, cannot correctly enforce wall conditions and non-vanishing stresses with laminar flows. Hence they devised the WALE model.
 
-The authors consider the compressible NS along the continuity equation as their governing equation. They subsequently present the SPH formulation of the continuity equation as defined by \Eqref{eq:Canelas2016-continuity-sph}.
+The authors consider the compressible NS along the continuity equation as their governing equation. They subsequently present the SPH formulation of the continuity equation as defined below:
 \begin{equation}
-    \LagDerivative{\rho_i} = - \rho_i \sum_j m_j \VIJ \cdot \DWIJ
+    \LagDerivative{\rho_i} = - \rho_i \sum_j m_j \VIJ \cdot \DWIJ.
     \label{eq:Canelas2016-continuity-sph}
 \end{equation}
-The pressure gradient term is given in \Eqref{eq:Gotoh2004-grad-p-sph}. The laminar stress term, consisting of the velocity Laplacian, is given by \Eqref{eq:Canelas2016-vel-laplacian-sph}. 
+The pressure gradient term is given in \Eqref{eq:Gotoh2004-grad-p-sph}. The laminar stress term, consisting of the velocity Laplacian, is given as:
 \begin{equation}
-    \big(\nu \Delta(\vect{v}) \big)_i = \sum_j m_j \frac{4 \nu}{\rho_i + \rho_j}\frac{\VIJ \RIJ \cdot \DWIJ}{\RtwoIJ}
+    \big(\nu \Delta(\vect{v}) \big)_i = \sum_j m_j \frac{4 \nu}{\rho_i + \rho_j}\frac{\VIJ \RIJ \cdot \DWIJ}{\RtwoIJ}.
     \label{eq:Canelas2016-vel-laplacian-sph}
 \end{equation}
 
-Finally the stress divergence is defined by \Eqref{eq:Gotoh2004-div-tau-sph}, with the stress tensor being defined by \Eqref{eq:Canelas2016-tau}
+Finally the stress divergence is defined by \Eqref{eq:Gotoh2004-div-tau-sph}, with the stress tensor being defined as:
 \begin{equation}
-    \tensor{\tau} = \rho \bigg( 2\nu_t \tensor{S} - \frac{2 \nu_t}{3}\operatorname{tr}[\tensor{S}]\tensor{I} \bigg) - \bigg( \frac{4}{3} \rho C_I (\Delta x)^2 \FrobeniusInnerProduct{S}{S} \bigg) \tensor{I} \quad , \quad C_I = \SciNot{6.6}{-3}
+    \tensor{\tau} = \rho \bigg( 2\nu_t \tensor{S} - \frac{2 \nu_t}{3}\operatorname{tr}[\tensor{S}]\tensor{I} \bigg) - \bigg( \frac{4}{3} \rho C_I (\Delta x)^2 \FrobeniusInnerProduct{S}{S} \bigg) \tensor{I} \quad , \quad C_I = \SciNot{6.6}{-3}.
     \label{eq:Canelas2016-tau}
 \end{equation}
 
-The WALE model redefines the turbulent eddy viscosity as given by \Eqref{eq:Canelas2016-turbulent-eddy-visc}.
+The WALE model redefines the turbulent eddy viscosity as given by:
 \begin{equation}
-    \nu_t = \rho (C_w \Delta x)^2 \frac{\FrobeniusInnerProduct{S^d}{S^d}^{3/2}}{\FrobeniusInnerProduct{S}{S}^{5/2} + \FrobeniusInnerProduct{S^d}{S^d}^{5/4}} \quad , \quad C_w=0.325
+    \nu_t = \rho (C_w \Delta x)^2 \frac{\FrobeniusInnerProduct{S^d}{S^d}^{3/2}}{\FrobeniusInnerProduct{S}{S}^{5/2} + \FrobeniusInnerProduct{S^d}{S^d}^{5/4}} \quad , \quad C_w=0.325,
     \label{eq:Canelas2016-turbulent-eddy-visc}
 \end{equation}
 \begin{equation}
-    \tensor{S^d} = \HalfFrac \bigg( (\nabla \vect{v})^2 + \big((\nabla \vect{v})^T\big)^2 \bigg) - \frac{1}{3} \operatorname{tr}[(\nabla \vect{v})^2] \tensor{I}
+    \tensor{S^d} = \HalfFrac \bigg( (\nabla \vect{v})^2 + \big((\nabla \vect{v})^T\big)^2 \bigg) - \frac{1}{3} \operatorname{tr}[(\nabla \vect{v})^2] \tensor{I}.
 \end{equation}
 
 In order to test their model, the authors considered an array of cylinders in fluid flow as shown in \figref{fig:Canelas2016-vel-field}, with a constant body force. They computed the vorticity field and the Finite-Time Lyapunov Exponents (FTLE) field to study the LCSs in the flow. These fields are shown in \figref{fig:Canelas2016-vorticity-field} and \figref{fig:Canelas2016-ftle-field} respectively.
@@ -443,49 +440,49 @@ The authors observed that the vortices produced, would evolve to recombine into 
 
 The authors use the compressible NS equations and subject them to a spatial average operator to obtain the filtered governing equations. They subsequently derive the SPH formulations of the mass and momentum conservation equations as given in \Eqref{eq:Adami2012-summation-density} and \Eqref{eq:Okraschevski2022-mom-sph}.
 \begin{equation}
-    \overline{\rho}_i\LagDerivative{\widetilde{\vect{v}}} = - \sum_j (\overline{P}_i + \overline{P}_j) \DWIJ \Vol_j + 2(2+n_{dim})\eta \sum_j \frac{\widetilde{\vect{v}}_{ij} \cdot \RIJ}{\RtwoIJ}\DWIJ \Vol_j + \nabla \cdot \tensor{\tau}
+    \overline{\rho}_i\LagDerivative{\widetilde{\vect{v}}} = - \sum_j (\overline{P}_i + \overline{P}_j) \DWIJ \Vol_j + 2(2+n_{dim})\eta \sum_j \frac{\widetilde{\vect{v}}_{ij} \cdot \RIJ}{\RtwoIJ}\DWIJ \Vol_j + \nabla \cdot \tensor{\tau},
     \label{eq:Okraschevski2022-mom-sph}
 \end{equation}
-Where $(n_{dim})$ denotes the number of spatial dimensions for a given problem.
+where $(n_{dim})$ denotes the number of spatial dimensions for a given problem.
 
 The equation of state is given by \Eqref{eq:Okraschevski2022-eos-sph}, with the SFS tensor being given by \Eqref{eq:Okraschevski2022-tau}.
 \begin{equation}
-    \overline{P}_i = P_o + K\bigg(\frac{\overline{\rho}_i}{\rho_o} - 1 \bigg)
+    \overline{P}_i = P_o + K\bigg(\frac{\overline{\rho}_i}{\rho_o} - 1 \bigg),
     \label{eq:Okraschevski2022-eos-sph}
 \end{equation}
-Where, $(K)$ is a constant.
+where, $(K)$ is a constant.
 \begin{equation}
-    \tensor{\tau} = 2\nu_t\overline{\rho}\tensor{S}
+    \tensor{\tau} = 2\nu_t\overline{\rho}\tensor{S}.
     \label{eq:Okraschevski2022-tau}
 \end{equation}
 
 The SPH formulation for the strain rate tensor is given by \Eqref{eq:Okraschevski2022-S-tensor-sph}, and the divergence of the SFS tensor being given by \Eqref{eq:Okraschevski2022-div-tau-sph}.
 \begin{equation}
-    \tensor{S}_i = - \sum_j \widetilde{\vect{v}}_{ij} \otimes \DWIJ \Vol_j
+    \tensor{S}_i = - \sum_j \widetilde{\vect{v}}_{ij} \otimes \DWIJ \Vol_j,
     \label{eq:Okraschevski2022-S-tensor-sph}
 \end{equation}
 \begin{equation}
-    \bigg(\nabla \cdot \tensor{\tau}\bigg)_i =\sum_j \big( \tensor{\tau}_i + \tensor{\tau}_j \big) \DWIJ \Vol_j
+    \bigg(\nabla \cdot \tensor{\tau}\bigg)_i =\sum_j \big( \tensor{\tau}_i + \tensor{\tau}_j \big) \DWIJ \Vol_j.
     \label{eq:Okraschevski2022-div-tau-sph}
 \end{equation}
 
 The authors consider three models for the turbulent eddy viscosity:
 \begin{itemize}
-    \item \texttt{SMAG}: Standard Smagorinsky model
+    \item \texttt{SMAG}: Standard Smagorinsky model,
         \begin{equation}
-            \nu_t = (C_s \Delta x)^2 \sqrt{2 \FrobeniusInnerProduct{S}{S}}
+            \nu_t = (C_s \Delta x)^2 \sqrt{2 \FrobeniusInnerProduct{S}{S}},
             \label{eq:Okraschevski2022-SMAG}
         \end{equation}
         
-    \item \texttt{SIGMA}: $\sigma$-model \parencite{nicoud2011using}, where $(\sigma_i)$ denotes the $i^{th}$ singular value of the velocity gradient
+    \item \texttt{SIGMA}: $\sigma$-model \parencite{nicoud2011using}, where $(\sigma_i)$ denotes the $i^{th}$ singular value of the velocity gradient,
         \begin{equation}
-            \nu_t = (C_{\sigma} \Delta x)^2 \frac{\sigma_3 (\sigma_1 - \sigma_2) (\sigma_2 - \sigma_3)}{\sigma_1^2}
+            \nu_t = (C_{\sigma} \Delta x)^2 \frac{\sigma_3 (\sigma_1 - \sigma_2) (\sigma_2 - \sigma_3)}{\sigma_1^2},
             \label{eq:Okraschevski2022-SIGMA}
         \end{equation}
     
-    \item \texttt{SMAG-MCG}: Standard Smagorinsky model discretized in the Monaghan-Cleary-Gingold (MCG) form \parencite{cleary1999conduction}
+    \item \texttt{SMAG-MCG}: Standard Smagorinsky model discretized in the Monaghan-Cleary-Gingold (MCG) form \parencite{cleary1999conduction},
         \begin{equation}
-            \nabla \cdot \tensor{\tau} = 2(2+n_{dim}) \sum_j \overline{\rho}_i \overline{\rho}_j \frac{\nu_{t, i} + \nu_{t, j}}{\overline{\rho}_i + \overline{\rho}_j} \frac{\widetilde{\vect{v}}_{ij} \cdot \RIJ }{\RtwoIJ} \DWIJ \Vol_j
+            \nabla \cdot \tensor{\tau} = 2(2+n_{dim}) \sum_j \overline{\rho}_i \overline{\rho}_j \frac{\nu_{t, i} + \nu_{t, j}}{\overline{\rho}_i + \overline{\rho}_j} \frac{\widetilde{\vect{v}}_{ij} \cdot \RIJ }{\RtwoIJ} \DWIJ \Vol_j.
             \label{eq:Okraschevski2022-SMAG-MCG}
         \end{equation}
 \end{itemize}
@@ -529,119 +526,114 @@ Having reviewed turbulence models developed for SPH, \cite{DiMascio2017} conclud
 
 The authors consider a weakly compressible, barotropic fluid whose conservation equations for mass and density are given by \Eqref{eq:Gotoh2004-continuity-governing} and \Eqref{eq:DiMascio2017-mom-governing} respectively.
 \begin{equation}
-    \LagDerivative{\vect{v}} = -\frac{1}{\rho} + \nu \Delta(\vect{v}) + (\lambda' + \nu)\nabla(\nabla \cdot \vect{v})
+    \LagDerivative{\vect{v}} = -\frac{1}{\rho} + \nu \Delta(\vect{v}) + (\lambda' + \nu)\nabla(\nabla \cdot \vect{v}),
     \label{eq:DiMascio2017-mom-governing}
 \end{equation}
-Where, $(\lambda' = \lambda/\rho)$ is the Lam\'e constant.
-The equation of state is simply given as \Eqref{eq:DiMascio2017-eos}.
+where, $(\lambda' = \lambda/\rho)$ is the Lam\'e constant.
+The equation of state is simply given as:
 \begin{equation}
-    P = F(\rho)
+    P = F(\rho).
     \label{eq:DiMascio2017-eos}
 \end{equation}
-\begin{equation}
-    \LagDerivative{\vect{r}} = \vect{v}
-    \label{eq:DiMascio2017-r-governing}
-\end{equation}
 
-The authors subsequently define a Lagrangian filter $(\phi)$ with compact support of the form
+The authors subsequently define a Lagrangian filter $(\phi)$ with compact support of the form:
 \begin{equation}
-    \phi = \phi\big(\TildeR_p(t)-\vect{y}, t-\tau  \big)
+    \phi = \phi\big(\TildeR_p(t)-\vect{y}, t-\tau  \big),
     \label{eq:DiMascio2017-filter}
 \end{equation}
-
-Where the filter is an even function in its arguments, and $(\TildeR_p(t))$ is the position of a material which moves with velocity 
+where the filter is an even function in its arguments, and $(\TildeR_p(t))$ is the position of a material which moves with the velocity being:
 \begin{equation}
-    \TildeV(\TildeR, t) = \IntRThreeAndT \phi \big(\TildeR_p(t)-\vect{y}, t-\tau  \big) \vect{v}(\vect{y}, \tau)d\tau dV_y
+    \TildeV(\TildeR, t) = \IntRThreeAndT \phi \big(\TildeR_p(t)-\vect{y}, t-\tau  \big) \vect{v}(\vect{y}, \tau)d\tau dV_y.
 \end{equation}
 
-By using the filter as defined in \Eqref{eq:DiMascio2017-filter}, the filtered governing equations are as follows
+By using the filter as defined in \Eqref{eq:DiMascio2017-filter}, the filtered governing equations are as follows:
 \begin{equation}
-    \LagDerivative{\TildeRho} = -\TildeRho \nabla \cdot \TildeV + \nabla \cdot (\TildeRho\TildeV - \widetilde{\rho \vect{v}})
+    \LagDerivative{\TildeRho} = -\TildeRho \nabla \cdot \TildeV + \nabla \cdot (\TildeRho\TildeV - \widetilde{\rho \vect{v}}),
 \end{equation}
 \begin{equation}
-    \LagDerivative{\TildeV} = - \frac{\nabla \TildeP}{\TildeRho} + \nu \Delta(\TildeV) + (\lambda'+\nu)\nabla(\nabla\cdot\TildeV) - \nabla[\widetilde{(\rho)}-G(\TildeRho)] + \nabla\cdot\tensor{T}_l+\widetilde{\vect{v}\nabla\cdot\vect{v}}
+    \LagDerivative{\TildeV} = - \frac{\nabla \TildeP}{\TildeRho} + \nu \Delta(\TildeV) + (\lambda'+\nu)\nabla(\nabla\cdot\TildeV) - \nabla[\widetilde{(\rho)}-G(\TildeRho)] + \nabla\cdot\tensor{T}_l+\widetilde{\vect{v}\nabla\cdot\vect{v}},
 \end{equation}
 \begin{equation}
-    \LagDerivative{\TildeR}=\TildeV
+    \LagDerivative{\TildeR}=\TildeV,
 \end{equation}
 \begin{equation}
-    \TildeRho = F(\TildeP)
+    \TildeRho = F(\TildeP),
 \end{equation}
 \begin{equation}
-    \tensor{T}_l = \TildeV\otimes\TildeV - \widetilde{\vect{v}\otimes\vect{v}}
+    \tensor{T}_l = \TildeV\otimes\TildeV - \widetilde{\vect{v}\otimes\vect{v}},
 \end{equation}
 \begin{equation}
-    G(\rho) = \int^{\rho} \frac{1}{s}\frac{dF}{ds}ds
-\end{equation}
-
-In order for the authors to be able to reinterpret the Lagrangian LES through SPH, they split the filter as follows
-\begin{equation}
-    \phi\big(\TildeR_p(t)-\vect{y}, t-\tau  \big) = W(\TildeR - \vect{y})\theta(t-\tau)
+    G(\rho) = \int^{\rho} \frac{1}{s}\frac{dF}{ds}ds,
 \end{equation}
 
-This allows the author to provide a relationship between the various type of filtered quantities as given
+In order for the authors to be able to reinterpret the Lagrangian LES through SPH, they split the filter as follows:
 \begin{equation}
-    \EncAngBrk{f}(\TildeR, t) = \int_{\mathbb{R}^3} W ( \TildeR - \vect{y} ) f ( \vect{y}, t ) dV_y
-\end{equation}
-\begin{equation}
-    \bar{f}(\vect{y}, t) = \int_{\mathbb{R}} \theta(t-\tau) f(\vect{y}, \tau) d\tau
-\end{equation}
-\begin{equation}
-    \widetilde{f} = \EncAngBrk{\bar{f}}, \EncAngBrk{\bar{f}} \neq \bar{\EncAngBrk{f}}
+    \phi\big(\TildeR_p(t)-\vect{y}, t-\tau  \big) = W(\TildeR - \vect{y})\theta(t-\tau).
 \end{equation}
 
-The authors, therefore, can derive the equations in an SPH formalism as given by
+This allows the author to provide a relationship between the various type of filtered quantities as given here below:
 \begin{equation}
-    \LagDerivative{\TildeRho} = -\TildeRho \EncAngBrk{\nabla\cdot\TildeV} + C_1 + C_2
+    \EncAngBrk{f}(\TildeR, t) = \int_{\mathbb{R}^3} W ( \TildeR - \vect{y} ) f ( \vect{y}, t ) dV_y,
 \end{equation}
 \begin{equation}
-    C_1 = -\TildeRho\EncAngBrk{\nabla\cdot(\bar{\vect{v}}-\TildeV)}
+    \bar{f}(\vect{y}, t) = \int_{\mathbb{R}} \theta(t-\tau) f(\vect{y}, \tau) d\tau,
 \end{equation}
 \begin{equation}
-    C_2 = \nabla\cdot(\TildeRho\TildeV - \widetilde{\rho\vect{v}})
-\end{equation}
-\begin{equation}
-    \LagDerivative{\TildeV} = -\frac{\EncAngBrk{\nabla\TildeP}}{\TildeRho} + \nu\EncAngBrk{\Delta(\TildeV)} + (\lambda'+\nu)\EncAngBrk{\nabla(\nabla\cdot\TildeV)} + M_1 + M_2
-\end{equation}
-\begin{equation}
-    M_1 = -\frac{\EncAngBrk{\nabla(\bar{\rho}-\TildeRho)}}{\TildeRho} + \nu\EncAngBrk{\Delta(\bar{\vect{v}}-\TildeV)} + (\lambda'+\nu)\EncAngBrk{\nabla(\nabla\cdot(\bar{\vect{v}}-\TildeV))}
-\end{equation}
-\begin{equation}
-    M_2 = -\nabla\big(\widetilde{G(\rho)}-G(\TildeRho)\big) + \widetilde{\vect{v}\nabla\cdot\vect{v}} + \nabla\cdot\tensor{T}_l
-\end{equation}
-\begin{equation}
-    \LagDerivative{\TildeR} = \TildeV
-\end{equation}
-\begin{equation}
-    \TildeP=F(\TildeRho)
+    \widetilde{f} = \EncAngBrk{\bar{f}}, \EncAngBrk{\bar{f}} \neq \bar{\EncAngBrk{f}},
 \end{equation}
 
-The authors close the terms $(C_2, M_2)$ as follows
+The authors, therefore, can derive the equations in an SPH formalism as given by:
+\begin{equation}
+    \LagDerivative{\TildeRho} = -\TildeRho \EncAngBrk{\nabla\cdot\TildeV} + C_1 + C_2,
+\end{equation}
+\begin{equation}
+    C_1 = -\TildeRho\EncAngBrk{\nabla\cdot(\bar{\vect{v}}-\TildeV)},
+\end{equation}
+\begin{equation}
+    C_2 = \nabla\cdot(\TildeRho\TildeV - \widetilde{\rho\vect{v}}),
+\end{equation}
+\begin{equation}
+    \LagDerivative{\TildeV} = -\frac{\EncAngBrk{\nabla\TildeP}}{\TildeRho} + \nu\EncAngBrk{\Delta(\TildeV)} + (\lambda'+\nu)\EncAngBrk{\nabla(\nabla\cdot\TildeV)} + M_1 + M_2,
+\end{equation}
+\begin{equation}
+    M_1 = -\frac{\EncAngBrk{\nabla(\bar{\rho}-\TildeRho)}}{\TildeRho} + \nu\EncAngBrk{\Delta(\bar{\vect{v}}-\TildeV)} + (\lambda'+\nu)\EncAngBrk{\nabla(\nabla\cdot(\bar{\vect{v}}-\TildeV))},
+\end{equation}
+\begin{equation}
+    M_2 = -\nabla\big(\widetilde{G(\rho)}-G(\TildeRho)\big) + \widetilde{\vect{v}\nabla\cdot\vect{v}} + \nabla\cdot\tensor{T}_l,
+\end{equation}
+\begin{equation}
+    \LagDerivative{\TildeR} = \TildeV,
+\end{equation}
+\begin{equation}
+    \TildeP=F(\TildeRho).
+\end{equation}
+
+The authors close the terms $(C_2, M_2)$ as follows:
 % \begin{equation}
 %     C_1 \approx \TildeRho\EncAngBrk[\bigg]{\nabla\cdot\big(\sigma^2\Delta(\TildeV)\big)}, \sigma^2=h^2\alpha
 % \end{equation}
 
 % Where $(\alpha)$ is a dimensionless parameter.
 \begin{equation}
-    C_2 \approx \nabla \cdot (\nu_{\delta} \nabla\TildeRho)
+    C_2 \approx \nabla \cdot (\nu_{\delta} \nabla\TildeRho),
 \end{equation}
 \begin{equation}
-    \nu_{\delta} = (C_{\delta}\sigma)^2\sqrt{2\FrobeniusInnerProduct{S}{S}}
+    \nu_{\delta} = (C_{\delta}\sigma)^2\sqrt{2\FrobeniusInnerProduct{S}{S}},
 \end{equation}
-Where $(\nu_{\delta})$ has the dimensions of kinematic viscosity and represents a turbulent diffusion coefficient, $(C_{\delta})$ represents a dimensionless coefficient, and $(\sigma \propto h)$. If the spatial derivative of $(\nu_{\delta})$ is negligible then
+where $(\nu_{\delta})$ has the dimensions of kinematic viscosity and represents a turbulent diffusion coefficient, $(C_{\delta})$ represents a dimensionless coefficient, and $(\sigma \propto h)$. If the spatial derivative of $(\nu_{\delta})$ is negligible then:
 \begin{equation}
-    C_2 = \nu_{\delta} \Delta(\TildeRho)
-\end{equation}
-\begin{equation}
-    M_2 = \nabla \cdot \tensor{T}_l = \nabla \cdot \bigg( -\frac{k^2}{3}\tensor{I} - \frac{2}{3}\nu_t \operatorname{Tr}[\widetilde{\tensor{S}}]\tensor{I} + 2\nu_t\widetilde{\tensor{S}} \bigg)
+    C_2 = \nu_{\delta} \Delta(\TildeRho),
 \end{equation}
 \begin{equation}
-    k^2 = 4 C_y \sigma^2 \FrobeniusInnerProduct{S}{S} \quad , \quad C_y=0.044
+    M_2 = \nabla \cdot \tensor{T}_l = \nabla \cdot \bigg( -\frac{k^2}{3}\tensor{I} - \frac{2}{3}\nu_t \operatorname{Tr}[\widetilde{\tensor{S}}]\tensor{I} + 2\nu_t\widetilde{\tensor{S}} \bigg),
 \end{equation}
 \begin{equation}
-    \nu_t = (C_s\sigma)^2\sqrt{2 \FrobeniusInnerProduct{S}{S}} \quad , \quad C_s=0.12
+    k^2 = 4 C_y \sigma^2 \FrobeniusInnerProduct{S}{S} \quad , \quad C_y=0.044,
 \end{equation}
-Where $(Tr[])$ is the trace operator, $(C_y)$ is the Yoshizawa constant \parencite{yoshizawa1986statistical}, and $(C_s$ is the Smagorinsky constant.
+\begin{equation}
+    \nu_t = (C_s\sigma)^2\sqrt{2 \FrobeniusInnerProduct{S}{S}} \quad , \quad C_s=0.12,
+\end{equation}
+where $(Tr[])$ is the trace operator, $(C_y)$ is the Yoshizawa constant \parencite{yoshizawa1986statistical}, and $(C_s$ is the Smagorinsky constant.
 
 The above equations, coupled with the closure models, allow the authors to replace the differential operators with SPH counterparts of WCSPH.
 
@@ -662,9 +654,9 @@ The authors used the  $2D$ and $3D$ TGV problems to validate the model. The auth
 
  As seen from the results of the simulations in \figref{fig:DiMascio2017-fig-4} and \figref{fig:DiMascio2017-fig-9} for the $2D$ and $3D$ case, respectively, the authors were able to claim that the model captures the typical characteristics of the flow evolution with relatively coarse particle discretisation, provided an appropriate LES modelling is used.
 
-Building on this, \cite{Colagrossi2021QuasiLagrangian} introduced a small arbitrary velocity deviation $(\TildeDeltaV)$ to the fluid particle as given by
+Building on this, \cite{Colagrossi2021QuasiLagrangian} introduced a small arbitrary velocity deviation $(\TildeDeltaV)$ to the fluid particle as given by:
 \begin{equation}
-    \LagDerivative{\TildeR} = \TildeV + \TildeDeltaV 
+    \LagDerivative{\TildeR} = \TildeV + \TildeDeltaV.
     \label{eq:Colagrossi2021QuasiLagrangian-r-transport}
 \end{equation}
 
@@ -692,16 +684,16 @@ The authors conclude that the $\delta$-LES-SPH model would need to be validated 
 \subsection{Extension to EDAC-SPH Scheme}
 \label{sec:Extension-to-EDAC-SPH-Scheme}
 The Entropically Damped Artificial Compressibility (EDAC) SPH scheme, based on the work of \cite{Clausen2013}, is an explicit SPH method devised for incompressible flow by \cite{Ramachandran2019}.
-In this scheme, the authors consider a transport equation for pressure instead of density derived from the continuity equation, as given in \Eqref{eq:Ramachandran2019-edac-p-transport}.
+In this scheme, the authors consider a transport equation for pressure instead of density derived from the continuity equation, as given below:
 \begin{equation}
-    \LagDerivative{P} = -c_s^2 \rho \nabla \cdot \vect{v} + \nu \nabla^2 P
+    \LagDerivative{P} = -c_s^2 \rho \nabla \cdot \vect{v} + \nu \nabla^2 P.
     \label{eq:Ramachandran2019-edac-p-transport}
 \end{equation}
 
 Considering the pressure evolution equation above, an equation of state is longer required by the scheme.
 By filtering \Eqref{eq:Ramachandran2019-edac-p-transport} with the Lagrangian LES technique \parencite{DiMascio2017}, we arrive at the result given by \Eqref{eq:edac-filtered} (Refer \appref{appendix:lagrangian-les-filtering-of-edac} for derivation).
 \begin{equation}
-    \LagDerivative{\TildeP} = -c_s^2 \rho \nabla \cdot \TildeV + \nu \nabla^2 \TildeP + \TildeV \cdot \nabla \TildeP - \widetilde{\vect{v}\cdot\nabla P}
+    \LagDerivative{\TildeP} = -c_s^2 \rho \nabla \cdot \TildeV + \nu \nabla^2 \TildeP + \TildeV \cdot \nabla \TildeP - \widetilde{\vect{v}\cdot\nabla P}.
     \label{eq:edac-filtered}
 \end{equation}
 
@@ -718,45 +710,44 @@ In \Eqref{eq:edac-filtered}, we see that the term $(\widetilde{\vect{v}\cdot\nab
 To discretise the RANS equations to an SPH form, the author considers the Reynolds averaged mass and momentum conservation equations as given in \Eqref{eq:Shao2006-rans-continuity-governing} and \Eqref{eq:Shao2006-rans-mom-governing} respectively. \textit{Note:} The averaged flow properties are represented without any over-line $\overline{(...)}$ hereafter.
 %TODO: Use filtered terms explicitly
 \begin{equation}
-    \frac{1}{\rho} \LagDerivative{\rho} + \nabla \cdot \vect{v} = 0 \quad , \quad \LagDerivative{\rho} = 0 \text{ (Incompressible)}
+    \frac{1}{\rho} \LagDerivative{\rho} + \nabla \cdot \vect{v} = 0 \quad , \quad \LagDerivative{\rho} = 0 \text{ (Incompressible)},
     \label{eq:Shao2006-rans-continuity-governing}
 \end{equation}
 \begin{equation}
-    \LagDerivative{\vect{v}} = -\frac{1}{\rho}\nabla P + \nu \Delta( \vect{v} ) + \frac{1}{\rho} \nabla \cdot \tensor{\tau} + \vect{F}
+    \LagDerivative{\vect{v}} = -\frac{1}{\rho}\nabla P + \nu \Delta( \vect{v} ) + \frac{1}{\rho} \nabla \cdot \tensor{\tau} + \vect{F}.
     \label{eq:Shao2006-rans-mom-governing}
 \end{equation}
 
-The stress tensor is given by \Eqref{eq:Gotoh2004-boussinesq}, while the turbulent eddy viscosity is defined as \Eqref{eq:Shao2006-turbulent-eddy-visc}.
+The stress tensor is given by \Eqref{eq:Gotoh2004-boussinesq}, while the turbulent eddy viscosity is defined below:
 \begin{equation}
-    \nu_t = c_d \frac{k^2}{\epsilon}
+    \nu_t = c_d \frac{k^2}{\epsilon}.
     \label{eq:Shao2006-turbulent-eddy-visc}
 \end{equation}
 
 The transport equations for the turbulent kinetic energy and dissipation rate is given by \Eqref{eq:Shao2006-k-transport-eq} and \Eqref{eq:Shao2006-eps-transport-eq} respectively.
 \begin{equation}
-    \LagDerivative{k} = \nabla \cdot \bigg( \frac{\nu_t}{\sigma_k} \nabla k \bigg) + P_k - \epsilon
+    \LagDerivative{k} = \nabla \cdot \bigg( \frac{\nu_t}{\sigma_k} \nabla k \bigg) + P_k - \epsilon,
     \label{eq:Shao2006-k-transport-eq}
 \end{equation}
 \begin{equation}
-    \LagDerivative{\epsilon} = \nabla \cdot \bigg( \frac{\nu_t}{\sigma_{\epsilon}} \nabla \epsilon \bigg) + c_{1\epsilon} \frac{\epsilon}{k} P_k - c_{2\epsilon} \frac{\epsilon^2}{k}
+    \LagDerivative{\epsilon} = \nabla \cdot \bigg( \frac{\nu_t}{\sigma_{\epsilon}} \nabla \epsilon \bigg) + c_{1\epsilon} \frac{\epsilon}{k} P_k - c_{2\epsilon} \frac{\epsilon^2}{k},
     \label{eq:Shao2006-eps-transport-eq}
 \end{equation}
 \begin{equation}
-    P_k = 2\nu_t \FrobeniusInnerProduct{S}{S}
+    P_k = 2\nu_t \FrobeniusInnerProduct{S}{S},
     \label{eq:Shao2006-k-production-term}
 \end{equation}
-
-Where, $(\sigma_k, \sigma_{\epsilon}, c_{1\epsilon}, c_{2\epsilon}) = (1.0, 1.3, 1.44, 1.92)$ are empirical constants dependent on the nature of the flow , and $(P_k)$ is the turbulence production rate, which satisfies the relation given by \Eqref{eq:pope2000turbulent-k-production-relation} \parencite{pope2000turbulent}.
+where, $(\sigma_k, \sigma_{\epsilon}, c_{1\epsilon}, c_{2\epsilon}) = (1.0, 1.3, 1.44, 1.92)$ are empirical constants dependent on the nature of the flow , and $(P_k)$ is the turbulence production rate, which satisfies the relation given by \Eqref{eq:pope2000turbulent-k-production-relation} \parencite{pope2000turbulent}.
 \begin{equation}
-    \frac{P_k}{\epsilon} = c_d \Bigg( \frac{\sqrt{2 \FrobeniusInnerProduct{S}{S}}}{\epsilon} \Bigg)
+    \frac{P_k}{\epsilon} = c_d \Bigg( \frac{\sqrt{2 \FrobeniusInnerProduct{S}{S}}}{\epsilon} \Bigg).
     \label{eq:pope2000turbulent-k-production-relation}
 \end{equation}
 
 These governing equations are solved and evolved using the same predictive-corrective time integrator as seen in the work of \cite{Gotoh2004}, and outlined in \Eqref{eq:Gotoh2004-predict-start} - \Eqref{eq:Gotoh2004-correct-end}.
 
-As for the SPH formulations of the governing equations, the author builds on the work of \cite{Gotoh2004}, and uses the same discretization as defined in \Eqref{eq:Gotoh2004-summation-density} - \Eqref{eq:Gotoh2004-div-tau-sph}. However, the author uses a slightly modified version of the laminar stress term given in \Eqref{eq:Gotoh2004-vel-laplacian-sph} and redefines it as given in \Eqref{eq:Shao2006-vel-laplacian-sph}.
+As for the SPH formulations of the governing equations, the author builds on the work of \cite{Gotoh2004}, and uses the same discretization as defined in \Eqref{eq:Gotoh2004-summation-density} - \Eqref{eq:Gotoh2004-div-tau-sph}. However, the author uses a slightly modified version of the laminar stress term given in \Eqref{eq:Gotoh2004-vel-laplacian-sph} and redefines it as given below:
 \begin{equation}
-    \big(\nu \Delta(\vect{v}) \big)_i = \sum_j m_j \frac{2 ( \nu_i + \nu_j ) }{ \rho_i + \rho_j }\frac{\VIJ \RIJ \cdot \DWIJ}{\RtwoIJ}
+    \big(\nu \Delta(\vect{v}) \big)_i = \sum_j m_j \frac{2 ( \nu_i + \nu_j ) }{ \rho_i + \rho_j }\frac{\VIJ \RIJ \cdot \DWIJ}{\RtwoIJ}.
     \label{eq:Shao2006-vel-laplacian-sph}
 \end{equation}
 
@@ -774,41 +765,41 @@ In \figref{fig:Shao2006-water-surf-elevations}(c) and \figref{fig:Shao2006-water
 The author concludes that the $k-\epsilon$ model would require further sensitivity analysis for the turbulence model and spatial resolution for improved results, despite being reasonably accurate in tracking free surfaces.
 
 \cite{Wang2020} build on the work of \cite{Shao2006} to further improve the ISPH $k-\epsilon$ model. They achieved this by using the modelling and computational developments which SPH has benefited from since the work of Shao.
-The authors here consider the same SPH discretised equations and two-step time integrator as Shao, with two distinct modifications in the Pressure Poisson equation as given by \Eqref{eq:Wang2020-correct-pressure-implicit} instead of \Eqref{eq:Gotoh2004-correct-pressure-implicit}. They also redefined propagation equation for $(\vect{r}$ using \Eqref{eq:Wang2020-correct-end} instead of \Eqref{eq:Gotoh2004-correct-end}.
+The authors here consider the same SPH discretised equations and two-step time integrator as Shao, with two distinct modifications in the Pressure Poisson equation as given by \Eqref{eq:Wang2020-correct-pressure-implicit} instead of \Eqref{eq:Gotoh2004-correct-pressure-implicit}. They also redefined propagation equation for $(\vect{r})$ using \Eqref{eq:Wang2020-correct-end} instead of \Eqref{eq:Gotoh2004-correct-end}.
 \begin{equation}
-    \nabla \cdot \bigg( \frac{1}{\rho_o} \nabla P_{t+1} \bigg) = \frac{1}{\Delta t} \nabla \cdot \vect{u_*}
+    \nabla \cdot \bigg( \frac{1}{\rho_o} \nabla P_{t+1} \bigg) = \frac{1}{\Delta t} \nabla \cdot \vect{u_*},
     \label{eq:Wang2020-correct-pressure-implicit}
 \end{equation}
 \begin{equation}
-    \vect{r}_{t+1} = \vect{r}_* + \Delta \vect{v}_{**} \Delta t
+    \vect{r}_{t+1} = \vect{r}_* + \Delta \vect{v}_{**} \Delta t.
     \label{eq:Wang2020-correct-end}
 \end{equation}
 
 The authors also provided SPH discretization for the transport equations for $(k)$ and $(\epsilon)$ using \Eqref{eq:Wang2020-k-laplacian} and \Eqref{eq:Wang2020-eps-laplacian} which requires the use of particle density $(\varphi)$ as given in \Eqref{eq:Wang2020-particle-density}.
 \begin{equation}
-    \varphi_i = \sum_j \WIJ
+    \varphi_i = \sum_j \WIJ,
     \label{eq:Wang2020-particle-density}
 \end{equation}
 \begin{equation}
-    \nabla \cdot \bigg( \frac{\nu_t}{\sigma_k} \nabla k \bigg)_i = - \sum_j \frac{1}{\varphi_j} \bigg( \frac{\nu_{t,i}}{\sigma_k} + \frac{\nu_{t,i}}{\sigma_k}  \bigg) \frac{k_{ij} \RIJ \DWIJ}{\RtwoIJ}
+    \nabla \cdot \bigg( \frac{\nu_t}{\sigma_k} \nabla k \bigg)_i = - \sum_j \frac{1}{\varphi_j} \bigg( \frac{\nu_{t,i}}{\sigma_k} + \frac{\nu_{t,i}}{\sigma_k}  \bigg) \frac{k_{ij} \RIJ \DWIJ}{\RtwoIJ},
     \label{eq:Wang2020-k-laplacian}
 \end{equation}
 \begin{equation}
-    \nabla \cdot \bigg( \frac{\nu_t}{\sigma_{\epsilon}} \nabla \epsilon \bigg)_i = - \sum_j \frac{1}{\varphi_j} \bigg( \frac{\nu_{t,i}}{\sigma_{\epsilon}} + \frac{\nu_{t,i}}{\sigma_{\epsilon}}  \bigg) \frac{\epsilon_{ij} \RIJ \DWIJ}{\RtwoIJ}
+    \nabla \cdot \bigg( \frac{\nu_t}{\sigma_{\epsilon}} \nabla \epsilon \bigg)_i = - \sum_j \frac{1}{\varphi_j} \bigg( \frac{\nu_{t,i}}{\sigma_{\epsilon}} + \frac{\nu_{t,i}}{\sigma_{\epsilon}}  \bigg) \frac{\epsilon_{ij} \RIJ \DWIJ}{\RtwoIJ}.
     \label{eq:Wang2020-eps-laplacian}
 \end{equation}
 
 The authors also derived an SPH formulation for the strain rate tensor defined in \Eqref{eq:Wang2020-strain-rate-tensor}, which is based on the studies done on kernel correction \parencite{bonet1999variational, khayyer2008corrected} and given by \Eqref{eq:Wang2020-vel-grad-term} and \Eqref{eq:Wang2020-corrective-matrix}. 
 \begin{equation}
-    \tensor{S}_i = \HalfFrac \bigg( \nabla \vect{v}_i + (\nabla \vect{v}_i)^T \bigg)
+    \tensor{S}_i = \HalfFrac \bigg( \nabla \vect{v}_i + (\nabla \vect{v}_i)^T \bigg),
     \label{eq:Wang2020-strain-rate-tensor}
 \end{equation}
 \begin{equation}
-    \nabla \vect{v}_i = - \sum_j \frac{1}{\varphi_j} \VIJ \otimes \tensor{L}_i \DWIJ
+    \nabla \vect{v}_i = - \sum_j \frac{1}{\varphi_j} \VIJ \otimes \tensor{L}_i \DWIJ,
     \label{eq:Wang2020-vel-grad-term}
 \end{equation}
 \begin{equation}
-    \tensor{L}_i = \Bigg(- \sum_j \frac{1}{\varphi_j} \DWIJ \otimes \RIJ \Bigg)^{-1}
+    \tensor{L}_i = \Bigg(- \sum_j \frac{1}{\varphi_j} \DWIJ \otimes \RIJ \Bigg)^{-1}.
     \label{eq:Wang2020-corrective-matrix}
 \end{equation}
 
@@ -850,48 +841,48 @@ In order to tackle the issues above and address them reasonably, we look for pos
 
 The LANS-$\alpha$ equations, assuming incompressibility and isotropic turbulence, are derived and simplified by \cite{Mohseni2003}. These equations are as follows:
 \begin{equation}
-    \nabla \cdot \vect{v} = 0
+    \nabla \cdot \vect{v} = 0,
 \end{equation}
 \begin{equation}
-    \LagDerivative{\vect{v}} = \tensor{\sigma}(\vect{v})
+    \LagDerivative{\vect{v}} = \tensor{\sigma}(\vect{v}),
 \end{equation}
 \begin{equation}
-    \tensor{\sigma}(\vect{v}) = -P\tensor{I} + 2\nu(1 - \alpha^2\Delta)\tensor{S} + 2\alpha^2\Dot{\tensor{S}}
+    \tensor{\sigma}(\vect{v}) = -P\tensor{I} + 2\nu(1 - \alpha^2\Delta)\tensor{S} + 2\alpha^2\Dot{\tensor{S}},
     \label{eq:LANS-alpha-stress-tensor}
 \end{equation}
 \begin{equation}
-    \Dot{\tensor{S}} = \LagDerivative{\tensor{S}} + \tensor{S}\tensor{R} - \tensor{R}\tensor{S}
+    \Dot{\tensor{S}} = \LagDerivative{\tensor{S}} + \tensor{S}\tensor{R} - \tensor{R}\tensor{S},
 \end{equation}
 \begin{equation}
-    \tensor{R} = \HalfFrac\bigg(\nabla\vect{v}-(\nabla\vect{v})^T\bigg)
+    \tensor{R} = \HalfFrac\bigg(\nabla\vect{v}-(\nabla\vect{v})^T\bigg),
 \end{equation}
-Where $\alpha$ denotes the scale of rapid fluctuations in the flow map, such that for scales smaller than $\alpha$, the wave activity is filtered by a nonlinear energy redistribution. Here, $(1 - \alpha^2 \Delta)$ denotes the Helmholtz operator.
+where $\alpha$ denotes the scale of rapid fluctuations in the flow map, such that for scales smaller than $\alpha$, the wave activity is filtered by a nonlinear energy redistribution. Here, $(1 - \alpha^2 \Delta)$ denotes the Helmholtz operator.
 
 \cite{Monaghan2002}, building on the work of \cite{holm1998euler}, attempted to formulate an SPH version of the continuum LANS-$\alpha$ equations. His work provided one of the earliest models of turbulence in compressible flow. The author incorporated some of his earlier work on XSPH \parencite{monaghan1989problem}, in which particles are moved with a smoothed velocity, leaving the acceleration equation unchanged. The smoothed velocity denoted an average over the velocities of the neighbouring particles. This facilitated the author in writing the Lagrangian analysed by Holm in an SPH form, allowing for the subsequent derivation of the momentum equation, albeit being elaborate and highly complicated. Nevertheless, in conjunction with the continuity equation, the derived momentum equation formulated the SPH-$\alpha$ model, which essentially consisted of an SPH particle moving with the transport velocity smoothed from momentum velocity by an iterative algorithm with an additional dissipation term meant to mimic the standard LES model.
 
 \cite{Hu2015} also devised a turbulence model for incompressible flow based on spatial filtering of the NS equations using SPH approximations termed the SPH-$\sigma$ model. The model shares similarities with the LANS-$\alpha$ model and the SPH-$\alpha$ model, differing by the additional stress term in the model and its approach in evaluating the particle transport velocity. The proposed model is also built on the authors’ previous work \parencite{hu2007incompressible}, and hence shares similar numerical techniques. The authors also validated the proposed model on $2D$ flow comprising decaying and forced turbulence cases. Their results suggested that the model could simulate incompressible turbulent flow.
 
-Monaghan \parencite{Monaghan2011, Monaghan2017} subsequently improved on the SPH-$\alpha$ model and derived a more amenable variant of the momentum equation. Since, in this case, the model was parameterised around the smoothing parameter $(\varepsilon)$, the turbulence model was termed the SPH-$\varepsilon$ model. The linearly smoothed velocity $(\widehat{\vect{v}})$ is given by \Eqref{eq:Monaghan2017-xsph-vel-smoothing}.
+Monaghan \parencite{Monaghan2011, Monaghan2017} subsequently improved on the SPH-$\alpha$ model and derived a more amenable variant of the momentum equation. Since, in this case, the model was parameterised around the smoothing parameter $(\varepsilon)$, the turbulence model was termed the SPH-$\varepsilon$ model. The linearly smoothed velocity $(\widehat{\vect{v}})$ is given below:
 \begin{equation}
-    \widehat{\vect{v}}_i = \vect{v}_i - \varepsilon \sum_j \frac{m_j}{M_o} \VIJ K_{h', ij} \quad , \quad \varepsilon \in [0, 1]
+    \widehat{\vect{v}}_i = \vect{v}_i - \varepsilon \sum_j \frac{m_j}{M_o} \VIJ K_{h', ij} \quad , \quad \varepsilon \in [0, 1],
     \label{eq:Monaghan2017-xsph-vel-smoothing}
 \end{equation}
-Where $(K)$ is a smoothing kernel, which can be different from the kernel used in SPH, its corresponding smoothing length being $(h')$. It is noted that the smoothed velocity preserves the shape of the spectrum of the unsmoothed velocity for short-length scales. However, it reduces the magnitude of the unsmoothed velocity by a factor $(1-\varepsilon)$. 
+where $(K)$ is a smoothing kernel, which can be different from the kernel used in SPH, its corresponding smoothing length being $(h')$. It is noted that the smoothed velocity preserves the shape of the spectrum of the unsmoothed velocity for short-length scales. However, it reduces the magnitude of the unsmoothed velocity by a factor $(1-\varepsilon)$. 
 
 The equation of state is given by \Eqref{eq:violeau-eos}, and the momentum equation is given by \Eqref{eq:Monaghan2017-mom-governing}. The momentum equation’s third term on the right-hand side is an extra stress term determined by the smoothing. Its overall effect is to redistribute energy without dissipation.
 \begin{equation}
-    \LagDerivative{\vect{v}_i} = - \sum_j m_j \bigg( \frac{P_i}{\rho_i^2} + \frac{P_j}{\rho_j^2} \bigg) \DWIJ - \sum_j m_j \Pi_{ij} \DWIJ + \frac{\varepsilon}{2} \sum_j \frac{m_j}{M_o} \VtwoIJ[] \DWIJ 
+    \LagDerivative{\vect{v}_i} = - \sum_j m_j \bigg( \frac{P_i}{\rho_i^2} + \frac{P_j}{\rho_j^2} \bigg) \DWIJ - \sum_j m_j \Pi_{ij} \DWIJ + \frac{\varepsilon}{2} \sum_j \frac{m_j}{M_o} \VtwoIJ[] \DWIJ ,
     \label{eq:Monaghan2017-mom-governing}
 \end{equation}
-Where the viscosity term $(\Pi_{ij})$ is given by \Eqref{eq:Monaghan2017-Pi-visc-term}, in which $(\alpha)$ is a constant.
+where the viscosity term $(\Pi_{ij})$ is given by \Eqref{eq:Monaghan2017-Pi-visc-term}, in which $(\alpha)$ is a constant.
 \begin{equation}
-    \Pi_{ij} = - \frac{2 \alpha c_s \VIJ \cdot \RIJ}{(\rho_i + \rho_j) \RtwoIJ}
+    \Pi_{ij} = - \frac{2 \alpha c_s \VIJ \cdot \RIJ}{(\rho_i + \rho_j) \RtwoIJ}.
     \label{eq:Monaghan2017-Pi-visc-term}
 \end{equation}
 
-The particles are subsequently transported using \Eqref{eq:Monaghan2017-r-transport}.
+The particles are subsequently transported as given below:
 \begin{equation}
-    \LagDerivative{\vect{r}_i} = \widehat{\vect{v}}_i
+    \LagDerivative{\vect{r}_i} = \widehat{\vect{v}}_i.
     \label{eq:Monaghan2017-r-transport}
 \end{equation}
 
@@ -904,36 +895,36 @@ The author demonstrated the model’s capabilities to predict satisfactory resul
 \section{Miscellaneous Models}
 \cite{Liu2019} approached the problem of turbulence modelling from the perspective of computer $3D$ visualisation to visualise flows with realistic features. The authors’ viscosity-based vorticity correction model offers more advantages to the computer visual-effects audience. However, the model would still be a worthwhile investigation.
 
-The authors define a vorticity field $(\Vorticity)$ in the system as given in \Eqref{eq:Liu2019-vorticity}.
+The authors define a vorticity field $(\Vorticity)$ in the system as given below:
 \begin{equation}
-    \Vorticity_i = \nabla \times \vect{v}_i = - \frac{1}{\rho} \sum_j m_j \VIJ \times \DWIJ
+    \Vorticity_i = \nabla \times \vect{v}_i = - \frac{1}{\rho} \sum_j m_j \VIJ \times \DWIJ.
     \label{eq:Liu2019-vorticity}
 \end{equation}
 
-The contribution to the SPH particle’s momentum velocity from the viscous term is calculated as given in \Eqref{eq:Liu2019-visc-vel-contribution}.
+The contribution to the SPH particle’s momentum velocity from the viscous term is calculated as given by:
 \begin{equation}
-    \vect{v}_{\nu, i} = \vect{v}_i + \vect{a}_i^{(visc)}\Delta t
+    \vect{v}_{\nu, i} = \vect{v}_i + \vect{a}_i^{(visc)}\Delta t.
     \label{eq:Liu2019-visc-vel-contribution}
 \end{equation}
-If the magnitude of viscous velocity $(\vect{v}_{\nu, i})$ is greater than $(\vect{v}_i)$ for a given particle, then its vorticity field is updated as given in \Eqref{eq:Liu2019-vorticity-update}.
+If the magnitude of viscous velocity $(\vect{v}_{\nu, i})$ is greater than $(\vect{v}_i)$ for a given particle, then its vorticity field is updated as given by:
 \begin{equation}
-    \delta \Vorticity_i = (\alpha \sqrt{R_i}) \Vorticity_i
+    \delta \Vorticity_i = (\alpha \sqrt{R_i}) \Vorticity_i,
     \label{eq:Liu2019-vorticity-update}
 \end{equation}
 \begin{equation}
-    R_i = \frac{\delta E_i}{E_i} = \frac{\vect{v}_{\nu, i}^2 - \vect{v}_i^2}{\vect{v}_i^2}
+    R_i = \frac{\delta E_i}{E_i} = \frac{\vect{v}_{\nu, i}^2 - \vect{v}_i^2}{\vect{v}_i^2}.
     \label{eg:Liu2019-R}
 \end{equation}
 
-A stream function $(\Psi)$ is subsequently defined as given in \Eqref{eq:Liu2019-stream-func}.
+A stream function $(\Psi)$ is subsequently defined as given by:
 \begin{equation}
-    \Psi_i = \sum_j \frac{\delta \Vorticity_j \Vol_j}{4\pi \RtwoIJ[]}
+    \Psi_i = \sum_j \frac{\delta \Vorticity_j \Vol_j}{4\pi \RtwoIJ[]}.
     \label{eq:Liu2019-stream-func}
 \end{equation}
 
-The velocity correction $(\delta \vect{v})$ for the particle is subsequently defined by \Eqref{eq:Liu2019-vel-update}.
+The velocity correction $(\delta \vect{v})$ for the particle is subsequently defined by:
 \begin{equation}
-    \delta \vect{v}_i = \nabla \times \Psi_i
+    \delta \vect{v}_i = \nabla \times \Psi_i.
     \label{eq:Liu2019-vel-update}
 \end{equation}
 
