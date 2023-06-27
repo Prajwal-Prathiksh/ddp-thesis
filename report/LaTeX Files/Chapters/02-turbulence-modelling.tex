@@ -8,47 +8,50 @@
 %----------------------------------------------------------------------------------------
 \section{Viscosity-based Models}
 \label{sec:visc-based-model}
-\cite{VIOLEAU2002} were amongst the early pioneers who tried to incorporate a turbulence model in SPH. They came up with two techniques to tackle the problem of turbulence in a Lagrangian framework, which so far had been neglected till then in research, namely, the eddy viscosity model and a generalised Langevin model. For each of their techniques, they considered the following equation of state \Eqref{eq:violeau-eos}, continuity equation \Eqref{eq:violeau-continuity} and momentum equation \Eqref{eq:violeau-mom}, based on the work of \cite{Monaghan1992}:   
+\cite{VIOLEAU2002} were amongst the early pioneers who tried to incorporate a turbulence model in SPH. They came up with two techniques to tackle the problem of turbulence in a Lagrangian framework, which so far had been neglected till then in research, namely, the eddy viscosity model and a generalised Langevin model. For each of their techniques, they considered the following equation of state, 
 \begin{equation}
-    P_i = B \Bigg[ \bigg( \frac{\rho_i}{\rho_o} \bigg)^{\gamma} - 1 \Bigg] \quad , \quad B = \frac{\rho_o c_s^2}{\gamma}
+    P_i = B \Bigg[ \bigg( \frac{\rho_i}{\rho_o} \bigg)^{\gamma} - 1 \Bigg] \quad , \quad B = \frac{\rho_o c_s^2}{\gamma},
     \label{eq:violeau-eos}
 \end{equation}
-Where, $(P, \rho)$ denotes pressure and density respectively. $(...)_i$ denotes the property of the $i^{th}$ SPH particle, $(...)_o$ denotes the reference quantities, and $(c_s)$ denotes the speed of sound.
+where, $(P, \rho)$ denotes pressure and density respectively. $(...)_i$ denotes the property of the $i^{th}$ SPH particle, $(...)_o$ denotes the reference quantities, and $(c_s)$ denotes the speed of sound.
+The continuity equation is given below:
 \begin{equation}
-    \LagDerivative{\rho_i} = \sum_j m_j \VIJ \cdot \DWIJ
+    \LagDerivative{\rho_i} = \sum_j m_j \VIJ \cdot \DWIJ,
     \label{eq:violeau-continuity}
 \end{equation}
-Where $[\LagDerivative{()}]$ denotes the Lagrangian derivative, and $(m, \vect{v})$ represent the mass and velocity respectively. Here we adopt the nomenclature of $(...)_{ij}$ to denote the difference of a specified property between the $i^{th}$ and $j^{th}$ SPH particle $[(...)_{i} - (...)_{j}]$, and $(\DWIJ)$ denotes $[\nabla_i W(\RIJ,h) = \frac{\RIJ}{\RtwoIJ[]} \PartialDerivative[r_i]{\WIJ}]$, where $(h)$ is the kernel smoothing length.
+where $[\LagDerivative{()}]$ denotes the Lagrangian derivative, and $(m, \vect{v})$ represent the mass and velocity respectively.
+Here we adopt the nomenclature of $(...)_{ij}$ to denote the difference of a specified property between the $i^{th}$ and $j^{th}$ SPH particle $[(...)_{i} - (...)_{j}]$, and $(\DWIJ)$ denotes $[\nabla_i W(\RIJ,h) = \frac{\RIJ}{\RtwoIJ[]} \PartialDerivative[r_i]{\WIJ}]$, where $(h)$ is the kernel smoothing length.
+The momentum equation, based on the work of \cite{Monaghan1992}, is given below:   
 \begin{equation}
-    \LagDerivative{\vect{v}_i} = - \sum_j m_j \bigg( \frac{P_i}{\rho_i^2} + \frac{P_j}{\rho_j^2} + \Pi_{ij} \bigg) \DWIJ + \vect{F}_i
+    \LagDerivative{\vect{v}_i} = - \sum_j m_j \bigg( \frac{P_i}{\rho_i^2} + \frac{P_j}{\rho_j^2} + \Pi_{ij} \bigg) \DWIJ + \vect{F}_i,
     \label{eq:violeau-mom}
 \end{equation}
-Where $(\vect{F})$ is the external body force, and the viscous term $(\Pi)$ is defined as:
+where $(\vect{F})$ is the external body force, and the viscous term $(\Pi)$ is defined as:
 \begin{equation}
-    \Pi_{ij} = - \frac{16\nu}{\rho_i + \rho_j} \frac{\VIJ \cdot \RIJ}{\RtwoIJ + \MachineEpsilon^2} 
+    \Pi_{ij} = - \frac{16\nu}{\rho_i + \rho_j} \frac{\VIJ \cdot \RIJ}{\RtwoIJ + \MachineEpsilon^2},
     \label{eq:violeau-diffusion-term}
 \end{equation}
-Here $(\nu)$ is the kinematic viscosity, and $(\MachineEpsilon)$ is the machine epsilon.
+here $(\nu)$ is the kinematic viscosity, and $(\MachineEpsilon)$ is the machine epsilon.
 
 
 \subsection{Eddy Viscosity Model}
 \label{sec:eddy-visc-model}
-The eddy viscosity model was devised as a first-order closure model, which consisted of a relationship between the Reynolds stress tensor and the mean velocity gradients. Therefore, the momentum equation is similar to the equation in \Eqref{eq:violeau-mom}, except that the kinematic viscosity is replaced by the eddy viscosity $(\nu_t)$, and the velocities are Reynolds-averaged. In the SPH formalism, the diffusion term occurring is therefore defined as given in \Eqref{eq:violeau-turbulent-diffusion-term}, with the eddy viscosity defined according to \Eqref{eq:violeau-eddy-viscosity}.
+The eddy viscosity model was devised as a first-order closure model, which consisted of a relationship between the Reynolds stress tensor and the mean velocity gradients. Therefore, the momentum equation is similar to the equation in \Eqref{eq:violeau-mom}, except that the kinematic viscosity is replaced by the eddy viscosity $(\nu_t)$, and the velocities are Reynolds-averaged. In the SPH formalism, the diffusion term occurring is therefore defined as given in \Eqref{eq:violeau-turbulent-diffusion-term}, with the eddy viscosity defined according to \Eqref{eq:violeau-eddy-viscosity}, which are given below:
 \begin{equation}
-    \widetilde{\Pi}_{ij} = -8 \frac{\nu_{t, i} + \nu_{t, j}}{\rho_i + \rho_j} \frac{\RAProp{\vect{v}}_{ij} \cdot \RIJ }{\RtwoIJ + \MachineEpsilon^2}
+    \widetilde{\Pi}_{ij} = -8 \frac{\nu_{t, i} + \nu_{t, j}}{\rho_i + \rho_j} \frac{\RAProp{\vect{v}}_{ij} \cdot \RIJ }{\RtwoIJ + \MachineEpsilon^2},
     \label{eq:violeau-turbulent-diffusion-term}
 \end{equation}
 \begin{equation}
-    \nu_t = L_m^2 \FrobeniusNorm{S} = L_m^2 \sqrt{\FrobeniusInnerProduct{S}{S}}
+    \nu_t = L_m^2 \FrobeniusNorm{S} = L_m^2 \sqrt{\FrobeniusInnerProduct{S}{S}},
     \label{eq:violeau-eddy-viscosity}
 \end{equation}
-Where $\RAProp{\vect{v}}$ is Reynolds-averaged velocity, $L_m$ refers to the mixing length scales, and $(\tensor{S})$ is the strain-rate tensor $(=[1/2][\nabla \vect{v} + \nabla \vect{v}^T])$, where we adopt the nomenclature of $(\tensor{A})$ to represent a second-rank tensor field. Also, here $(\FrobeniusInnerProduct{A}{B})$ denotes the Frobenius inner product of $\tensor{A}$ and $\tensor{B}$, and $(\FrobeniusNorm{A})$ denotes the Frobenius norm of $\tensor{A}$ $( = \sqrt{\FrobeniusInnerProduct{A}{A}})$.
-The SPH formulation for the mean velocity gradients are given in \Eqref{eq:violeau-mean-velocity-gradient}.
+where $\RAProp{\vect{v}}$ is Reynolds-averaged velocity, $L_m$ refers to the mixing length scales, and $(\tensor{S})$ is the strain-rate tensor $(=[1/2][\nabla \vect{v} + \nabla \vect{v}^T])$, where we adopt the nomenclature of $(\tensor{A})$ to represent a second-rank tensor field. Also, here $(\FrobeniusInnerProduct{A}{B})$ denotes the Frobenius inner product of $\tensor{A}$ and $\tensor{B}$, and $(\FrobeniusNorm{A})$ denotes the Frobenius norm of $\tensor{A}$ $( = \sqrt{\FrobeniusInnerProduct{A}{A}})$.
+The SPH formulation for the mean velocity gradients is given below:
 \begin{equation}
-    \nabla \RAProp{\vect{v}}_i = - \frac{1}{\rho_i} \sum_j m_j \RAProp{\vect{v}}_{ij} \otimes \DWIJ
+    \nabla \RAProp{\vect{v}}_i = - \frac{1}{\rho_i} \sum_j m_j \RAProp{\vect{v}}_{ij} \otimes \DWIJ,
     \label{eq:violeau-mean-velocity-gradient}
 \end{equation}
-Where $(\otimes)$ denotes the tensor product.
+where $(\otimes)$ denotes the tensor product.
 
 On simulating Poiseuille flow for a high Reynolds number case, the authors could show that the velocity profile showed only a slight discrepancy with theory, with the expected log-law profile near the walls \figref{fig:violeau2002-eddy-viscosity-result}. This indicated that the model is appropriate for turbulent mixing problems or for cases involving spatially-varying viscosity while restricted to shear flows.
 
@@ -62,28 +65,28 @@ On simulating Poiseuille flow for a high Reynolds number case, the authors could
 \subsection{Generalized Langevin Model}
 \cite{VIOLEAU2002} also considered a stochastic approach, where the main idea is built on the concept of prescribing particle velocities as a random process, with properties fulfilling the theoretical turbulence hypotheses \parencite{pope1994lagrangi}. Hence, came about the Generalised Langevin model (GLM), where the particle acceleration is defined as:
 \begin{equation}
-    d\vect{v} = -\frac{1}{\rho} \nabla \RAProp{P} + \tensor{G}(\vect{v} - \RAProp{\vect{v}})dt + \sqrt{C_0 \epsilon dt}\Vec{\xi}
+    d\vect{v} = -\frac{1}{\rho} \nabla \RAProp{P} + \tensor{G}(\vect{v} - \RAProp{\vect{v}})dt + \sqrt{C_0 \epsilon dt}\Vec{\xi},
     \label{eq:violeau-glm-particle-accel}
 \end{equation}
-Where $\Vec{\xi}$ is a random vector statistically non-correlated with velocities. The closure for this model was defined by specifying $\tensor{G}$ as:
+where $\Vec{\xi}$ is a random vector statistically non-correlated with velocities. The closure for this model was defined by specifying $\tensor{G}$ as:
 \begin{equation}
-    \tensor{G} = \HalfFrac C_1 \frac{\epsilon}{k}\tensor{I} + C_2 \nabla \RAProp{\vect{v}}
+    \tensor{G} = \HalfFrac C_1 \frac{\epsilon}{k}\tensor{I} + C_2 \nabla \RAProp{\vect{v}},
 \end{equation}
-Where $(k)$ is the turbulent kinetic energy, $(\epsilon)$ the dissipation rate, and $(C_i)$ being constants - $(C_1=1.8, C_2=0.6)$. $(\tensor{I})$, here, denotes the identity tensor.
+where $(k)$ is the turbulent kinetic energy, $(\epsilon)$ the dissipation rate, and $(C_i)$ being constants - $(C_1=1.8, C_2=0.6)$. $(\tensor{I})$, here, denotes the identity tensor.
 By modelling turbulence as GLM in SPH, the momentum equation derived was given by:
 \begin{equation}
-    \LagDerivative{\vect{v}_i} = -\sum_j m_j \bigg( \frac{\RAProp{P}_i}{\rho_i^2} + \frac{\RAProp{P}_j}{\rho_j^2} \bigg) \DWIJ - \HalfFrac C_1 \frac{\epsilon_i}{k_i} \vect{v}'_i + C_2 \nabla \RAProp{\vect{v}}_i \cdot \vect{v}'_i + \sqrt{\frac{C_0 \epsilon_i}{\Delta t}} \Vec{\xi}_i
+    \LagDerivative{\vect{v}_i} = -\sum_j m_j \bigg( \frac{\RAProp{P}_i}{\rho_i^2} + \frac{\RAProp{P}_j}{\rho_j^2} \bigg) \DWIJ - \HalfFrac C_1 \frac{\epsilon_i}{k_i} \vect{v}'_i + C_2 \nabla \RAProp{\vect{v}}_i \cdot \vect{v}'_i + \sqrt{\frac{C_0 \epsilon_i}{\Delta t}} \Vec{\xi}_i,
     \label{eq:violeau-mom-glm}
 \end{equation}
 \begin{equation}
-    \RAProp{\vect{v}} = \sum_j \frac{m_j}{\rho_j}\vect{v}_j W_h (\vect{r}_j)
+    \RAProp{\vect{v}} = \sum_j \frac{m_j}{\rho_j}\vect{v}_j W_h (\vect{r}_j),
     \label{eq:violeau-ra-vel}
 \end{equation}
-Where the fluctuations are defined as $\vect{v}' = \vect{v} - \RAProp{\vect{v}}$, and the local values of turbulent kinetic energy and dissipation rate are:
+where the fluctuations are defined as $\vect{v}' = \vect{v} - \RAProp{\vect{v}}$, and the local values of turbulent kinetic energy and dissipation rate are:
 \begin{align}
     \epsilon_i = 2 \nu_{t, i} + 
-    \FrobeniusNorm{S_i}^2 \\
-    k_i = \frac{\epsilon_i \nu_{t, i}}{C_{\mu}} \quad , \quad C_{\mu} = 0.009
+    \FrobeniusNorm{S_i}^2, \\
+    k_i = \frac{\epsilon_i \nu_{t, i}}{C_{\mu}} \quad , \quad C_{\mu} = 0.009.
     \label{eq:violeau-k-eps}
 \end{align}
 
@@ -104,29 +107,29 @@ As observed in \figref{fig:violeau2002-GLM-result}, the fluctuations have an ord
 
 The authors considered summation density (\Eqref{eq:Adami2012-summation-density}), which is a function of the volume of the respective SPH particle as given by \Eqref{eq:Adami2012-vol}, as opposed to evolving density through the continuity equation \parencite{hu2006multi}. The modified equation of state as given by \Eqref{eq:Adami2012-eos}, is equivalent to the classical SPH equation-of-state with $\gamma=1$.
 \begin{equation}
-    \Vol_i = \frac{1}{\sum_j \WIJ}
+    \Vol_i = \frac{1}{\sum_j \WIJ},
     \label{eq:Adami2012-vol}
 \end{equation}
 \begin{equation}
-    \rho_i = \frac{m_i}{\Vol_i} = m_i\sum_j \WIJ
+    \rho_i = \frac{m_i}{\Vol_i} = m_i\sum_j \WIJ,
     \label{eq:Adami2012-summation-density}
 \end{equation}
 \begin{equation}
-    P_i = c_s^2 (\rho_i - \rho_o)
+    P_i = c_s^2 (\rho_i - \rho_o),
     \label{eq:Adami2012-eos}
 \end{equation}
-Where $(\Vol)$ represents the volume of a particle.
+where $(\Vol)$ represents the volume of a particle.
 
 The momentum equation, which provides the acceleration of the particle, is a function of just the gradient and viscous shear forces as given by \Eqref{eq:Adami2012-mom-governing}. The corresponding SPH formulation was derived as given by \Eqref{eq:Adami2012-mom-sph}, which built on the earlier work of \cite{hu2007incompressible}.
 \begin{equation}
-    \LagDerivative{\vect{v}} = -\frac{1}{\rho}\nabla P + \nu \Delta( \vect{v} ) + \vect{F}
+    \LagDerivative{\vect{v}} = -\frac{1}{\rho}\nabla P + \nu \Delta( \vect{v} ) + \vect{F},
     \label{eq:Adami2012-mom-governing}
 \end{equation}
 \begin{equation}
-    \LagDerivative{\vect{v}_i} = -\frac{1}{m_i} \sum_j (\Vol^2_i + \Vol^2_j) \frac{P_i \rho_j + P_j \rho_i}{\rho_i + \rho_i} \DWIJ - \frac{\eta}{m_i} \sum_j (\Vol^2_i + \Vol^2_j) \frac{\VIJ}{\RtwoIJ[]}\DWIJ + \vect{F}_i
+    \LagDerivative{\vect{v}_i} = -\frac{1}{m_i} \sum_j (\Vol^2_i + \Vol^2_j) \frac{P_i \rho_j + P_j \rho_i}{\rho_i + \rho_i} \DWIJ - \frac{\eta}{m_i} \sum_j (\Vol^2_i + \Vol^2_j) \frac{\VIJ}{\RtwoIJ[]}\DWIJ + \vect{F}_i,
     \label{eq:Adami2012-mom-sph}
 \end{equation}
-Where $[\Delta ()]$ denotes the component-wise Laplacian operator, and $(\eta)$ is the dynamic viscosity.
+where $[\Delta ()]$ denotes the component-wise Laplacian operator, and $(\eta)$ is the dynamic viscosity.
 
 This scheme takes advantage of the regularisation of the
 particle motion stemming from the additional background pressure $(P_o = \rho_o c_s^2)$. The additional force exerted by the background pressure counteracts non-homogeneous particle distributions, therein reducing numerical dissipation.
@@ -180,99 +183,99 @@ The governing equations of the system were described as given by the continuity 
 
 The LES mass and momentum conservation equations for the flow were derived by filtering the respective equations using a spatial filter $\overline{(...)}$ to obtain their filtered counterparts as given by \Eqref{eq:Gotoh2004-continuity-filtered} and \Eqref{eq:Gotoh2004-mom-filtered} respectively.
 \begin{equation}
-    \frac{1}{\rho} \LagDerivative{\rho} + \nabla \cdot \vect{\overline{v}} = 0
+    \frac{1}{\rho} \LagDerivative{\rho} + \nabla \cdot \vect{\overline{v}} = 0,
     \label{eq:Gotoh2004-continuity-filtered}
 \end{equation}
 \begin{equation}
-    \LagDerivative{\vect{\overline{v}}} = -\frac{1}{\rho}\nabla \overline{P} + \nu \Delta ( \vect{\overline{v}} ) + \frac{1}{\rho}\nabla\cdot\tensor{\tau} + \vect{F}
+    \LagDerivative{\vect{\overline{v}}} = -\frac{1}{\rho}\nabla \overline{P} + \nu \Delta ( \vect{\overline{v}} ) + \frac{1}{\rho}\nabla\cdot\tensor{\tau} + \vect{F},
     \label{eq:Gotoh2004-mom-filtered}
 \end{equation}
 \begin{equation}
-    \frac{1}{\rho} \tensor{\tau} = \vect{\overline{v}} \otimes \vect{\overline{v}} - \overline{\vect{v} \otimes \vect{v}}
+    \frac{1}{\rho} \tensor{\tau} = \vect{\overline{v}} \otimes \vect{\overline{v}} - \overline{\vect{v} \otimes \vect{v}}.
     \label{eq:Gotoh2004-stress-tensor}
 \end{equation}
 
-The stress tensor $(\tensor{\tau})$ defined in \Eqref{eq:Gotoh2004-stress-tensor} is closed using Boussinesq’s Hypothesis as defined in \Eqref{eq:Gotoh2004-boussinesq}.
+The stress tensor $(\tensor{\tau})$ defined in \Eqref{eq:Gotoh2004-stress-tensor} is closed using Boussinesq’s Hypothesis as defined below:
 \begin{equation}
-    \frac{1}{\rho} \tensor{\tau} = 2\nu_t \tensor{S} - \frac{2}{3}k\tensor{I}
+    \frac{1}{\rho} \tensor{\tau} = 2\nu_t \tensor{S} - \frac{2}{3}k\tensor{I}.
     \label{eq:Gotoh2004-boussinesq}
 \end{equation}
 
-The turbulent eddy viscosity is estimated using a modified Smagorinsky model as given in \Eqref{eq:Gotoh2004-eddy-visc}. This allows wall effects to be incorporated into the model, which the authors required to tackle the problem they were working on.
+The turbulent eddy viscosity is estimated using a modified Smagorinsky model as given in \Eqref{eq:Gotoh2004-eddy-visc}. This allows wall effects to be incorporated into the model, which was required by the authors to tackle the problem they were working on.
 \begin{equation}
     \nu_t = \min(C_s \Delta x, \kappa d_{wall})^2 \sqrt{2 \FrobeniusInnerProduct{S}{S}}
-    \label{eq:Gotoh2004-eddy-visc}
+    \label{eq:Gotoh2004-eddy-visc},
 \end{equation}
 \begin{equation}
-    C_s=0.1 \quad , \quad \kappa=0.4
+    C_s=0.1 \quad , \quad \kappa=0.4,
 \end{equation}
-Where $(C_s)$ is the Smagorinsky constant, $(\kappa)$ is the von Karman constant, $d_{wall}$ is the normal distance of the particle to the closest wall, and $(\Delta x)$ is the inter-particle spacing.
+where $(C_s)$ is the Smagorinsky constant, $(\kappa)$ is the von Karman constant, $d_{wall}$ is the normal distance of the particle to the closest wall, and $(\Delta x)$ is the inter-particle spacing.
 
 The first term in \Eqref{eq:Gotoh2004-eddy-visc} dominates the flow far away from the solid wall, thereby recovering the standard Smagorinsky model. However, the second term dominates for flow close to the wall; hence, the eddy viscosity is a function of the particle distance to the wall. This overcomes the disadvantage of the standard Smagorinsky being over-dissipative inside the laminar layer.
 
 In order to solve the system of equations and evolve them in time, the authors employed the Predictive-Corrective time integrator, similar to the two-step projection method of \cite{chorin1968numerical}. The prediction stage is outlined by \Eqref{eq:Gotoh2004-predict-start} - \Eqref{eq:Gotoh2004-predict-end}, where $(\delta t)$ denotes the time step.
 \begin{equation}
-    \Delta \vect{v}_* = \bigg( \nu \Delta ( \vect{\overline{v}} ) + \frac{1}{\rho}\nabla\cdot\tensor{\tau} + \vect{F} \bigg) \Delta t
+    \Delta \vect{v}_* = \bigg( \nu \Delta ( \vect{\overline{v}} ) + \frac{1}{\rho}\nabla\cdot\tensor{\tau} + \vect{F} \bigg) \Delta t,
     \label{eq:Gotoh2004-predict-start}
 \end{equation}
 \begin{equation}
-    \vect{v}_* = \vect{v}_t + \Delta \vect{v}_*
+    \vect{v}_* = \vect{v}_t + \Delta \vect{v}_*,
 \end{equation}
 \begin{equation}
-    \vect{r}_* = \vect{r}_t + \vect{v}_* \Delta t
+    \vect{r}_* = \vect{r}_t + \vect{v}_* \Delta t.
     \label{eq:Gotoh2004-predict-end}
 \end{equation}
 
 The correction stage is outlined by \Eqref{eq:Gotoh2004-correct-start} - \Eqref{eq:Gotoh2004-correct-end}. $(\overline{P})$ which is required to update the $(\vect{v}_{t+1})$ term is calculated implicitly from \Eqref{eq:Gotoh2004-correct-pressure-implicit}, which is based on the filtered continuity equation given by \Eqref{eq:Gotoh2004-continuity-filtered} and assuming incompressibility $\LagDerivative{\rho}=0$.
 \begin{equation}
-    \Delta \vect{v}_{**} = -\frac{1}{\rho} \nabla \overline{P}_{t+1} \Delta t
+    \Delta \vect{v}_{**} = -\frac{1}{\rho} \nabla \overline{P}_{t+1} \Delta t,
     \label{eq:Gotoh2004-correct-start}
 \end{equation}
 \begin{equation}
-    \nabla \cdot \bigg( \frac{1}{\rho_*} \nabla \overline{P}_{t+1} \bigg) = \frac{\rho_o - \rho_*}{\rho_o \Delta t^2}
+    \nabla \cdot \bigg( \frac{1}{\rho_*} \nabla \overline{P}_{t+1} \bigg) = \frac{\rho_o - \rho_*}{\rho_o \Delta t^2},
     \label{eq:Gotoh2004-correct-pressure-implicit}
 \end{equation}
 \begin{equation}
-    \vect{v}_{t+1} = \vect{v}_* + \Delta \vect{v}_{**}
+    \vect{v}_{t+1} = \vect{v}_* + \Delta \vect{v}_{**},
 \end{equation}
 \begin{equation}
-    \vect{r}_{t+1} = \vect{r}_t + (\vect{v}_t + \vect{v}_{t+1})\frac{\Delta t}{2}
+    \vect{r}_{t+1} = \vect{r}_t + (\vect{v}_t + \vect{v}_{t+1})\frac{\Delta t}{2}.
     \label{eq:Gotoh2004-correct-end}
 \end{equation}
 
-In order to solve the system of equations given by \Eqref{eq:Gotoh2004-predict-start} - \Eqref{eq:Gotoh2004-correct-end} in an SPH setting, the authors presented the following SPH formulation for the flow property. The fluid density is given using a simple summation density \Eqref{eq:Gotoh2004-summation-density}.
+In order to solve the system of equations given by \Eqref{eq:Gotoh2004-predict-start} - \Eqref{eq:Gotoh2004-correct-end} in an SPH setting, the authors presented the following SPH formulation for the flow property. The fluid density is given using a simple summation density given below:
 \begin{equation}
-    \rho_i = \sum_j m_j\WIJ
+    \rho_i = \sum_j m_j\WIJ.
     \label{eq:Gotoh2004-summation-density}
 \end{equation}
 
-The pressure gradient term is defined in \Eqref{eq:Gotoh2004-grad-p-sph} in a symmetric form.
+The pressure gradient term is defined in a symmetric form, as given below:
 \begin{equation}
-    \bigg( \frac{1}{\rho} \nabla \overline{P} \bigg)_i = \sum_j m_j \bigg( \frac{\overline{P}_i}{\rho_i^2} + \frac{\overline{P}_j}{\rho_j^2} \bigg) \DWIJ
+    \bigg( \frac{1}{\rho} \nabla \overline{P} \bigg)_i = \sum_j m_j \bigg( \frac{\overline{P}_i}{\rho_i^2} + \frac{\overline{P}_j}{\rho_j^2} \bigg) \DWIJ.
     \label{eq:Gotoh2004-grad-p-sph}
 \end{equation}
 
-The divergence of $\vect{v}$ is also defined symmetrically as given by \Eqref{eq:Gotoh2004-div-u-sph}.
+The divergence of $\vect{v}$ is also defined symmetrically as given as:
 \begin{equation}
-    \nabla \cdot \vect{\overline{v}}_i = \rho_i \sum_j m_j \bigg(\frac{\vect{\overline{v}}_i}{\rho^2_i} + \frac{\vect{\overline{v}}_j}{\rho^2_j} \bigg) \cdot \DWIJ
+    \nabla \cdot \vect{\overline{v}}_i = \rho_i \sum_j m_j \bigg(\frac{\vect{\overline{v}}_i}{\rho^2_i} + \frac{\vect{\overline{v}}_j}{\rho^2_j} \bigg) \cdot \DWIJ.
     \label{eq:Gotoh2004-div-u-sph}
 \end{equation}
 
 The pressure Laplacian, defined in \Eqref{eq:Gotoh2004-p-laplacian-sph}, is formulated as a hybrid of a standard SPH first derivative with a finite difference approximation for the first derivative to aid particle pressure stability \parencite{cummins1999sph}.
 \begin{equation}
-    \nabla \cdot \bigg( \frac{1}{\rho} \nabla \overline{P} \bigg)_i = \sum_j m_j \frac{8}{(\rho_i + \rho_j)^2} \frac{\overline{P}_{ij} \RIJ \cdot \DWIJ }{\RtwoIJ}
+    \nabla \cdot \bigg( \frac{1}{\rho} \nabla \overline{P} \bigg)_i = \sum_j m_j \frac{8}{(\rho_i + \rho_j)^2} \frac{\overline{P}_{ij} \RIJ \cdot \DWIJ }{\RtwoIJ}.
     \label{eq:Gotoh2004-p-laplacian-sph}
 \end{equation}
 
-The divergence of the stress tensor is defined in \Eqref{eq:Gotoh2004-div-tau-sph}.
+The divergence of the stress tensor is defined as:
 \begin{equation}
-    \bigg( \frac{1}{\rho} \nabla \cdot \tensor{\tau} \bigg)_i = \sum_j m_j \Bigg( \frac{1}{\rho_i^2}\tensor{\tau_i} + \frac{1}{\rho_j^2}\tensor{\tau_j} \Bigg) \cdot \DWIJ
+    \bigg( \frac{1}{\rho} \nabla \cdot \tensor{\tau} \bigg)_i = \sum_j m_j \Bigg( \frac{1}{\rho_i^2}\tensor{\tau_i} + \frac{1}{\rho_j^2}\tensor{\tau_j} \Bigg) \cdot \DWIJ.
     \label{eq:Gotoh2004-div-tau-sph}
 \end{equation}
 
-Finally, the laminar stress term, consisting of the velocity Laplacian term, is defined as given by \Eqref{eq:Gotoh2004-vel-laplacian-sph}.
+Finally, the laminar stress term, consisting of the velocity Laplacian term, is defined as:
 \begin{equation}
-    \big(\nu \Delta(\vect{\overline{v}}) \big)_i = \sum_j m_j \frac{4(\eta_i + \eta_j)}{(\rho_i + \rho_j)^2}\frac{\vect{\overline{v}}_{ij} \RIJ \cdot \DWIJ}{\RtwoIJ}
+    \big(\nu \Delta(\vect{\overline{v}}) \big)_i = \sum_j m_j \frac{4(\eta_i + \eta_j)}{(\rho_i + \rho_j)^2}\frac{\vect{\overline{v}}_{ij} \RIJ \cdot \DWIJ}{\RtwoIJ}.
     \label{eq:Gotoh2004-vel-laplacian-sph}
 \end{equation}
 
@@ -291,18 +294,18 @@ Building on the work mentioned above, \cite{Shao2005} performed a comparative st
 
 The filtered conservation equations which the authors considered were the same as given by \Eqref{eq:Gotoh2004-continuity-filtered} - \Eqref{eq:Gotoh2004-boussinesq}. However, they incorporated the standard Smagorinsky model \parencite{smagorinsky1963general} given by \Eqref{eq:Shao2005-eddy-visc} as opposed to the modified model \Eqref{eq:Gotoh2004-eddy-visc}.
 \begin{equation}
-    \nu_t = (C_s \Delta x)^2
+    \nu_t = (C_s \Delta x)^2.
     \label{eq:Shao2005-eddy-visc}
 \end{equation}
 
 The authors consider the same predictive-corrective scheme to evolve their system as detailed in \Eqref{eq:Gotoh2004-predict-start} - \Eqref{eq:Gotoh2004-correct-end}.
-Similarly, they follow the same SPH formulation outlined in \Eqref{eq:Gotoh2004-summation-density} - \Eqref{eq:Gotoh2004-vel-laplacian-sph}. They do however, slightly modify the pressure and velocity Laplacian terms as given in \Eqref{eq:Shao2005-P-laplacian-sph} and \Eqref{eq:Shao2005-vel-laplacian-sph} respectively.
+Similarly, they follow the same SPH formulation outlined in \Eqref{eq:Gotoh2004-summation-density} - \Eqref{eq:Gotoh2004-vel-laplacian-sph}. They do however, slightly modify the pressure and velocity Laplacian terms as given below:
 \begin{equation}
-    (\nabla^2 P)_i = \sum_j m_j \frac{4}{\rho_i + \rho_j} \frac{P_{ij} \RIJ \cdot \DWIJ }{\RtwoIJ}
+    (\nabla^2 P)_i = \sum_j m_j \frac{4}{\rho_i + \rho_j} \frac{P_{ij} \RIJ \cdot \DWIJ, }{\RtwoIJ}
     \label{eq:Shao2005-P-laplacian-sph}
 \end{equation}
 \begin{equation}
-    \big(\nu \Delta(\vect{v}) \big)_i = \sum_j m_j \frac{2(\nu_i + \nu_j)}{\rho_i + \rho_j}\frac{\VIJ \RIJ \cdot \DWIJ}{\RtwoIJ}
+    \big(\nu \Delta(\vect{v}) \big)_i = \sum_j m_j \frac{2(\nu_i + \nu_j)}{\rho_i + \rho_j}\frac{\VIJ \RIJ \cdot \DWIJ}{\RtwoIJ}.
     \label{eq:Shao2005-vel-laplacian-sph}
 \end{equation}
 
