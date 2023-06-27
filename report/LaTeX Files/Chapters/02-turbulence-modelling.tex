@@ -654,30 +654,30 @@ The authors used the  $2D$ and $3D$ TGV problems to validate the model. The auth
 
  As seen from the results of the simulations in \figref{fig:DiMascio2017-fig-4} and \figref{fig:DiMascio2017-fig-9} for the $2D$ and $3D$ case, respectively, the authors were able to claim that the model captures the typical characteristics of the flow evolution with relatively coarse particle discretisation, provided an appropriate LES modelling is used.
 
-Building on this, \cite{Colagrossi2021QuasiLagrangian} introduced a small arbitrary velocity deviation $(\TildeDeltaV)$ to the fluid particle as given by:
+Building on this, \cite{Antuono_Marrone_Di_Mascio_Colagrossi_2021} introduced a small arbitrary velocity deviation $(\TildeDeltaV)$ to the fluid particle as given by:
 \begin{equation}
     \LagDerivative{\TildeR} = \TildeV + \TildeDeltaV.
-    \label{eq:Colagrossi2021QuasiLagrangian-r-transport}
+    \label{eq:Antuono_Marrone_Di_Mascio_Colagrossi_2021-r-transport}
 \end{equation}
 
-This was done since the Lagrangian nature of the proposed model was proving to be an obstacle for accurate simulations of high Reynolds number problems. Therefore, they modified the model with the transport equation given in \Eqref{eq:Colagrossi2021QuasiLagrangian-r-transport} to obtain a quasi-Lagrangian LES-SPH model. The small velocity deviation to the actual Lagrangian velocity was based on the work done on particle shifting technique (PST) and tensile instability control (TIC) technique by \cite{sun2018multi} in their $\delta$-SPH scheme.
+This was done since the Lagrangian nature of the proposed model was proving to be an obstacle for accurate simulations of high Reynolds number problems. Therefore, they modified the model with the transport equation given in \Eqref{eq:Antuono_Marrone_Di_Mascio_Colagrossi_2021-r-transport} to obtain a quasi-Lagrangian LES-SPH model. The small velocity deviation to the actual Lagrangian velocity was based on the work done on particle shifting technique (PST) and tensile instability control (TIC) technique by \cite{sun2018multi} in their $\delta$-SPH scheme.
 
 The authors subsequently employed this $\delta$-LES-SPH scheme with the same set of closure models as detailed by \cite{DiMascio2017}. They compared their proposed model with standard LES-SPH on the $2D$ and $3D$ TGV problems for Reynolds numbers up to $\SciNot{1}{6}$.
 
 \begin{figure}[htbp!]
     \centering
-    \includegraphics[scale=0.7]{Figures/research_papers/Colagrossi2021QuasiLagrangian-fig-4.png}
-    \caption{Left: Energy spectrum at $(tU/L = 3, Re = \SciNot{1}{6})$ as predicted by the $\delta$-LES-SPH model and a finite volume scheme. Symbols $k_f$ and $k_R$ indicate the wave numbers of the external forcing and the kernel radius, respectively, while $k_{\lambda}$ and $k_D$ are the wave numbers associated with the Taylor and Kolmogorov scales. Right: $k$ field at the same instant. Reproduced from \cite{Colagrossi2021QuasiLagrangian}}
-    \label{fig:Colagrossi2021QuasiLagrangian-fig-4}
+    \includegraphics[scale=0.7]{Figures/research_papers/Antuono_Marrone_Di_Mascio_Colagrossi_2021-fig-4.png}
+    \caption{Left: Energy spectrum at $(tU/L = 3, Re = \SciNot{1}{6})$ as predicted by the $\delta$-LES-SPH model and a finite volume scheme. Symbols $k_f$ and $k_R$ indicate the wave numbers of the external forcing and the kernel radius, respectively, while $k_{\lambda}$ and $k_D$ are the wave numbers associated with the Taylor and Kolmogorov scales. Right: $k$ field at the same instant. Reproduced from \cite{Antuono_Marrone_Di_Mascio_Colagrossi_2021}}
+    \label{fig:Antuono_Marrone_Di_Mascio_Colagrossi_2021-fig-4}
 \end{figure}
 \begin{figure}[htbp!]
     \centering
-    \includegraphics[scale=0.65]{Figures/research_papers/Colagrossi2021QuasiLagrangian-fig-8.png}
-    \caption{Left: Time histories of $k$ as predicted by finite volume scheme and the $\delta$-LES-SPH model. Right: Energy spectra. Symbols $k_f$ and $k_R$ denote the wave numbers of the external forcing and the kernel radius, respectively. Reproduced from \cite{Colagrossi2021QuasiLagrangian}}
-    \label{fig:Colagrossi2021QuasiLagrangian-fig-8}
+    \includegraphics[scale=0.65]{Figures/research_papers/Antuono_Marrone_Di_Mascio_Colagrossi_2021-fig-8.png}
+    \caption{Left: Time histories of $k$ as predicted by finite volume scheme and the $\delta$-LES-SPH model. Right: Energy spectra. Symbols $k_f$ and $k_R$ denote the wave numbers of the external forcing and the kernel radius, respectively. Reproduced from \cite{Antuono_Marrone_Di_Mascio_Colagrossi_2021}}
+    \label{fig:Antuono_Marrone_Di_Mascio_Colagrossi_2021-fig-8}
 \end{figure}
 
-As seen from the results of the simulations in \figref{fig:Colagrossi2021QuasiLagrangian-fig-4} and \figref{fig:Colagrossi2021QuasiLagrangian-fig-8} for the $2D$ and $3D$ case respectively, the authors claimed that the proposed model could overcome issues of high Reynolds number flows, such as generation of spurious high-frequency noise and the onset of the tensile instability. Furthermore, comparing the proposed model’s and an FVM solve’s energy spectra with the theoretical decay rate confirmed the model’s accuracy and reliability.
+As seen from the results of the simulations in \figref{fig:Antuono_Marrone_Di_Mascio_Colagrossi_2021-fig-4} and \figref{fig:Antuono_Marrone_Di_Mascio_Colagrossi_2021-fig-8} for the $2D$ and $3D$ case respectively, the authors claimed that the proposed model could overcome issues of high Reynolds number flows, such as generation of spurious high-frequency noise and the onset of the tensile instability. Furthermore, comparing the proposed model’s and an FVM solve’s energy spectra with the theoretical decay rate confirmed the model’s accuracy and reliability.
 
 The authors conclude that the $\delta$-LES-SPH model would need to be validated for flows with a Reynolds number larger than $\SciNot{1}{6}$ with experimental or numerical data. They believe that the inclusion of wall functions to deal with solid boundaries and the extension of the model to free-surface flows can further improve the model’s effectiveness. Finally, the authors believe that a higher-order approach could significantly improve the model results.
 

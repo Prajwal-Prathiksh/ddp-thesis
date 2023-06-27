@@ -139,7 +139,7 @@ Subsequently, the test cases were reconsidered to test the correctness when mult
 
 The vector energy spectral fields are shown in \figref{fig:espec-vector-fields-gamma1}. Here, it can be observed that in both the $1D$ and $2D$ case, the energy spectrum peaks for $k=1$ and is non-zero up to $k=n_x/2$, indicating the nature of the velocity field, consisting of multiple modes. The amplitudes are also observed to have an exponential drop-off, as is expected, given the nature of the amplitude weighting.
 
-This is made all the more apparent with the scalar energy spectral fields shown in \figref{fig:espec-scalar-fields-gamma1}. The log-log plots here allow for the exponential drop-off to be observed more clearly, by fitting a straight line to the log-log plot between wavenumbers $k \in [1, n_x/4]$. The gree-dashed lines, which represent the scalar energy spectrum computed for the original velocity field (which is uniform and rectangular) without interpolation, represent the `best'-case scenario, where the energy spectrum is computed without any loss of information in the velocity field, and the source of noise can be solely attributed to numerical errors from the discrete Fourier transform. The scalar energy spectrum computed from the interpolated velocity is plotted in blue.
+This is made all the more apparent with the scalar energy spectral fields shown in \figref{fig:espec-scalar-fields-gamma1}. The log-log plots here allow for the exponential drop-off to be observed more clearly, by fitting a straight line to the log-log plot between wavenumbers $k \in [1, n_x/4]$. The green-dashed lines, which represent the scalar energy spectrum computed for the original velocity field (which is uniform and rectangular) without interpolation, represent the `best'-case scenario, where the energy spectrum is computed without any loss of information in the velocity field, and the source of noise can be solely attributed to numerical errors from the discrete Fourier transform. The scalar energy spectrum computed from the interpolated velocity is plotted in blue.
 
 It is observed that the energy spectrum computed without interpolation is indeed the `best'-case scenario since it much more closely follows the exact trend. However, with the computed energy spectrum from the interpolated velocity field, the trend is still observed to be followed, but only up to the $k/8$ wavenumber, beyond which the trend is lost, and the computed energy spectrum is observed to be much lower than the green-dashed line, with the difference increasing with the wavenumber.
 This seems to indicate that the act of interpolation itself is introducing some amount of noise in the velocity field, which is reflected by the jagged nature of the blue line, and also seems to decrease the energy at lower scales, which is reflected by the blue line being consistently lower than the green-dashed line at lower wavenumbers. This allows for the conclusion that the interpolation scheme behaves as a low-pass filter, which is expected since the interpolation scheme is essentially a convolution of the velocity field with the kernel function, which is a low-pass filter.
@@ -155,7 +155,7 @@ Therefore, it was concluded that the $1D$ energy field, computed from the interp
       \centering\includegraphics[width=6cm]{Code-Figures/sine-vel-prof-2d/EK_spectrum.png}
       \caption{$2D$ $\vect{E}(\vect{k})$ field}
     \end{subfigure}
-    \caption{The vector fields $\vect{E}(\vect{k})$ for $1D$ and $2D$ case, with decay rate $\gamma=1$, and $N=n_x/2$.}
+    \caption{The vector fields $\vect{E}(\vect{k})$ for $1D$ and $2D$ case, with decay rate $\gamma=1$, and $N=n_x/2$. \textit{Note: The plots are shown by shifting the energy spectrum such that the centre of the plot along each axis corresponds to the zero wavenumber for that axis.}}
     \label{fig:espec-vector-fields-gamma1}
 \end{figure}
 
@@ -363,7 +363,7 @@ In order to better understand the nature of each major category and to subsequen
   \multicolumn{1}{|c|}{\textbf{Turbulence Model}} & \multicolumn{1}{c|}{\textbf{Review Section}} & \multicolumn{1}{c|}{\textbf{Scheme Name}}                                                                               & \multicolumn{1}{c|}{\textbf{Reference}}  \\ \hline
   Viscosity-based Model                           & \secref{sec:visc-based-model}                  & \begin{tabular}[c]{@{}l@{}}Lagrangian with iterative PST and \texttt{coupled\_c} viscosity formulation\\ (L-IPST-C)\end{tabular} & \cite{Negi2022Techniques}            \\ \hline
   Large Eddy Simulation-based Model               & \secref{sec:les-based-model}                   & SPH-LES                                                                                                                          & \cite{Okraschevski2022}              \\ \hline
-  Lagrangian LES-based Model                      & \secref{sec:lagrangian-les-based-model}        & $\delta$-LES-SPH                                                                                                                 & \cite{Colagrossi2021QuasiLagrangian} \\ \hline
+  Lagrangian LES-based Model                      & \secref{sec:lagrangian-les-based-model}        & $\delta$-LES-SPH                                                                                                                 & \cite{Antuono_Marrone_Di_Mascio_Colagrossi_2021} \\ \hline
   RANS-based k-epsilon Model                      & \secref{sec:rans-based-k-epsilon-model}        & $k-\epsilon$ SPH                                                                                                                 & \cite{Shao2006}                      \\ \hline
   LANS-based Model                                & \secref{sec:lans-based-model}                  & SPH-$\epsilon$                                                                                                                   & \cite{Monaghan2017}                  \\ \hline
   \end{tabular}%
@@ -386,7 +386,7 @@ Subsequently, the $L_1$ error for the entire simulation is defined as the mean o
 
 \subsection{L-IPST-C Scheme}
 
-The L-IPST-C scheme was considered over the other viscosity-based schemes since it was observed to be second-order convergent (SOC) by \cite{Negi2022Techniques}, for a wide variety of problems, which included the Gresho vortex problem, Kelvin-Helmholtz instability problem, and the Taylor-Green vortex problem. This scheme considers the weakly-compressible NS equations the governing equations and uses the \texttt{coupled\_c} viscosity formulation, which is corrected using the Bonet and Lok correction \parencite{bonet1999variational}. Hence, since the scheme, by definition, has the viscous term in its governing equation, it does require any additional `artificial'-viscosity term to be added.
+The L-IPST-C scheme was considered over the other viscosity-based schemes since it was observed to be second-order convergent (SOC) by \cite{Negi2022Techniques}, for a wide variety of problems, which included the Gresho vortex problem, Kelvin-Helmholtz instability problem, and the Taylor-Green vortex problem. This scheme considers the weakly-compressible NS equations the governing equations and uses the \texttt{coupled\_c} viscosity formulation, which is corrected using the Bonet and Lok correction \parencite{bonet1999variational}. Hence, since the scheme, by definition, has the viscous term in its governing equation, it does not require any additional `artificial'-viscosity term to be added.
 The scheme also incorporates the iterative particle shifting technique (IPST) by \cite{Huang_Long_Li_Liu_2019} in order to redistribute the particles to obtain a reasonably uniform grid of particles in the domain. Besides shifting the position of the particles, the scheme also updates the particles' properties, such as the density and velocity, to keep the approximation of the particle $O(h^2)$.
 Based on the parametric study conducted by \cite{Negi2022Techniques}, the proposed scheme is observed to be SOC by considering the speed of sound to be $c_s = 20$ and the shifting frequency for the particles through PST to be at every ten iterations $f_{pst} = 10$.
 
@@ -420,6 +420,7 @@ with a corresponding $CFL$ values of $[1, 1, 1.5, 2, 2]$ respectively.
 
 From the results shown in \figref{fig:lipstc-integrator}, it is evident that the order of the integrator does not appear to have much effect on the OOC and almost negligible effect on the actual magnitude of the $L_1$ errors as well.
 This highlights a much more important aspect of the effect and role of time integrators in SPH: the time-step size is the most critical factor. The order of the integrator is less important since the time-step size is typically chosen to be small enough to ensure stability. Hence, the error introduced by the time integrator is typically negligible.
+As the $Re$ number increases, the scheme loses SOC, which is also evident in \figref{fig:lipstc-integrator}, irrespective of the time integrator used. This effect will be discussed in the sections on long-time simulations of the TGV problem, with efforts made to provide a potential explanation.
 
 Also, when the run-times of these integrators were analysed, the higher order integrators were observed to be more computationally expensive, allowing for the \texttt{PEC} integrator to be around $\approx 1.6\times$ faster, which is reflected in the run-times shown in \figref{fig:lipstc-integrator-rt}.
 Typically, higher-order integrators can be used with much larger $CFL$ values, allowing for larger time steps and faster run times. However, in the case of SPH, such generalisations cannot be made since the stability of the scheme is not only dependent on the time-step size but also on the particle spacing, and hence, the $CFL$ value is typically chosen to be close to $1.0-2.0$.
@@ -571,7 +572,7 @@ Hence, the SPH-LES scheme is unsuitable for problems of low $Re$ due to the lack
 
 
 \subsection[delta-LES-SPH Scheme]{$\delta$-LES-SPH Scheme}
-The Lagrangian LES-based models have only two major schemes to offer. One is the LES-SPH scheme of \cite{DiMascio2017}, and the other is the $\delta$-LES-SPH scheme of \cite{Colagrossi2021QuasiLagrangian}.
+The Lagrangian LES-based models have only two major schemes to offer. One is the LES-SPH scheme of \cite{DiMascio2017}, and the other is the $\delta$-LES-SPH scheme of \cite{Antuono_Marrone_Di_Mascio_Colagrossi_2021}.
 The latter was chosen since their scheme introduced a small arbitrary velocity deviation $(\TildeDeltaV)$ to the fluid particles, which allowed for improved accuracy in simulations of high Reynolds number problems. This scheme also included PST and tensile instability control (TIC). This allowed the scheme to tackle the issue of spurious high-frequency noise and the onset of the tensile instability and was hence chosen.
 
 During the scheme's implementation, two choices were made regarding the treatment of the fluid density. The first choice was to note that the fluid density $\rho_c$ is independent of the summation density $\rho$, and in the second choice, both were treated as the same. This was done based on the work of \cite{Negi2022Techniques}, where they observed that the former choice led to improved OOC since the $\rho_c$ should not depend on the particle configuration and should be prescribed with an initial condition. Therefore, these two variants, i.e, $\delta$-LES-SPH $(\rho_c)$ and $\delta$-LES-SPH $(\rho)$, corresponding to the two choices respectively, were considered.
@@ -690,7 +691,7 @@ Hence, for subsequent studies, a value of $f_{pst} = 10$ is chosen as the defaul
   \label{fig:deltales-pst-espec}
 \end{figure}
 
-The original scheme of \cite{Colagrossi2021QuasiLagrangian} used a \texttt{RK4} time-integrator with a $CFL=1.5$. Therefore, to study the effects of the time-integrator, the following schemes were considered: \texttt{PEC}, \texttt{RK2} and \texttt{RK4}, with an appropriate $CFL$ value for each scheme. The results are shown in \figref{fig:deltales-integrator}, where it can be observed that the \texttt{RK2} scheme offers the best OOC and hence, is chosen as the default time-integrator for the $\delta$-LES-SPH scheme. It is also to be noted that the \texttt{RK2} integrator is also the fastest, as shown in \figref{fig:deltales-integrator-rt}, while offering a speedup of $\approx 1.6$ times over the \texttt{RK4} integrator.
+The original scheme of \cite{Antuono_Marrone_Di_Mascio_Colagrossi_2021} used a \texttt{RK4} time-integrator with a $CFL=1.5$. Therefore, to study the effects of the time-integrator, the following schemes were considered: \texttt{PEC}, \texttt{RK2} and \texttt{RK4}, with an appropriate $CFL$ value for each scheme. The results are shown in \figref{fig:deltales-integrator}, where it can be observed that the \texttt{RK2} scheme offers the best OOC and hence, is chosen as the default time-integrator for the $\delta$-LES-SPH scheme. It is also to be noted that the \texttt{RK2} integrator is also the fastest, as shown in \figref{fig:deltales-integrator-rt}, while offering a speedup of $\approx 1.6$ times over the \texttt{RK4} integrator.
 It is also noted that there are no significant differences to be observed in the velocity magnitude field and the energy spectrum, as shown in \figref{fig:deltales-integrator-vmag} and \figref{fig:deltales-integrator-espec} respectively, for the different time-integrators.
 
 \begin{figure}[htbp!]
@@ -788,7 +789,8 @@ Alternatively, the above equations can also be expanded, using standard identiti
 \end{equation}
 
 Therefore, the two variants, i.e., $k-\epsilon$ simplified and $k-\epsilon$ expanded, corresponding to the two choices for the pair of transport equations are discretised using SOC SPH operators as detailed in the work of \cite{Negi2022Techniques}.
-In order to verify the correctness of the SPH discretisation of the $k-\epsilon$ transport equations, in either case, and study the OOC of the transport equations, a single time-step of the scheme was run on a predetermined set of initial conditions for the flow properties, including $k$ and $\epsilon$. The computed RHS of the $k$ and $\epsilon$ transport equations were then compared with the analytical RHS of the equations, and the appropriate $L_1$ error was computed and plotted for various resolutions.
+In order to verify the correctness of the SPH discretisation of the $k-\epsilon$ transport equations, in either case, and study the OOC of the transport equations, a single time-step of the scheme was run on a predetermined set of initial conditions for the flow properties, including $k$ and $\epsilon$. The computed RHS of the $k$ and $\epsilon$ transport equations were then compared with the analytical RHS of the equations, and the appropriate $L_1$ error was computed and plotted for various resolutions. This test was designed based on the more complex work done by \cite{Negi_Ramachandran_2021}, which involved the comprehensive testing of the OOC of an SPH scheme through the method of manufactured solutions (MMS) in a robust and efficient manner.
+
 Three test cases were devised to represent three distinct functional forms. Flow properties such as the velocity, pressure and density were modelled after the initial conditions of the $2D$ TGV problem, as detailed in \secref{sec:taylor-green-vortex-problem}. In contrast, the initial conditions for $k$ and $\epsilon$ fields were defined as follows:
 \begin{itemize}
   \item \texttt{Test-case 1}:
@@ -814,7 +816,7 @@ For all of the above cases, the analytical values of the RHS of the $k$ and $\ep
 The results for the $k$ and $\epsilon$ transport equations are shown in \figref{fig:k-spatial-ooc} and \figref{fig:eps-spatial-ooc} respectively. It can be observed here that for the first test case, the OOC for the spatial operators in the transport equation agrees well, irrespective of the variant of discretisation.
 However, the $k-\epsilon$ simplified variant in the subsequent test cases shows a better OOC than the $k-\epsilon$ expanded variant.
 This can be attributed to the fact that in the expanded equations of \eqref{eq:Shao2006-k-transport-eq-exp-res-chap} and \eqref{eq:Shao2006-eps-transport-eq-exp-res-chap}, the terms involve either higher-order derivatives or products of derivatives, which are not well approximated by the SPH operators, and hence, lead to increased errors. It appears that the advantage of dealing with single-term derivatives (e.g., $\nabla k$) in the expanded equations, compared to having multi-term derivatives (e.g., $\nabla \cdot (k^2\nabla k / \epsilon)$) in the simplified equations, is not enough to offset the increased numerical errors due to the higher-order derivatives.
-This is also made more evident in the actual $k-\epsilon$ fields, as shown in \figref{fig:k-spatial-ooc-field} and \figref{fig:eps-spatial-ooc-field}, respectively.
+This is also made more evident in the actual $k-\epsilon$ fields, as shown in \figref{fig:k-spatial-ooc-field} and \figref{fig:eps-spatial-ooc-field}, respectively, where the significant error caused by the $k-\epsilon$ expanded variant is visible. This is also corroborated by the fact that the expanded variant shows sudden and massive spikes in the OOC plot of \figref{fig:eps-spatial-ooc} for specific resolutions, which are not observed in the simplified variant. This would indicate that the expanded variant is sensitive to the resolution of the problem and hence, is unsuitable for general use.
 Therefore, the $k-\epsilon$ simplified variant is chosen as the default variant for the $k-\epsilon$ SPH scheme.
 
 \begin{figure}[htbp!]
@@ -1529,7 +1531,7 @@ The observations with the $k-\epsilon$ SPH and SPH-$\epsilon$ schemes are much s
 
 From the previous section, it is evident that $k-\epsilon$ SPH and SPH-$\epsilon$ need to be improved before they can be considered potential turbulence modelling schemes in SPH.
 Therefore, to better gauge the differences between the L-IPST-C and $\delta$-LES-SPH schemes, the externally forced TGV problem is considered.
-Detailed in the work of \cite{Colagrossi2021QuasiLagrangian}, this $2D$ problem is driven by a forcing function, given by:
+Detailed in the work of \cite{Antuono_Marrone_Di_Mascio_Colagrossi_2021}, this $2D$ problem is driven by a forcing function, given by:
 \begin{equation}
   \vect{F}_{2D} = r(t^*) A \bigg( \sin(8\pi x^*) \cos(8\pi y^*), -\cos(8\pi x^*) \sin(8\pi y^*) \bigg),
 \end{equation}
@@ -1550,8 +1552,9 @@ For the sake of uniformity and computational feasibility, the same problem is ru
 The kinetic energy evolution for various $Re$ is shown in \figref{fig:tgv-forced-ke}.
 As had been discussed in the previous section, regarding the over-predicting and under-predicting nature of the L-ISPT-C and $\delta$-LES-SPH schemes, respectively, when it comes to the energy of the system, we see similar trends here as well.
 This causes the L-IPST-C scheme to blow up for all $Re$ when $N=100^2$ even after the forcing term has been switched off. 
-However, when the resolution is increased to $N=200^2$, the L-IPST-C scheme can track the trend as observed by Colagrossi, albeit with a slight over-prediction. This manifests in the energy appearing to diverge towards the end of the $3s$ mark. Therefore, it is safe to conclude that the simulation cannot be run longer (the author was able to simulate up to $t_f=20s$) without using a significantly large resolution.
-On the other hand, the $\delta$-LES-SPH scheme continues to underpredict the system's energy, even for the $N=200^2$ case. There might be credible reasons for this, considering that the author used the same scheme but with a resolution that is $6x$ finer. This would imply that if we consider the fact that the $\delta$-LES-SPH scheme will continue to reduce the error in under-predicting the energy of the system, with increasing resolution, it is possible that the exact results obtained by Colagrossi, can be reproduced with simply a much higher resolution.
+However, when the resolution is increased to $N=200^2$, the L-IPST-C scheme can track the trend as the authors observe, albeit with a slight over-prediction. This manifests in the energy appearing to diverge towards the end of the $3s$ mark. Therefore, it is safe to conclude that the simulation cannot run longer without a significantly large resolution. The authors, however, were able to simulate the problem for $t_f=20s$ in their work. They have made the data available in the form of a video titled: \href{https://youtu.be/Qxxuo4K-k6c}{\texttt{SPH LES TurboMixer N1200 Re=1M, Q, Curl, Pr, Lyap}}.
+
+On the other hand, the $\delta$-LES-SPH scheme continues to underpredict the system's energy, even for the $N=200^2$ case. There might be credible reasons for this, considering that the author used the same scheme but with a resolution that is $6x$ finer. This would imply that if we consider the fact that the $\delta$-LES-SPH scheme will continue to reduce the error in under-predicting the energy of the system, with increasing resolution, it is possible that the exact results obtained by the authors, can be reproduced with simply a much higher resolution.
 
 \begin{figure}[htbp!]
   \begin{subfigure}{7cm}
@@ -1566,20 +1569,20 @@ On the other hand, the $\delta$-LES-SPH scheme continues to underpredict the sys
   \centering\includegraphics[width=6cm]{Code-Figures/ext-force-tgv/limit_ke_re_1000000.png}
   \caption{Kinetic energy ($Re = 1,000,000$) \textit{(zoomed in)}}
   \end{subfigure}
-  \caption{Evolution of the kinetic energy for the externally-forced TGV problem $(N=[100^2, 200^2], Re=[10^4, 10^5, 10^6], c_s=20)$. Compared with data obtained from \cite{Colagrossi2021QuasiLagrangian}.}
+  \caption{Evolution of the kinetic energy for the externally-forced TGV problem $(N=[100^2, 200^2], Re=[10^4, 10^5, 10^6], c_s=20)$. Compared with data obtained from \cite{Antuono_Marrone_Di_Mascio_Colagrossi_2021}.}
   \label{fig:tgv-forced-ke}
 \end{figure}
 
 
-The evolution of the energy spectrum for $Re=10^6$ is shown in \figref{fig:tgv-forced-espec}.
-It is noted that this is not a fair comparison with the data obtained from Colagrossi since the author used a much finer resolution, allowing for much larger wavenumbers to be captured in the energy spectrum.
+The evolution of the energy spectrum for $Re=10^6$ is shown in \figref{fig:tgv-forced-espec}. It must be highlighted that the multiple coloured lines in the computed energy spectrum plots refer to the energy spectrum at different time instances. The dark blue line represents the energy spectrum at the earliest time, and the yellow line represents the energy spectrum at the final time, with the other colours representing the energy spectrum at intermediate time instances.
+It is immediately noted that this is not a fair comparison with the data obtained from the authors since they used a much finer resolution, allowing for much larger wavenumbers to be captured in the energy spectrum.
 Therefore, only the trends are compared here qualitatively. The slope of the line is calculated using the first quartile of the energy spectrum. The slope obtained from the L-IPST-C scheme is $-1.77$ at the final time instance, which is appropriately $-5/3$ and, therefore, close to the expected slope for the inertial subrange.
 However, the energy in the lower scales is also significant, and the expected slope of $-3$ for the viscous subrange is not observed.
 This would imply the lack of a robust viscous dissipation mechanism. This is also evident in the velocity magnitude plots, shown in \figref{fig:tgv-forced-colag-vmag}, where we can see a noisy velocity field, implying the presence of particles with relatively high energy throughout the domain. Similarly, in the vorticity plots, shown in \figref{fig:tgv-forced-colag-omega}, we see that the vorticity field is extremely noisy and does not appear to have coherent vorticity structures.
 Therefore, it is reasonable to conclude that the reason for the L-IPST-C scheme to predict a slope of $-5/3$ might have more to do with the fact that the particles are no longer associated with eddies, and are instead being advected arbitrarily, without a viscous term to curtail their motion and organise them into Lagrangian coherent structures.
 
 On the other hand, the slope obtained from the $\delta$-LES-SPH scheme is $-3.12$, which is close to the slope expected in the viscous subrange, but appears in the inertial subrange instead. This shows that the $\delta$-LES-SPH scheme has a robust viscous dissipation mechanism, causing a steep energy redistribution from a much larger scale than expected. This implies that the velocity magnitude field would be much smoother, and the flow would be characterised by significantly larger eddies that contain the bulk of the energy and a cascade of energy to lower scales through smaller and smaller structures. This is what is seen in \figref{fig:tgv-forced-colag-vmag}.
-A similar conclusion can be made from observing the vorticity field, as shown in \figref{fig:tgv-forced-colag-omega}. The vorticity field obtained from the $\delta$-LES-SPH scheme is much smoother and appears to have distorted yet coherent vorticity structures.
+A similar conclusion can be made from observing the vorticity field, as shown in \figref{fig:tgv-forced-colag-omega}. The vorticity field obtained from the $\delta$-LES-SPH scheme is much smoother and appears to have coherent vorticity structures.
 This indicates that merely increasing the resolution of the L-IPST-C scheme will not be sufficient to turn it into a suitable turbulence model. Instead, a mechanism to dissipate energy at smaller scales will have to be introduced, allowing the energy to cascade to smaller scales and dissipate at the viscous subrange.
 This also gives a reasonable explanation behind the over-predicting and under-predicting predicament of these two schemes.
 
@@ -1595,9 +1598,9 @@ This also gives a reasonable explanation behind the over-predicting and under-pr
   \end{subfigure}
   \begin{subfigure}{7cm}
   \centering\includegraphics[width=6cm]{Code-Figures/ext-force-tgv/colag_ek_t_3.png}
-  \caption{Energy spectrum ($Re = 1,000,000$), reproduced from \cite{Colagrossi2021QuasiLagrangian}}
+  \caption{Energy spectrum ($Re = 1,000,000$), reproduced from \cite{Antuono_Marrone_Di_Mascio_Colagrossi_2021}}
   \end{subfigure}
-  \caption{Evolution of the energy spectrum for the externally-forced TGV problem $(N=200^2, t_f=3, Re=10^6, c_s=20)$. Compared with data obtained from \cite{Colagrossi2021QuasiLagrangian}.}
+  \caption{Evolution of the energy spectrum for the externally-forced TGV problem $(N=200^2, t_f=3, Re=10^6, c_s=20)$. Compared with data obtained from \cite{Antuono_Marrone_Di_Mascio_Colagrossi_2021}.}
   \label{fig:tgv-forced-espec}
 \end{figure}
 
@@ -1605,14 +1608,14 @@ This also gives a reasonable explanation behind the over-predicting and under-pr
 \centering
 \begin{subfigure}{10cm}
 \centering\includegraphics[width=10cm]{Code-Figures/ext-force-tgv/colag_vmag_t_3.png}
-\caption{Velocity magnitude field ($Re = 10^6$), reproduced from \cite{Colagrossi2021QuasiLagrangian}}
+\caption{Velocity magnitude field ($Re = 10^6$), reproduced from \cite{Antuono_Marrone_Di_Mascio_Colagrossi_2021}}
 \end{subfigure}
 \\ \vspace{1cm}
 \begin{subfigure}{14cm}
 \centering\includegraphics[width=14cm]{Code-Figures/ext-force-tgv/vmag_t_3.png}
 \caption{Velocity magnitude field ($Re = 10^6$), computed from the L-IPST-C and $\delta$-LES-SPH schemes}
 \end{subfigure}
-\caption{Comparison between expected velocity magnitude field \parencite{Colagrossi2021QuasiLagrangian}, and the computed velocity magnitude field for the externally-forced TGV problem $(N=200^2, t_f=1.92, Re=10^6, c_s=20)$.}
+\caption{Comparison between expected velocity magnitude field \parencite{Antuono_Marrone_Di_Mascio_Colagrossi_2021}, and the computed velocity magnitude field for the externally-forced TGV problem $(N=200^2, t_f=1.92, Re=10^6, c_s=20)$.}
 \label{fig:tgv-forced-colag-vmag}
 \end{figure}
 
@@ -1620,14 +1623,14 @@ This also gives a reasonable explanation behind the over-predicting and under-pr
 \centering
 \begin{subfigure}{10cm}
 \centering\includegraphics[width=10cm]{Code-Figures/ext-force-tgv/colag_omegaz_t_3.png}
-\caption{$\Vorticity_z$ field ($Re = 10^6$), reproduced from \cite{Colagrossi2021QuasiLagrangian}}
+\caption{$\Vorticity_z$ field ($Re = 10^6$), reproduced from \cite{Antuono_Marrone_Di_Mascio_Colagrossi_2021}}
 \end{subfigure}
 \\ \vspace{1cm}
 \begin{subfigure}{14cm}
 \centering\includegraphics[width=14cm]{Code-Figures/ext-force-tgv/omegaz_t_3.png}
 \caption{$\Vorticity_z$ field ($Re = 10^6$), computed from the L-IPST-C and $\delta$-LES-SPH schemes}
 \end{subfigure}
-\caption{Comparison between expected $\Vorticity_z$ field \parencite{Colagrossi2021QuasiLagrangian}, and the computed $\Vorticity_z$ field for the externally-forced TGV problem $(N=200^2, t_f=1.92, Re=10^6, c_s=20)$.}
+\caption{Comparison between expected $\Vorticity_z$ field \parencite{Antuono_Marrone_Di_Mascio_Colagrossi_2021}, and the computed $\Vorticity_z$ field for the externally-forced TGV problem $(N=200^2, t_f=1.92, Re=10^6, c_s=20)$.}
 \label{fig:tgv-forced-colag-omega}
 \end{figure}
 
@@ -1640,20 +1643,20 @@ This needs to be studied further since the pressure field is a significant quant
 \centering
 \begin{subfigure}{10cm}
 \centering\includegraphics[width=10cm]{Code-Figures/ext-force-tgv/colag_p_t_1.92.png}
-\caption{Pressure field ($Re = 10^6$), reproduced from \cite{Colagrossi2021QuasiLagrangian}}
+\caption{Pressure field ($Re = 10^6$), reproduced from \cite{Antuono_Marrone_Di_Mascio_Colagrossi_2021}}
 \end{subfigure}
 \\ \vspace{1cm}
 \begin{subfigure}{14cm}
 \centering\includegraphics[width=14cm]{Code-Figures/ext-force-tgv/p_t_1.92.png}
 \caption{Pressure field ($Re = 10^6$), computed from the L-IPST-C and $\delta$-LES-SPH schemes}
 \end{subfigure}
-\caption{Comparison between expected pressure field \parencite{Colagrossi2021QuasiLagrangian}, and the computed pressure field for the externally-forced TGV problem $(N=200^2, t_f=1.92, Re=10^6, c_s=20)$.}
+\caption{Comparison between expected pressure field \parencite{Antuono_Marrone_Di_Mascio_Colagrossi_2021}, and the computed pressure field for the externally-forced TGV problem $(N=200^2, t_f=1.92, Re=10^6, c_s=20)$.}
 \label{fig:tgv-forced-colag-p}
 \end{figure}
 
 
 Finally, the various schemes' angular and linear momentum evolution is shown in \figref{fig:tgv-forced-am-lm}. These quantities would have to be conserved here since the net force on the system is zero. The expected trend of improved bounds around the zero line with increased resolution is observed.
-However, the L-IPST-C scheme is not as accurate as the $\delta$-LES-SPH scheme regarding being bounded or having similar zones of peaks and troughs.
+However, the L-IPST-C scheme is not as conservative as the $\delta$-LES-SPH scheme regarding being bounded or having similar zones of peaks and troughs.
 
 \begin{figure}[htbp!]
   \begin{subfigure}{7cm}
