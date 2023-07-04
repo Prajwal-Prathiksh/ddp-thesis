@@ -83,6 +83,7 @@
 \usepackage[utf8]{inputenc} % Required for inputting international characters
 \usepackage{lmodern,textcomp} % Latin modern font
 \usepackage{mathpazo} % Use the Palatino font by default
+\usepackage{pdfpages}
 
 
 % ------ BIBLIOGRAPHY ------
@@ -210,6 +211,15 @@
 
 % Include title page
 \input{Base/titlepage.tex}
+
+% Include approval page
+\includepdf[
+  pages={1},
+  pagecommand={\thispagestyle{plain}},
+  addtotoc={1,chapter,1,Thesis Approval,thesis-approval}
+]{Base/thesis-approval-180010027-signed.pdf}
+% \input{Base/thesis-approval.tex}
+
 
 % Include declaration of independence
 \input{Base/declaration.tex}
