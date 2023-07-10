@@ -222,18 +222,24 @@
 
 
 % Include declaration of independence
-\input{Base/declaration.tex}
+\includepdf[
+  pages={1},
+  pagecommand={\thispagestyle{plain}},
+  addtotoc={1,chapter,1,Declaration of Authorship,thesis-declaration}
+]{Base/thesis-declaration-180010027-signed.pdf}
+% \input{Base/declaration.tex}
 
 \cleardoublepage
 
 % Include quotation page
 % \input{Base/quotation.tex}
 
+% Include acknowledgements page
+\input{Base/acknowledgements.tex}
+
 % Include abstract page
 \input{Base/abstract.tex}
 
-% Include acknowledgements page
-\input{Base/acknowledgements.tex}
 
 
 %----------------------------------------------------------------------------------------
