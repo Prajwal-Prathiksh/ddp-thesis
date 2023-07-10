@@ -17,7 +17,7 @@
 
 \documentclass[
   11pt, % The default document font size, options: 10pt, 11pt, 12pt
-  oneside, % One side output by default, comment it out to switch to two side with alternating margins
+  % oneside, % One side output by default, comment it out to switch to two side with alternating margins
   english, % AE: american, BE: english ngerman for (new) German -> (New spelling, important for line breaks in a word)
   singlespacing, % Single line spacing, alternatives: onehalfspacing or doublespacing
   % draft, % Uncomment to enable draft mode (no pictures, no links, overfull hboxes indicated)
@@ -213,20 +213,22 @@
 \input{Base/titlepage.tex}
 
 % Include approval page
+\cleardoublepage % Comment out if oneside is used
 \includepdf[
   pages={1},
   pagecommand={\thispagestyle{plain}},
   addtotoc={1,chapter,1,Thesis Approval,thesis-approval}
-]{Base/thesis-approval-180010027-signed.pdf}
+]{Base/thesis-approval-180010027-signed-no-pagenum.pdf}
 % \input{Base/thesis-approval.tex}
 
 
-% Include declaration of independence
+% Include declaration of authorship page
+\cleardoublepage % Comment out if oneside is used
 \includepdf[
   pages={1},
   pagecommand={\thispagestyle{plain}},
   addtotoc={1,chapter,1,Declaration of Authorship,thesis-declaration}
-]{Base/thesis-declaration-180010027-signed.pdf}
+]{Base/thesis-declaration-180010027-signed-no-pagenum.pdf}
 % \input{Base/declaration.tex}
 
 \cleardoublepage
@@ -322,8 +324,6 @@
 % Uncomment the lines as you write the Appendices
 
 \include{Appendices/A-lagrangian-les-filtering-of-edac}
-% \include{Appendices/AppendixB}
-% \include{Appendices/AppendixC}
 
 
 %----------------------------------------------------------------------------------------
